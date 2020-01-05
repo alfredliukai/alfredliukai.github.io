@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh_CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="tomcat,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="概述1.Tomcat 要实现 2 个核心功能:  处理 Socket 连接，负责网络字节流与 Request 和 Response 对象的转化。 加载和管理 Servlet，以及具体处理 Request 请求。  因此 Tomcat 设计了两个核心组件连接器(Connector)和容器(Container)来分别做 这两件事情。连接器负责对外交流，容器负责内部处理。 2.Tomcat 支持的 I/">
+<meta name="keywords" content="tomcat">
+<meta property="og:type" content="article">
+<meta property="og:title" content="tomcat系统架构及实现">
+<meta property="og:url" content="https://alfredliukai.github.io/2019/10/02/tomcat系统架构及实现/index.html">
+<meta property="og:site_name" content="昨非的个人网站">
+<meta property="og:description" content="概述1.Tomcat 要实现 2 个核心功能:  处理 Socket 连接，负责网络字节流与 Request 和 Response 对象的转化。 加载和管理 Servlet，以及具体处理 Request 请求。  因此 Tomcat 设计了两个核心组件连接器(Connector)和容器(Container)来分别做 这两件事情。连接器负责对外交流，容器负责内部处理。 2.Tomcat 支持的 I/">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://alfredliukai.github.io/2019/10/02/tomcat系统架构及实现/tomcat1.png">
+<meta property="og:image" content="https://alfredliukai.github.io/2019/10/02/tomcat系统架构及实现/tomcat2.png">
+<meta property="og:image" content="https://alfredliukai.github.io/2019/10/02/tomcat系统架构及实现/tomcat3.png">
+<meta property="og:image" content="https://alfredliukai.github.io/2019/10/02/tomcat系统架构及实现/tomcat4.png">
+<meta property="og:image" content="https://alfredliukai.github.io/2019/10/02/tomcat系统架构及实现/tomcat5.png">
+<meta property="og:updated_time" content="2019-10-03T15:50:58.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="tomcat系统架构及实现">
+<meta name="twitter:description" content="概述1.Tomcat 要实现 2 个核心功能:  处理 Socket 连接，负责网络字节流与 Request 和 Response 对象的转化。 加载和管理 Servlet，以及具体处理 Request 请求。  因此 Tomcat 设计了两个核心组件连接器(Connector)和容器(Container)来分别做 这两件事情。连接器负责对外交流，容器负责内部处理。 2.Tomcat 支持的 I/">
+<meta name="twitter:image" content="https://alfredliukai.github.io/2019/10/02/tomcat系统架构及实现/tomcat1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://alfredliukai.github.io/2019/10/02/tomcat系统架构及实现/">
+
+
+
+
+
+  <title>tomcat系统架构及实现 | 昨非的个人网站</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh_CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">昨非的个人网站</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-首页">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-标签">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-归档">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-关于">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://alfredliukai.github.io/2019/10/02/tomcat系统架构及实现/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="刘凯">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="昨非的个人网站">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">tomcat系统架构及实现</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-10-02T10:43:28+08:00">
+                2019-10-02
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h4 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h4><p>1.Tomcat 要实现 2 个核心功能:</p>
+<ul>
+<li>处理 Socket 连接，负责网络字节流与 Request 和 Response 对象的转化。</li>
+<li>加载和管理 Servlet，以及具体处理 Request 请求。</li>
+</ul>
+<p>因此 Tomcat 设计了两个核心组件连接器(Connector)和容器(Container)来分别做 这两件事情。连接器负责对外交流，容器负责内部处理。</p>
+<p>2.Tomcat 支持的 I/O 模型有:</p>
+<ul>
+<li>NIO:非阻塞 I/O，采用 Java NIO 类库实现。</li>
+<li>NIO2:异步 I/O，采用 JDK 7 最新的 NIO2 类库实现。</li>
+<li>APR:采用 Apache 可移植运行库实现，是 C/C++ 编写的本地库。</li>
+</ul>
+<p>3.Tomcat 支持的应用层协议有:</p>
+<ul>
+<li>HTTP/1.1:这是大部分 Web 应用采用的访问协议。 </li>
+<li>AJP:用于和 Web 服务器集成(如 Apache)。 </li>
+<li>HTTP/2:HTTP 2.0 大幅度的提升了 Web 性能。</li>
+</ul>
+<p>Tomcat 为了实现支持多种 I/O 模型和应用层协议，一个容器可能对接多个连接器，就好比 一个房间有多个门。但是单独的连接器或者容器都不能对外提供服务，需要把它们组装起来 才能工作，组装后这个整体叫作 Service 组件。<br><img src="/2019/10/02/tomcat系统架构及实现/tomcat1.png" alt="avatar"><br>从图上你可以看到，最顶层是 Server，这里的 Server 指的就是一个 Tomcat 实例。一个 Server 中有一个或者多个 Service，一个 Service 中有多个连接器和一个容器。连接器与容 器之间通过标准的 ServletRequest 和 ServletResponse 通信。</p>
+<h4 id="连接器"><a href="#连接器" class="headerlink" title="连接器"></a>连接器</h4><p>1.主要功能</p>
+<ol>
+<li>连接器功能</li>
+<li>监听网络端口。</li>
+<li>接受网络连接请求。</li>
+<li>读取请求网络字节流。</li>
+<li>根据具体应用层协议(HTTP/AJP)解析字节流，生成统一的 Tomcat Request 对象。 将 Tomcat Request 对象转成标准的 ServletRequest。</li>
+<li>调用 Servlet 容器，得到 ServletResponse。</li>
+<li>将 ServletResponse 转成 Tomcat Response 对象。</li>
+<li>将 Tomcat Response 转成网络字节流。 </li>
+<li>将响应字节流写回给浏览器。</li>
+</ol>
+<p>通过分析连接器的详细功能列表，我们发现连接器需要完成 3 个高内聚的功能:</p>
+<ul>
+<li>网络通信。</li>
+<li>应用层协议解析。</li>
+<li>Tomcat Request/Response 与 ServletRequest/ServletResponse 的转化。</li>
+</ul>
+<p>因此 Tomcat 的设计者设计了 3 个组件来实现这 3 个功能，分别是 EndPoint、Processor 和 Adapter。EndPoint 负责提供字节流给 Processor，Processor 负责 提供 Tomcat Request 对象给 Adapter，Adapter 负责提供 ServletRequest 对象给容器。其中 Endpoint 和 Processor 放在一起抽象成了 ProtocolHandler 组件，它们的关系如下图所示。<br><img src="/2019/10/02/tomcat系统架构及实现/tomcat2.png" alt="avatar"></p>
+<p>2.ProtocolHandler 组件<br>连接器用 ProtocolHandler 来处理网络连接和应用层协议，包含了 2 个 重要部件:EndPoint 和 Processor。EndPoint 是通信端点，即通信监听的接口，是具体的 Socket 接收和发送处理器，是对传输层的抽象，因此 EndPoint 是用来实现 TCP/IP 协议的。如果说 EndPoint 是用来实现 TCP/IP 协议的，那么 Processor 用来实现 HTTP 协议， Processor 接收来自 EndPoint 的 Socket，读取字节流解析成 Tomcat Request 和Response对象，并通过 Adapter 将其提交到容器处理，Processor 是对应用层协议的抽象。<br>EndPoint 是一个接口，对应的抽象实现类是 AbstractEndpoint，而 AbstractEndpoint 的具体子类，比如在 NioEndpoint 和 Nio2Endpoint 中，有两个重要的子组件: Acceptor 和 SocketProcessor。其中 Acceptor 用于监听 Socket 连接请求。SocketProcessor 用于处理接收到的 Socket 请求，它实现 Runnable 接口，在 Run 方法里调用协议处理组件 Processor 进行处理。为 了提高处理能力，SocketProcessor 被提交到线程池来执行。而这个线程池叫作执行器 (Executor)。Processor 是一个接口，定义了请求的处理等方法。它的抽象实现类 AbstractProcessor 对一些协议共有的属性进行封装，没有对方法进行实现。具体的实现有 AJPProcessor、 HTTP11Processor 等，这些具体实现类实现了特定协议的解析方法和请求处理方式。<br><img src="/2019/10/02/tomcat系统架构及实现/tomcat3.png" alt="avatar"><br>从图中我们看到，EndPoint 接收到 Socket 连接后，生成一个 SocketProcessor 任务提交 到线程池去处理，SocketProcessor 的 Run 方法会调用 Processor 组件去解析应用层协 议，Processor 通过解析生成 Request 对象后，会调用 Adapter 的 Service 方法。</p>
+<p>3.Adapter 组件<br>Tomcat 定义了自己 的 Request 类来“存放”这些请求信息。ProtocolHandler 接口负责解析请求并生成 Tomcat Request 类。但是这个 Request 对象不是标准的 ServletRequest，也就意味着， 不能用 Tomcat Request 作为参数来调用容器。Tomcat 设计者的解决方案是引入 CoyoteAdapter，这是适配器模式的经典运用，连接器调用 CoyoteAdapter 的 Sevice 方法，传入的是 Tomcat Request 对象，CoyoteAdapter 负责将 Tomcat Request 转成 ServletRequest，再调用容器的 Service 方法。</p>
+<h4 id="多层容器"><a href="#多层容器" class="headerlink" title="多层容器"></a>多层容器</h4><p>1.容器的层次结构<br><img src="/2019/10/02/tomcat系统架构及实现/tomcat4.png" alt="avatar"><br>Context 表示一个 Web 应用程序;Wrapper 表示一个 Servlet，一个 Web 应用程序中可 能会有多个 Servlet;Host 代表的是一个虚拟主机，或者说一个站点，可以给 Tomcat 配 置多个虚拟主机地址，而一个虚拟主机下可以部署多个 Web 应用程序;Engine 表示引 擎，用来管理多个虚拟站点，一个 Service 最多只能有一个 Engine。<br>Tomcat 就是用组合模式来管理 这些容器的。具体实现方法是，所有容器组件都实现了 Container 接口，因此组合模式可 以使得用户对单容器对象和组合容器对象的使用具有一致性。这里单容器对象指的是最底层 的 Wrapper，组合容器对象指的是上面的 Context、Host 或者 Engine。Container 接口 定义如下:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">public interface Container extends Lifecycle &#123;</span><br><span class="line">    public void setName(String name);</span><br><span class="line">    public Container getParent();</span><br><span class="line">    public void setParent(Container container);</span><br><span class="line">    public void addChild(Container child);</span><br><span class="line">    public void removeChild(Container child);</span><br><span class="line"> 	public Container findChild(String name);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>2.请求定位 Servlet 的过程</p>
+<p>Tomcat 是用Mapper组件来完成这个任务的。Mapper组件的功能就是将用户请求的URL定位到一个Servlet，它的工作原理是:Mapper 件里保存了Web 应用的配置信息，其实就是容器组件与访问路径的映射关系， 比如Host容器里配置的域名、Context容器里的Web应用路径，以及Wrapper容器里Servlet 映射的路径，你可以想象这些配置信息就是一个多层次的Map。<br>首先，根据协议和端口号选定Service和Engine。Tomcat的每个连接器都监听不同的端口，比如Tomcat默认的HTTP连接器监听8080端口、默认的AJP连接器监听8009 端口。上面例子中的 URL 访问的是 8080 端 口，因此这个请求会被 HTTP 连接器接收，而一个连接器是属于一个 Service 组件的，这样 Service组件就确定了。我们还知道一个Service组件里除了有多个连接器，还有一个容器组件，具体来说就是一个Engine容器，因此Service确定了也就意味着 Engine也确定了。然后根据域名选定Host。之后根据URL路径找到Context组件。最后根据URL路径找到Wrapper(Servlet)。Context确定后，Mapper再根据 web.xml中配置的Servlet映射路径来找到具体的Wrapper和Servlet。<br>需要注意的是，并不是说只有Servlet才会去处理请求，实际上这个查找路径上的父子容器都会对请求做一些处理。连接器中的Adapter会调用容器的Service 方法来执行 Servlet，最先拿到请求的是Engine容器，Engine 容器对请求做一些处理后，会把请求传给自己子容器 Host继续处理，依次类推，最后这个请求会传给 Wrapper容器，Wrapper会调用最终的Servlet 来处理。<br>那么这个调用过程具体是怎么实现的呢?答案是使用Pipeline-Valve管道。Pipeline-Valve是责任链模式，责任链模式是指在一个请求处理的过程中有很多处理者依次对请求进行处理，每个处理者负责做自己相应的处理，处理完之后将再调用下一个处理者 继续处理。Valve表示一个处理点，比如权限认证和记录日志。如果你还不太理解的话，可以来看看Valve和Pipeline接口中的关键方法。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">public interface Valve &#123;</span><br><span class="line"> public Valve getNext();</span><br><span class="line"> public void setNext(Valve valve);</span><br><span class="line"> public void invoke(Request request, Response response)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>由于Valve是一个处理点，因此invoke方法就是来处理请求的。注意到Valve中有getNext和setNext方法，因此我们大概可以猜到有一个链表将Valve链起来了。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">public interface Pipeline extends Contained &#123;</span><br><span class="line">	public void addValve(Valve valve);</span><br><span class="line">	public Valve getBasic();</span><br><span class="line">	public void setBasic(Valve valve);</span><br><span class="line">	public Valve getFirst();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>整个调用过程由连接器中的 Adapter 触发的，它会调用 Engine 的第一个 Valve:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">connector.getService().getContainer().getPipeline().getFirst().invoke(request, response)</span><br></pre></td></tr></table></figure></p>
+<p><img src="/2019/10/02/tomcat系统架构及实现/tomcat5.png" alt="avatar"></p>
+<p>Valve是Tomcat的私有机制，与Tomcat的基础架构/API是紧耦合的。Servlet API是公有的标准，所有的Web容器包括Jetty都支持Filter机制。另一个重要的区别是 Valve 工作在 Web 容器级别，拦截所有应用的请求;而Servlet Filter工作在应用级别，只能拦截某个Web应用的所有请求。如果想做整个Web容器 的拦截器，必须通过 Valve 来实现。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/tomcat/" rel="tag"># tomcat</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/09/22/动手实现运行servlet/" rel="next" title="动手实现运行servlet">
+                <i class="fa fa-chevron-left"></i> 动手实现运行servlet
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/10/04/tomcat系统架构及实现二/" rel="prev" title="tomcat系统架构及实现二">
+                tomcat系统架构及实现二 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">刘凯</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">24</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">1</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">16</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#概述"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#连接器"><span class="nav-number">2.</span> <span class="nav-text">连接器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#多层容器"><span class="nav-number">3.</span> <span class="nav-text">多层容器</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">刘凯</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

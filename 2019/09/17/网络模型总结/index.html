@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh_CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="网络模型,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="常用的五种网络IO模型是阻塞I/O，非阻塞I/O，I/O复用，事件(信号)驱动I/O，异步I/O。为什么要发起系统调用？因为进程想要获取磁盘中的数据，而能和硬件打交道的只能是内核，进程通知内核说我要磁盘中的数据，此过程就是系统调用。一次I/O的完成的步骤：当进程发起系统调用时，这个系统调用就进入内核模式，然后开始I/O操作。I/O操作分为两个步骤；1、磁盘把数据装载到内核的内存空间，2、内核的内存">
+<meta name="keywords" content="网络模型">
+<meta property="og:type" content="article">
+<meta property="og:title" content="网络模型总结">
+<meta property="og:url" content="https://alfredliukai.github.io/2019/09/17/网络模型总结/index.html">
+<meta property="og:site_name" content="昨非的个人网站">
+<meta property="og:description" content="常用的五种网络IO模型是阻塞I/O，非阻塞I/O，I/O复用，事件(信号)驱动I/O，异步I/O。为什么要发起系统调用？因为进程想要获取磁盘中的数据，而能和硬件打交道的只能是内核，进程通知内核说我要磁盘中的数据，此过程就是系统调用。一次I/O的完成的步骤：当进程发起系统调用时，这个系统调用就进入内核模式，然后开始I/O操作。I/O操作分为两个步骤；1、磁盘把数据装载到内核的内存空间，2、内核的内存">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://alfredliukai.github.io/2019/09/17/网络模型总结/net1.png">
+<meta property="og:image" content="https://alfredliukai.github.io/2019/09/17/网络模型总结/net2.png">
+<meta property="og:image" content="https://alfredliukai.github.io/2019/09/17/网络模型总结/net3.png">
+<meta property="og:image" content="https://alfredliukai.github.io/2019/09/17/网络模型总结/net4.png">
+<meta property="og:image" content="https://alfredliukai.github.io/2019/09/17/网络模型总结/net5.png">
+<meta property="og:updated_time" content="2019-09-17T00:55:17.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="网络模型总结">
+<meta name="twitter:description" content="常用的五种网络IO模型是阻塞I/O，非阻塞I/O，I/O复用，事件(信号)驱动I/O，异步I/O。为什么要发起系统调用？因为进程想要获取磁盘中的数据，而能和硬件打交道的只能是内核，进程通知内核说我要磁盘中的数据，此过程就是系统调用。一次I/O的完成的步骤：当进程发起系统调用时，这个系统调用就进入内核模式，然后开始I/O操作。I/O操作分为两个步骤；1、磁盘把数据装载到内核的内存空间，2、内核的内存">
+<meta name="twitter:image" content="https://alfredliukai.github.io/2019/09/17/网络模型总结/net1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://alfredliukai.github.io/2019/09/17/网络模型总结/">
+
+
+
+
+
+  <title>网络模型总结 | 昨非的个人网站</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh_CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">昨非的个人网站</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-首页">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-标签">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-归档">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-关于">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://alfredliukai.github.io/2019/09/17/网络模型总结/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="刘凯">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="昨非的个人网站">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">网络模型总结</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-09-17T00:12:47+08:00">
+                2019-09-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>常用的五种网络IO模型是阻塞I/O，非阻塞I/O，I/O复用，事件(信号)驱动I/O，异步I/O。<br>为什么要发起系统调用？因为进程想要获取磁盘中的数据，而能和硬件打交道的只能是内核，进程通知内核说我要磁盘中的数据，此过程就是系统调用。<br>一次I/O的完成的步骤：当进程发起系统调用时，这个系统调用就进入内核模式，然后开始I/O操作。I/O操作分为两个步骤；<br>1、磁盘把数据装载到内核的内存空间，<br>2、内核的内存空间的数据copy到用户的内存空间中(此过程是I/O发生的地方)<br>以下是进程获取数据的详细图解过程；<br><img src="/2019/09/17/网络模型总结/net1.png" alt="avatar"><br>整个过程：此进程需要对磁盘中的数据进行操作，则会向内核发起一个系统调用，然后此进程，将会被切换出去，此进程会被挂起或者进入睡眠状态，也叫不可中断的睡眠，因为数据还没有得到，只有等到系统调用的结果完成后，则进程会被唤醒，继续接下来的操作，从系统调用的开始到系统调用结束经过的步骤：<br>①进程向内核发起一个系统调用，<br>②内核接收到系统调用，知道是对文件的请求，于是告诉磁盘，把文件读取出来<br>③磁盘接收到来着内核的命令后，把文件载入到内核的内存空间里面<br>④内核的内存空间接收到数据之后，把数据copy到用户进程的内存空间(此过程是I/O发生的地方)<br>⑤进程内存空间得到数据后，给内核发送通知<br>⑥内核把接收到的通知回复给进程，此过程为唤醒进程，然后进程得到数据，进行下一步操作<br>I/O发生的地方才会出现阻塞或非阻塞<br>阻塞：进程发起I/O调用，进程又不得不等待I/O的完成，此时CPU把进程切换出去，进程处于睡眠状态则此过程为阻塞I/O<br>阻塞I/O系统怎么通知进程？I/O完成，系统直接通知进程，则进程被唤醒</p>
+<h4 id="阻塞IO（blocking-I-O）"><a href="#阻塞IO（blocking-I-O）" class="headerlink" title="阻塞IO（blocking I/O）"></a>阻塞IO（blocking I/O）</h4><p>在内核将数据准备好之前，系统调用会一直等待所有的套接字，默认的是阻塞方式。<br><img src="/2019/09/17/网络模型总结/net2.png" alt="avatar"></p>
+<h4 id="非阻塞IO（noblocking-I-O）"><a href="#非阻塞IO（noblocking-I-O）" class="headerlink" title="非阻塞IO（noblocking I/O）"></a>非阻塞IO（noblocking I/O）</h4><p>每次客户询问内核是否有数据准备好，即文件描述符缓冲区是否就绪。当有数据报准备好时，就进行拷贝数据报的操作。当没有数据报准备好时，也不阻塞程序，内核直接返回未准备就绪的信号，等待用户程序的下一个轮寻。但是，轮寻对于CPU来说是较大的浪费，一般只有在特定的场景下才使用。<br><img src="/2019/09/17/网络模型总结/net3.png" alt="avatar"></p>
+<h4 id="IO多路复用"><a href="#IO多路复用" class="headerlink" title="IO多路复用"></a>IO多路复用</h4><p>IO多路转接是多了一个select函数，select函数有一个参数是文件描述符集合，对这些文件描述符进行循环监听，当某个文件描述符就绪时，就对这个文件描述符进行处理。<br><img src="/2019/09/17/网络模型总结/net4.png" alt="avatar"></p>
+<h4 id="异步IO（asynchronous-I-O）"><a href="#异步IO（asynchronous-I-O）" class="headerlink" title="异步IO（asynchronous I/O）"></a>异步IO（asynchronous I/O）</h4><p>当应用程序调用aio_read时，内核一方面去取数据报内容返回，另一方面将程序控制权还给应用进程，应用进程继续处理其他事情，是一种非阻塞的状态。<br>当内核中有数据报就绪时，由内核将数据报拷贝到应用程序中，返回aio_read中定义好的函数处理程序。<br><img src="/2019/09/17/网络模型总结/net5.png" alt="avatar"></p>
+<h4 id="阻塞、非阻塞，同步、异步"><a href="#阻塞、非阻塞，同步、异步" class="headerlink" title="阻塞、非阻塞，同步、异步"></a>阻塞、非阻塞，同步、异步</h4><p>关于同步和异步<br>同步和异步其实指的是，请求发起方对消息结果的获取是主动发起的，还是等被动通知的。如果是请求方主动发起的，一直在等待应答结果（同步阻塞），或者可以先去处理其他的事情，但要不断轮询查看发起的请求是否有应答结果（同步非阻塞 ）因为不管如何都要发起方主动获取消息结果，所以形式上还是同步操作。如果是由服务方通知的，也就是请求方发出请求后，要么在一直等待通知（异步阻塞），要么就先去干自己的事了（异步非阻塞），当事情处理完成之后，服务方会主动通知请求方，它的请求已经完成，这就是异步。异步通知的方式一般是通过状态改变，消息通知，或者回调函数来完成，大多数时候采用的都是回调函数。<br>关于阻塞和非阻塞<br>阻塞和非阻塞在计算机的世界里面，通常指的是针对IO的操作，如网络IO和磁盘IO等。那么什么是阻塞和非阻塞呢？简单的说就是我们调用了一个函数之后，在等待这个函数返回结果之前，当前的线程是处于挂起状态，还是运行状态，如果是挂起状态，就意味着当前线程什么都不能干，就等着获取结果，这就叫同步阻塞，如果仍然是运行状态，就意味当前线程是可以的继续处理其他任务，但要时不时的去看下是否有结果了，这就是同步非阻塞。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/网络模型/" rel="tag"># 网络模型</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/09/14/S3总结/" rel="next" title="S3总结">
+                <i class="fa fa-chevron-left"></i> S3总结
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/09/17/多路复用机制与javaNIO/" rel="prev" title="多路复用机制与javaNIO">
+                多路复用机制与javaNIO <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">刘凯</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">24</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">1</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">16</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#阻塞IO（blocking-I-O）"><span class="nav-number">1.</span> <span class="nav-text">阻塞IO（blocking I/O）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#非阻塞IO（noblocking-I-O）"><span class="nav-number">2.</span> <span class="nav-text">非阻塞IO（noblocking I/O）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#IO多路复用"><span class="nav-number">3.</span> <span class="nav-text">IO多路复用</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#异步IO（asynchronous-I-O）"><span class="nav-number">4.</span> <span class="nav-text">异步IO（asynchronous I/O）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#阻塞、非阻塞，同步、异步"><span class="nav-number">5.</span> <span class="nav-text">阻塞、非阻塞，同步、异步</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">刘凯</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

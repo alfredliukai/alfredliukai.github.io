@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh_CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="参考文章:https://www.callicoder.com/distributed-unique-id-sequence-number-generator/ 已有解决方案UUIDUUID是全局唯一的128位十六进制数字。 两次生成相同UUID的可能性可以忽略不计。UUID的问题在于它们的大小非常大并且索引不好。 当您的数据集增加时，索引大小也会增加，并且查询性能会受到影响。 MongoDB的O">
+<meta name="keywords" content="java,go,程序猿,数据库，测试，测试开发，架构">
+<meta property="og:type" content="article">
+<meta property="og:title" content="生成可排序（时间序列）的唯一 id">
+<meta property="og:url" content="https://alfredliukai.github.io/2019/03/30/生成可排序（时间序列）的唯一 id/index.html">
+<meta property="og:site_name" content="昨非的个人网站">
+<meta property="og:description" content="参考文章:https://www.callicoder.com/distributed-unique-id-sequence-number-generator/ 已有解决方案UUIDUUID是全局唯一的128位十六进制数字。 两次生成相同UUID的可能性可以忽略不计。UUID的问题在于它们的大小非常大并且索引不好。 当您的数据集增加时，索引大小也会增加，并且查询性能会受到影响。 MongoDB的O">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:updated_time" content="2019-03-31T04:56:58.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="生成可排序（时间序列）的唯一 id">
+<meta name="twitter:description" content="参考文章:https://www.callicoder.com/distributed-unique-id-sequence-number-generator/ 已有解决方案UUIDUUID是全局唯一的128位十六进制数字。 两次生成相同UUID的可能性可以忽略不计。UUID的问题在于它们的大小非常大并且索引不好。 当您的数据集增加时，索引大小也会增加，并且查询性能会受到影响。 MongoDB的O">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://alfredliukai.github.io/2019/03/30/生成可排序（时间序列）的唯一 id/">
+
+
+
+
+
+  <title>生成可排序（时间序列）的唯一 id | 昨非的个人网站</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh_CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">昨非的个人网站</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-首页">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-标签">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-归档">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-关于">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://alfredliukai.github.io/2019/03/30/生成可排序（时间序列）的唯一 id/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="刘凯">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="昨非的个人网站">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">生成可排序（时间序列）的唯一 id</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-03-30T13:20:52+08:00">
+                2019-03-30
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>参考文章:<a href="https://www.callicoder.com/distributed-unique-id-sequence-number-generator/" target="_blank" rel="noopener">https://www.callicoder.com/distributed-unique-id-sequence-number-generator/</a></p>
+<h2 id="已有解决方案"><a href="#已有解决方案" class="headerlink" title="已有解决方案"></a>已有解决方案</h2><h3 id="UUID"><a href="#UUID" class="headerlink" title="UUID"></a>UUID</h3><p>UUID是全局唯一的128位十六进制数字。 两次生成相同UUID的可能性可以忽略不计。<br>UUID的问题在于它们的大小非常大并且索引不好。 当您的数据集增加时，索引大小也会增加，并且查询性能会受到影响。</p>
+<h3 id="MongoDB的ObjectId"><a href="#MongoDB的ObjectId" class="headerlink" title="MongoDB的ObjectId"></a>MongoDB的ObjectId</h3><p>MongoDB的ObjectID是12字节（96位）十六进制数字，由 - 组成 -<br>一个4字节的纪元时间戳，以秒为单位，<br>一个3字节的机器标识符，<br>一个2字节的进程ID，和<br>一个3字节的计数器，以随机值开始。<br>这比早期的128位UUID小。但同样，大小比我们通常在单个MySQL自动增量字段（64位bigint值）中的长度要长。</p>
+<h3 id="Database-Ticket-Servers"><a href="#Database-Ticket-Servers" class="headerlink" title="Database Ticket Servers"></a>Database Ticket Servers</h3><p>此方法使用集中式数据库服务器生成唯一的递增ID。 这就像一个集中的自动增量。 Flickr使用此方法。<br>这种方法的问题是票证服务器可能成为写入瓶颈。 此外，您还需要在基础架构中引入一个需要管理和扩展的组件。</p>
+<h3 id="Twitter-Snowflake"><a href="#Twitter-Snowflake" class="headerlink" title="Twitter Snowflake"></a>Twitter Snowflake</h3><p>Twitter Snowflake是一种专用网络服务，用于大规模生成64位唯一ID。 此服务生成的ID大致可按时间排序。<br>ID由以下组件组成：<br>Epoch时间戳以毫秒为单位精度 -  41位（使用自定义纪元为69年）<br>配置的机器ID  -  10位（最多可提供1024台机器）<br>序列号 -  12位（每台机器的本地计数器，每4096重复一次）<br>为了后续扩展，他们保留了1位。 由于ID使用时间戳作为第一个组件，因此它们是可排序的。</p>
+<p>Twitter Snowflake 生成的ID符合64位，并且是时间可排序的, 这就是我们想要的。但如果我们使用Twitter Snowflake，我们将再次在我们需要维护的基础架构中引入另一个组件。</p>
+<h2 id="Distributed-64-bit-unique-ID-generator-inspired-by-Twitter-Snowflake"><a href="#Distributed-64-bit-unique-ID-generator-inspired-by-Twitter-Snowflake" class="headerlink" title="Distributed 64-bit unique ID generator inspired by Twitter Snowflake"></a>Distributed 64-bit unique ID generator inspired by Twitter Snowflake</h2><p>该序列生成器生成的ID由 - 组成；<br>Epoch时间戳以毫秒为单位精度 -  42位。 可以使用42位表示的最大时间戳是2^42-1，或4398046511103，其发布时间是2109年5月15日星期三7：35：11.103 AM。 可以使用139年的定制时代。<br>节点ID  -  10位。 这为我们提供了1024个节点/机器。<br>每台机器的本地计数器 -  12位。 计数器的最大值为4095。<br>您的微服务可以使用此序列生成器独立生成ID。 这是有效的，适合bigint的大小。</p>
+<h3 id="java版本代码"><a href="#java版本代码" class="headerlink" title="java版本代码"></a>java版本代码</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">import java.net.NetworkInterface;</span><br><span class="line">import java.security.SecureRandom;</span><br><span class="line">import java.time.Instant;</span><br><span class="line">import java.util.Enumeration;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> * Distributed Sequence Generator.</span><br><span class="line"> * Inspired by Twitter snowflake: https://github.com/twitter/snowflake/tree/snowflake-2010</span><br><span class="line"> *</span><br><span class="line"> * This class should be used as a Singleton.</span><br><span class="line"> * Make sure that you create and reuse a Single instance of SequenceGenerator per node in your distributed system cluster.</span><br><span class="line"> */</span><br><span class="line">public class SequenceGenerator &#123;</span><br><span class="line"></span><br><span class="line">    private static final int TOTAL_BITS = 64;</span><br><span class="line">    private static final int EPOCH_BITS = 42;</span><br><span class="line">    private static final int NODE_ID_BITS = 10;</span><br><span class="line">    private static final int SEQUENCE_BITS = 12;</span><br><span class="line"></span><br><span class="line">    private static final int maxNodeId = (int)(Math.pow(2,NODE_ID_BITS)-1);</span><br><span class="line">    private static final int maxSequence = (int)(Math.pow(2,SEQUENCE_BITS)-1);</span><br><span class="line">    //2019-03-30 22:59:53</span><br><span class="line">    private static final long CUSTOM_EPOCH =1553957993000L;</span><br><span class="line"></span><br><span class="line">    private  int nodeId;</span><br><span class="line"></span><br><span class="line">    private volatile long lastTimestamp = -1L;</span><br><span class="line">    private volatile long sequence = 0L;</span><br><span class="line"></span><br><span class="line">    public SequenceGenerator(int nodeId)&#123;</span><br><span class="line">        if(nodeId &lt;0 || nodeId &gt; maxSequence)&#123;</span><br><span class="line">            throw new IllegalArgumentException(String.format(&quot;NodeId must be between %d and %d&quot;,0,maxNodeId));</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public SequenceGenerator()&#123;</span><br><span class="line">        this.nodeId = createNodeId();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public synchronized long nextId()&#123;</span><br><span class="line">        long currentTimestamp = timestamp();</span><br><span class="line">        if(currentTimestamp &lt; lastTimestamp)&#123;</span><br><span class="line">            throw new IllegalStateException(&quot;Invalid System Clock!&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">        if(currentTimestamp == lastTimestamp)&#123;</span><br><span class="line">            sequence = (sequence+1)&amp;maxSequence;</span><br><span class="line">            if(sequence == 0)&#123;</span><br><span class="line">                // Sequence Exhausted, wait till next millisecond.</span><br><span class="line">                currentTimestamp = waitNextMillis(currentTimestamp);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;else&#123;</span><br><span class="line">            // reset sequence to start with zero for the next millisecond</span><br><span class="line">            sequence = 0;</span><br><span class="line">        &#125;</span><br><span class="line">        lastTimestamp = currentTimestamp;</span><br><span class="line">        long id = currentTimestamp &lt;&lt;(TOTAL_BITS-EPOCH_BITS);</span><br><span class="line">        id |= (nodeId &lt;&lt;(TOTAL_BITS-EPOCH_BITS-NODE_ID_BITS));</span><br><span class="line">        id |= sequence;</span><br><span class="line">        return id;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private static long timestamp()&#123;</span><br><span class="line">        return Instant.now().toEpochMilli() - CUSTOM_EPOCH;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private long waitNextMillis(long currentTimestamp)&#123;</span><br><span class="line">        while ( currentTimestamp == lastTimestamp)&#123;</span><br><span class="line">            currentTimestamp = timestamp();</span><br><span class="line">        &#125;</span><br><span class="line">        return currentTimestamp;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private int createNodeId()&#123;</span><br><span class="line">        int nodeId;</span><br><span class="line">        try &#123;</span><br><span class="line">            StringBuilder sb = new StringBuilder();</span><br><span class="line">            Enumeration&lt;NetworkInterface&gt; networkInterfaceEnumeration = NetworkInterface.getNetworkInterfaces();</span><br><span class="line">            while(networkInterfaceEnumeration.hasMoreElements())&#123;</span><br><span class="line">                NetworkInterface networkInterface = networkInterfaceEnumeration.nextElement();</span><br><span class="line">                byte[] mac = networkInterface.getHardwareAddress();</span><br><span class="line">                if(mac != null)&#123;</span><br><span class="line">                    for(int i=0;i&lt;mac.length;i++) &#123;</span><br><span class="line">                        sb.append(String.format(&quot;%02X&quot;, mac[i]));</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            nodeId = sb.toString().hashCode();</span><br><span class="line">        &#125;catch(Exception e)&#123;</span><br><span class="line">           nodeId = (new SecureRandom().nextInt());</span><br><span class="line">        &#125;</span><br><span class="line">        nodeId = nodeId &amp; maxNodeId;</span><br><span class="line">        return nodeId;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="go版本代码"><a href="#go版本代码" class="headerlink" title="go版本代码"></a>go版本代码</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br></pre></td><td class="code"><pre><span class="line">package main</span><br><span class="line"></span><br><span class="line">import (</span><br><span class="line">	&quot;fmt&quot;</span><br><span class="line">	&quot;strings&quot;</span><br><span class="line">	&quot;strconv&quot;</span><br><span class="line">	&quot;net&quot;</span><br><span class="line">	&quot;time&quot;</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">const (</span><br><span class="line">	TotalBits    = 64 // 总位数</span><br><span class="line">	EpochBits    = 42 // 起始时间位数</span><br><span class="line">	NodeIdBits   = 10 // 节点位数，最大支持 1024 个节点</span><br><span class="line">	SequenceBits = 12 // 序列位数，最大支持 4096 个序列</span><br><span class="line"></span><br><span class="line">	MaxNodeId   = 1&lt;&lt;NodeIdBits - 1   // 最大节点数</span><br><span class="line">	MaxSequence = 1&lt;&lt;SequenceBits - 1 // 最大序列数</span><br><span class="line"></span><br><span class="line">	CustomEpoch = 1553957993000 // 起始时间</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">var (</span><br><span class="line">	mac       uint64</span><br><span class="line">	seq       uint64</span><br><span class="line">	timestamp uint64</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">func init()&#123;</span><br><span class="line">	mac = getMac()</span><br><span class="line">	seq = getSeq()</span><br><span class="line">	timestamp = getTimestamp()</span><br><span class="line">&#125;</span><br><span class="line">//加锁引用</span><br><span class="line">func generateUniqueId() uint64&#123;</span><br><span class="line">	ct := getTimestamp()</span><br><span class="line">	if ct == timestamp&#123;</span><br><span class="line">		seq = (seq+1)%MaxSequence</span><br><span class="line">		if seq == 0&#123;</span><br><span class="line">			ct = getNextTimestamp()</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;else&#123;</span><br><span class="line">		seq=0</span><br><span class="line">	&#125;</span><br><span class="line">	timestamp=ct</span><br><span class="line">	nodeId := getNodeId()</span><br><span class="line">	</span><br><span class="line">	id := ct&lt;&lt;(TotalBits-EpochBits)</span><br><span class="line">	id |= nodeId &lt;&lt;(TotalBits-EpochBits-NodeIdBits)</span><br><span class="line">	id |= seq</span><br><span class="line">	return id</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 获取节点 Id</span><br><span class="line">// 根据 Mac 地址取模，0 ～ 1023</span><br><span class="line">func getNodeId() uint64 &#123;</span><br><span class="line">	return mac % MaxNodeId</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 获取毫秒时间戳</span><br><span class="line">func getTimestamp() uint64 &#123;</span><br><span class="line">	ns := time.Now().UnixNano()</span><br><span class="line">	ms := uint64(ns / 1000 / 1000)</span><br><span class="line">	shift := ms - CustomEpoch</span><br><span class="line"></span><br><span class="line">	return shift</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 获取下一个毫秒时间戳</span><br><span class="line">func getNextTimestamp() uint64 &#123;</span><br><span class="line">	t := getTimestamp()</span><br><span class="line">	for t != timestamp &#123;</span><br><span class="line">		t = getTimestamp()</span><br><span class="line">	&#125;</span><br><span class="line">	return t</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func getMac() uint64&#123;</span><br><span class="line">	var mac uint64</span><br><span class="line">	macAddress :=&quot;&quot;</span><br><span class="line"></span><br><span class="line">	netInterfaces, err := net.Interfaces()</span><br><span class="line">	if err != nil&#123;</span><br><span class="line">		fmt.Println(&quot;err&quot;,err)</span><br><span class="line">		return mac</span><br><span class="line">	&#125;</span><br><span class="line">	for _,netInterface := range netInterfaces &#123;</span><br><span class="line">		macAddress = netInterface.HardwareAddr.String()</span><br><span class="line">		if len(macAddress) != 0 &#123;</span><br><span class="line">			break</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	macAddress = strings.Replace(macAddress,&quot;:&quot;,&quot;&quot;,-1)</span><br><span class="line">	mac,err = strconv.ParseUint(macAddress,16,64)</span><br><span class="line">	if err != nil &#123;</span><br><span class="line">		fmt.Println(&quot;convert err&quot;, err)</span><br><span class="line">		return mac</span><br><span class="line">	&#125;</span><br><span class="line">	return mac</span><br><span class="line">&#125;</span><br><span class="line">// 获取序列号</span><br><span class="line">func getSeq() uint64&#123;</span><br><span class="line">	return 0</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h2><p><a href="https://github.com/twitter-archive/snowflake/tree/snowflake-2010" target="_blank" rel="noopener">https://github.com/twitter-archive/snowflake/tree/snowflake-2010</a><br><a href="https://en.wikipedia.org/wiki/Universally_unique_identifier" target="_blank" rel="noopener">https://en.wikipedia.org/wiki/Universally_unique_identifier</a><br><a href="https://docs.mongodb.com/manual/reference/method/ObjectId/" target="_blank" rel="noopener">https://docs.mongodb.com/manual/reference/method/ObjectId/</a><br><a href="http://code.flickr.net/2010/02/08/ticket-servers-distributed-unique-primary-keys-on-the-cheap/" target="_blank" rel="noopener">http://code.flickr.net/2010/02/08/ticket-servers-distributed-unique-primary-keys-on-the-cheap/</a><br><a href="https://instagram-engineering.com/sharding-ids-at-instagram-1cf5a71e5a5c" target="_blank" rel="noopener">https://instagram-engineering.com/sharding-ids-at-instagram-1cf5a71e5a5c</a><br><a href="https://stackoverflow.com/questions/2671858/distributed-sequence-number-generation/5685869" target="_blank" rel="noopener">https://stackoverflow.com/questions/2671858/distributed-sequence-number-generation/5685869</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/04/01/strconv包学习整理(golang)/" rel="prev" title="strconv包学习整理(golang)">
+                strconv包学习整理(golang) <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">刘凯</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">24</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">1</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">16</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#已有解决方案"><span class="nav-number">1.</span> <span class="nav-text">已有解决方案</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#UUID"><span class="nav-number">1.1.</span> <span class="nav-text">UUID</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MongoDB的ObjectId"><span class="nav-number">1.2.</span> <span class="nav-text">MongoDB的ObjectId</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Database-Ticket-Servers"><span class="nav-number">1.3.</span> <span class="nav-text">Database Ticket Servers</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Twitter-Snowflake"><span class="nav-number">1.4.</span> <span class="nav-text">Twitter Snowflake</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Distributed-64-bit-unique-ID-generator-inspired-by-Twitter-Snowflake"><span class="nav-number">2.</span> <span class="nav-text">Distributed 64-bit unique ID generator inspired by Twitter Snowflake</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#java版本代码"><span class="nav-number">2.1.</span> <span class="nav-text">java版本代码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#go版本代码"><span class="nav-number">2.2.</span> <span class="nav-text">go版本代码</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考文章"><span class="nav-number">3.</span> <span class="nav-text">参考文章</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">刘凯</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

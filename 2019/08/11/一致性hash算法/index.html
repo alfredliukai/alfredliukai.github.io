@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh_CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="简单hash算法在缓存中常见问题 当缓存服务器数量发生变化时，会引起缓存的雪崩，可能会引起整体系统压力过大而崩溃（大量缓存同一时间失效）。 当缓存服务器数量发生变化时，几乎所有缓存的位置都会发生改变，怎样才能尽量减少受影响的缓存呢？  一致性hash算法一致性Hash算法也是使用取模的方法，只是，刚才描述的取模法是对服务器的数量进行取模，而一致性Hash算法是对2^32取模，什么意思呢？简单来说，">
+<meta name="keywords" content="java,go,程序猿,数据库，测试，测试开发，架构">
+<meta property="og:type" content="article">
+<meta property="og:title" content="一致性hash算法">
+<meta property="og:url" content="https://alfredliukai.github.io/2019/08/11/一致性hash算法/index.html">
+<meta property="og:site_name" content="昨非的个人网站">
+<meta property="og:description" content="简单hash算法在缓存中常见问题 当缓存服务器数量发生变化时，会引起缓存的雪崩，可能会引起整体系统压力过大而崩溃（大量缓存同一时间失效）。 当缓存服务器数量发生变化时，几乎所有缓存的位置都会发生改变，怎样才能尽量减少受影响的缓存呢？  一致性hash算法一致性Hash算法也是使用取模的方法，只是，刚才描述的取模法是对服务器的数量进行取模，而一致性Hash算法是对2^32取模，什么意思呢？简单来说，">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://alfredliukai.github.io/2019/08/11/一致性hash算法/hash.png">
+<meta property="og:image" content="https://alfredliukai.github.io/2019/08/11/一致性hash算法/hash2.png">
+<meta property="og:image" content="https://alfredliukai.github.io/2019/08/11/一致性hash算法/hash3.png">
+<meta property="og:image" content="https://alfredliukai.github.io/2019/08/11/一致性hash算法/hash4.png">
+<meta property="og:image" content="https://alfredliukai.github.io/2019/08/11/一致性hash算法/hash5.png">
+<meta property="og:image" content="https://alfredliukai.github.io/2019/08/11/一致性hash算法/hash6.png">
+<meta property="og:image" content="https://alfredliukai.github.io/2019/08/11/一致性hash算法/hash7.png">
+<meta property="og:updated_time" content="2019-08-11T14:42:02.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="一致性hash算法">
+<meta name="twitter:description" content="简单hash算法在缓存中常见问题 当缓存服务器数量发生变化时，会引起缓存的雪崩，可能会引起整体系统压力过大而崩溃（大量缓存同一时间失效）。 当缓存服务器数量发生变化时，几乎所有缓存的位置都会发生改变，怎样才能尽量减少受影响的缓存呢？  一致性hash算法一致性Hash算法也是使用取模的方法，只是，刚才描述的取模法是对服务器的数量进行取模，而一致性Hash算法是对2^32取模，什么意思呢？简单来说，">
+<meta name="twitter:image" content="https://alfredliukai.github.io/2019/08/11/一致性hash算法/hash.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://alfredliukai.github.io/2019/08/11/一致性hash算法/">
+
+
+
+
+
+  <title>一致性hash算法 | 昨非的个人网站</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh_CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">昨非的个人网站</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-首页">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-标签">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-归档">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-关于">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://alfredliukai.github.io/2019/08/11/一致性hash算法/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="刘凯">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="昨非的个人网站">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">一致性hash算法</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-08-11T16:39:50+08:00">
+                2019-08-11
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h4 id="简单hash算法在缓存中常见问题"><a href="#简单hash算法在缓存中常见问题" class="headerlink" title="简单hash算法在缓存中常见问题"></a>简单hash算法在缓存中常见问题</h4><ol>
+<li>当缓存服务器数量发生变化时，会引起缓存的雪崩，可能会引起整体系统压力过大而崩溃（大量缓存同一时间失效）。</li>
+<li>当缓存服务器数量发生变化时，几乎所有缓存的位置都会发生改变，怎样才能尽量减少受影响的缓存呢？</li>
+</ol>
+<h4 id="一致性hash算法"><a href="#一致性hash算法" class="headerlink" title="一致性hash算法"></a>一致性hash算法</h4><p>一致性Hash算法也是使用取模的方法，只是，刚才描述的取模法是对服务器的数量进行取模，而一致性Hash算法是对2^32取模，什么意思呢？简单来说，一致性Hash算法将整个哈希值空间组织成一个虚拟的圆环，如假设某哈希函数H的值空间为0-2^32-1（即哈希值是一个32位无符号整形），整个哈希环如下：<br><img src="/2019/08/11/一致性hash算法/hash.png" alt="avatar"><br>整个空间按顺时针方向组织，圆环的正上方的点代表0，0点右侧的第一个点代表1，以此类推，2、3、4、5、6……直到2^32-1，也就是说0点左侧的第一个点代表2^32-1， 0和2^32-1在零点中方向重合，我们把这个由2^32个点组成的圆环称为Hash环。</p>
+<p>下一步将各个服务器使用Hash进行一个哈希，具体可以选择服务器的IP或主机名作为关键字进行哈希，这样每台机器就能确定其在哈希环上的位置，这里假设将上文中四台服务器使用IP地址哈希后在环空间的位置如下：<br><img src="/2019/08/11/一致性hash算法/hash2.png" alt="avatar"><br>接下来使用如下算法定位数据访问到相应服务器：将数据key使用相同的函数Hash计算出哈希值，并确定此数据在环上的位置，从此位置沿环顺时针“行走”，第一台遇到的服务器就是其应该定位到的服务器！<br>例如我们有Object A、Object B、Object C、Object D四个数据对象，经过哈希计算后，在环空间上的位置如下：<br><img src="/2019/08/11/一致性hash算法/hash3.png" alt="avatar"><br>根据一致性Hash算法，数据A会被定为到Node A上，B被定为到Node B上，C被定为到Node C上，D被定为到Node D上。</p>
+<h4 id="一致性hash算法的容错性和可扩展性"><a href="#一致性hash算法的容错性和可扩展性" class="headerlink" title="一致性hash算法的容错性和可扩展性"></a>一致性hash算法的容错性和可扩展性</h4><p>现假设Node C不幸宕机，可以看到此时对象A、B、D不会受到影响，只有C对象被重定位到Node D。一般的，在一致性Hash算法中，如果一台服务器不可用，则受影响的数据仅仅是此服务器到其环空间中前一台服务器（即沿着逆时针方向行走遇到的第一台服务器）之间数据，其它不会受到影响，如下所示：<br><img src="/2019/08/11/一致性hash算法/hash4.png" alt="avatar"><br>下面考虑另外一种情况，如果在系统中增加一台服务器Node X，如下图所示：<br><img src="/2019/08/11/一致性hash算法/hash5.png" alt="avatar"><br>此时对象Object A、B、D不受影响，只有对象C需要重定位到新的Node X ！一般的，在一致性Hash算法中，如果增加一台服务器，则受影响的数据仅仅是新服务器到其环空间中前一台服务器（即沿着逆时针方向行走遇到的第一台服务器）之间数据，其它数据也不会受到影响。</p>
+<p>综上所述，一致性Hash算法对于节点的增减都只需重定位环空间中的一小部分数据，具有较好的容错性和可扩展性。</p>
+<h4 id="Hash环的数据倾斜问题"><a href="#Hash环的数据倾斜问题" class="headerlink" title="Hash环的数据倾斜问题"></a>Hash环的数据倾斜问题</h4><p>一致性Hash算法在服务节点太少时，容易因为节点分部不均匀而造成数据倾斜（被缓存的对象大部分集中缓存在某一台服务器上）问题，例如系统中只有两台服务器，其环分布如下：</p>
+<p>此时必然造成大量数据集中到Node A上，而只有极少量会定位到Node B上。为了解决这种数据倾斜问题，一致性Hash算法引入了虚拟节点机制，即对每一个服务节点计算多个哈希，每个计算结果位置都放置一个此服务节点，称为虚拟节点。具体做法可以在服务器IP或主机名的后面增加编号来实现。<br><img src="/2019/08/11/一致性hash算法/hash6.png" alt="avatar"><br>例如上面的情况，可以为每台服务器计算三个虚拟节点，于是可以分别计算 “Node A#1”、“Node A#2”、“Node A#3”、“Node B#1”、“Node B#2”、“Node B#3”的哈希值，于是形成六个虚拟节点：<br><img src="/2019/08/11/一致性hash算法/hash7.png" alt="avatar"><br>同时数据定位算法不变，只是多了一步虚拟节点到实际节点的映射，例如定位到“Node A#1”、“Node A#2”、“Node A#3”三个虚拟节点的数据均定位到Node A上。这样就解决了服务节点少时数据倾斜的问题。在实际应用中，通常将虚拟节点数设置为32甚至更大，因此即使很少的服务节点也能做到相对均匀的数据分布。</p>
+<h4 id="一致性hash算法java实现"><a href="#一致性hash算法java实现" class="headerlink" title="一致性hash算法java实现"></a>一致性hash算法java实现</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br></pre></td><td class="code"><pre><span class="line">不带虚拟节点</span><br><span class="line">package com.learn.hash;</span><br><span class="line"></span><br><span class="line">import java.util.SortedMap;</span><br><span class="line">import java.util.TreeMap;</span><br><span class="line"></span><br><span class="line">public class ConsistentHashingWithoutVirtualNode &#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    //待添加入Hash环的服务器列表</span><br><span class="line">    private static String[] servers = &#123;&quot;192.168.0.0:111&quot;, &quot;192.168.0.1:111&quot;,</span><br><span class="line">            &quot;192.168.0.2:111&quot;, &quot;192.168.0.3:111&quot;, &quot;192.168.0.4:111&quot;&#125;;</span><br><span class="line"></span><br><span class="line">    //key表示服务器的hash值，value表示服务器</span><br><span class="line">    private static SortedMap&lt;Integer, String&gt; sortedMap = new TreeMap&lt;Integer, String&gt;();</span><br><span class="line"></span><br><span class="line">    //程序初始化，将所有的服务器放入sortedMap中</span><br><span class="line">    static &#123;</span><br><span class="line">        for (int i = 0; i &lt; servers.length; i++) &#123;</span><br><span class="line">            int hash = getHash(servers[i]);</span><br><span class="line">            System.out.println(&quot;[&quot; + servers[i] + &quot;]加入集合中, 其Hash值为&quot; + hash);</span><br><span class="line">            sortedMap.put(hash, servers[i]);</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private static String getServer(String key) &#123;</span><br><span class="line">        //得到该key的hash值</span><br><span class="line">        int hash = getHash(key);</span><br><span class="line">        //得到大于该Hash值的所有Map</span><br><span class="line">        SortedMap&lt;Integer, String&gt; subMap = sortedMap.tailMap(hash);</span><br><span class="line">        if (subMap.isEmpty()) &#123;</span><br><span class="line">            //如果没有比该key的hash值大的，则从第一个node开始</span><br><span class="line">            Integer i = sortedMap.firstKey();</span><br><span class="line">            //返回对应的服务器</span><br><span class="line">            return sortedMap.get(i);</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            //第一个Key就是顺时针过去离node最近的那个结点</span><br><span class="line">            Integer i = subMap.firstKey();</span><br><span class="line">            //返回对应的服务器</span><br><span class="line">            return subMap.get(i);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    //使用FNV1_32_HASH算法计算服务器的Hash值,这里不使用重写hashCode的方法，最终效果没区别</span><br><span class="line">    private static int getHash(String str) &#123;</span><br><span class="line">        final int p = 16777619;</span><br><span class="line">        int hash = (int) 2166136261L;</span><br><span class="line">        for (int i = 0; i &lt; str.length(); i++)</span><br><span class="line">            hash = (hash ^ str.charAt(i)) * p;</span><br><span class="line">        hash += hash &lt;&lt; 13;</span><br><span class="line">        hash ^= hash &gt;&gt; 7;</span><br><span class="line">        hash += hash &lt;&lt; 3;</span><br><span class="line">        hash ^= hash &gt;&gt; 17;</span><br><span class="line">        hash += hash &lt;&lt; 5;</span><br><span class="line"></span><br><span class="line">        // 如果算出来的值为负数则取其绝对值</span><br><span class="line">        if (hash &lt; 0)</span><br><span class="line">            hash = Math.abs(hash);</span><br><span class="line">        return hash;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        String[] keys = &#123;&quot;太阳&quot;, &quot;月亮&quot;, &quot;星星&quot;&#125;;</span><br><span class="line">        for (int i = 0; i &lt; keys.length; i++)</span><br><span class="line">            System.out.println(&quot;[&quot; + keys[i] + &quot;]的hash值为&quot; + getHash(keys[i])</span><br><span class="line">                    + &quot;, 被路由到结点[&quot; + getServer(keys[i]) + &quot;]&quot;);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br></pre></td><td class="code"><pre><span class="line">带虚拟节点</span><br><span class="line">package com.learn.hash;</span><br><span class="line"></span><br><span class="line">import java.util.LinkedList;</span><br><span class="line">import java.util.List;</span><br><span class="line">import java.util.SortedMap;</span><br><span class="line">import java.util.TreeMap;</span><br><span class="line"></span><br><span class="line">public class ConsistentHashingWithVirtualNode &#123;</span><br><span class="line"></span><br><span class="line">    //待添加入Hash环的服务器列表</span><br><span class="line">    private static String[] servers = &#123;&quot;192.168.0.0:111&quot;, &quot;192.168.0.1:111&quot;, &quot;192.168.0.2:111&quot;,</span><br><span class="line">            &quot;192.168.0.3:111&quot;, &quot;192.168.0.4:111&quot;&#125;;</span><br><span class="line"></span><br><span class="line">    //真实结点列表,考虑到服务器上线、下线的场景，即添加、删除的场景会比较频繁，这里使用LinkedList会更好</span><br><span class="line">    private static List&lt;String&gt; realNodes = new LinkedList&lt;String&gt;();</span><br><span class="line"></span><br><span class="line">    //虚拟节点，key表示虚拟节点的hash值，value表示虚拟节点的名称</span><br><span class="line">    private static SortedMap&lt;Integer, String&gt; virtualNodes = new TreeMap&lt;Integer, String&gt;();</span><br><span class="line"></span><br><span class="line">    //虚拟节点的数目，这里写死，为了演示需要，一个真实结点对应5个虚拟节点</span><br><span class="line">    private static final int VIRTUAL_NODES = 5;</span><br><span class="line"></span><br><span class="line">    static&#123;</span><br><span class="line">        //先把原始的服务器添加到真实结点列表中</span><br><span class="line">        for(int i=0; i&lt;servers.length; i++)</span><br><span class="line">            realNodes.add(servers[i]);</span><br><span class="line"></span><br><span class="line">        //再添加虚拟节点，遍历LinkedList使用foreach循环效率会比较高</span><br><span class="line">        for (String str : realNodes)&#123;</span><br><span class="line">            for(int i=0; i&lt;VIRTUAL_NODES; i++)&#123;</span><br><span class="line">                String virtualNodeName = str + &quot;&amp;&amp;VN&quot; + String.valueOf(i);</span><br><span class="line">                int hash = getHash(virtualNodeName);</span><br><span class="line">                System.out.println(&quot;虚拟节点[&quot; + virtualNodeName + &quot;]被添加, hash值为&quot; + hash);</span><br><span class="line">                virtualNodes.put(hash, virtualNodeName);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    //得到应当路由到的结点</span><br><span class="line">    private static String getServer(String key)&#123;</span><br><span class="line">        //得到该key的hash值</span><br><span class="line">        int hash = getHash(key);</span><br><span class="line">        // 得到大于该Hash值的所有Map</span><br><span class="line">        SortedMap&lt;Integer, String&gt; subMap = virtualNodes.tailMap(hash);</span><br><span class="line">        String virtualNode;</span><br><span class="line">        if(subMap.isEmpty())&#123;</span><br><span class="line">            //如果没有比该key的hash值大的，则从第一个node开始</span><br><span class="line">            Integer i = virtualNodes.firstKey();</span><br><span class="line">            //返回对应的服务器</span><br><span class="line">            virtualNode = virtualNodes.get(i);</span><br><span class="line">        &#125;else&#123;</span><br><span class="line">            //第一个Key就是顺时针过去离node最近的那个结点</span><br><span class="line">            Integer i = subMap.firstKey();</span><br><span class="line">            //返回对应的服务器</span><br><span class="line">            virtualNode = subMap.get(i);</span><br><span class="line">        &#125;</span><br><span class="line">        //virtualNode虚拟节点名称要截取一下</span><br><span class="line">        if(virtualNode != null)&#123;</span><br><span class="line">            return virtualNode.substring(0, virtualNode.indexOf(&quot;&amp;&amp;&quot;));</span><br><span class="line">        &#125;</span><br><span class="line">        return null;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    //使用FNV1_32_HASH算法计算服务器的Hash值,这里不使用重写hashCode的方法，最终效果没区别</span><br><span class="line">    private static int getHash(String str)&#123;</span><br><span class="line">        final int p = 16777619;</span><br><span class="line">        int hash = (int)2166136261L;</span><br><span class="line">        for (int i = 0; i &lt; str.length(); i++)</span><br><span class="line">            hash = (hash ^ str.charAt(i)) * p;</span><br><span class="line">        hash += hash &lt;&lt; 13;</span><br><span class="line">        hash ^= hash &gt;&gt; 7;</span><br><span class="line">        hash += hash &lt;&lt; 3;</span><br><span class="line">        hash ^= hash &gt;&gt; 17;</span><br><span class="line">        hash += hash &lt;&lt; 5;</span><br><span class="line"></span><br><span class="line">        // 如果算出来的值为负数则取其绝对值</span><br><span class="line">        if (hash &lt; 0)</span><br><span class="line">            hash = Math.abs(hash);</span><br><span class="line">        return hash;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args)&#123;</span><br><span class="line">        String[] keys = &#123;&quot;太阳&quot;, &quot;月亮&quot;, &quot;星星&quot;&#125;;</span><br><span class="line">        for(int i=0; i&lt;keys.length; i++)</span><br><span class="line">            System.out.println(&quot;[&quot; + keys[i] + &quot;]的hash值为&quot; +</span><br><span class="line">                    getHash(keys[i]) + &quot;, 被路由到结点[&quot; + getServer(keys[i]) + &quot;]&quot;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><p>一致性hash算法解决了分布式环境下机器增加或者减少时，简单的取模运算无法获取较高命中率的问题。通过虚拟节点的使用，一致性hash算法可以均匀分担机器的负载，使得这一算法更具现实的意义。正因如此，一致性hash算法被广泛应用于分布式系统中。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/08/05/LRU算法/" rel="next" title="LRU算法">
+                <i class="fa fa-chevron-left"></i> LRU算法
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/08/17/SkipList总结/" rel="prev" title="SkipList总结">
+                SkipList总结 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">刘凯</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">24</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">1</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">16</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#简单hash算法在缓存中常见问题"><span class="nav-number">1.</span> <span class="nav-text">简单hash算法在缓存中常见问题</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#一致性hash算法"><span class="nav-number">2.</span> <span class="nav-text">一致性hash算法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#一致性hash算法的容错性和可扩展性"><span class="nav-number">3.</span> <span class="nav-text">一致性hash算法的容错性和可扩展性</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Hash环的数据倾斜问题"><span class="nav-number">4.</span> <span class="nav-text">Hash环的数据倾斜问题</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#一致性hash算法java实现"><span class="nav-number">5.</span> <span class="nav-text">一致性hash算法java实现</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#总结"><span class="nav-number">6.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">刘凯</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

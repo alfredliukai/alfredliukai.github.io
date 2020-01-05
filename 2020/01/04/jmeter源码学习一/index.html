@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh_CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="jmeter,性能测试,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="概览最近在搞jmeter版本升级的事情，此前仅仅对jmeter的使用有大致的了解，并没有完全熟悉jmeter的源码。趁着这次升级的计划，打算细致的看下jmeter源码。 项目目录使用的是jmeter5.0版本的代码，项目目录如下源码目录如下运行机制如下HashTree 是 JMeter 执行测试依赖的数据结构，在执行测试之前进行配置测试数据，HashTree将数据组织到一个递归树结构中，并提供了操">
+<meta name="keywords" content="jmeter,性能测试">
+<meta property="og:type" content="article">
+<meta property="og:title" content="jmeter源码学习一">
+<meta property="og:url" content="https://alfredliukai.github.io/2020/01/04/jmeter源码学习一/index.html">
+<meta property="og:site_name" content="昨非的个人网站">
+<meta property="og:description" content="概览最近在搞jmeter版本升级的事情，此前仅仅对jmeter的使用有大致的了解，并没有完全熟悉jmeter的源码。趁着这次升级的计划，打算细致的看下jmeter源码。 项目目录使用的是jmeter5.0版本的代码，项目目录如下源码目录如下运行机制如下HashTree 是 JMeter 执行测试依赖的数据结构，在执行测试之前进行配置测试数据，HashTree将数据组织到一个递归树结构中，并提供了操">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://alfredliukai.github.io/2020/01/04/jmeter源码学习一/jmeter1.png">
+<meta property="og:image" content="https://alfredliukai.github.io/2020/01/04/jmeter源码学习一/jmeter2.png">
+<meta property="og:image" content="https://alfredliukai.github.io/2020/01/04/jmeter源码学习一/jmeter3.png">
+<meta property="og:updated_time" content="2020-01-05T07:12:52.333Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="jmeter源码学习一">
+<meta name="twitter:description" content="概览最近在搞jmeter版本升级的事情，此前仅仅对jmeter的使用有大致的了解，并没有完全熟悉jmeter的源码。趁着这次升级的计划，打算细致的看下jmeter源码。 项目目录使用的是jmeter5.0版本的代码，项目目录如下源码目录如下运行机制如下HashTree 是 JMeter 执行测试依赖的数据结构，在执行测试之前进行配置测试数据，HashTree将数据组织到一个递归树结构中，并提供了操">
+<meta name="twitter:image" content="https://alfredliukai.github.io/2020/01/04/jmeter源码学习一/jmeter1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://alfredliukai.github.io/2020/01/04/jmeter源码学习一/">
+
+
+
+
+
+  <title>jmeter源码学习一 | 昨非的个人网站</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh_CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">昨非的个人网站</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-首页">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-标签">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-归档">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-关于">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://alfredliukai.github.io/2020/01/04/jmeter源码学习一/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="刘凯">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="昨非的个人网站">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">jmeter源码学习一</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-01-04T22:34:44+08:00">
+                2020-01-04
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h4 id="概览"><a href="#概览" class="headerlink" title="概览"></a>概览</h4><p>最近在搞jmeter版本升级的事情，此前仅仅对jmeter的使用有大致的了解，并没有完全熟悉jmeter的源码。趁着这次升级的计划，打算细致的看下jmeter源码。</p>
+<h4 id="项目目录"><a href="#项目目录" class="headerlink" title="项目目录"></a>项目目录</h4><p>使用的是jmeter5.0版本的代码，项目目录如下<br><img src="/2020/01/04/jmeter源码学习一/jmeter1.png" alt="avatar"><br>源码目录如下<br><img src="/2020/01/04/jmeter源码学习一/jmeter2.png" alt="avatar"><br>运行机制如下<br><img src="/2020/01/04/jmeter源码学习一/jmeter3.png" alt="avatar"><br>HashTree 是 JMeter 执行测试依赖的数据结构，在执行测试之前进行配置测试数据，HashTree将数据组织到一个递归树结构中，并提供了操作该结构的方法<br>StandardJMeterEngine 执行JMeter 测试 ,直接用于本地 GUI 和非 GUI 调用，或者在服务器模式下运行时由 RemoteJMeterEngineImpl 启动<br>JMeterEngine 接口被运行 JMeter的测试类实现，此接口共8个方法，JMeterEngine本质就是一个线程。</p>
+<h4 id="代码分析"><a href="#代码分析" class="headerlink" title="代码分析"></a>代码分析</h4><ol>
+<li><p>NewDriver类</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">main方法</span><br><span class="line"> public static void main(String[] args) &#123;</span><br><span class="line">        if(!EXCEPTIONS_IN_INIT.isEmpty()) &#123;</span><br><span class="line">            System.err.println(&quot;Configuration error during init, see exceptions:&quot;+exceptionsToString(EXCEPTIONS_IN_INIT));</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            Thread.currentThread().setContextClassLoader(loader);</span><br><span class="line"></span><br><span class="line">            setLoggingProperties(args);</span><br><span class="line"></span><br><span class="line">            try &#123;</span><br><span class="line">                Class&lt;?&gt; initialClass = loader.loadClass(&quot;org.apache.jmeter.JMeter&quot;);// $NON-NLS-1$</span><br><span class="line">                Object instance = initialClass.newInstance();</span><br><span class="line">                Method startup = initialClass.getMethod(&quot;start&quot;, new Class[] &#123; new String[0].getClass() &#125;);// $NON-NLS-1$</span><br><span class="line">                startup.invoke(instance, new Object[] &#123; args &#125;);</span><br><span class="line">            &#125; catch(Throwable e)&#123; // NOSONAR We want to log home directory in case of exception</span><br><span class="line">                e.printStackTrace(); // NOSONAR No logger at this step</span><br><span class="line">                System.err.println(&quot;JMeter home directory was detected as: &quot;+JMETER_INSTALLATION_DIRECTORY);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Jmeter类</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br></pre></td><td class="code"><pre><span class="line">1. start方法</span><br><span class="line"> public void start(String[] args) &#123;</span><br><span class="line">        CLArgsParser parser = new CLArgsParser(args, options);</span><br><span class="line">        String error = parser.getErrorString();</span><br><span class="line">        if (error == null)&#123;// Check option combinations</span><br><span class="line">            boolean gui = parser.getArgumentById(NONGUI_OPT)==null;</span><br><span class="line">            boolean nonGuiOnly = parser.getArgumentById(REMOTE_OPT)!=null</span><br><span class="line">                               || parser.getArgumentById(REMOTE_OPT_PARAM)!=null</span><br><span class="line">                               || parser.getArgumentById(REMOTE_STOP)!=null;</span><br><span class="line">            if (gui &amp;&amp; nonGuiOnly) &#123;</span><br><span class="line">                error = &quot;-r and -R and -X are only valid in non-GUI mode&quot;;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        if (null != error) &#123;</span><br><span class="line">            System.err.println(&quot;Error: &quot; + error);//NOSONAR</span><br><span class="line">            System.out.println(&quot;Usage&quot;);//NOSONAR</span><br><span class="line">            System.out.println(CLUtil.describeOptions(options).toString());//NOSONAR</span><br><span class="line">            // repeat the error so no need to scroll back past the usage to see it</span><br><span class="line">            System.out.println(&quot;Error: &quot; + error);//NOSONAR</span><br><span class="line">            return;</span><br><span class="line">        &#125;</span><br><span class="line">        try &#123;</span><br><span class="line">            initializeProperties(parser); // Also initialises JMeter logging</span><br><span class="line"></span><br><span class="line">            Thread.setDefaultUncaughtExceptionHandler(</span><br><span class="line">                    (Thread t, Throwable e) -&gt; &#123;</span><br><span class="line">                    if (!(e instanceof ThreadDeath)) &#123;</span><br><span class="line">                        log.error(&quot;Uncaught exception: &quot;, e);</span><br><span class="line">                        System.err.println(&quot;Uncaught Exception &quot; + e + &quot;. See log file for details.&quot;);//NOSONAR</span><br><span class="line">                    &#125;</span><br><span class="line">            &#125;);</span><br><span class="line"></span><br><span class="line">            if (log.isInfoEnabled()) &#123;</span><br><span class="line">                log.info(JMeterUtils.getJMeterCopyright());</span><br><span class="line">                log.info(&quot;Version &#123;&#125;&quot;, JMeterUtils.getJMeterVersion());</span><br><span class="line">                log.info(&quot;java.version=&#123;&#125;&quot;, System.getProperty(&quot;java.version&quot;));//$NON-NLS-1$ //$NON-NLS-2$</span><br><span class="line">                log.info(&quot;java.vm.name=&#123;&#125;&quot;, System.getProperty(&quot;java.vm.name&quot;));//$NON-NLS-1$ //$NON-NLS-2$</span><br><span class="line">                log.info(&quot;os.name=&#123;&#125;&quot;, System.getProperty(&quot;os.name&quot;));//$NON-NLS-1$ //$NON-NLS-2$</span><br><span class="line">                log.info(&quot;os.arch=&#123;&#125;&quot;, System.getProperty(&quot;os.arch&quot;));//$NON-NLS-1$ //$NON-NLS-2$</span><br><span class="line">                log.info(&quot;os.version=&#123;&#125;&quot;, System.getProperty(&quot;os.version&quot;));//$NON-NLS-1$ //$NON-NLS-2$</span><br><span class="line">                log.info(&quot;file.encoding=&#123;&#125;&quot;, System.getProperty(&quot;file.encoding&quot;));//$NON-NLS-1$ //$NON-NLS-2$</span><br><span class="line">                log.info(&quot;Max memory     =&#123;&#125;&quot;, Runtime.getRuntime().maxMemory());</span><br><span class="line">                log.info(&quot;Available Processors =&#123;&#125;&quot;, Runtime.getRuntime().availableProcessors());</span><br><span class="line">                log.info(&quot;Default Locale=&#123;&#125;&quot;, Locale.getDefault().getDisplayName());</span><br><span class="line">                log.info(&quot;JMeter  Locale=&#123;&#125;&quot;, JMeterUtils.getLocale().getDisplayName());</span><br><span class="line">                log.info(&quot;JMeterHome=&#123;&#125;&quot;, JMeterUtils.getJMeterHome());</span><br><span class="line">                log.info(&quot;user.dir  =&#123;&#125;&quot;, System.getProperty(&quot;user.dir&quot;));//$NON-NLS-1$ //$NON-NLS-2$</span><br><span class="line">                log.info(&quot;PWD       =&#123;&#125;&quot;, new File(&quot;.&quot;).getCanonicalPath());//$NON-NLS-1$</span><br><span class="line">                log.info(&quot;IP: &#123;&#125; Name: &#123;&#125; FullName: &#123;&#125;&quot;, JMeterUtils.getLocalHostIP(), JMeterUtils.getLocalHostName(),</span><br><span class="line">                        JMeterUtils.getLocalHostFullName());</span><br><span class="line">            &#125;</span><br><span class="line">            setProxy(parser);</span><br><span class="line"></span><br><span class="line">            updateClassLoader();</span><br><span class="line">            if (log.isDebugEnabled())</span><br><span class="line">            &#123;</span><br><span class="line">                String jcp=System.getProperty(&quot;java.class.path&quot;);// $NON-NLS-1$</span><br><span class="line">                String[] bits = jcp.split(File.pathSeparator);</span><br><span class="line">                log.debug(&quot;ClassPath&quot;);</span><br><span class="line">                for(String bit : bits)&#123;</span><br><span class="line">                    log.debug(bit);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            // Set some (hopefully!) useful properties</span><br><span class="line">            long now=System.currentTimeMillis();</span><br><span class="line">            JMeterUtils.setProperty(&quot;START.MS&quot;,Long.toString(now));// $NON-NLS-1$</span><br><span class="line">            Date today=new Date(now); // so it agrees with above</span><br><span class="line">            JMeterUtils.setProperty(&quot;START.YMD&quot;,new SimpleDateFormat(&quot;yyyyMMdd&quot;).format(today));// $NON-NLS-1$ $NON-NLS-2$</span><br><span class="line">            JMeterUtils.setProperty(&quot;START.HMS&quot;,new SimpleDateFormat(&quot;HHmmss&quot;).format(today));// $NON-NLS-1$ $NON-NLS-2$</span><br><span class="line"></span><br><span class="line">            if (parser.getArgumentById(VERSION_OPT) != null) &#123;</span><br><span class="line">                displayAsciiArt();</span><br><span class="line">            &#125; else if (parser.getArgumentById(HELP_OPT) != null) &#123;</span><br><span class="line">                displayAsciiArt();</span><br><span class="line">                System.out.println(JMeterUtils.getResourceFileAsText(&quot;org/apache/jmeter/help.txt&quot;));//NOSONAR $NON-NLS-1$</span><br><span class="line">            &#125; else if (parser.getArgumentById(OPTIONS_OPT) != null) &#123;</span><br><span class="line">                displayAsciiArt();</span><br><span class="line">                System.out.println(CLUtil.describeOptions(options).toString());//NOSONAR</span><br><span class="line">            &#125; else if (parser.getArgumentById(SERVER_OPT) != null) &#123;</span><br><span class="line">                // Start the server</span><br><span class="line">                try &#123;</span><br><span class="line">                    RemoteJMeterEngineImpl.startServer(RmiUtils.getRmiRegistryPort()); // $NON-NLS-1$</span><br><span class="line">                    startOptionalServers();</span><br><span class="line">                &#125; catch (Exception ex) &#123;</span><br><span class="line">                    System.err.println(&quot;Server failed to start: &quot;+ex);//NOSONAR</span><br><span class="line">                    log.error(&quot;Giving up, as server failed with:&quot;, ex);</span><br><span class="line">                    throw ex;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125; else &#123;</span><br><span class="line">                String testFile=null;</span><br><span class="line">                CLOption testFileOpt = parser.getArgumentById(TESTFILE_OPT);</span><br><span class="line">                if (testFileOpt != null)&#123;</span><br><span class="line">                    testFile = testFileOpt.getArgument();</span><br><span class="line">                    if (USE_LAST_JMX.equals(testFile)) &#123;</span><br><span class="line">                        testFile = LoadRecentProject.getRecentFile(0);// most recent</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">                CLOption testReportOpt = parser.getArgumentById(REPORT_GENERATING_OPT);</span><br><span class="line">                if (testReportOpt != null) &#123; // generate report from existing file</span><br><span class="line">                    String reportFile = testReportOpt.getArgument();</span><br><span class="line">                    extractAndSetReportOutputFolder(parser, false);</span><br><span class="line">                    ReportGenerator generator = new ReportGenerator(reportFile, null);</span><br><span class="line">                    generator.generate();</span><br><span class="line">                &#125; else if (parser.getArgumentById(NONGUI_OPT) == null) &#123; // not non-GUI =&gt; GUI</span><br><span class="line">                    startGui(testFile);</span><br><span class="line">                    startOptionalServers();</span><br><span class="line">                &#125; else &#123; // NON-GUI must be true</span><br><span class="line">                    extractAndSetReportOutputFolder(parser, deleteResultFile);</span><br><span class="line">                    </span><br><span class="line">                    CLOption rem = parser.getArgumentById(REMOTE_OPT_PARAM);</span><br><span class="line">                    if (rem == null) &#123;</span><br><span class="line">                        rem = parser.getArgumentById(REMOTE_OPT);</span><br><span class="line">                    &#125;</span><br><span class="line">                    CLOption jtl = parser.getArgumentById(LOGFILE_OPT);</span><br><span class="line">                    String jtlFile = null;</span><br><span class="line">                    if (jtl != null) &#123;</span><br><span class="line">                        jtlFile = processLAST(jtl.getArgument(), &quot;.jtl&quot;); // $NON-NLS-1$</span><br><span class="line">                    &#125;</span><br><span class="line">                    CLOption reportAtEndOpt = parser.getArgumentById(REPORT_AT_END_OPT);</span><br><span class="line">                    if(reportAtEndOpt != null &amp;&amp; jtlFile == null) &#123;</span><br><span class="line">                        throw new IllegalUserActionException(</span><br><span class="line">                                &quot;Option -&quot;+ ((char)REPORT_AT_END_OPT)+&quot; requires -&quot;+((char)LOGFILE_OPT )+ &quot; option&quot;);</span><br><span class="line">                    &#125;</span><br><span class="line">                    startNonGui(testFile, jtlFile, rem, reportAtEndOpt != null);</span><br><span class="line">                    startOptionalServers();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; catch (IllegalUserActionException e) &#123;// NOSONAR</span><br><span class="line">            System.out.println(&quot;Incorrect Usage:&quot;+e.getMessage());//NOSONAR</span><br><span class="line">            System.out.println(CLUtil.describeOptions(options).toString());//NOSONAR</span><br><span class="line">        &#125; catch (Throwable e) &#123; // NOSONAR</span><br><span class="line">            log.error(&quot;An error occurred: &quot;, e);</span><br><span class="line">            System.out.println(&quot;An error occurred: &quot; + e.getMessage());//NOSONAR</span><br><span class="line">            // FIXME Should we exit here ? If we are called by Maven or Jenkins</span><br><span class="line">            System.exit(1);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br></pre></td><td class="code"><pre><span class="line">2. startGui方法</span><br><span class="line">private void startGui(String testFile) &#123;</span><br><span class="line">        System.out.println(&quot;================================================================================&quot;);//NOSONAR</span><br><span class="line">        System.out.println(&quot;Don&apos;t use GUI mode for load testing !, only for Test creation and Test debugging.&quot;);//NOSONAR</span><br><span class="line">        System.out.println(&quot;For load testing, use NON GUI Mode:&quot;);//NOSONAR</span><br><span class="line">        System.out.println(&quot;   jmeter -n -t [jmx file] -l [results file] -e -o [Path to web report folder]&quot;);//NOSONAR</span><br><span class="line">        System.out.println(&quot;&amp; increase Java Heap to meet your test requirements:&quot;);//NOSONAR</span><br><span class="line">        System.out.println(&quot;   Modify current env variable HEAP=\&quot;-Xms1g -Xmx1g -XX:MaxMetaspaceSize=256m\&quot; in the jmeter batch file&quot;);//NOSONAR</span><br><span class="line">        System.out.println(&quot;Check : https://jmeter.apache.org/usermanual/best-practices.html&quot;);//NOSONAR</span><br><span class="line">        System.out.println(&quot;================================================================================&quot;);//NOSONAR</span><br><span class="line">        </span><br><span class="line">        SplashScreen splash = new SplashScreen();</span><br><span class="line">        splash.showScreen();</span><br><span class="line">        String jMeterLaf = LookAndFeelCommand.getJMeterLaf();</span><br><span class="line">        try &#123;</span><br><span class="line">            log.info(&quot;Setting LAF to: &#123;&#125;&quot;, jMeterLaf);</span><br><span class="line">            UIManager.setLookAndFeel(jMeterLaf);</span><br><span class="line">        &#125; catch (Exception ex) &#123;</span><br><span class="line">            log.warn(&quot;Could not set LAF to: &#123;&#125;&quot;, jMeterLaf, ex);</span><br><span class="line">        &#125;</span><br><span class="line">        splash.setProgress(10);</span><br><span class="line">        JMeterUtils.applyHiDPIOnFonts();</span><br><span class="line">        PluginManager.install(this, true);</span><br><span class="line"></span><br><span class="line">        JMeterTreeModel treeModel = new JMeterTreeModel();</span><br><span class="line">        splash.setProgress(30);</span><br><span class="line">        JMeterTreeListener treeLis = new JMeterTreeListener(treeModel);</span><br><span class="line">        final ActionRouter instance = ActionRouter.getInstance();</span><br><span class="line">        instance.populateCommandMap();</span><br><span class="line">        splash.setProgress(60);</span><br><span class="line">        treeLis.setActionHandler(instance);</span><br><span class="line">        GuiPackage.initInstance(treeLis, treeModel);</span><br><span class="line">        splash.setProgress(80);</span><br><span class="line">        MainFrame main = new MainFrame(treeModel, treeLis);</span><br><span class="line">        splash.setProgress(100);</span><br><span class="line">        ComponentUtil.centerComponentInWindow(main, 80);</span><br><span class="line">        main.setLocationRelativeTo(splash);</span><br><span class="line">        main.setVisible(true);</span><br><span class="line">        main.toFront();</span><br><span class="line">        instance.actionPerformed(new ActionEvent(main, 1, ActionNames.ADD_ALL));</span><br><span class="line">        if (testFile != null) &#123;</span><br><span class="line">            try &#123;</span><br><span class="line">                File f = new File(testFile);</span><br><span class="line">                log.info(&quot;Loading file: &#123;&#125;&quot;, f);</span><br><span class="line">                FileServer.getFileServer().setBaseForScript(f);</span><br><span class="line"></span><br><span class="line">                HashTree tree = SaveService.loadTree(f);</span><br><span class="line"></span><br><span class="line">                GuiPackage.getInstance().setTestPlanFile(f.getAbsolutePath());</span><br><span class="line"></span><br><span class="line">                Load.insertLoadedTree(1, tree);</span><br><span class="line">            &#125; catch (ConversionException e) &#123;</span><br><span class="line">                log.error(&quot;Failure loading test file&quot;, e);</span><br><span class="line">                JMeterUtils.reportErrorToUser(SaveService.CEtoString(e));</span><br><span class="line">            &#125; catch (Exception e) &#123;</span><br><span class="line">                log.error(&quot;Failure loading test file&quot;, e);</span><br><span class="line">                JMeterUtils.reportErrorToUser(e.toString());</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            JTree jTree = GuiPackage.getInstance().getMainFrame().getTree();</span><br><span class="line">            TreePath path = jTree.getPathForRow(0);</span><br><span class="line">            jTree.setSelectionPath(path);</span><br><span class="line">            FocusRequester.requestFocus(jTree);</span><br><span class="line">        &#125;</span><br><span class="line">        splash.setProgress(100);</span><br><span class="line">        splash.close();</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br></pre></td><td class="code"><pre><span class="line">3. startNoGui方法</span><br><span class="line">private void startNonGui(String testFile, String logFile, CLOption remoteStart, boolean generateReportDashboard)</span><br><span class="line">            throws IllegalUserActionException, ConfigurationException &#123;</span><br><span class="line">        // add a system property so samplers can check to see if JMeter</span><br><span class="line">        // is running in NonGui mode</span><br><span class="line">        System.setProperty(JMETER_NON_GUI, &quot;true&quot;);// $NON-NLS-1$</span><br><span class="line">        JMeter driver = new JMeter();// TODO - why does it create a new instance?</span><br><span class="line">        driver.remoteProps = this.remoteProps;</span><br><span class="line">        driver.remoteStop = this.remoteStop;</span><br><span class="line">        driver.deleteResultFile = this.deleteResultFile;</span><br><span class="line">        </span><br><span class="line">        PluginManager.install(this, false);</span><br><span class="line"></span><br><span class="line">        String remoteHostsString = null;</span><br><span class="line">        if (remoteStart != null) &#123;</span><br><span class="line">            remoteHostsString = remoteStart.getArgument();</span><br><span class="line">            if (remoteHostsString == null) &#123;</span><br><span class="line">                remoteHostsString = JMeterUtils.getPropDefault(</span><br><span class="line">                        &quot;remote_hosts&quot;, //$NON-NLS-1$</span><br><span class="line">                        &quot;127.0.0.1&quot;);//NOSONAR $NON-NLS-1$ </span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        if (testFile == null) &#123;</span><br><span class="line">            throw new IllegalUserActionException(&quot;Non-GUI runs require a test plan&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">        driver.runNonGui(testFile, logFile, remoteStart != null, remoteHostsString, generateReportDashboard);</span><br><span class="line">    &#125;</span><br><span class="line">    // run test in batch mode</span><br><span class="line">    private void runNonGui(String testFile, String logFile, boolean remoteStart, String remoteHostsString, boolean generateReportDashboard) &#123;</span><br><span class="line">        try &#123;</span><br><span class="line">            File f = new File(testFile);</span><br><span class="line">            if (!f.exists() || !f.isFile()) &#123;</span><br><span class="line">                println(&quot;Could not open &quot; + testFile);</span><br><span class="line">                return;</span><br><span class="line">            &#125;</span><br><span class="line">            FileServer.getFileServer().setBaseForScript(f);</span><br><span class="line"></span><br><span class="line">            HashTree tree = SaveService.loadTree(f);</span><br><span class="line"></span><br><span class="line">            @SuppressWarnings(&quot;deprecation&quot;) // Deliberate use of deprecated ctor</span><br><span class="line">            JMeterTreeModel treeModel = new JMeterTreeModel(new Object());// Create non-GUI version to avoid headless problems</span><br><span class="line">            JMeterTreeNode root = (JMeterTreeNode) treeModel.getRoot();</span><br><span class="line">            treeModel.addSubTree(tree, root);</span><br><span class="line"></span><br><span class="line">            // Hack to resolve ModuleControllers in non GUI mode</span><br><span class="line">            SearchByClass&lt;ReplaceableController&gt; replaceableControllers =</span><br><span class="line">                    new SearchByClass&lt;&gt;(ReplaceableController.class);</span><br><span class="line">            tree.traverse(replaceableControllers);</span><br><span class="line">            Collection&lt;ReplaceableController&gt; replaceableControllersRes = replaceableControllers.getSearchResults();</span><br><span class="line">            for (ReplaceableController replaceableController : replaceableControllersRes) &#123;</span><br><span class="line">                replaceableController.resolveReplacementSubTree(root);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            // Remove the disabled items</span><br><span class="line">            // For GUI runs this is done in Start.java</span><br><span class="line">            convertSubTree(tree);</span><br><span class="line">            </span><br><span class="line">            Summariser summariser = null;</span><br><span class="line">            String summariserName = JMeterUtils.getPropDefault(&quot;summariser.name&quot;, &quot;&quot;);//$NON-NLS-1$</span><br><span class="line">            if (summariserName.length() &gt; 0) &#123;</span><br><span class="line">                log.info(&quot;Creating summariser &lt;&#123;&#125;&gt;&quot;, summariserName);</span><br><span class="line">                println(&quot;Creating summariser &lt;&quot; + summariserName + &quot;&gt;&quot;);</span><br><span class="line">                summariser = new Summariser(summariserName);</span><br><span class="line">            &#125;</span><br><span class="line">            ResultCollector resultCollector = null;</span><br><span class="line">            if (logFile != null) &#123;</span><br><span class="line">                resultCollector = new ResultCollector(summariser);</span><br><span class="line">                resultCollector.setFilename(logFile);</span><br><span class="line">                tree.add(tree.getArray()[0], resultCollector);</span><br><span class="line">            &#125;</span><br><span class="line">            else &#123;</span><br><span class="line">                // only add Summariser if it can not be shared with the ResultCollector</span><br><span class="line">                if (summariser != null) &#123;</span><br><span class="line">                    tree.add(tree.getArray()[0], summariser);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            if (deleteResultFile) &#123;</span><br><span class="line">                SearchByClass&lt;ResultCollector&gt; resultListeners = new SearchByClass&lt;&gt;(ResultCollector.class);</span><br><span class="line">                tree.traverse(resultListeners);</span><br><span class="line">                Iterator&lt;ResultCollector&gt; irc = resultListeners.getSearchResults().iterator();</span><br><span class="line">                while (irc.hasNext()) &#123;</span><br><span class="line">                    ResultCollector rc = irc.next();</span><br><span class="line">                    File resultFile = new File(rc.getFilename());</span><br><span class="line">                    if (resultFile.exists() &amp;&amp; !resultFile.delete()) &#123;</span><br><span class="line">                        throw new IllegalStateException(&quot;Could not delete results file &quot; + resultFile.getAbsolutePath()</span><br><span class="line">                            + &quot;(canRead:&quot;+resultFile.canRead()+&quot;, canWrite:&quot;+resultFile.canWrite()+&quot;)&quot;);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            ReportGenerator reportGenerator = null;</span><br><span class="line">            if (logFile != null &amp;&amp; generateReportDashboard) &#123;</span><br><span class="line">                reportGenerator = new ReportGenerator(logFile, resultCollector);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            // Used for remote notification of threads start/stop,see BUG 54152</span><br><span class="line">            // Summariser uses this feature to compute correctly number of threads </span><br><span class="line">            // when NON GUI mode is used</span><br><span class="line">            tree.add(tree.getArray()[0], new RemoteThreadsListenerTestElement());</span><br><span class="line"></span><br><span class="line">            List&lt;JMeterEngine&gt; engines = new LinkedList&lt;&gt;();</span><br><span class="line">            tree.add(tree.getArray()[0], new ListenToTest(remoteStart &amp;&amp; remoteStop ? engines : null, reportGenerator));</span><br><span class="line">            println(&quot;Created the tree successfully using &quot;+testFile);</span><br><span class="line">            if (!remoteStart) &#123;</span><br><span class="line">                JMeterEngine engine = new StandardJMeterEngine();</span><br><span class="line">                engine.configure(tree);</span><br><span class="line">                long now=System.currentTimeMillis();</span><br><span class="line">                println(&quot;Starting the test @ &quot;+new Date(now)+&quot; (&quot;+now+&quot;)&quot;);</span><br><span class="line">                engine.runTest();</span><br><span class="line">                engines.add(engine);</span><br><span class="line">            &#125; else &#123;</span><br><span class="line">                java.util.StringTokenizer st = new java.util.StringTokenizer(remoteHostsString, &quot;,&quot;);//$NON-NLS-1$</span><br><span class="line">                List&lt;String&gt; hosts = new LinkedList&lt;&gt;();</span><br><span class="line">                while (st.hasMoreElements()) &#123;</span><br><span class="line">                    hosts.add((String) st.nextElement());</span><br><span class="line">                &#125;</span><br><span class="line">                </span><br><span class="line">                DistributedRunner distributedRunner=new DistributedRunner(this.remoteProps);</span><br><span class="line">                distributedRunner.setStdout(System.out); // NOSONAR</span><br><span class="line">                distributedRunner.setStdErr(System.err); // NOSONAR</span><br><span class="line">                distributedRunner.init(hosts, tree);</span><br><span class="line">                engines.addAll(distributedRunner.getEngines());</span><br><span class="line">                distributedRunner.start();</span><br><span class="line">            &#125;</span><br><span class="line">            startUdpDdaemon(engines);</span><br><span class="line">        &#125; catch (Exception e) &#123;</span><br><span class="line">            System.out.println(&quot;Error in NonGUIDriver &quot; + e.toString());//NOSONAR</span><br><span class="line">            log.error(&quot;Error in NonGUIDriver&quot;, e);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<ol>
+<li>解析命令行参数，加载配置文件；</li>
+<li>将 .Jmx 文件解析成 HashTree；</li>
+<li>实例化一个StandardJMeterEngine,并把测试的工作交给JMeterEngine；</li>
+<li>监听所有的 JMeterEngine ,当接收到 GUI 的 StopTestNow / Shutdown 等命令时候来调用JMeterEngine接口相应的方法。</li>
+</ol>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/jmeter/" rel="tag"># jmeter</a>
+          
+            <a href="/tags/性能测试/" rel="tag"># 性能测试</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/10/05/持续交付总结二/" rel="next" title="持续交付总结二">
+                <i class="fa fa-chevron-left"></i> 持续交付总结二
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">刘凯</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">24</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">1</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">16</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#概览"><span class="nav-number">1.</span> <span class="nav-text">概览</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#项目目录"><span class="nav-number">2.</span> <span class="nav-text">项目目录</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#代码分析"><span class="nav-number">3.</span> <span class="nav-text">代码分析</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">刘凯</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

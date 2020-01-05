@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh_CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="golang,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="main函数和init函数&amp;emsp;&amp;emsp;Go里面有两个保留的函数：init函数（能够应用于所有的package）和main函数（只能应用于package main）。这两个函数在定义时不能有任何的参数和返回值。虽然一个package里面可以写任意多个init函数，但这无论是对于可读性还是以后的可维护性来说，我们都强烈建议用户在一个package中每个文件只写一个init函数。&amp;emsp;">
+<meta name="keywords" content="golang">
+<meta property="og:type" content="article">
+<meta property="og:title" content="go基础整理">
+<meta property="og:url" content="https://alfredliukai.github.io/2019/04/05/go基础整理/index.html">
+<meta property="og:site_name" content="昨非的个人网站">
+<meta property="og:description" content="main函数和init函数&amp;emsp;&amp;emsp;Go里面有两个保留的函数：init函数（能够应用于所有的package）和main函数（只能应用于package main）。这两个函数在定义时不能有任何的参数和返回值。虽然一个package里面可以写任意多个init函数，但这无论是对于可读性还是以后的可维护性来说，我们都强烈建议用户在一个package中每个文件只写一个init函数。&amp;emsp;">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:updated_time" content="2019-04-14T10:38:50.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="go基础整理">
+<meta name="twitter:description" content="main函数和init函数&amp;emsp;&amp;emsp;Go里面有两个保留的函数：init函数（能够应用于所有的package）和main函数（只能应用于package main）。这两个函数在定义时不能有任何的参数和返回值。虽然一个package里面可以写任意多个init函数，但这无论是对于可读性还是以后的可维护性来说，我们都强烈建议用户在一个package中每个文件只写一个init函数。&amp;emsp;">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://alfredliukai.github.io/2019/04/05/go基础整理/">
+
+
+
+
+
+  <title>go基础整理 | 昨非的个人网站</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh_CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">昨非的个人网站</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-首页">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-标签">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-归档">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-关于">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://alfredliukai.github.io/2019/04/05/go基础整理/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="刘凯">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="昨非的个人网站">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">go基础整理</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-04-05T11:11:08+08:00">
+                2019-04-05
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/golang/" itemprop="url" rel="index">
+                    <span itemprop="name">golang</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h4 id="main函数和init函数"><a href="#main函数和init函数" class="headerlink" title="main函数和init函数"></a>main函数和init函数</h4><p>&emsp;&emsp;Go里面有两个保留的函数：init函数（能够应用于所有的package）和main函数（只能应用于package main）。这两个函数在定义时不能有任何的参数和返回值。虽然一个package里面可以写任意多个init函数，但这无论是对于可读性还是以后的可维护性来说，我们都强烈建议用户在一个package中每个文件只写一个init函数。<br>&emsp;&emsp;Go程序会自动调用init()和main()，所以你不需要在任何地方调用这两个函数。每个package中的init函数都是可选的，但package main就必须包含一个main函数。<br>&emsp;&emsp;程序的初始化和执行都起始于main包。如果main包还导入了其它的包，那么就会在编译时将它们依次导入。有时一个包会被多个包同时导入，那么它只会被导入一次（例如很多包可能都会用到fmt包，但它只会被导入一次，因为没有必要导入多次）。当一个包被导入时，如果该包还导入了其它的包，那么会先将其它包导入进来，然后再对这些包中的包级常量和变量进行初始化，接着执行init函数（如果有的话），依次类推。等所有被导入的包都加载完毕了，就会开始对main包中的包级常量和变量进行初始化，然后执行main包中的init函数（如果存在的话），最后执行main函数。</p>
+<h4 id="json处理"><a href="#json处理" class="headerlink" title="json处理"></a>json处理</h4><p>json 中提供的处理 json 的标准包是 encoding/json,主要使用的是以下两个方法：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">// 序列化</span><br><span class="line">func Marshal(v interface&#123;&#125;) ([]byte, error)</span><br><span class="line">// 反序列化</span><br><span class="line">func Unmarshal(data []byte, v interface&#123;&#125;) error</span><br><span class="line">序列化前后的数据结构有以下的对应关系：</span><br><span class="line">bool, for JSON booleans</span><br><span class="line">float64, for JSON numbers</span><br><span class="line">string, for JSON strings</span><br><span class="line">[]interface&#123;&#125;, for JSON arrays</span><br><span class="line">map[string]interface&#123;&#125;, for JSON objects</span><br><span class="line">nil for JSON null</span><br></pre></td></tr></table></figure></p>
+<p>Unmarshal<br>这是一个反序列化的过程，将 JSON 串重新组装成结构体。<br>已知类型解析<br>JSON 解析的时候只会解析能找得到的字段，找不到的字段会被忽略，这样的一个好处是：当你接收到一个很大的 JSON 数据结构而你却只想获取其中的部分数据的时候，你只需将你想要的数据对应的字段名大写，即可轻松解决这个问题。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">package main</span><br><span class="line">import (</span><br><span class="line">    &quot;encoding/json&quot;</span><br><span class="line">    &quot;fmt&quot;</span><br><span class="line">)</span><br><span class="line">type Animal struct &#123;</span><br><span class="line">    Name  string</span><br><span class="line">    Order string</span><br><span class="line">&#125;</span><br><span class="line">func main() &#123;</span><br><span class="line">    var jsonBlob = []byte(`[</span><br><span class="line">        &#123;&quot;Name&quot;: &quot;Platypus&quot;, &quot;Order&quot;: &quot;Monotremata&quot;&#125;,</span><br><span class="line">        &#123;&quot;Name&quot;: &quot;Quoll&quot;,    &quot;Order&quot;: &quot;Dasyuromorphia&quot;&#125;</span><br><span class="line">    ]`)</span><br><span class="line"></span><br><span class="line">    var animals []Animal</span><br><span class="line">    err := json.Unmarshal(jsonBlob, &amp;animals)</span><br><span class="line">    if err != nil &#123;</span><br><span class="line">        fmt.Println(&quot;error:&quot;, err)</span><br><span class="line">    &#125;</span><br><span class="line">    fmt.Printf(&quot;%+v&quot;, animals)</span><br></pre></td></tr></table></figure></p>
+<p>未知解析类型<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">var f interface&#123;&#125;</span><br><span class="line">b := []byte(`&#123;&quot;Name&quot;:&quot;Wednesday&quot;,&quot;Age&quot;:6,&quot;Parents&quot;:[&quot;Gomez&quot;,&quot;Morticia&quot;]&#125;`)</span><br><span class="line">json.Unmarshal(b, &amp;f)</span><br><span class="line">for k, v := range f.(map[string]interface&#123;&#125;) &#123;</span><br><span class="line">    switch vv := v.(type) &#123;</span><br><span class="line">    case string:</span><br><span class="line">        fmt.Println(k, &quot;is string&quot;, vv)</span><br><span class="line">    case int:</span><br><span class="line">        fmt.Println(k, &quot;is int &quot;, vv)</span><br><span class="line">    case float64:</span><br><span class="line">        fmt.Println(k, &quot;is float64 &quot;, vv)</span><br><span class="line">    case []interface&#123;&#125;:</span><br><span class="line">        fmt.Println(k, &quot;is array:&quot;)</span><br><span class="line">        for i, j := range vv &#123;</span><br><span class="line">            fmt.Println(i, j)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>Marshal<br>这是序列化的过程，将结构体序列化成一个 JSON 串。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">package main</span><br><span class="line"></span><br><span class="line">import (</span><br><span class="line">    &quot;encoding/json&quot;</span><br><span class="line">    &quot;fmt&quot;</span><br><span class="line">)</span><br><span class="line">type Animal struct &#123;</span><br><span class="line">    Name  string `json:&quot;name&quot;`</span><br><span class="line">    Order string `json:&quot;order&quot;`</span><br><span class="line">&#125;</span><br><span class="line">func main() &#123;</span><br><span class="line">    var animals []Animal</span><br><span class="line">    animals = append(animals, Animal&#123;Name: &quot;Platypus&quot;, Order: &quot;Monotremata&quot;&#125;)</span><br><span class="line">    animals = append(animals, Animal&#123;Name: &quot;Quoll&quot;, Order: &quot;Dasyuromorphia&quot;&#125;)</span><br><span class="line"></span><br><span class="line">    jsonStr, err := json.Marshal(animals)</span><br><span class="line">    if err != nil &#123;</span><br><span class="line">        fmt.Println(&quot;error:&quot;, err)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    fmt.Println(string(jsonStr))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>json tag 有很多值可以取，同时有着不同的含义，比如：<br>tag 是 “-“，表示该字段不会输出到 JSON.<br>tag 中带有自定义名称，那么这个自定义名称会出现在 JSON 的字段名中，比如上面小写字母开头的 name.<br>tag 中带有 “omitempty” 选项，那么如果该字段值为空，就不会输出到JSON 串中.<br>如果字段类型是 bool, string, int, int64 等，而 tag 中带有”,string” 选项，那么该字段在输出到 JSON 时，会把该字段对应的值转换成 JSON 字符串.</p>
+<h4 id="net-http包处理请求"><a href="#net-http包处理请求" class="headerlink" title="net/http包处理请求"></a>net/http包处理请求</h4><h4 id="golang类型断言"><a href="#golang类型断言" class="headerlink" title="golang类型断言"></a>golang类型断言</h4><p>类型断言是一个使用在接口值上的操作<br>有时候，我们可能需要知道某个接口类型的实际类型，比如某个方法需要接收多种类型的数据并需做分别处理时，我们可以把形参设为空接口类型以接收任意类型的值，但是我们怎么反向知道里面实际保存了的是哪个类型的对象呢？<br>• Comma-ok 断言语法<br>value,ok := x.(T)<br>x表示一个接口的类型，T表示一个类型（也可为接口类型）<br>该断言表达式会返回x的值和一个布尔值 可根据该布尔值判断x是否为T类型<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">func main() &#123;</span><br><span class="line">    var x interface&#123;&#125;</span><br><span class="line">    x = 10</span><br><span class="line">    value, ok := x.(int)</span><br><span class="line">    fmt.Print(value, &quot;,&quot;, ok)</span><br><span class="line">&#125;</span><br><span class="line">func judgeType(a interface&#123;&#125;) &#123;</span><br><span class="line">    switch a.(type) &#123;</span><br><span class="line">    case int:</span><br><span class="line">        fmt.Println(&quot;the type of a is int&quot;)</span><br><span class="line">    case string:</span><br><span class="line">        fmt.Println(&quot;the type of a is string&quot;)</span><br><span class="line">    case float64:</span><br><span class="line">        fmt.Println(&quot;the type of a is float&quot;)</span><br><span class="line">    default:</span><br><span class="line">        fmt.Println(&quot;unknown type&quot;)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/golang/" rel="tag"># golang</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/04/04/golang下sync包整理/" rel="next" title="golang下sync包整理">
+                <i class="fa fa-chevron-left"></i> golang下sync包整理
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/04/14/redis实现延时队列/" rel="prev" title="redis实现延时队列">
+                redis实现延时队列 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">刘凯</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">24</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">1</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">16</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#main函数和init函数"><span class="nav-number">1.</span> <span class="nav-text">main函数和init函数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#json处理"><span class="nav-number">2.</span> <span class="nav-text">json处理</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#net-http包处理请求"><span class="nav-number">3.</span> <span class="nav-text">net/http包处理请求</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#golang类型断言"><span class="nav-number">4.</span> <span class="nav-text">golang类型断言</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">刘凯</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

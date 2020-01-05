@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh_CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="tomcat,servlet,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="Cookie和SessionCookie 本质上就是一份存储在用户本地的文件，里面包含了每次请求中都需要传递的信息。Session可以理解为服务器端开辟的存储空间，里面保存了用户的状态， 用户信息以 Session 的形式存储在服务端。服务器在创建Session的同时，会为该Session 生成唯一的Session ID，通过set-cookie放在http的响应头里，然后浏览器写到 cookie">
+<meta name="keywords" content="tomcat,servlet">
+<meta property="og:type" content="article">
+<meta property="og:title" content="动手实现运行servlet">
+<meta property="og:url" content="https://alfredliukai.github.io/2019/09/22/动手实现运行servlet/index.html">
+<meta property="og:site_name" content="昨非的个人网站">
+<meta property="og:description" content="Cookie和SessionCookie 本质上就是一份存储在用户本地的文件，里面包含了每次请求中都需要传递的信息。Session可以理解为服务器端开辟的存储空间，里面保存了用户的状态， 用户信息以 Session 的形式存储在服务端。服务器在创建Session的同时，会为该Session 生成唯一的Session ID，通过set-cookie放在http的响应头里，然后浏览器写到 cookie">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://alfredliukai.github.io/2019/09/22/动手实现运行servlet/servlet.png">
+<meta property="og:image" content="https://alfredliukai.github.io/2019/09/22/动手实现运行servlet/servlet2.png">
+<meta property="og:image" content="https://alfredliukai.github.io/2019/09/22/动手实现运行servlet/servlet3.png">
+<meta property="og:updated_time" content="2019-09-23T15:56:11.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="动手实现运行servlet">
+<meta name="twitter:description" content="Cookie和SessionCookie 本质上就是一份存储在用户本地的文件，里面包含了每次请求中都需要传递的信息。Session可以理解为服务器端开辟的存储空间，里面保存了用户的状态， 用户信息以 Session 的形式存储在服务端。服务器在创建Session的同时，会为该Session 生成唯一的Session ID，通过set-cookie放在http的响应头里，然后浏览器写到 cookie">
+<meta name="twitter:image" content="https://alfredliukai.github.io/2019/09/22/动手实现运行servlet/servlet.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://alfredliukai.github.io/2019/09/22/动手实现运行servlet/">
+
+
+
+
+
+  <title>动手实现运行servlet | 昨非的个人网站</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh_CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">昨非的个人网站</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-首页">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-标签">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-归档">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-关于">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://alfredliukai.github.io/2019/09/22/动手实现运行servlet/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="刘凯">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="昨非的个人网站">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">动手实现运行servlet</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-09-22T15:14:30+08:00">
+                2019-09-22
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h4 id="Cookie和Session"><a href="#Cookie和Session" class="headerlink" title="Cookie和Session"></a>Cookie和Session</h4><p>Cookie 本质上就是一份存储在用户本地的文件，里面包含了每次请求中都需要传递的信息。Session可以理解为服务器端开辟的存储空间，里面保存了用户的状态， 用户信息以 Session 的形式存储在服务端。<br>服务器在创建Session的同时，会为该Session 生成唯一的Session ID，通过set-cookie放在http的响应头里，然后浏览器写到 cookie里，当浏览器再次发送请求的时候，会将这个Session ID带上，服务器接受到请 求之后就会依据 Session ID 找到相应的 Session，找到 Session 后，就可以在Session中 获取或者添加内容了。而这些内容只会保存在服务器中， 发到客户端的只有Session ID， 这样相对安全，也节省了网络流量，因为不需要在Cookie中存储大量用户信息。在 Java 中，是 Web 应用程序在调用 HttpServletRequest 的 getSession 方法时，由 Web 容器(比如 Tomcat)创建的.</p>
+<h4 id="Servlet容器和Servlet规范"><a href="#Servlet容器和Servlet规范" class="headerlink" title="Servlet容器和Servlet规范"></a>Servlet容器和Servlet规范</h4><p>Servlet接口其实是Servlet容器跟具体业务类之间的接口<br> <img src="/2019/09/22/动手实现运行servlet/servlet.png" alt="avatar"><br>Servlet 接口定义了下面五个方法:<br> <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">public interface Servlet &#123;</span><br><span class="line">	void init(ServletConfig config) throws ServletException;</span><br><span class="line"></span><br><span class="line">	ServletConfig getServletConfig();</span><br><span class="line"></span><br><span class="line">	void service(ServletRequest req, ServletResponse res)throws ServletException, IOExc 7</span><br><span class="line">	String getServletInfo();</span><br><span class="line"></span><br><span class="line">	void destroy();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p> Servlet 容器在加载 Servlet 类的时候会调用 init 方法，在卸载的时候会调用 destroy 方法。我们可能会在 init 方法里初始化一些资源，并在 destroy 方法里释放这些资源，比 如 Spring MVC 中的 DispatcherServlet，就是在 init 方法里创建了自己的 Spring 容器。<br> ServletConfig 的作用就是封装 Servlet 的初始化参 数。你可以在 web.xml 给 Servlet 配置参数，并在程序里通过 getServletConfig 方法拿到 这些参数。<br>Servlet 规范提供了 GenericServlet 抽象类，我们可以通过扩展它来实现 Servlet。虽然 Servlet 规 范并不在乎通信协议是什么，但是大多数的 Servlet 都是在 HTTP 环境中处理的，因此 Servet 规范还提供了 HttpServlet 来继承 GenericServlet，并且加入了 HTTP 特性。这样我们通过继承 HttpServlet 类来实现自己的 Servlet，只需要重写两个方法:doGet 和 doPost。<br>当客户请求某个资源时，HTTP 服务器会用一个 ServletRequest 对象把客户的请求信息封 装起来，然后调用 Servlet 容器的 service 方法，Servlet 容器拿到请求后，根据请求的 URL 和 Servlet 的映射关系，找到相应的 Servlet，如果 Servlet 还没有被加载，就用反射 机制创建这个 Servlet，并调用 Servlet 的 init 方法来完成初始化，接着调用 Servlet 的 service 方法来处理请求，把 ServletResponse 对象返回给 HTTP 服务器，HTTP 服务器会 把响应发送给客户端。同样我通过一张图来帮助你理解。<br><img src="/2019/09/22/动手实现运行servlet/servlet2.png" alt="avatar"><br>Servlet 规范提供了两种扩展机制:Filter和Listener。<br>Filter是过滤器，这个接口允许你对请求和响应做一些统一的定制化处理，比如你可以根据 请求的频率来限制访问，或者根据国家地区的不同来修 改响应内容。过滤器的工作原理是这 样的:Web 应用部署完成后，Servlet 容器需要实例化 Filter 并把 Filter 链接成一个 FilterChain。当请求进来时，获取第一个 Filter 并调用 doFilter 方法，doFilter 方法负责 调用这个 FilterChain 中的下一个 Filter。<br>Listener是监听器，这是另一种扩展机制。当 Web 应用在 Servlet 容器中运行时，Servlet 容器内部会不断的发生各种事件，如 Web 应用的启动和停止、用户请求到达等。 Servlet容器提供了一些默认的监听器来监听这些事件， 当事件发生时 ，Servlet 容器会负责调用监 听器的方法。当然，你可以定义自己的监听器去监听你感兴趣的事件，将监听器配置在 web.xml 中。比如 Spring 就实现了自己的监听器，来监听 ServletContext 的启动事件， 目的是当 Servlet 容器启动时，创建并初始化全局的 Spring 容器。</p>
+<h4 id="servlet容器，web容器，spring容器，springmvc容器的区别"><a href="#servlet容器，web容器，spring容器，springmvc容器的区别" class="headerlink" title="servlet容器，web容器，spring容器，springmvc容器的区别"></a>servlet容器，web容器，spring容器，springmvc容器的区别</h4><p>web容器中有servlet容器，spring项目部署后存在spring容器和springmvc容器。其中spring控制service层和dao层的bean对象。springmvc容器控制controller层bean对象。servlet容器控制servlet对象。项目启动是，首先 servlet初始化，初始化过程中通过web.xml中spring的配置加载spring配置， 初始化spring容器和springmvc容器。待容器加载完成。servlet初始化完成，则完成启动。HTTP请求到达web容器后，会到达Servlet容器，容器通过分发器分发到具体的spring的Controller层。执行业务操作后返回结果。<br> <img src="/2019/09/22/动手实现运行servlet/servlet3.png" alt="avatar"></p>
+<h4 id="Filter和Listener"><a href="#Filter和Listener" class="headerlink" title="Filter和Listener"></a>Filter和Listener</h4><p> Filter是过滤器，这个接口允许你对请求和响应做一些统一的定制化处理，比如你可以根据 请求的频率来限制访问，或者根据国家地区的不同来修改响应内容。过滤器的工作原理是这 样的:Web 应用部署完成后，Servlet 容器需要实例化 Filter 并把 Filter 链接成一个 FilterChain。当请求进来时，获取第一个 Filter 并调用 doFilter 方法，doFilter 方法负责 调用这个 FilterChain 中的下一个 Filter。<br> Listener是监听器，这是另一种扩展机制。当 Web 应用在 Servlet 容器中运行时，Servlet 容器内部会不断的发生各种事件，如 Web 应用的启动和停止、用户请求到达等。 Servlet容器提供了一些默认的监听器来监听这些事件，当事件发生时，Servlet 容器会负责调用监 听器的方法。当然，你可以定义自己的监听器去监听你感兴趣的事件，将监听器配置在 web.xml 中。比如 Spring 就实现了自己的监听器，来监听 ServletContext 的启动事件， 目的是当 Servlet 容器启动时，创建并初始化全局的 Spring 容器。<br> <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Filter.doFilter(); </span><br><span class="line">HandlerInterceptor.preHandle(); </span><br><span class="line">Controller </span><br><span class="line">HandlerInterceptor.postHandle(); </span><br><span class="line">DispatcherServlet 渲染视图 </span><br><span class="line">HandlerInterceptor.afterCompletion(); </span><br><span class="line">Filter.doFilter(); Servlet方法返回</span><br></pre></td></tr></table></figure></p>
+<h4 id="通过tomcat部署servlet"><a href="#通过tomcat部署servlet" class="headerlink" title="通过tomcat部署servlet"></a>通过tomcat部署servlet</h4><p> 1.部署在tomcat中</p>
+<ol>
+<li>servlet代码 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">import java.io.IOException;</span><br><span class="line">import java.io.PrintWriter;</span><br><span class="line">import javax.servlet.ServletException;</span><br><span class="line">import javax.servlet.http.HttpServlet;</span><br><span class="line">import javax.servlet.http.HttpServletRequest;</span><br><span class="line">import javax.servlet.http.HttpServletResponse;</span><br><span class="line"></span><br><span class="line">public class MyServlet extends HttpServlet&#123;</span><br><span class="line"></span><br><span class="line">@Override</span><br><span class="line">protected void doGet(HttpServletRequest request,HttpServletResponse response)</span><br><span class="line">	throws ServletException,IOException&#123;</span><br><span class="line">	System.out.println(&quot;MyServlet 在处理 get()请求...&quot;);</span><br><span class="line">	PrintWriter out = response.getWriter();</span><br><span class="line">	response.setContentType(&quot;text/html;charset=utf-8&quot;);</span><br><span class="line">	out.println(&quot;&lt;strong&gt;My Servlet!&lt;/strong&gt;&lt;br&gt;&quot;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">@Override</span><br><span class="line">protected void doPost(HttpServletRequest request,HttpServletResponse response)</span><br><span class="line">	throws ServletException,IOException&#123;</span><br><span class="line">	System.out.println(&quot;MyServlet 在处理 post()请求...&quot;);</span><br><span class="line">	PrintWriter out = response.getWriter();</span><br><span class="line">	response.setContentType(&quot;text/html;charset=utf-8&quot;);</span><br><span class="line">	out.println(&quot;&lt;strong&gt;My Servlet!&lt;/strong&gt;&lt;br&gt;&quot;);</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>步骤2：代码编译<br>     <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">javac -cp ./servlet-api.jar MyServlet.java</span><br></pre></td></tr></table></figure></p>
+<p>步骤3.项目层级<br>     <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">MyWebApp/WEB-INF/web.xml</span><br><span class="line">MyWebApp/WEB-INF/classes/MyServlet.class</span><br></pre></td></tr></table></figure></p>
+<p>步骤四 web.xml<br>     <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span><br><span class="line">&lt;web-app xmlns=&quot;http://xmlns.jcp.org/xml/ns/javaee&quot;</span><br><span class="line"> xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span><br><span class="line"> xsi:schemaLocation=&quot;http://xmlns.jcp.org/xml/ns/javaee</span><br><span class="line"> http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd&quot;</span><br><span class="line"> version=&quot;4.0&quot;</span><br><span class="line"> metadata-complete=&quot;true&quot;&gt;</span><br><span class="line">  &lt;servlet&gt;</span><br><span class="line">      &lt;servlet-name&gt;myServlet&lt;/servlet-name&gt;</span><br><span class="line">       &lt;servlet-class&gt;MyServlet&lt;/servlet-class&gt;</span><br><span class="line">   &lt;/servlet&gt;</span><br><span class="line">   &lt;servlet-mapping&gt;</span><br><span class="line">     &lt;servlet-name&gt;myServlet&lt;/servlet-name&gt;</span><br><span class="line">     &lt;url-pattern&gt;/myservlet&lt;/url-pattern&gt;</span><br><span class="line">   &lt;/servlet-mapping&gt;</span><br><span class="line">&lt;/web-app&gt;</span><br></pre></td></tr></table></figure></p>
+<p>2.其他参考地址<a href="https://github.com/feifa168/mytomcat" target="_blank" rel="noopener">https://github.com/feifa168/mytomcat</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/tomcat/" rel="tag"># tomcat</a>
+          
+            <a href="/tags/servlet/" rel="tag"># servlet</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/09/17/多路复用机制与javaNIO/" rel="next" title="多路复用机制与javaNIO">
+                <i class="fa fa-chevron-left"></i> 多路复用机制与javaNIO
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/10/02/tomcat系统架构及实现/" rel="prev" title="tomcat系统架构及实现">
+                tomcat系统架构及实现 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">刘凯</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">24</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">1</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">16</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#Cookie和Session"><span class="nav-number">1.</span> <span class="nav-text">Cookie和Session</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Servlet容器和Servlet规范"><span class="nav-number">2.</span> <span class="nav-text">Servlet容器和Servlet规范</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#servlet容器，web容器，spring容器，springmvc容器的区别"><span class="nav-number">3.</span> <span class="nav-text">servlet容器，web容器，spring容器，springmvc容器的区别</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Filter和Listener"><span class="nav-number">4.</span> <span class="nav-text">Filter和Listener</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#通过tomcat部署servlet"><span class="nav-number">5.</span> <span class="nav-text">通过tomcat部署servlet</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">刘凯</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

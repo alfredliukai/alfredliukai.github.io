@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh_CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="什么是hypervisor  Hypervisor是一种将操作系统与硬件抽象分离的方法，以达到host machine的硬件能同时运行一个至多个虚拟机作为guest machine的目的 ，这样能够使得这些虚拟机 高 效地分享主机硬件资源。 hypervisor的优点 提高主机硬件的使用效率。因为一个主机可以运行多个虚拟机，这样主机的硬件资源能被高效充分的利用起来。 虚拟机移动性强。传统软件强烈捆">
+<meta name="keywords" content="java,go,程序猿,数据库，测试，测试开发，架构">
+<meta property="og:type" content="article">
+<meta property="og:title" content="hypervisor学习总结">
+<meta property="og:url" content="https://alfredliukai.github.io/2019/09/08/hypervisor学习总结/index.html">
+<meta property="og:site_name" content="昨非的个人网站">
+<meta property="og:description" content="什么是hypervisor  Hypervisor是一种将操作系统与硬件抽象分离的方法，以达到host machine的硬件能同时运行一个至多个虚拟机作为guest machine的目的 ，这样能够使得这些虚拟机 高 效地分享主机硬件资源。 hypervisor的优点 提高主机硬件的使用效率。因为一个主机可以运行多个虚拟机，这样主机的硬件资源能被高效充分的利用起来。 虚拟机移动性强。传统软件强烈捆">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://alfredliukai.github.io/2019/09/08/hypervisor学习总结/server_virt-hypervisor.jpg">
+<meta property="og:updated_time" content="2019-09-08T15:06:31.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="hypervisor学习总结">
+<meta name="twitter:description" content="什么是hypervisor  Hypervisor是一种将操作系统与硬件抽象分离的方法，以达到host machine的硬件能同时运行一个至多个虚拟机作为guest machine的目的 ，这样能够使得这些虚拟机 高 效地分享主机硬件资源。 hypervisor的优点 提高主机硬件的使用效率。因为一个主机可以运行多个虚拟机，这样主机的硬件资源能被高效充分的利用起来。 虚拟机移动性强。传统软件强烈捆">
+<meta name="twitter:image" content="https://alfredliukai.github.io/2019/09/08/hypervisor学习总结/server_virt-hypervisor.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://alfredliukai.github.io/2019/09/08/hypervisor学习总结/">
+
+
+
+
+
+  <title>hypervisor学习总结 | 昨非的个人网站</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh_CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">昨非的个人网站</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-首页">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-标签">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-归档">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-关于">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://alfredliukai.github.io/2019/09/08/hypervisor学习总结/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="刘凯">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="昨非的个人网站">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">hypervisor学习总结</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-09-08T14:59:00+08:00">
+                2019-09-08
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h4 id="什么是hypervisor"><a href="#什么是hypervisor" class="headerlink" title="什么是hypervisor"></a>什么是hypervisor</h4><p>  Hypervisor是一种将操作系统与硬件抽象分离的方法，以达到host machine的硬件能同时运行一个至多个虚拟机作为guest machine的目的 ，这样能够使得这些虚拟机 高 效地分享主机硬件资源。</p>
+<h4 id="hypervisor的优点"><a href="#hypervisor的优点" class="headerlink" title="hypervisor的优点"></a>hypervisor的优点</h4><ol>
+<li>提高主机硬件的使用效率。因为一个主机可以运行多个虚拟机，这样主机的硬件资源能被高效充分的利用起来。</li>
+<li>虚拟机移动性强。传统软件强烈捆绑在硬件上，转移一个软件至另一个服务器上耗时耗力（比如重新安装）；然而，虚拟机与硬件是独立的，这样使得虚拟机可以在本地或远程虚拟服务器上低消耗转移。</li>
+<li>虚拟机彼此独立。一个虚拟机的奔溃不会影响其他分享同一硬件资源的虚拟机，大大提升安全性。</li>
+<li>易保护，易恢复。Snapshot技术可以记录下某一时间点下的虚拟机状态，这使得虚拟机在错误发生后能快速恢复。</li>
+</ol>
+<h4 id="hypervisor的分类"><a href="#hypervisor的分类" class="headerlink" title="hypervisor的分类"></a>hypervisor的分类</h4><p>bare-metal hypervisors：直接部署在主机硬件上，以管理硬件和guest machine。<br>hosted hypervisors：作为软件层部署在主机操作系统上，现在常用的VMware Player和VirtualBox就是这种类型。<br><img src="/2019/09/08/hypervisor学习总结/server_virt-hypervisor.jpg" alt="avatar"></p>
+<p>类型I：本地或裸机Hypervisor<br>这些虚拟机管理程序直接运行在主机的硬件来控制硬件和管理客体操作系统上。<br>特点<br>需要硬件支持<br>虚拟机监视器作为主操作系统<br>运行效率高<br>类型II：Hosted Hypervisor<br>这些虚拟机管理程序运行在传统的操作系统上，就像其他计算机程序那样运行。<br>特点<br>虚拟机监视器作为应用程序运行在主操作系统环境内<br>运行效率一般较类型I低</p>
+<h4 id="虚拟化技术的对比"><a href="#虚拟化技术的对比" class="headerlink" title="虚拟化技术的对比"></a>虚拟化技术的对比</h4><table>
+<thead>
+<tr>
+<th>类型</th>
+<th>代表产品 </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>硬件分区</td>
+<td>IBM/HP等大型机硬件分区技术 </td>
+</tr>
+<tr>
+<td>虚拟机 （Virtual Machine Monitor）</td>
+<td>EMC VMware Mircosoft Virtual PC/Server Parallels </td>
+</tr>
+<tr>
+<td>准虚拟机 （Para-Virtualization）</td>
+<td>Xen Project</td>
+</tr>
+<tr>
+<td>虚拟操作系统 （OS Virtualization）</td>
+<td>SWsoft Virtuozzo/OpenVZ Project Sun Solaris Container  HP vSE FreeBSD Jail Linux Vserver</td>
+</tr>
+</tbody>
+</table>
+<h4 id="QEMU和KVM"><a href="#QEMU和KVM" class="headerlink" title="QEMU和KVM"></a>QEMU和KVM</h4><p><strong> 基本概念 </strong><br>在 x86 平台上最热门运用最广泛的虚拟化方案莫过于KVM了。KVM 全称是 Kernel-Based Virtual Machine 。也就是说KVM是基于Linux内核实现的。 KVM有一个内核模 块叫kvm.ko，只用于管理虚拟CPU和内存。那 IO 的虚拟化，比如存储和网络设备由谁实现呢？这个就交给 Linux 内核和Qemu来实现。说白了，作为一个 Hypervisor，KVM 本身只关注虚拟机调度和内存管理这两个方面。IO 外设的任务交给 Linux 内核和 Qemu。<br><strong> Libvirt </strong><br>简单说就是 KVM 的管理工具。其实，Libvirt 除了能管理 KVM 这种 Hypervisor，还能管理 Xen，VirtualBox 等。<br>Libvirt 包含 3 个东西：后台 daemon 程序 libvirtd、API 库和命令行工具 virsh<br>libvirtd是服务程序，接收和处理 API 请求；<br>API 库使得其他人可以开发基于 Libvirt 的高级工具，比如 virt-manager，这是个图形化的 KVM 管理工具，后面我们也会介绍；<br>virsh 是我们经常要用的 KVM 命令行工具，后面会有使用的示例。<br><strong> KVM </strong><br>Kernel-Based Virtual Machine 基于内核的虚拟机，是Linux内核的一个可加载模块，通过调用Linux本身内核功能，实现对CPU的底层虚拟化和内存的虚拟化，使Linux内核成为虚拟化层，需要x86架构的，支持虚拟化功能的硬件支持（比如Intel-VT，AMD-V），是一种全虚拟化架构。KVM在2007年2月被导入Linux 2.6.20内核中。从存在形式来看，它包括两个内核模块：kvm.ko 和 kvm_intel.ko（或kvm_amd.ko），本质上，KVM是管理虚拟硬件设备的驱动，该驱动使用字符设备/dev/kvm（由KVM本身创建）作为管理接口，主要负责vCPU的创建，虚拟内存的分配，vCPU寄存器的读写以及vCPU的运行。<br><strong> QEMU </strong><br>QEMU：是一套由Fabrice Bellard编写的模拟处理器的自由软件，它是一个完整的可以单独运行的软件，可以独立模拟出整台计算机，包括CPU，内存，IO设备，通过一个特殊的“重编译器”对特定的处理器的二进制代码进行翻译，从而具有了跨平台的通用性。QEMU有两种工作模式：系统模式，可以模拟出整个电脑系统，另一种是用户模式，可以运行不同与当前硬件平台的其他平台上的程序（比如在x86平台上运行跑在ARM平台上的程序）；其代码地址 <a href="http://git.qemu.org/qemu.git" target="_blank" rel="noopener">http://git.qemu.org/qemu.git</a> ，有兴趣的同学可以自己去看看，目前最新的版本是2.7.0，在0.9.1及之前版本还可以使用kqemu加速器（可以理解为QEMU的一个插件，用来提高QEMU的翻译性能，支持Windows平台），但1.0以后版本就只能使用qemu-kvm（只支持Linux）进行加速了，1.3版本后QEMU和QEMU-KVM合二为一了。<br><strong> QEMU-KVM </strong><br>QEMU-KVM：从前面对KVM内核模块的介绍知道，它只负责CPU和内存的虚拟化，加载了它以后，用户就可以进一步通过工具创建虚拟机（KVM提供接口），但仅有KVM还是不够的，用户无法直接控制内核去做事情（KVM只提供接口，怎么创建虚拟机，分配vCPU等并不在它上面进行），还必须有个运行在用户空间的工具才行，KVM的开发者选择了比较成熟的开源虚拟化软件QEMU来作为这个工具，并对其进行了修改，最后形成了QEMU-KVM。</p>
+<p>在QEMU-KVM中，KVM运行在内核空间，QEMU运行在用户空间，实际模拟创建，管理各种虚拟硬件，QEMU将KVM整合了进来，通过/ioctl 调用 /dev/kvm，从而将CPU指令的部分交给内核模块来做，KVM实现了CPU和内存的虚拟化，但kvm不能虚拟其他硬件设备，因此qemu还有模拟IO设备（磁盘，网卡，显卡等）的作用，KVM加上QEMU后就是完整意义上的服务器虚拟化。当然，由于qemu模拟io设备效率不高的原因，现在常常采用半虚拟化的virtio方式来虚拟IO设备。</p>
+<h4 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h4><p><a href="https://blog.csdn.net/JackLiu16/article/details/79462698" target="_blank" rel="noopener">https://blog.csdn.net/JackLiu16/article/details/79462698</a><br><a href="https://blog.csdn.net/hdy007/article/details/1518425" target="_blank" rel="noopener">https://blog.csdn.net/hdy007/article/details/1518425</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/09/01/循环队列/" rel="next" title="循环队列">
+                <i class="fa fa-chevron-left"></i> 循环队列
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/09/12/分布式理论简介/" rel="prev" title="分布式理论简介">
+                分布式理论简介 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">刘凯</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">24</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">1</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">16</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#什么是hypervisor"><span class="nav-number">1.</span> <span class="nav-text">什么是hypervisor</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#hypervisor的优点"><span class="nav-number">2.</span> <span class="nav-text">hypervisor的优点</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#hypervisor的分类"><span class="nav-number">3.</span> <span class="nav-text">hypervisor的分类</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#虚拟化技术的对比"><span class="nav-number">4.</span> <span class="nav-text">虚拟化技术的对比</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#QEMU和KVM"><span class="nav-number">5.</span> <span class="nav-text">QEMU和KVM</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#参考文章"><span class="nav-number">6.</span> <span class="nav-text">参考文章</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">刘凯</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

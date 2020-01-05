@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh_CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="aws S3,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="AWS S3对象存储Amazon Simple Storage Service (Amazon S3) 是一种面向 Internet 的存储服务。您可以通过Amazon S3随时在Web上的任何位置存储和检索的任意大小的数 据。Amazon S3 特意内置了着重于简易性和稳健性的最小功能集。以下是 Amazon S3 服务的一些优势: 创建存储桶 – 创建和命名存储数据的存储桶。存储桶是 Amaz">
+<meta name="keywords" content="aws S3">
+<meta property="og:type" content="article">
+<meta property="og:title" content="S3总结">
+<meta property="og:url" content="https://alfredliukai.github.io/2019/09/14/S3总结/index.html">
+<meta property="og:site_name" content="昨非的个人网站">
+<meta property="og:description" content="AWS S3对象存储Amazon Simple Storage Service (Amazon S3) 是一种面向 Internet 的存储服务。您可以通过Amazon S3随时在Web上的任何位置存储和检索的任意大小的数 据。Amazon S3 特意内置了着重于简易性和稳健性的最小功能集。以下是 Amazon S3 服务的一些优势: 创建存储桶 – 创建和命名存储数据的存储桶。存储桶是 Amaz">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://alfredliukai.github.io/2019/09/14/S3总结/S3.png">
+<meta property="og:updated_time" content="2019-09-14T16:09:15.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="S3总结">
+<meta name="twitter:description" content="AWS S3对象存储Amazon Simple Storage Service (Amazon S3) 是一种面向 Internet 的存储服务。您可以通过Amazon S3随时在Web上的任何位置存储和检索的任意大小的数 据。Amazon S3 特意内置了着重于简易性和稳健性的最小功能集。以下是 Amazon S3 服务的一些优势: 创建存储桶 – 创建和命名存储数据的存储桶。存储桶是 Amaz">
+<meta name="twitter:image" content="https://alfredliukai.github.io/2019/09/14/S3总结/S3.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://alfredliukai.github.io/2019/09/14/S3总结/">
+
+
+
+
+
+  <title>S3总结 | 昨非的个人网站</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh_CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">昨非的个人网站</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-首页">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-标签">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-归档">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-关于">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://alfredliukai.github.io/2019/09/14/S3总结/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="刘凯">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="昨非的个人网站">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">S3总结</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-09-14T15:06:45+08:00">
+                2019-09-14
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h4 id="AWS-S3对象存储"><a href="#AWS-S3对象存储" class="headerlink" title="AWS S3对象存储"></a>AWS S3对象存储</h4><p>Amazon Simple Storage Service (Amazon S3) 是一种面向 Internet 的存储服务。您可以通过Amazon S3随时在Web上的任何位置存储和检索的任意大小的数 据。Amazon S3 特意内置了着重于简易性和稳健性的最小功能集。以下是 Amazon S3 服务的一些优势:</p>
+<p>创建存储桶 – 创建和命名存储数据的存储桶。存储桶是 Amazon S3 中用于数据存储的基础容器。<br>在存储桶中存储数据 – 在存储桶中存储无限量的数据。可将所需数量的对象上传到 Amazon S3 存储桶。每个对象可包含最多 5TB的数据。使用开发人员分配的唯一键值存储和检索每个对象。</p>
+<p>下载数据 – 下载您的数据或允许其他人下载。随时下载您的数据或允许其他人执行相同的操作。<br>权限 - 对于要在您的 Amazon S3 存储桶中上传或下载数据的其他人员，您可授予其访问权限或拒绝其访问。将上传和下载的许可授予3种类型的用户。身份验证机制可帮助确保数据安全，以防未授权访问<br>标准接口 – 使用标准的REST接口(SOAP接口已弃用)，它们可与任何 Internet 开发工具包搭配使用</p>
+<h5 id="1-1-1-存储桶-bucket"><a href="#1-1-1-存储桶-bucket" class="headerlink" title="1.1.1 存储桶(bucket)"></a>1.1.1 存储桶(bucket)</h5><p>我们的数据都是存储在AWS 的存储桶中，我们可以把桶理解为磁盘分区，不过它是由一个桶名（字符串）唯一标识，即你不能创建别人已经创建过的桶。以下是S3 存储桶命名规则:<br>在S3中的所有现有存储桶名称中必须唯一<br>必须符合DNS命名约定<br>名称长度必须为至少3个字符，且不能超过 63 个字符<br>名称不能包含大写字符或下划线<br>名称必须以小写字母或数字开头<br>名称必须是一系列的一个或多个标签。相邻标签通过单个句点 (.) 分隔。名称可以包含小写字母、数字和连字符。每个标签都必须以小写字母或数字开头和结尾<br>名称不得采用IP地址格式<br>当通过安全套接字 (SSL) 使用虚拟托管式存储桶时，SSL通配符证书仅匹配不包含句点的存储桶。要解决此问题，请使用 HTTP或编写自己的证书验证逻辑</p>
+<h5 id="1-1-2-对象"><a href="#1-1-2-对象" class="headerlink" title="1.1.2 对象"></a>1.1.2 对象</h5><p>对象是 Amazon S3 中存储的基本实体。对象由对象数据和元数据组成。数据部分对S3不透明。元数据是一组描述对象的名称-值对。其中包括一些默认元数据 (如上次修改日期) 和标准 HTTP 元数据 (如 Content-Type)。您还可在存储对象时指定自定义元数据。<br>在存储桶中，对象将由键 (名称) 和版本 ID 进行唯一标识<br>S3数据模型是一种扁平结构。不存在子存储桶或子文件夹层次结构；但可用键名称前缀和分隔符推断逻辑层次结构<br>键名称中的以下字符可能需要进行代码处理，且可能需要以16进制形式在URL中编码或引用。其中部分字符是不可打印的字符，浏览器可能无法处理，这也需特殊处理</p>
+<table>
+<thead>
+<tr>
+<th>选择</th>
+<th>说明</th>
+<th>其他</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>表示和的符号 (“&amp;”)</td>
+<td>美元 (“$”)</td>
+<td>ASCII 字符范围 00–1F 十六进制 (0–31 十进制) 和 7F (127 十进制)</td>
+</tr>
+<tr>
+<td>“At”符号 (“@”)</td>
+<td>等于 (“=”)</td>
+<td>分号 (“;”)</td>
+</tr>
+<tr>
+<td>冒号 (“:”)</td>
+<td>加号 (“+”)</td>
+<td>空格 – 大量连续空格可能会在某些使用情形中丢失 (特别是多个空格)</td>
+</tr>
+<tr>
+<td>逗号 (“,”)</td>
+<td>问号 (“?”)</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h5 id="1-1-3-对象标签-tag"><a href="#1-1-3-对象标签-tag" class="headerlink" title="1.1.3 对象标签(tag)"></a>1.1.3 对象标签(tag)</h5><p>使用存储对象打标签对存储进行分类。每个标签都是一个键-值对。<br>您可以将标签添加到新对象 (当您上传新对象时)，也可以将标签添加到现有对象。请注意以下几点：</p>
+<p>您最多可以将 10 个标签与对象关联。与对象关联的标签必须具有唯一的标签键。<br>标签键的长度最大可以为 128 个 Unicode 字符，标签值的长度最大可以为 256 个 Unicode 字符。<br>键和值区分大小写。<br>标签对于对象管理相当好用所以重点说明<br>利用标签，您现在获得了另一个维度。如果您希望 photo1 属于项目 x 类别，则可以相应地标记该对象。除了数据分类之外，标签还提供其他好处。例如:</p>
+<p>对象标签支持权限的精细访问控制。例如，您可以向一个 IAM 用户授予仅读取带有特定标签的对象的权限。<br>对象标签支持精细的对象生命周期管理，在其中，除了在生命周期规则中指定键名称前缀之外，还可以指定基于标签的筛选条件。<br>使用 Amazon S3 分析时，您可以配置筛选条件，以便按对象标签、键名称前缀或前缀和标签的组合对对象进行分组以进行分析。<br>您还可以自定义 Amazon CloudWatch 指标以按特定标签筛选条件显示信息。以下各节提供了详细信息。</p>
+<h4 id="S3存储类型"><a href="#S3存储类型" class="headerlink" title="S3存储类型"></a>S3存储类型</h4><p>Amazon S3 中的每个对象都有与之关联的存储类别</p>
+<p><img src="/2019/09/14/S3总结/S3.png" alt="avatar"></p>
+<p>对于经常访问的存储类均为STANDARD，我们默认也是该存储类<br>创建对象时，要指定键名称(Key)，它在存储桶中唯一地标识该对象。可以理解为存储文件相对于当前桶的路径。</p>
+<h4 id="S3数据一致性模型"><a href="#S3数据一致性模型" class="headerlink" title="S3数据一致性模型"></a>S3数据一致性模型</h4><p>S3在所有区域为S3存储桶中的新对象的PUTS提供写后读一致性，但要注意，如果在创建对象前对键名发出HEAD或GET请求 (查看该对象是否存在)S3提供写后读最终一致性。</p>
+<p>S3在所有区域提供最终一致性用于覆盖PUTS和DELETES。</p>
+<p>单个键的更新是原子更新。例如，如果您对一个现有键执行PUT操作，则后续读取可能会返回旧数据或已更新的数据，但它永远不会返回损坏的数据或部分数据。</p>
+<p>S3通过在卓越亚马逊数据中心内的多个服务器间复制数据，从而实现高可用。如果PUT请求成功，则数据已安全存储。但有关更改的信息必须在S3间进行复制，这可能需要一些时间，因此您可能会观察到以下行为：</p>
+<p>这是一个过程，会将一个新对象写入S3，并立即列出其存储桶内的键。在充分传播此更改前，此对象可能不会显示在列表<br>这是一个过程，会替换一个现有对象，并立即尝试读取此对象。在充分传播此更改前，S3可能会返回先前的数据<br>这是一个过程，会删除一个现有的对象，并立即尝试读取此对象。在充分传播此删除前，S3可能会返回删除的数据<br>这是一个过程，会删除一个现有的对象，并立即列出其存储桶内的键。在充分传播此删除前，S3可能会列出删除的对象<br>注意: S3目前不支持对象锁定。如果同时对同一键发出2个PUT请求，则以带有最新时间戳的请求为准。如果这会导致问题，您需在应用程序中创建对象锁定机制。</p>
+<p>更新基于键值; 无法跨键值实现原子更新。例如，无法根据一个键值的更新对另一键值进行更新，除非将此功能设计到应用程序</p>
+<h4 id="代码实例操作"><a href="#代码实例操作" class="headerlink" title="代码实例操作"></a>代码实例操作</h4><p>Java创建存储桶<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line">import java.io.IOException;</span><br><span class="line"> </span><br><span class="line">import com.amazonaws.AmazonServiceException;</span><br><span class="line">import com.amazonaws.SdkClientException;</span><br><span class="line">import com.amazonaws.auth.profile.ProfileCredentialsProvider;</span><br><span class="line">import com.amazonaws.services.s3.AmazonS3;</span><br><span class="line">import com.amazonaws.services.s3.AmazonS3ClientBuilder;</span><br><span class="line">import com.amazonaws.services.s3.model.CreateBucketRequest;</span><br><span class="line">import com.amazonaws.services.s3.model.GetBucketLocationRequest;</span><br><span class="line"> </span><br><span class="line">public class CreateBucket &#123;</span><br><span class="line"> </span><br><span class="line">    public static void main(String[] args) throws IOException &#123;</span><br><span class="line">        String clientRegion = &quot;*** Client region ***&quot;;</span><br><span class="line">        String bucketName = &quot;*** Bucket name ***&quot;;</span><br><span class="line"> </span><br><span class="line">        try &#123;</span><br><span class="line">            AmazonS3 s3Client = AmazonS3ClientBuilder.standard()</span><br><span class="line">                    .withCredentials(new ProfileCredentialsProvider())</span><br><span class="line">                    .withRegion(clientRegion)</span><br><span class="line">                    .build();</span><br><span class="line"> </span><br><span class="line">            if (!s3Client.doesBucketExistV2(bucketName)) &#123;</span><br><span class="line">                // Because the CreateBucketRequest object doesn&apos;t specify a region, the</span><br><span class="line">                // bucket is created in the region specified in the client.</span><br><span class="line">                s3Client.createBucket(new CreateBucketRequest(bucketName));</span><br><span class="line">                </span><br><span class="line">                // Verify that the bucket was created by retrieving it and checking its location.</span><br><span class="line">                String bucketLocation = s3Client.getBucketLocation(new GetBucketLocationRequest(bucketName));</span><br><span class="line">                System.out.println(&quot;Bucket location: &quot; + bucketLocation);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        catch(AmazonServiceException e) &#123;</span><br><span class="line">            // The call was transmitted successfully, but Amazon S3 couldn&apos;t process </span><br><span class="line">            // it and returned an error response.</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">        catch(SdkClientException e) &#123;</span><br><span class="line">            // Amazon S3 couldn&apos;t be contacted for a response, or the client</span><br><span class="line">            // couldn&apos;t parse the response from Amazon S3.</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>Java删除存储桶<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br></pre></td><td class="code"><pre><span class="line">import java.util.Iterator;</span><br><span class="line"> </span><br><span class="line">import com.amazonaws.AmazonServiceException;</span><br><span class="line">import com.amazonaws.SdkClientException;</span><br><span class="line">import com.amazonaws.auth.profile.ProfileCredentialsProvider;</span><br><span class="line">import com.amazonaws.services.s3.AmazonS3;</span><br><span class="line">import com.amazonaws.services.s3.AmazonS3ClientBuilder;</span><br><span class="line">import com.amazonaws.services.s3.model.ListVersionsRequest;</span><br><span class="line">import com.amazonaws.services.s3.model.ObjectListing;</span><br><span class="line">import com.amazonaws.services.s3.model.S3ObjectSummary;</span><br><span class="line">import com.amazonaws.services.s3.model.S3VersionSummary;</span><br><span class="line">import com.amazonaws.services.s3.model.VersionListing;</span><br><span class="line"> </span><br><span class="line">public class DeleteBucket &#123;</span><br><span class="line"> </span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        String clientRegion = &quot;*** Client region ***&quot;;</span><br><span class="line">        String bucketName = &quot;*** Bucket name ***&quot;;</span><br><span class="line"> </span><br><span class="line">        try &#123;</span><br><span class="line">            AmazonS3 s3Client = AmazonS3ClientBuilder.standard()</span><br><span class="line">                    .withCredentials(new ProfileCredentialsProvider())</span><br><span class="line">                    .withRegion(clientRegion)</span><br><span class="line">                    .build();</span><br><span class="line">    </span><br><span class="line">            // Delete all objects from the bucket. This is sufficient</span><br><span class="line">            // for unversioned buckets. For versioned buckets, when you attempt to delete objects, Amazon S3 inserts</span><br><span class="line">            // delete markers for all objects, but doesn&apos;t delete the object versions.</span><br><span class="line">            // To delete objects from versioned buckets, delete all of the object versions before deleting</span><br><span class="line">            // the bucket (see below for an example).</span><br><span class="line">            ObjectListing objectListing = s3Client.listObjects(bucketName);</span><br><span class="line">            while (true) &#123;</span><br><span class="line">                Iterator&lt;S3ObjectSummary&gt; objIter = objectListing.getObjectSummaries().iterator();</span><br><span class="line">                while (objIter.hasNext()) &#123;</span><br><span class="line">                    s3Client.deleteObject(bucketName, objIter.next().getKey());</span><br><span class="line">                &#125;</span><br><span class="line">    </span><br><span class="line">                // If the bucket contains many objects, the listObjects() call</span><br><span class="line">                // might not return all of the objects in the first listing. Check to</span><br><span class="line">                // see whether the listing was truncated. If so, retrieve the next page of objects </span><br><span class="line">                // and delete them.</span><br><span class="line">                if (objectListing.isTruncated()) &#123;</span><br><span class="line">                    objectListing = s3Client.listNextBatchOfObjects(objectListing);</span><br><span class="line">                &#125; else &#123;</span><br><span class="line">                    break;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">    </span><br><span class="line">            // Delete all object versions (required for versioned buckets).</span><br><span class="line">            VersionListing versionList = s3Client.listVersions(new ListVersionsRequest().withBucketName(bucketName));</span><br><span class="line">            while (true) &#123;</span><br><span class="line">                Iterator&lt;S3VersionSummary&gt; versionIter = versionList.getVersionSummaries().iterator();</span><br><span class="line">                while (versionIter.hasNext()) &#123;</span><br><span class="line">                    S3VersionSummary vs = versionIter.next();</span><br><span class="line">                    s3Client.deleteVersion(bucketName, vs.getKey(), vs.getVersionId());</span><br><span class="line">                &#125;</span><br><span class="line">    </span><br><span class="line">                if (versionList.isTruncated()) &#123;</span><br><span class="line">                    versionList = s3Client.listNextBatchOfVersions(versionList);</span><br><span class="line">                &#125; else &#123;</span><br><span class="line">                    break;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">    </span><br><span class="line">            // After all objects and object versions are deleted, delete the bucket.</span><br><span class="line">            s3Client.deleteBucket(bucketName);</span><br><span class="line">        &#125;</span><br><span class="line">        catch(AmazonServiceException e) &#123;</span><br><span class="line">            // The call was transmitted successfully, but Amazon S3 couldn&apos;t process </span><br><span class="line">            // it, so it returned an error response.</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">        catch(SdkClientException e) &#123;</span><br><span class="line">            // Amazon S3 couldn&apos;t be contacted for a response, or the client couldn&apos;t</span><br><span class="line">            // parse the response from Amazon S3.</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>可配置存储桶的生命周期以使对象过期，S3随后将删除过期对象。可添加生命周期配置规则，以使所有或部分带特定键名称前缀的对象过期。e.g.,要删除存储桶中所有对象，可将生命周期规则设置为使对象在创建一天后过期。在S3删除所有对象后，可删除或保留存储桶.(未启用版本控制的存储桶，可直接删除所有对象，然后删除存储桶。启用了版本控制的存储桶，必须先删除所有对象版本，然后再删除存储桶)<br>Java管理存储桶的网站配置(要将网站配置添加到存储桶，请提供存储桶名称和网站配置。网站配置必须包含索引文档，且可包含可选的错误文档。这些文档必须已存在于存储桶)<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><span class="line">import java.io.IOException;</span><br><span class="line"> </span><br><span class="line">import com.amazonaws.AmazonServiceException;</span><br><span class="line">import com.amazonaws.SdkClientException;</span><br><span class="line">import com.amazonaws.auth.profile.ProfileCredentialsProvider;</span><br><span class="line">import com.amazonaws.services.s3.AmazonS3;</span><br><span class="line">import com.amazonaws.services.s3.AmazonS3ClientBuilder;</span><br><span class="line">import com.amazonaws.services.s3.model.BucketWebsiteConfiguration;</span><br><span class="line"> </span><br><span class="line">public class WebsiteConfiguration &#123;</span><br><span class="line"> </span><br><span class="line">    public static void main(String[] args) throws IOException &#123;</span><br><span class="line">        String clientRegion = &quot;*** Client region ***&quot;;</span><br><span class="line">        String bucketName = &quot;*** Bucket name ***&quot;;</span><br><span class="line">        String indexDocName = &quot;*** Index document name ***&quot;;</span><br><span class="line">        String errorDocName = &quot;*** Error document name ***&quot;;</span><br><span class="line"> </span><br><span class="line">        try &#123;</span><br><span class="line">            AmazonS3 s3Client = AmazonS3ClientBuilder.standard()</span><br><span class="line">                    .withRegion(clientRegion)</span><br><span class="line">                    .withCredentials(new ProfileCredentialsProvider())</span><br><span class="line">                    .build();</span><br><span class="line"> </span><br><span class="line">            // Print the existing website configuration, if it exists.</span><br><span class="line">            printWebsiteConfig(s3Client, bucketName);</span><br><span class="line">    </span><br><span class="line">            // Set the new website configuration.</span><br><span class="line">            s3Client.setBucketWebsiteConfiguration(bucketName, new BucketWebsiteConfiguration(indexDocName, errorDocName));</span><br><span class="line">    </span><br><span class="line">            // Verify that the configuration was set properly by printing it.</span><br><span class="line">            printWebsiteConfig(s3Client, bucketName);</span><br><span class="line">    </span><br><span class="line">            // Delete the website configuration.</span><br><span class="line">            s3Client.deleteBucketWebsiteConfiguration(bucketName);</span><br><span class="line">    </span><br><span class="line">            // Verify that the website configuration was deleted by printing it.</span><br><span class="line">            printWebsiteConfig(s3Client, bucketName);</span><br><span class="line">        &#125;</span><br><span class="line">        catch(AmazonServiceException e) &#123;</span><br><span class="line">            // The call was transmitted successfully, but Amazon S3 couldn&apos;t process </span><br><span class="line">            // it, so it returned an error response.</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">        catch(SdkClientException e) &#123;</span><br><span class="line">            // Amazon S3 couldn&apos;t be contacted for a response, or the client</span><br><span class="line">            // couldn&apos;t parse the response from Amazon S3.</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    private static void printWebsiteConfig(AmazonS3 s3Client, String bucketName) &#123;</span><br><span class="line">        System.out.println(&quot;Website configuration: &quot;);</span><br><span class="line">        BucketWebsiteConfiguration bucketWebsiteConfig = s3Client.getBucketWebsiteConfiguration(bucketName);</span><br><span class="line">        if (bucketWebsiteConfig == null) &#123;</span><br><span class="line">            System.out.println(&quot;No website config.&quot;);</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            System.out.println(&quot;Index doc: &quot; + bucketWebsiteConfig.getIndexDocumentSuffix());</span><br><span class="line">            System.out.println(&quot;Error doc: &quot; + bucketWebsiteConfig.getErrorDocument());</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>上传对象<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">//存储桶的名字</span><br><span class="line">    private String bucket_name=&quot;beijing&quot;;</span><br><span class="line">    //自定义上传到bucket后的目录结构</span><br><span class="line">    private String key_name=&quot;beijing/haidingqu/xierqi/yuanzougaofei.mp3&quot;;</span><br><span class="line">    //本地文件路径</span><br><span class="line">    private String file_path=&quot;E:/music/china/yuanzougaofei.mp3&quot;;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 上传文件到指定的bucket中。</span><br><span class="line">     * 注意点：这里的本地路径的文件必须存在才行，不然文件不存在回异常。</span><br><span class="line">     */</span><br><span class="line">    public void uploadObj()&#123;</span><br><span class="line">        final AmazonS3 s3 = new AmazonS3Client();</span><br><span class="line">        try &#123;</span><br><span class="line">            s3.putObject(bucket_name, key_name, file_path);</span><br><span class="line">        &#125; catch (AmazonServiceException e) &#123;</span><br><span class="line">            System.err.println(e.getErrorMessage());</span><br><span class="line">            System.exit(1);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></p>
+<p>列出所有bucket中的对象<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">public void showListObjFromBucket(String bucketName)&#123;</span><br><span class="line">        final AmazonS3 s3 = new AmazonS3Client();</span><br><span class="line">        ObjectListing ol = s3.listObjects(bucketName);</span><br><span class="line"></span><br><span class="line">        List&lt;S3ObjectSummary&gt; objects = ol.getObjectSummaries();</span><br><span class="line"></span><br><span class="line">        for (S3ObjectSummary os: objects) &#123;</span><br><span class="line">            System.out.println(&quot;* &quot; + os.getKey());</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></p>
+<p>下载对象<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">public void downloadObjByKey(String buketName,String key)&#123;</span><br><span class="line">        final AmazonS3 s3 = new AmazonS3Client();</span><br><span class="line">        try &#123;</span><br><span class="line">            S3Object o = s3.getObject(buketName, key);</span><br><span class="line">            S3ObjectInputStream s3is = o.getObjectContent();</span><br><span class="line">            //下载到指定路径file_path下</span><br><span class="line">            FileOutputStream fos = new FileOutputStream(new File(file_path));</span><br><span class="line">            byte[] read_buf = new byte[1024];</span><br><span class="line">            int read_len = 0;</span><br><span class="line">            while ((read_len = s3is.read(read_buf)) &gt; 0) &#123;</span><br><span class="line">                fos.write(read_buf, 0, read_len);</span><br><span class="line">            &#125;</span><br><span class="line">            s3is.close();</span><br><span class="line">            fos.close();</span><br><span class="line">        &#125; catch (AmazonServiceException e) &#123;</span><br><span class="line">            System.err.println(e.getErrorMessage());</span><br><span class="line">            System.exit(1);</span><br><span class="line">        &#125; catch (FileNotFoundException e) &#123;</span><br><span class="line">            System.err.println(e.getMessage());</span><br><span class="line">            System.exit(1);</span><br><span class="line">        &#125; catch (IOException e) &#123;</span><br><span class="line">            System.err.println(e.getMessage());</span><br><span class="line">            System.exit(1);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></p>
+<p>删除对象<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">public void deleteObject(String bucket_name, String object_key) &#123;</span><br><span class="line">        final AmazonS3 s3 = new AmazonS3Client();</span><br><span class="line">        try &#123;</span><br><span class="line">            s3.deleteObject(bucket_name, object_key);</span><br><span class="line">        &#125; catch (AmazonServiceException e) &#123;</span><br><span class="line">            System.err.println(e.getErrorMessage());</span><br><span class="line">            System.exit(1);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></p>
+<h4 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h4><p><a href="https://blog.csdn.net/m0_37263637/article/details/80697920" target="_blank" rel="noopener">https://blog.csdn.net/m0_37263637/article/details/80697920</a><br><a href="https://blog.csdn.net/u013747798/article/details/85261830" target="_blank" rel="noopener">https://blog.csdn.net/u013747798/article/details/85261830</a><br><a href="https://blog.csdn.net/zhanglf02/article/details/78500015" target="_blank" rel="noopener">https://blog.csdn.net/zhanglf02/article/details/78500015</a><br><a href="https://blog.csdn.net/weixin_33851429/article/details/91907444" target="_blank" rel="noopener">https://blog.csdn.net/weixin_33851429/article/details/91907444</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/aws-S3/" rel="tag"># aws S3</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/09/13/架构与开源学习总结/" rel="next" title="架构与开源学习总结">
+                <i class="fa fa-chevron-left"></i> 架构与开源学习总结
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/09/17/网络模型总结/" rel="prev" title="网络模型总结">
+                网络模型总结 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">刘凯</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">24</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">1</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">16</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#AWS-S3对象存储"><span class="nav-number">1.</span> <span class="nav-text">AWS S3对象存储</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#1-1-1-存储桶-bucket"><span class="nav-number">1.1.</span> <span class="nav-text">1.1.1 存储桶(bucket)</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#1-1-2-对象"><span class="nav-number">1.2.</span> <span class="nav-text">1.1.2 对象</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#1-1-3-对象标签-tag"><span class="nav-number">1.3.</span> <span class="nav-text">1.1.3 对象标签(tag)</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#S3存储类型"><span class="nav-number">2.</span> <span class="nav-text">S3存储类型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#S3数据一致性模型"><span class="nav-number">3.</span> <span class="nav-text">S3数据一致性模型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#代码实例操作"><span class="nav-number">4.</span> <span class="nav-text">代码实例操作</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#参考文章"><span class="nav-number">5.</span> <span class="nav-text">参考文章</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">刘凯</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
