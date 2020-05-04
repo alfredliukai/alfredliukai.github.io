@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh_CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="java,jackson,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="JSON（JavaScript Object Notation），是一种简单易读的数据交换格式。 它在全球无数项目中很受欢迎并且实现，对于那些不喜欢XML的人来说，JSON是一个非常好的替代解决方案。 处理JSON的java工具很多，我们关注比较流行的Jackson、Google Gson和fastjson。 JacksonJackson是一个简单基于Java应用库，Jackson可以轻松的将Ja">
+<meta name="keywords" content="java,jackson">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Jackson使用总结">
+<meta property="og:url" content="https://alfredliukai.github.io/2020/05/04/Jackson使用总结/index.html">
+<meta property="og:site_name" content="昨非的个人网站">
+<meta property="og:description" content="JSON（JavaScript Object Notation），是一种简单易读的数据交换格式。 它在全球无数项目中很受欢迎并且实现，对于那些不喜欢XML的人来说，JSON是一个非常好的替代解决方案。 处理JSON的java工具很多，我们关注比较流行的Jackson、Google Gson和fastjson。 JacksonJackson是一个简单基于Java应用库，Jackson可以轻松的将Ja">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:updated_time" content="2020-05-04T14:42:55.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Jackson使用总结">
+<meta name="twitter:description" content="JSON（JavaScript Object Notation），是一种简单易读的数据交换格式。 它在全球无数项目中很受欢迎并且实现，对于那些不喜欢XML的人来说，JSON是一个非常好的替代解决方案。 处理JSON的java工具很多，我们关注比较流行的Jackson、Google Gson和fastjson。 JacksonJackson是一个简单基于Java应用库，Jackson可以轻松的将Ja">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://alfredliukai.github.io/2020/05/04/Jackson使用总结/">
+
+
+
+
+
+  <title>Jackson使用总结 | 昨非的个人网站</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh_CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">昨非的个人网站</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-首页">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-标签">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-归档">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-关于">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://alfredliukai.github.io/2020/05/04/Jackson使用总结/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="昨非">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="昨非的个人网站">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Jackson使用总结</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-05-04T08:23:51+08:00">
+                2020-05-04
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>JSON（JavaScript Object Notation），是一种简单易读的数据交换格式。 它在全球无数项目中很受欢迎并且实现，对于那些不喜欢XML的人来说，JSON是一个非常好的替代解决方案。</p>
+<p>处理JSON的java工具很多，我们关注比较流行的Jackson、Google Gson和fastjson。</p>
+<h3 id="Jackson"><a href="#Jackson" class="headerlink" title="Jackson"></a>Jackson</h3><p>Jackson是一个简单基于Java应用库，Jackson可以轻松的将Java对象转换成json对象和xml文档，同样也可以将json、xml转换成Java对象。Jackson所依赖的jar包较少，简单易用并且性能也要相对高些，并且Jackson社区相对比较活跃，更新速度也比较快。</p>
+<p>Jackson有以下特点：</p>
+<ul>
+<li>容易使用， jackson API提供了一个高层次外观，以简化常用的用例。</li>
+<li>无需创建映射， API提供了默认的映射大部分对象序列化。</li>
+<li>性能高 ，快速，低内存占用，适合大型对象图表或系统。</li>
+<li>干净的JSON ， jackson创建一个干净和紧凑的JSON结果，这是让人很容易阅读。</li>
+<li>不依赖 ， 库不需要任何其他的库，除了JDK。</li>
+<li>开源代码， jackson是开源的，可以免费使用。</li>
+</ul>
+<p>JSON 提供了三种不同的方法来处理</p>
+<ol>
+<li>JSON 流式API ， 读取并将JSON内容写入作为离散事件。 JsonParser读取数据，而JsonGenerator写入数据。它是三者中最有效的方法，是最低的开销和最快的读/写操作。它类似于Stax解析器XML。</li>
+<li>树模型 ，准备JSON文件在内存里以树形式表示。 ObjectMapper构建JsonNode节点树。这是最灵活的方法。它类似于XML的DOM解析器。</li>
+<li>数据绑定， 转换JSON并从POJO（普通Java对象）使用属性访问或使用注释。它有两个类型。</li>
+</ol>
+<ul>
+<li>简单的数据绑定 ，转换JSON和Java Maps, Lists, Strings, Numbers, Booleans 和null 对象。</li>
+<li>全部数据绑定 ， 转换为JSON从任何JAVA类型。</li>
+</ul>
+<ol start="4">
+<li>ObjectMapper读/写JSON两种类型的数据绑定。数据绑定是最方便的方式是类似XML的JAXB解析器。</li>
+</ol>
+<p><strong>jackson包介绍</strong></p>
+<ul>
+<li><p>jackson-core，核心包，提供基于”流模式”解析的相关 API，它包括 JsonPaser 和 JsonGenerator。 Jackson 内部实现正是通过高性能的流模式 API 的 JsonGenerator 和 JsonParser 来生成和解析 json。</p>
+</li>
+<li><p>jackson-annotations，注解包，提供标准注解功能；</p>
+</li>
+<li><p>jackson-databind ，数据绑定包， 提供基于”对象绑定” 解析的相关 API （ ObjectMapper ） 和”树模型” 解析的相关 API （JsonNode）；基于”对象绑定” 解析的 API 和”树模型”解析的 API 依赖基于”流模式”解析的 API。</p>
+</li>
+</ul>
+<h3 id="Gson"><a href="#Gson" class="headerlink" title="Gson"></a>Gson</h3><p>Gson（又称Google Gson）是Google公司发布的一个开放源代码的Java库，主要用途为序列化Java对象为JSON字符串，或反序列化JSON字符串成Java对象。</p>
+<p>Gson的应用主要为toJson与fromJson两个转换函数，而在使用这种对象转换之前需先创建好对象的类别以及其成员才能成功的将JSON字符串成功转换成相对应的对象。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">class User &#123;</span><br><span class="line">  private age = 5;</span><br><span class="line">  private String username = &quot;paopaozhu&quot;;</span><br><span class="line">  User()&#123;</span><br><span class="line">  &#125;     // default constructor</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>序列化JAVA对象成JSON字符串<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">User user = new User();</span><br><span class="line">Gson gson = new Gson();</span><br><span class="line">String json = gson.toJson(user);</span><br></pre></td></tr></table></figure></p>
+<p>反序列化JSON字符串成对应的JAVA对象<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">User user= gson.fromJson(json,User.class);</span><br></pre></td></tr></table></figure></p>
+<h3 id="使用方式"><a href="#使用方式" class="headerlink" title="使用方式"></a>使用方式</h3><p>使用Jackson将java对象和json对象相互转换非常简单。</p>
+<p><strong>关键技术 1 引用依赖</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;com.fasterxml.jackson.core&lt;/groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;jackson-databind&lt;/artifactId&gt;</span><br><span class="line">    &lt;version&gt;2.5.3&lt;/version&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br></pre></td></tr></table></figure>
+<p>jackson-databind 依赖 jackson-core 和 jackson-annotations，当添加 jackson-databind 之后， jackson-core 和 jackson-annotations 也随之添加到 Java 项目工程中。在添加相关依赖包之后，就可以使用 Jackson。</p>
+<p><strong>关键技术 2 使用 ObjectMapper 对象的方法写成String、写成文件</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">String writeValueAsString(Object value) 写String</span><br><span class="line"></span><br><span class="line">void writeValue(File resultFile, Object value) 写文件</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br></pre></td><td class="code"><pre><span class="line">package com.wukong.learn.jackson;</span><br><span class="line"></span><br><span class="line">import java.util.Date;</span><br><span class="line"></span><br><span class="line">import com.fasterxml.jackson.annotation.JsonFormat;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> * POJO类，用于序列化和反序列化</span><br><span class="line"> *</span><br><span class="line"> * @author paopaozhu</span><br><span class="line"> *</span><br><span class="line"> */</span><br><span class="line">public class User &#123;</span><br><span class="line"></span><br><span class="line">    private String name;</span><br><span class="line"></span><br><span class="line">    private Integer age;</span><br><span class="line"></span><br><span class="line">    @JsonFormat(pattern=&quot;yyyy-MM-dd HH:mm:ss&quot;,timezone = &quot;GMT+8&quot;)</span><br><span class="line">    private Date birthday;</span><br><span class="line"></span><br><span class="line">    private String email;</span><br><span class="line"></span><br><span class="line">    public User() &#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public String getName() &#123;</span><br><span class="line">        return name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void setName(String name) &#123;</span><br><span class="line">        this.name = name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public Integer getAge() &#123;</span><br><span class="line">        return age;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void setAge(Integer age) &#123;</span><br><span class="line">        this.age = age;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public Date getBirthday() &#123;</span><br><span class="line">        return birthday;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void setBirthday(Date birthday) &#123;</span><br><span class="line">        this.birthday = birthday;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public String getEmail() &#123;</span><br><span class="line">        return email;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void setEmail(String email) &#123;</span><br><span class="line">        this.email = email;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public String toString() &#123;</span><br><span class="line">        return &quot;User [name=&quot; + name + &quot;, age=&quot; + age + &quot;, birthday=&quot; + birthday + &quot;, email=&quot; + email + &quot;]&quot;;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>@JsonFormat 此注解用于属性上，作用是把Date类型直接转化为想要的格式，如@JsonFormat(pattern = “yyyy-MM-dd HH-mm-ss”)。</p>
+<p>@JsonIgnore 此注解用于属性上，作用是进行JSON操作时忽略该属性。不会输出被注释的字段和值。</p>
+<p>@JsonProperty 此注解用于属性上，作用是把该属性的名称序列化为另外一个名称，如把Nickname属性序列化为name，@JsonProperty(“name”)。</p>
+<p><strong>Java对象转换成json对象</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">package com.wukong.learn.jackson;</span><br><span class="line"></span><br><span class="line">import com.fasterxml.jackson.databind.ObjectMapper;</span><br><span class="line"></span><br><span class="line">import java.text.SimpleDateFormat;</span><br><span class="line">import java.io.IOException;</span><br><span class="line">import java.text.ParseException;</span><br><span class="line"></span><br><span class="line">public class ToJson &#123;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        User user = new User();</span><br><span class="line">        user.setName(&quot;paopaozhu&quot;);</span><br><span class="line">        user.setEmail(&quot;admin@lpaopaozhu.com&quot;);</span><br><span class="line">        user.setAge(4);</span><br><span class="line">        SimpleDateFormat dateformat = new SimpleDateFormat(&quot;yyyy-MM-dd&quot;);</span><br><span class="line"></span><br><span class="line">        try &#123;</span><br><span class="line">            user.setBirthday(dateformat.parse(&quot;2020-05-02&quot;));</span><br><span class="line">        &#125; catch (ParseException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        ObjectMapper mapper = new ObjectMapper();</span><br><span class="line"></span><br><span class="line">        try &#123;</span><br><span class="line">            String json = mapper.writeValueAsString(user);</span><br><span class="line">            System.out.printf(&quot;json=&quot;+json);</span><br><span class="line">            //mapper.writeValue(new File(&quot;/Users/zyy/Downloads/user.json&quot;),user);</span><br><span class="line">        &#125;catch (IOException e)&#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>输出结果<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">json=&#123;&quot;name&quot;:&quot;paopaozhu&quot;,&quot;age&quot;:4,&quot;birthday&quot;:&quot;2020年05月01日&quot;,&quot;email&quot;:&quot;admin@lpaopaozhu.com&quot;&#125;</span><br></pre></td></tr></table></figure></p>
+<p><strong>将json对象转换成java对象</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">package com.wukong.learn.jackson;</span><br><span class="line"></span><br><span class="line">import com.fasterxml.jackson.core.JsonParseException;</span><br><span class="line">import com.fasterxml.jackson.databind.JsonMappingException;</span><br><span class="line">import com.fasterxml.jackson.databind.ObjectMapper;</span><br><span class="line"></span><br><span class="line">import java.io.IOException;</span><br><span class="line"></span><br><span class="line">public class FromJson &#123;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        String json = &quot;&#123;\&quot;name\&quot;:\&quot;paopaozhu\&quot;,\&quot;age\&quot;:4,\&quot;birthday\&quot;:\&quot;2020-05-02 00:00:00\&quot;,&quot; +</span><br><span class="line">                &quot;\&quot;email\&quot;:\&quot;admin@lpaopaozhu.com\&quot;&#125;&quot;;</span><br><span class="line"></span><br><span class="line">        ObjectMapper mapper = new ObjectMapper();</span><br><span class="line">        User user = null;</span><br><span class="line">        try &#123;</span><br><span class="line">            user = mapper.readValue(json, User.class);</span><br><span class="line">        &#125; catch (JsonParseException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125; catch (JsonMappingException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125; catch (IOException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println(user);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="List-Java对象互转"><a href="#List-Java对象互转" class="headerlink" title="List/Java对象互转"></a>List/Java对象互转</h3><p>前端发给后台的数据是一个数组对象，数组里的元素也是对象。</p>
+<p>它是下面格式的数据：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[&#123;&quot;id&quot;:1,&quot;checked&quot;:true&#125;,&#123;&quot;id&quot;:3,&quot;checked&quot;:true&#125;,&#123;&quot;id&quot;:4,&quot;checked&quot;:true&#125;,&#123;&quot;id&quot;:2,&quot;checked&quot;:false&#125;]</span><br></pre></td></tr></table></figure></p>
+<p>在Jackson的基础上， 我们需要一个DTO对象。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">package com.wukong.learn.jackson;</span><br><span class="line"></span><br><span class="line">import lombok.AllArgsConstructor;</span><br><span class="line">import lombok.Data;</span><br><span class="line">import lombok.NoArgsConstructor;</span><br><span class="line"></span><br><span class="line">@Data</span><br><span class="line">@NoArgsConstructor</span><br><span class="line">@AllArgsConstructor</span><br><span class="line">public class PermissionChecker &#123;</span><br><span class="line">    private int id;</span><br><span class="line">    private boolean checked;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这个DTO对象有id和checked两个属性，用于对应json中的id和checked。</p>
+<p>接下来就使用Jackson 工具将接收到的json转换成<code>List&lt;PermissionChecker &gt;</code><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">package com.wukong.learn.jackson;</span><br><span class="line"></span><br><span class="line">import com.fasterxml.jackson.databind.JavaType;</span><br><span class="line">import com.fasterxml.jackson.databind.ObjectMapper;</span><br><span class="line"></span><br><span class="line">import java.util.ArrayList;</span><br><span class="line">import java.util.List;</span><br><span class="line"></span><br><span class="line">public class ListToJson &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        String jsonstr=&quot;[&#123;\&quot;id\&quot;:1,\&quot;checked\&quot;:true&#125;,&#123;\&quot;id\&quot;:3,\&quot;checked\&quot;:true&#125;,&quot; +</span><br><span class="line">                &quot;&#123;\&quot;id\&quot;:4,\&quot;checked\&quot;:true&#125;,&#123;\&quot;id\&quot;:2,\&quot;checked\&quot;:false&#125;]&quot;;</span><br><span class="line">        ObjectMapper mapper = new ObjectMapper();</span><br><span class="line">        JavaType jt = mapper.getTypeFactory().constructParametricType(ArrayList.class, PermissionChecker.class);</span><br><span class="line">        List&lt;PermissionChecker&gt; list= new ArrayList&lt;PermissionChecker&gt;();</span><br><span class="line">        try &#123;</span><br><span class="line">            list = mapper.readValue(jsonstr, jt);</span><br><span class="line">        &#125;catch(Exception e)&#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">        for(PermissionChecker pc:list) &#123;</span><br><span class="line">            System.out.println(pc.getId()+&quot; is &quot;+pc.isChecked());</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="Map-Json对象互转"><a href="#Map-Json对象互转" class="headerlink" title="Map/Json对象互转"></a>Map/Json对象互转</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line">package com.wukong.learn.jackson;</span><br><span class="line"></span><br><span class="line">import com.fasterxml.jackson.core.JsonParseException;</span><br><span class="line">import com.fasterxml.jackson.core.JsonProcessingException;</span><br><span class="line">import com.fasterxml.jackson.core.type.TypeReference;</span><br><span class="line">import com.fasterxml.jackson.databind.JsonMappingException;</span><br><span class="line">import com.fasterxml.jackson.databind.ObjectMapper;</span><br><span class="line"></span><br><span class="line">import java.io.IOException;</span><br><span class="line">import java.util.HashMap;</span><br><span class="line">import java.util.Map;</span><br><span class="line"></span><br><span class="line">public class MapToJson &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        //toJson();</span><br><span class="line">        toMap();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private static void toJson() &#123;</span><br><span class="line">        Map&lt;String,Object&gt; map = new HashMap&lt;String,Object&gt;();</span><br><span class="line">        map.put(&quot;site&quot;, &quot;昨非&quot;);</span><br><span class="line">        map.put(&quot;URL&quot;, &quot;https://alfredliukai.github.io&quot;);</span><br><span class="line"></span><br><span class="line">        ObjectMapper mapper = new ObjectMapper();</span><br><span class="line">        String json;</span><br><span class="line">        try&#123;</span><br><span class="line">            json = mapper.writeValueAsString(map);</span><br><span class="line">            System.out.println(json);</span><br><span class="line">        &#125;catch (JsonProcessingException e)&#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private static void toMap()&#123;</span><br><span class="line">        ObjectMapper mapper = new ObjectMapper();</span><br><span class="line"></span><br><span class="line">        String json = &quot;&#123;\&quot;site\&quot;:\&quot;昨非\&quot;,\&quot;URL\&quot;:\&quot;https://alfredliukai.github.io\&quot;&#125;&quot;;</span><br><span class="line"></span><br><span class="line">        Map&lt;String, Object&gt; map = new HashMap&lt;String, Object&gt;();</span><br><span class="line"></span><br><span class="line">        try&#123;</span><br><span class="line">           map= mapper.readValue(json, new TypeReference&lt;Map&lt;String,Object&gt;&gt;() &#123;&#125;);</span><br><span class="line">        &#125;catch (JsonParseException e)&#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;catch (JsonMappingException e)&#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;catch (IOException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">        for (Map.Entry&lt;String,Object&gt; entry : map.entrySet())&#123;</span><br><span class="line">            System.out.println(entry.getKey() + &quot; : &quot; + entry.getValue());</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="Tree-Model"><a href="#Tree-Model" class="headerlink" title="Tree Model"></a>Tree Model</h3><p>树形结构的数据在工作中出现的频率非常高。</p>
+<p>如一个叫张大大的同学，他的信息用json表示如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;id&quot;   : 1,</span><br><span class="line">  &quot;name&quot; : &#123;</span><br><span class="line">    &quot;first&quot; : &quot;zhang&quot;,</span><br><span class="line">    &quot;last&quot; : &quot;dada&quot;</span><br><span class="line">  &#125;,</span><br><span class="line">  &quot;contact&quot; : [</span><br><span class="line">    &#123; &quot;type&quot; : &quot;QQ&quot;, &quot;ref&quot; : &quot;88888888&quot;&#125;,</span><br><span class="line">    &#123; &quot;type&quot; : &quot;phone&quot;, &quot;ref&quot; : &quot;18822222222&quot;&#125;</span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>这样数据具有树形的特点，处理方式有些繁琐。</p>
+<p><strong>处理单条记录</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br></pre></td><td class="code"><pre><span class="line">package com.wukong.learn.jackson;</span><br><span class="line"></span><br><span class="line">import com.fasterxml.jackson.core.JsonProcessingException;</span><br><span class="line">import com.fasterxml.jackson.databind.JsonNode;</span><br><span class="line">import com.fasterxml.jackson.databind.ObjectMapper;</span><br><span class="line"></span><br><span class="line">import java.io.IOException;</span><br><span class="line"></span><br><span class="line">public class TreeModel &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        String content = &quot;&#123;\n&quot; +</span><br><span class="line">                &quot;  \&quot;id\&quot;   : 1,\n&quot; +</span><br><span class="line">                &quot;  \&quot;name\&quot; : &#123;\n&quot; +</span><br><span class="line">                &quot;    \&quot;first\&quot; : \&quot;zhang\&quot;,\n&quot; +</span><br><span class="line">                &quot;    \&quot;last\&quot; : \&quot;dada\&quot;\n&quot; +</span><br><span class="line">                &quot;  &#125;,\n&quot; +</span><br><span class="line">                &quot;  \&quot;contact\&quot; : [\n&quot; +</span><br><span class="line">                &quot;    &#123; \&quot;type\&quot; : \&quot;QQ\&quot;, \&quot;ref\&quot; : \&quot;88888888\&quot;&#125;,\n&quot; +</span><br><span class="line">                &quot;    &#123; \&quot;type\&quot; : \&quot;phone\&quot;, \&quot;ref\&quot; : \&quot;18822222222\&quot;&#125;\n&quot; +</span><br><span class="line">                &quot;  ]\n&quot; +</span><br><span class="line">                &quot;&#125;&quot;;</span><br><span class="line"></span><br><span class="line">        long id;</span><br><span class="line">        String firstName = &quot;&quot;;</span><br><span class="line">        String lastName = &quot;&quot;;</span><br><span class="line"></span><br><span class="line">        ObjectMapper mapper = new ObjectMapper();</span><br><span class="line">        JsonNode root;</span><br><span class="line"></span><br><span class="line">        try &#123;</span><br><span class="line">            root = mapper.readTree(content);</span><br><span class="line"></span><br><span class="line">            id = root.path(&quot;id&quot;).asLong();</span><br><span class="line">            System.out.println(&quot;id: &quot;+id);</span><br><span class="line"></span><br><span class="line">            JsonNode nameNode = root.path(&quot;name&quot;);</span><br><span class="line">            if (nameNode.isMissingNode()) &#123;</span><br><span class="line">                // 处理缺失的节点</span><br><span class="line">            &#125; else &#123;</span><br><span class="line"></span><br><span class="line">                firstName = nameNode.path(&quot;first&quot;).asText();</span><br><span class="line">                lastName = nameNode.path(&quot;last&quot;).asText();</span><br><span class="line"></span><br><span class="line">                System.out.println(&quot;姓： &quot; + firstName);</span><br><span class="line">                System.out.println(&quot;名： &quot; + lastName);</span><br><span class="line"></span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            JsonNode contactNode = root.path(&quot;contact&quot;);</span><br><span class="line">            if (contactNode.isArray()) &#123;</span><br><span class="line">                // 处理数组</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            for (JsonNode node : contactNode) &#123;</span><br><span class="line">                String type = node.path(&quot;type&quot;).asText();</span><br><span class="line">                String ref = node.path(&quot;ref&quot;).asText();</span><br><span class="line">                System.out.println(&quot;type : &quot; + type);</span><br><span class="line">                System.out.println(&quot;ref : &quot; + ref);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            System.out.println(&quot;---------------------- 我是分割线 ------------------------&quot;);</span><br><span class="line"></span><br><span class="line">        &#125; catch (JsonProcessingException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125; catch (IOException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>关键技术：</p>
+<p>使用 readTree(File file) 方法从磁盘读取json文件<br>使用 JsonNode 对象的 path(String fieldName); 方法返回一个JsonNode<br>再对JsonNode 对象进行类型转换，转换成基本的数据类型或包装器类型</p>
+<p>计算结果：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">id: 1</span><br><span class="line">姓： zhang</span><br><span class="line">名： dada</span><br><span class="line">type : QQ</span><br><span class="line">ref : 88888888</span><br><span class="line">type : phone</span><br><span class="line">ref : 18822222222</span><br><span class="line">---------------------- 我是分割线 ------------------------</span><br></pre></td></tr></table></figure></p>
+<h3 id="流式API"><a href="#流式API" class="headerlink" title="流式API"></a>流式API</h3><p>使用Jackson流式API可以读写json</p>
+<p>用到的关键技术：</p>
+<ul>
+<li>com.fasterxml.jackson.core.JsonGenerator 写入json文件</li>
+<li>com.fasterxml.jackson.core.JsonParser 解析文件</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">package com.wukong.learn.jackson;</span><br><span class="line"></span><br><span class="line">import com.fasterxml.jackson.core.JsonEncoding;</span><br><span class="line">import com.fasterxml.jackson.core.JsonFactory;</span><br><span class="line">import com.fasterxml.jackson.core.JsonGenerator;</span><br><span class="line"></span><br><span class="line">import java.io.File;</span><br><span class="line">import java.io.IOException;</span><br><span class="line"></span><br><span class="line">public class APIReadAndWrite &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        JsonFactory factory = new JsonFactory();</span><br><span class="line"></span><br><span class="line">        try &#123;</span><br><span class="line">            JsonGenerator generator = factory.createGenerator(new File(&quot;/Users/zyy/Downloads/user.json&quot;),</span><br><span class="line">                    JsonEncoding.UTF8);</span><br><span class="line"></span><br><span class="line">            generator.writeStartObject();</span><br><span class="line"></span><br><span class="line">            generator.writeStringField(&quot;site&quot;, &quot;alfred.github.io&quot;);</span><br><span class="line">            generator.writeStringField(&quot;URL&quot;, &quot;http://alfred.github.io&quot;);</span><br><span class="line"></span><br><span class="line">            generator.writeFieldName(&quot;messages&quot;);</span><br><span class="line">            generator.writeStartArray(); // [</span><br><span class="line"></span><br><span class="line">            generator.writeString(&quot;第一条消息 为人民服务&quot;);</span><br><span class="line">            generator.writeString(&quot;第二条消息 好好学习，天天向上&quot;);</span><br><span class="line">            generator.writeString(&quot;第三条消息 快乐编程&quot;);</span><br><span class="line"></span><br><span class="line">            generator.writeEndArray(); // ]</span><br><span class="line"></span><br><span class="line">            generator.writeEndObject(); // &#125;</span><br><span class="line"></span><br><span class="line">            generator.close();</span><br><span class="line">        &#125; catch (IOException e) &#123;</span><br><span class="line"></span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>关键方法有：</p>
+<ul>
+<li>JsonFactory 对象用于产生JsonGenerator 对象;</li>
+<li>void writeStartObject() 方法用于写一个{</li>
+<li>void writeEndObject() 方法用于写一个}</li>
+<li>void writeStartArray() 方法用于写入一个[</li>
+<li>void writeEndArray() 方法用于写一个]</li>
+<li>void writeStringField(String fieldName, String value) 方法用于写入一个字段，包括字段名和值，字段是String类型</li>
+<li>void writeNumberField(String fieldName, int value) 方法用于写入一个字段，包括字段名和值，字段是Number类型</li>
+<li>void writeString(String text) 方法用于写入一个值</li>
+</ul>
+<p>计算结果：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;&quot;site&quot;:&quot;alfred.github.io&quot;,&quot;URL&quot;:&quot;http://alfred.github.io&quot;,&quot;messages&quot;:[&quot;第一条消息 为人民服务&quot;,&quot;第二条消息 好好学习，天天向上&quot;,&quot;第三条消息 快乐编程&quot;]&#125;</span><br></pre></td></tr></table></figure></p>
+<p><strong>JsonParser解析文件</strong><br>使用JsonParser可以解析json文件。这种解析试建立在对json结构有清晰认识的基础上。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br></pre></td><td class="code"><pre><span class="line">package com.wukong.learn.jackson;</span><br><span class="line"></span><br><span class="line">import com.fasterxml.jackson.core.*;</span><br><span class="line"></span><br><span class="line">import java.io.File;</span><br><span class="line">import java.io.IOException;</span><br><span class="line"></span><br><span class="line">public class APIReadAndWrite &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        //jsonGenerator();</span><br><span class="line">        jsonParser();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private static void jsonGenerator() &#123;</span><br><span class="line">        JsonFactory factory = new JsonFactory();</span><br><span class="line"></span><br><span class="line">        try &#123;</span><br><span class="line">            JsonGenerator generator = factory.createGenerator(new File(&quot;/Users/zyy/Downloads/user.json&quot;),</span><br><span class="line">                    JsonEncoding.UTF8);</span><br><span class="line"></span><br><span class="line">            generator.writeStartObject();</span><br><span class="line"></span><br><span class="line">            generator.writeStringField(&quot;site&quot;, &quot;alfred.github.io&quot;);</span><br><span class="line">            generator.writeStringField(&quot;URL&quot;, &quot;http://alfred.github.io&quot;);</span><br><span class="line"></span><br><span class="line">            generator.writeFieldName(&quot;messages&quot;);</span><br><span class="line">            generator.writeStartArray(); // [</span><br><span class="line"></span><br><span class="line">            generator.writeString(&quot;第一条消息 为人民服务&quot;);</span><br><span class="line">            generator.writeString(&quot;第二条消息 好好学习，天天向上&quot;);</span><br><span class="line">            generator.writeString(&quot;第三条消息 快乐编程&quot;);</span><br><span class="line"></span><br><span class="line">            generator.writeEndArray(); // ]</span><br><span class="line"></span><br><span class="line">            generator.writeEndObject(); // &#125;</span><br><span class="line"></span><br><span class="line">            generator.close();</span><br><span class="line">        &#125; catch (IOException e) &#123;</span><br><span class="line"></span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private static void jsonParser()&#123;</span><br><span class="line">        JsonFactory factory = new JsonFactory();</span><br><span class="line"></span><br><span class="line">        try &#123;</span><br><span class="line">            JsonParser parser = factory.createParser(new File(&quot;/Users/zyy/Downloads/user.json&quot;));</span><br><span class="line"></span><br><span class="line">            // 读取每一行，直到找到 &quot;&#125;&quot;</span><br><span class="line">            while (parser.nextToken() != JsonToken.END_OBJECT) &#123;</span><br><span class="line"></span><br><span class="line">                String fieldname = parser.getCurrentName();</span><br><span class="line">                if (&quot;site&quot;.equals(fieldname)) &#123;</span><br><span class="line">                    // 找到site后，再找下一个</span><br><span class="line">                    parser.nextToken();</span><br><span class="line">                    System.out.println(parser.getText());</span><br><span class="line"></span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                if (&quot;URL&quot;.equals(fieldname)) &#123;</span><br><span class="line">                    // 找到URL后，再找下一个</span><br><span class="line">                    parser.nextToken();</span><br><span class="line">                    System.out.println(parser.getText());</span><br><span class="line"></span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                if (&quot;messages&quot;.equals(fieldname)) &#123;</span><br><span class="line">                    parser.nextToken();</span><br><span class="line">                    // 读取每一行，直到找到 &quot;]&quot;</span><br><span class="line">                    while (parser.nextToken() != JsonToken.END_ARRAY) &#123;</span><br><span class="line">                        System.out.println(parser.getText());</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            parser.close();</span><br><span class="line"></span><br><span class="line">        &#125; catch (JsonParseException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125; catch (IOException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>关键方法：</p>
+<p>JsonToken nextToken() 方法用于读取每一个JsonToken<br>JsonParser 对象的方法 String getCurrentName() 读取字段名<br>JsonParser 对象的方法 String getText() 读取字段值</p>
+<h3 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h3><ol>
+<li><a href="https://www.jianshu.com/p/040e8671e560" target="_blank" rel="noopener">https://www.jianshu.com/p/040e8671e560</a></li>
+<li><a href="https://www.ibm.com/developerworks/cn/java/jackson-advanced-application/index.html" target="_blank" rel="noopener">https://www.ibm.com/developerworks/cn/java/jackson-advanced-application/index.html</a></li>
+<li><a href="https://www.wangshenghua.com/wiki/jackson/f5789c8c7cd39ad348e3a8ccadfa9523/" target="_blank" rel="noopener">https://www.wangshenghua.com/wiki/jackson/f5789c8c7cd39ad348e3a8ccadfa9523/</a></li>
+</ol>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/java/" rel="tag"># java</a>
+          
+            <a href="/tags/jackson/" rel="tag"># jackson</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/04/26/java日志体系二/" rel="next" title="java日志体系二(slf4j作用及其实现原理)">
+                <i class="fa fa-chevron-left"></i> java日志体系二(slf4j作用及其实现原理)
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">昨非</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">39</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">1</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">24</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Jackson"><span class="nav-number">1.</span> <span class="nav-text">Jackson</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Gson"><span class="nav-number">2.</span> <span class="nav-text">Gson</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用方式"><span class="nav-number">3.</span> <span class="nav-text">使用方式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#List-Java对象互转"><span class="nav-number">4.</span> <span class="nav-text">List/Java对象互转</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Map-Json对象互转"><span class="nav-number">5.</span> <span class="nav-text">Map/Json对象互转</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Tree-Model"><span class="nav-number">6.</span> <span class="nav-text">Tree Model</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#流式API"><span class="nav-number">7.</span> <span class="nav-text">流式API</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参考文献"><span class="nav-number">8.</span> <span class="nav-text">参考文献</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">昨非</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
