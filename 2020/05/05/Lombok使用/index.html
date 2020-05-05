@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh_CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="java,lombok,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="Lombok背景介绍1Project Lombok makes java a spicier language by adding &amp;apos;handlers&amp;apos; that know how to build and compile simple, boilerplate-free, not-quite-java code. 大致意思是Lombok通过增加一些“处理程序”，可以让java">
+<meta name="keywords" content="java,lombok">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Lombok使用">
+<meta property="og:url" content="https://alfredliukai.github.io/2020/05/05/Lombok使用/index.html">
+<meta property="og:site_name" content="昨非的个人网站">
+<meta property="og:description" content="Lombok背景介绍1Project Lombok makes java a spicier language by adding &amp;apos;handlers&amp;apos; that know how to build and compile simple, boilerplate-free, not-quite-java code. 大致意思是Lombok通过增加一些“处理程序”，可以让java">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://alfredliukai.github.io/2020/05/05/Lombok使用/lombok.png">
+<meta property="og:updated_time" content="2020-05-05T05:12:37.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Lombok使用">
+<meta name="twitter:description" content="Lombok背景介绍1Project Lombok makes java a spicier language by adding &amp;apos;handlers&amp;apos; that know how to build and compile simple, boilerplate-free, not-quite-java code. 大致意思是Lombok通过增加一些“处理程序”，可以让java">
+<meta name="twitter:image" content="https://alfredliukai.github.io/2020/05/05/Lombok使用/lombok.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://alfredliukai.github.io/2020/05/05/Lombok使用/">
+
+
+
+
+
+  <title>Lombok使用 | 昨非的个人网站</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh_CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">昨非的个人网站</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-首页">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-标签">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-归档">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-关于">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://alfredliukai.github.io/2020/05/05/Lombok使用/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="昨非">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="昨非的个人网站">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Lombok使用</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-05-05T07:31:23+08:00">
+                2020-05-05
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="Lombok背景介绍"><a href="#Lombok背景介绍" class="headerlink" title="Lombok背景介绍"></a>Lombok背景介绍</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Project Lombok makes java a spicier language by adding &apos;handlers&apos; that know how to build and compile simple, boilerplate-free, not-quite-java code.</span><br></pre></td></tr></table></figure>
+<p>大致意思是Lombok通过增加一些“处理程序”，可以让java变得简洁、快速。</p>
+<h3 id="Lombok使用方法"><a href="#Lombok使用方法" class="headerlink" title="Lombok使用方法"></a>Lombok使用方法</h3><p><strong>依赖管理</strong></p>
+<p>Lombok能以简单的注解形式来简化java代码，提高开发人员的开发效率。例如开发中经常需要写的javabean，都需要花时间去添加相应的getter/setter，也许还要去写构造器、equals等方法，而且需要维护，当属性多时会出现大量的getter/setter方法，这些显得很冗长也没有太多技术含量，一旦修改属性，就容易出现忘记修改对应方法的失误。</p>
+<p>Lombok能通过注解的方式，在编译时自动为属性生成构造器、getter/setter、equals、hashcode、toString方法。出现的神奇就是在源码中没有getter和setter方法，但是在编译生成的字节码文件中有getter和setter方法。这样就省去了手动重建这些代码的麻烦，使代码看起来更简洁些。</p>
+<p>Lombok的使用跟引用jar包一样，可以在官网（<a href="https://projectlombok.org/download）下载jar包，也可以使用maven添加依赖：" target="_blank" rel="noopener">https://projectlombok.org/download）下载jar包，也可以使用maven添加依赖：</a><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;org.projectlombok&lt;/groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;lombok&lt;/artifactId&gt;</span><br><span class="line">    &lt;version&gt;1.18.10&lt;/version&gt;</span><br><span class="line">    &lt;scope&gt;provided&lt;/scope&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br></pre></td></tr></table></figure></p>
+<p>Lombok的scope=provided，说明它只在编译阶段生效，不需要打入包中。事实正是如此，Lombok在编译期将带Lombok注解的Java文件正确编译为完整的Class文件。<br>接下来我们来分析Lombok中注解的具体用法。</p>
+<p><strong>IDEA插件的安装</strong></p>
+<ol>
+<li>在IDEA插件里搜索lombok，安装，重启</li>
+<li>直接官网下载插件，安装，这是链接</li>
+<li>设置中启用annotation processors</li>
+</ol>
+<p><img src="/2020/05/05/Lombok使用/lombok.png" alt="avatar"></p>
+<h3 id="Lombok实现原理"><a href="#Lombok实现原理" class="headerlink" title="Lombok实现原理"></a>Lombok实现原理</h3><p>自从Java 6起，javac就支持“JSR 269 Pluggable Annotation Processing API”规范，只要程序实现了该API，就能在javac运行的时候得到调用。</p>
+<p>Lombok就是一个实现了”JSR 269 API”的程序。在使用javac的过程中，它产生作用的具体流程如下：</p>
+<ol>
+<li>javac对源代码进行分析，生成一棵抽象语法树(AST)</li>
+<li>javac编译过程中调用实现了JSR 269的Lombok程序</li>
+<li>此时Lombok就对第一步骤得到的AST进行处理，找到Lombok注解所在类对应的语法树(AST)，然后修改该语法树(AST)，增加Lombok注解定义的相应树节点</li>
+<li>javac使用修改后的抽象语法树(AST)生成字节码文件</li>
+</ol>
+<h3 id="Lombok注解的使用"><a href="#Lombok注解的使用" class="headerlink" title="Lombok注解的使用"></a>Lombok注解的使用</h3><ol>
+<li>@Setter 注解在类或字段，注解在类时为所有字段生成setter方法，注解在字段上时只为该字段生成setter方法。</li>
+<li>@Getter 使用方法同上，区别在于生成的是getter方法。</li>
+<li>@ToString 注解在类，添加toString方法。</li>
+<li>@EqualsAndHashCode 注解在类，生成hashCode和equals方法。</li>
+<li>@NoArgsConstructor 注解在类，生成无参的构造方法。</li>
+<li>@RequiredArgsConstructor 注解在类，为类中需要特殊处理的字段生成构造方法，比如final和被@NonNull注解的字段。</li>
+<li>@AllArgsConstructor 注解在类，生成包含类中所有字段的构造方法。</li>
+<li>@Data 注解在类，为类的所有字段注解@ToString、@EqualsAndHashCode、@Getter的便捷方法，同时为所有非final字段注解@Setter。</li>
+</ol>
+<p><strong>@Data注解</strong></p>
+<p>@Data注解在类上，会为类的所有属性自动生成setter/getter、equals、canEqual、hashCode、toString方法，如为final属性，则不会为该属性生成setter方法。<br>@Data可以很好地处理字段的泛型参数。 为了在为具有泛型的类构造对象时减少样板，可以使用staticConstructor参数来生成私有构造函数，以及返回新实例的静态方法。 这样，javac将推断变量名称。 因此，通过这样声明：@Data（staticConstructor =“of”）类Foo {private T x;}可以通过写入来创建Foo的新实例：Foo.of（5）; 而不必写：new Foo （5）;</p>
+<p>如果使用了@Data注解<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">@Data public class DataExample &#123;</span><br><span class="line">  private final String name;</span><br><span class="line">  </span><br><span class="line">  @Setter(AccessLevel.PACKAGE) </span><br><span class="line">  private int age;</span><br><span class="line">  </span><br><span class="line">  private double score;</span><br><span class="line">  private String[] tags;</span><br><span class="line">  </span><br><span class="line">  @ToString(includeFieldNames=true)</span><br><span class="line">  @Data(staticConstructor=&quot;of&quot;)</span><br><span class="line">  public static class Exercise&lt;T&gt; &#123;</span><br><span class="line">    private final String name;</span><br><span class="line">    private final T value;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><strong>不加lombok注解的Pojo的写法</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br></pre></td><td class="code"><pre><span class="line">public class DataExample &#123;</span><br><span class="line">  private final String name;</span><br><span class="line">  private int age;</span><br><span class="line">  private double score;</span><br><span class="line">  private String[] tags;</span><br><span class="line">  </span><br><span class="line">  public DataExample(String name) &#123;</span><br><span class="line">    this.name = name;</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  public String getName() &#123;</span><br><span class="line">    return this.name;</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  void setAge(int age) &#123;</span><br><span class="line">    this.age = age;</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  public int getAge() &#123;</span><br><span class="line">    return this.age;</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  public void setScore(double score) &#123;</span><br><span class="line">    this.score = score;</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  public double getScore() &#123;</span><br><span class="line">    return this.score;</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  public String[] getTags() &#123;</span><br><span class="line">    return this.tags;</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  public void setTags(String[] tags) &#123;</span><br><span class="line">    this.tags = tags;</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  @Override public String toString() &#123;</span><br><span class="line">    return &quot;DataExample(&quot; + this.getName() + &quot;, &quot; + this.getAge() + &quot;, &quot; + this.getScore() + &quot;, &quot; + Arrays.deepToString(this.getTags()) + &quot;)&quot;;</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  protected boolean canEqual(Object other) &#123;</span><br><span class="line">    return other instanceof DataExample;</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  @Override public boolean equals(Object o) &#123;</span><br><span class="line">    if (o == this) return true;</span><br><span class="line">    if (!(o instanceof DataExample)) return false;</span><br><span class="line">    DataExample other = (DataExample) o;</span><br><span class="line">    if (!other.canEqual((Object)this)) return false;</span><br><span class="line">    if (this.getName() == null ? other.getName() != null : !this.getName().equals(other.getName())) return false;</span><br><span class="line">    if (this.getAge() != other.getAge()) return false;</span><br><span class="line">    if (Double.compare(this.getScore(), other.getScore()) != 0) return false;</span><br><span class="line">    if (!Arrays.deepEquals(this.getTags(), other.getTags())) return false;</span><br><span class="line">    return true;</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  @Override public int hashCode() &#123;</span><br><span class="line">    final int PRIME = 59;</span><br><span class="line">    int result = 1;</span><br><span class="line">    final long temp1 = Double.doubleToLongBits(this.getScore());</span><br><span class="line">    result = (result*PRIME) + (this.getName() == null ? 43 : this.getName().hashCode());</span><br><span class="line">    result = (result*PRIME) + this.getAge();</span><br><span class="line">    result = (result*PRIME) + (int)(temp1 ^ (temp1 &gt;&gt;&gt; 32));</span><br><span class="line">    result = (result*PRIME) + Arrays.deepHashCode(this.getTags());</span><br><span class="line">    return result;</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  public static class Exercise&lt;T&gt; &#123;</span><br><span class="line">    private final String name;</span><br><span class="line">    private final T value;</span><br><span class="line">    </span><br><span class="line">    private Exercise(String name, T value) &#123;</span><br><span class="line">      this.name = name;</span><br><span class="line">      this.value = value;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    //可以看到这里自动生成了of方法</span><br><span class="line">    public static &lt;T&gt; Exercise&lt;T&gt; of(String name, T value) &#123;</span><br><span class="line">      return new Exercise&lt;T&gt;(name, value);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    public String getName() &#123;</span><br><span class="line">      return this.name;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    public T getValue() &#123;</span><br><span class="line">      return this.value;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    @Override public String toString() &#123;</span><br><span class="line">      return &quot;Exercise(name=&quot; + this.getName() + &quot;, value=&quot; + this.getValue() + &quot;)&quot;;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    protected boolean canEqual(Object other) &#123;</span><br><span class="line">      return other instanceof Exercise;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    @Override public boolean equals(Object o) &#123;</span><br><span class="line">      if (o == this) return true;</span><br><span class="line">      if (!(o instanceof Exercise)) return false;</span><br><span class="line">      Exercise&lt;?&gt; other = (Exercise&lt;?&gt;) o;</span><br><span class="line">      if (!other.canEqual((Object)this)) return false;</span><br><span class="line">      if (this.getName() == null ? other.getValue() != null : !this.getName().equals(other.getName())) return false;</span><br><span class="line">      if (this.getValue() == null ? other.getValue() != null : !this.getValue().equals(other.getValue())) return false;</span><br><span class="line">      return true;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    @Override public int hashCode() &#123;</span><br><span class="line">      final int PRIME = 59;</span><br><span class="line">      int result = 1;</span><br><span class="line">      result = (result*PRIME) + (this.getName() == null ? 43 : this.getName().hashCode());</span><br><span class="line">      result = (result*PRIME) + (this.getValue() == null ? 43 : this.getValue().hashCode());</span><br><span class="line">      return result;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>@Getter/@Setter</strong></p>
+<p>如果觉得@Data太过残暴（因为@Data集合了@ToString、@EqualsAndHashCode、@Getter/@Setter、@RequiredArgsConstructor的所有特性）不够精细，可以使用@Getter/@Setter注解，此注解在属性上，可以为相应的属性自动生成Getter/Setter方法.<br>@Getter/@Setter: 作用类上，生成所有成员变量的getter/setter方法；作用于成员变量上，生成该成员变量的getter/setter方法。可以设定访问权限及是否懒加载等。示例如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">import lombok.AccessLevel;</span><br><span class="line">import lombok.Getter;</span><br><span class="line">import lombok.Setter;</span><br><span class="line"></span><br><span class="line">public class GetterSetterExample &#123;</span><br><span class="line"></span><br><span class="line">  @Getter </span><br><span class="line">  @Setter </span><br><span class="line">  private int age = 10;</span><br><span class="line">  </span><br><span class="line">  @Setter(AccessLevel.PROTECTED) </span><br><span class="line">  private String name;</span><br><span class="line">  </span><br><span class="line">  @Override public String toString() &#123;</span><br><span class="line">    return String.format(&quot;%s (age: %d)&quot;, name, age);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>如果不使用Lombok：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">public class GetterSetterExample &#123;</span><br><span class="line"></span><br><span class="line">  private int age = 10;</span><br><span class="line"></span><br><span class="line">  private String name;</span><br><span class="line">  </span><br><span class="line">  @Override </span><br><span class="line">  public String toString() &#123;</span><br><span class="line">    return String.format(&quot;%s (age: %d)&quot;, name, age);</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  public int getAge() &#123;</span><br><span class="line">    return age;</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  public void setAge(int age) &#123;</span><br><span class="line">    this.age = age;</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  protected void setName(String name) &#123;</span><br><span class="line">    this.name = name;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><strong>@NonNull</strong><br>该注解用在属性或构造器上，Lombok会生成一个非空的声明，可用于校验参数，能帮助避免空指针。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">import lombok.NonNull;</span><br><span class="line"></span><br><span class="line">public class NonNullExample extends Something &#123;</span><br><span class="line">  private String name;</span><br><span class="line">  </span><br><span class="line">  public NonNullExample(@NonNull Person person) &#123;</span><br><span class="line">    super(&quot;Hello&quot;);</span><br><span class="line">    this.name = person.getName();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>不使用Lombok：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">import lombok.NonNull;</span><br><span class="line"></span><br><span class="line">public class NonNullExample extends Something &#123;</span><br><span class="line">  private String name;</span><br><span class="line">  </span><br><span class="line">  public NonNullExample(@NonNull Person person) &#123;</span><br><span class="line">    super(&quot;Hello&quot;);</span><br><span class="line">    if (person == null) &#123;</span><br><span class="line">      throw new NullPointerException(&quot;person&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">    this.name = person.getName();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><strong>@EqualsAndHashCode</strong></p>
+<p>默认情况下，会使用所有非静态（non-static）和非瞬态（non-transient）属性来生成equals和hasCode，也能通过exclude注解来排除一些属性。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">mport lombok.EqualsAndHashCode;</span><br><span class="line"></span><br><span class="line">@EqualsAndHashCode(exclude=&#123;&quot;id&quot;, &quot;shape&quot;&#125;)</span><br><span class="line">public class EqualsAndHashCodeExample &#123;</span><br><span class="line">  private transient int transientVar = 10;</span><br><span class="line">  private String name;</span><br><span class="line">  private double score;</span><br><span class="line">  private Shape shape = new Square(5, 10);</span><br><span class="line">  private String[] tags;</span><br><span class="line">  private int id;</span><br><span class="line">  </span><br><span class="line">  public String getName() &#123;</span><br><span class="line">    return this.name;</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  @EqualsAndHashCode(callSuper=true)</span><br><span class="line">  public static class Square extends Shape &#123;</span><br><span class="line">    private final int width, height;</span><br><span class="line">    </span><br><span class="line">    public Square(int width, int height) &#123;</span><br><span class="line">      this.width = width;</span><br><span class="line">      this.height = height;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><strong>@ToString</strong></p>
+<p>类使用@ToString注解，Lombok会生成一个toString()方法，默认情况下，会输出类名、所有属性（会按照属性定义顺序），用逗号来分割。<br>通过将includeFieldNames参数设为true，就能明确的输出toString()属性。这一点是不是有点绕口，通过代码来看会更清晰些。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">import lombok.ToString;</span><br><span class="line"></span><br><span class="line">@ToString(exclude=&quot;id&quot;)</span><br><span class="line">public class ToStringExample &#123;</span><br><span class="line">  private static final int STATIC_VAR = 10;</span><br><span class="line">  private String name;</span><br><span class="line">  private Shape shape = new Square(5, 10);</span><br><span class="line">  private String[] tags;</span><br><span class="line">  private int id;</span><br><span class="line">  </span><br><span class="line">  public String getName() &#123;</span><br><span class="line">    return this.getName();</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  @ToString(callSuper=true, includeFieldNames=true)</span><br><span class="line">  public static class Square extends Shape &#123;</span><br><span class="line">    private final int width, height;</span><br><span class="line">    </span><br><span class="line">    public Square(int width, int height) &#123;</span><br><span class="line">      this.width = width;</span><br><span class="line">      this.height = height;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>不使用Lombok的示例如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">import java.util.Arrays;</span><br><span class="line"></span><br><span class="line">public class ToStringExample &#123;</span><br><span class="line">  private static final int STATIC_VAR = 10;</span><br><span class="line">  private String name;</span><br><span class="line">  private Shape shape = new Square(5, 10);</span><br><span class="line">  private String[] tags;</span><br><span class="line">  private int id;</span><br><span class="line">  </span><br><span class="line">  public String getName() &#123;</span><br><span class="line">    return this.getName();</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  public static class Square extends Shape &#123;</span><br><span class="line">    private final int width, height;</span><br><span class="line">    </span><br><span class="line">    public Square(int width, int height) &#123;</span><br><span class="line">      this.width = width;</span><br><span class="line">      this.height = height;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    @Override </span><br><span class="line">    public String toString() &#123;</span><br><span class="line">      return &quot;Square(super=&quot; + super.toString() + &quot;, width=&quot; + this.width + &quot;, height=&quot; + this.height + &quot;)&quot;;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  @Override </span><br><span class="line">  public String toString() &#123;</span><br><span class="line">    return &quot;ToStringExample(&quot; + this.getName() + &quot;, &quot; + this.shape + &quot;, &quot; + Arrays.deepToString(this.tags) + &quot;)&quot;;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><strong>@NoArgsConstructor, @RequiredArgsConstructor and @AllArgsConstructor</strong></p>
+<p>无参构造器、部分参数构造器、全参构造器。Lombok没法实现多种参数构造器的重载。</p>
+<p>@NoArgsConstructor将生成一个没有参数的构造函数。如果这是不可能的（因为最终字段），将导致编译器错误，除非使用@NoArgsConstructor（force = true），然后使用0 / false / null初始化所有final字段。对于具有约束的字段，例如@NonNull字段，不会生成任何检查，因此请注意，在稍后正确初始化这些字段之前，通常不会满足这些约束。某些java构造（例如hibernate和Service Provider Interface）需要no-args构造函数。</p>
+<p>@RequiredArgsConstructor为每个需要特殊处理的字段生成一个带有1个参数的构造函数。所有未初始化的final字段都会获得一个参数，以及标记为@NonNull的任何字段，这些字段在声明它们时未初始化。对于标有@NonNull的字段，还会生成显式空检查。如果用于标记为@NonNull的字段的任何参数包含null，则构造函数将抛出NullPointerException。参数的顺序与字段在类中的显示顺序相匹配。</p>
+<p>@AllArgsConstructor</p>
+<p>@AllArgsConstructor为类中的每个字段生成一个带有1个参数的构造函数。标有@NonNull的字段会导致对这些参数进行空检查。</p>
+<p>这些注释中的每一个都允许使用替代形式，其中生成的构造函数始终是私有的，并且生成包围私有构造函数的附加静态工厂方法。通过为注释提供staticName值来启用此模式，如下所示：@RequiredArgsConstructor（staticName =“of”）。与普通构造函数不同，这种静态工厂方法将推断泛型。这意味着您的API用户可以编写MapEntry.of（“foo”，5）而不是更长的新MapEntry &lt;String，Integer&gt;（“foo”，5）。</p>
+<p>与大多数其他lombok注释不同，显式构造函数的存在不会阻止这些注解生成自己的构造函数。这意味着可以编写自己的专用构造函数，并让lombok生成样板文件。</p>
+<p>注意：如果出现冲突（自定义的一个构造函数最终使用与lombok生成的构造函数相同），则会发生编译器错误。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">import lombok.AccessLevel;</span><br><span class="line">import lombok.RequiredArgsConstructor;</span><br><span class="line">import lombok.AllArgsConstructor;</span><br><span class="line">import lombok.NonNull;</span><br><span class="line"></span><br><span class="line">@RequiredArgsConstructor(staticName = &quot;of&quot;)</span><br><span class="line">@AllArgsConstructor(access = AccessLevel.PROTECTED)</span><br><span class="line">public class ConstructorExample&lt;T&gt; &#123;</span><br><span class="line">  private int x, y;</span><br><span class="line">  @NonNull private T description;</span><br><span class="line">  </span><br><span class="line">  @NoArgsConstructor</span><br><span class="line">  public static class NoArgsExample &#123;</span><br><span class="line">    @NonNull private String field;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>不使用Lombok的示例如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">public class ConstructorExample&lt;T&gt; &#123;</span><br><span class="line">  private int x, y;</span><br><span class="line">  @NonNull private T description;</span><br><span class="line">  </span><br><span class="line">  private ConstructorExample(T description) &#123;</span><br><span class="line">    if (description == null) throw new NullPointerException(&quot;description&quot;);</span><br><span class="line">    this.description = description;</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  public static &lt;T&gt; ConstructorExample&lt;T&gt; of(T description) &#123;</span><br><span class="line">    return new ConstructorExample&lt;T&gt;(description);</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  @java.beans.ConstructorProperties(&#123;&quot;x&quot;, &quot;y&quot;, &quot;description&quot;&#125;)</span><br><span class="line">  protected ConstructorExample(int x, int y, T description) &#123;</span><br><span class="line">    if (description == null) throw new NullPointerException(&quot;description&quot;);</span><br><span class="line">    this.x = x;</span><br><span class="line">    this.y = y;</span><br><span class="line">    this.description = description;</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  public static class NoArgsExample &#123;</span><br><span class="line">    @NonNull private String field;</span><br><span class="line">    </span><br><span class="line">    public NoArgsExample() &#123;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><strong>@Log及其日志注解</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">@Log</span><br><span class="line">public class LogExample &#123;</span><br><span class="line">  </span><br><span class="line">  public static void main(String... args) &#123;</span><br><span class="line">    log.severe(&quot;Something&apos;s wrong here&quot;);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">@Slf4j</span><br><span class="line">public class LogExampleOther &#123;</span><br><span class="line">  </span><br><span class="line">  public static void main(String... args) &#123;</span><br><span class="line">    log.error(&quot;Something else is wrong here&quot;);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">@CommonsLog(topic=&quot;CounterLog&quot;)</span><br><span class="line">public class LogExampleCategory &#123;</span><br><span class="line"></span><br><span class="line">  public static void main(String... args) &#123;</span><br><span class="line">    log.error(&quot;Calling the &apos;CounterLog&apos; with a message&quot;);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>等效于：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"> private static final java.util.logging.Logger log = java.util.logging.Logger.getLogger(LogExample.class.getName());</span><br><span class="line">  </span><br><span class="line">  public static void main(String... args) &#123;</span><br><span class="line">    log.severe(&quot;Something&apos;s wrong here&quot;);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public class LogExampleOther &#123;</span><br><span class="line">  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(LogExampleOther.class);</span><br><span class="line">  </span><br><span class="line">  public static void main(String... args) &#123;</span><br><span class="line">    log.error(&quot;Something else is wrong here&quot;);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public class LogExampleCategory &#123;</span><br><span class="line">  private static final org.apache.commons.logging.Log log = org.apache.commons.logging.LogFactory.getLog(&quot;CounterLog&quot;);</span><br><span class="line"></span><br><span class="line">  public static void main(String... args) &#123;</span><br><span class="line">    log.error(&quot;Calling the &apos;CounterLog&apos; with a message&quot;);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><strong>bean中的链式风格</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">@Accessors(chain = true)</span><br><span class="line">@Data</span><br><span class="line">public class User &#123;</span><br><span class="line">    private Long id;</span><br><span class="line">    private String name;</span><br><span class="line">    private int age;</span><br><span class="line">&#125;</span><br><span class="line">@Test</span><br><span class="line">    public void test() &#123;</span><br><span class="line">        User user = new User();</span><br><span class="line">        user.setId(1L).setAge(2).setName(&quot;Zhangsan&quot;);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></p>
+<p><strong>静态构造方法</strong><br>构造参数为空的最佳实践<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">@Accessors(chain = true)</span><br><span class="line">@Data</span><br><span class="line">@RequiredArgsConstructor(staticName = &quot;of&quot;)</span><br><span class="line">public class User &#123;</span><br><span class="line">    private Long id;</span><br><span class="line">    private String name;</span><br><span class="line">    private int age;</span><br><span class="line">&#125;</span><br><span class="line">@Test</span><br><span class="line">public void testConstructor() &#123;</span><br><span class="line">    User user = User.of().setId(1L).setAge(2).setName(&quot;Zhangsan&quot;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>构造参数为name的最佳实践<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">@Accessors(chain = true)</span><br><span class="line">@Data</span><br><span class="line">@RequiredArgsConstructor(staticName = &quot;of&quot;)</span><br><span class="line">public class User &#123;</span><br><span class="line">    private Long id;</span><br><span class="line">    @NonNull</span><br><span class="line">    private String name;</span><br><span class="line">    private int age;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">@Test</span><br><span class="line">public void testConstructorOfName() &#123;</span><br><span class="line">    User user = User.of(&quot;Zhangsan&quot;).setId(1L).setAge(2);</span><br><span class="line">        System.out.println(user);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><strong>Builder模式</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">@Builder</span><br><span class="line">public class User &#123;</span><br><span class="line">    private Long id;</span><br><span class="line">    private String name;</span><br><span class="line">    private int age;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">@Test</span><br><span class="line">public void testBuilder() &#123;</span><br><span class="line">    User user = User.builder().id(1L).age(2).name(&quot;Zhangsan&quot;).build();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h3><ol>
+<li><a href="https://www.cnblogs.com/heyonggang/p/8638374.html" target="_blank" rel="noopener">https://www.cnblogs.com/heyonggang/p/8638374.html</a></li>
+<li><a href="https://www.cnblogs.com/keeya/p/9929617.html" target="_blank" rel="noopener">https://www.cnblogs.com/keeya/p/9929617.html</a></li>
+<li><a href="https://www.jianshu.com/p/2543c71a8e45" target="_blank" rel="noopener">https://www.jianshu.com/p/2543c71a8e45</a></li>
+<li><a href="https://www.jianshu.com/p/ef0646d05f3c" target="_blank" rel="noopener">https://www.jianshu.com/p/ef0646d05f3c</a></li>
+</ol>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/java/" rel="tag"># java</a>
+          
+            <a href="/tags/lombok/" rel="tag"># lombok</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/05/04/Jackson使用总结/" rel="next" title="Jackson使用总结">
+                <i class="fa fa-chevron-left"></i> Jackson使用总结
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/05/05/Idea创建maven项目问题解决/" rel="prev" title="Idea创建maven项目问题解决">
+                Idea创建maven项目问题解决 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">昨非</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">42</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">1</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">27</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Lombok背景介绍"><span class="nav-number">1.</span> <span class="nav-text">Lombok背景介绍</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Lombok使用方法"><span class="nav-number">2.</span> <span class="nav-text">Lombok使用方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Lombok实现原理"><span class="nav-number">3.</span> <span class="nav-text">Lombok实现原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Lombok注解的使用"><span class="nav-number">4.</span> <span class="nav-text">Lombok注解的使用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参考文献"><span class="nav-number">5.</span> <span class="nav-text">参考文献</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">昨非</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
