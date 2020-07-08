@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh_CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="git,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="前几天在大神的wiki里看到了这么一篇文章（https://nvie.com/posts/a-successful-git-branching-model/），抱着学习的态度想对原文进行翻译下，不当之处请大家多多指教。图1是给出的git分支模型，在原文中作者没有讨论任何项目的细节信息，仅仅讨论关于分支策略和release版本管理。 Decentralized but centralizedGIT是">
+<meta name="keywords" content="git">
+<meta property="og:type" content="article">
+<meta property="og:title" content="浅析GIT分支模型">
+<meta property="og:url" content="https://alfredliukai.github.io/2020/07/08/浅析GIT分支模型/index.html">
+<meta property="og:site_name" content="昨非的个人网站">
+<meta property="og:description" content="前几天在大神的wiki里看到了这么一篇文章（https://nvie.com/posts/a-successful-git-branching-model/），抱着学习的态度想对原文进行翻译下，不当之处请大家多多指教。图1是给出的git分支模型，在原文中作者没有讨论任何项目的细节信息，仅仅讨论关于分支策略和release版本管理。 Decentralized but centralizedGIT是">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://alfredliukai.github.io/2020/07/08/浅析GIT分支模型/git1.png">
+<meta property="og:image" content="https://alfredliukai.github.io/2020/07/08/浅析GIT分支模型/git2.png">
+<meta property="og:image" content="https://alfredliukai.github.io/2020/07/08/浅析GIT分支模型/git3.png">
+<meta property="og:image" content="https://alfredliukai.github.io/2020/07/08/浅析GIT分支模型/git4.png">
+<meta property="og:image" content="https://alfredliukai.github.io/2020/07/08/浅析GIT分支模型/git5.png">
+<meta property="og:image" content="https://alfredliukai.github.io/2020/07/08/浅析GIT分支模型/git6.png">
+<meta property="og:image" content="https://alfredliukai.github.io/2020/07/08/浅析GIT分支模型/git7.png">
+<meta property="og:image" content="https://alfredliukai.github.io/2020/07/08/浅析GIT分支模型/git8.png">
+<meta property="og:image" content="https://alfredliukai.github.io/2020/07/08/浅析GIT分支模型/git9.png">
+<meta property="og:updated_time" content="2020-07-08T15:54:33.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="浅析GIT分支模型">
+<meta name="twitter:description" content="前几天在大神的wiki里看到了这么一篇文章（https://nvie.com/posts/a-successful-git-branching-model/），抱着学习的态度想对原文进行翻译下，不当之处请大家多多指教。图1是给出的git分支模型，在原文中作者没有讨论任何项目的细节信息，仅仅讨论关于分支策略和release版本管理。 Decentralized but centralizedGIT是">
+<meta name="twitter:image" content="https://alfredliukai.github.io/2020/07/08/浅析GIT分支模型/git1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://alfredliukai.github.io/2020/07/08/浅析GIT分支模型/">
+
+
+
+
+
+  <title>浅析GIT分支模型 | 昨非的个人网站</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh_CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">昨非的个人网站</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-首页">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-标签">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-归档">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-关于">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://alfredliukai.github.io/2020/07/08/浅析GIT分支模型/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="昨非">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="昨非的个人网站">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">浅析GIT分支模型</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-07-08T23:44:14+08:00">
+                2020-07-08
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>前几天在大神的wiki里看到了这么一篇文章（<a href="https://nvie.com/posts/a-successful-git-branching-model/），抱着学习的态度想对原文进行翻译下，不当之处请大家多多指教。图1是给出的git分支模型，在原文中作者没有讨论任何项目的细节信息，仅仅讨论关于分支策略和release版本管理。" target="_blank" rel="noopener">https://nvie.com/posts/a-successful-git-branching-model/），抱着学习的态度想对原文进行翻译下，不当之处请大家多多指教。图1是给出的git分支模型，在原文中作者没有讨论任何项目的细节信息，仅仅讨论关于分支策略和release版本管理。</a><br><img src="/2020/07/08/浅析GIT分支模型/git1.png" alt="avatar"></p>
+<h2 id="Decentralized-but-centralized"><a href="#Decentralized-but-centralized" class="headerlink" title="Decentralized but centralized"></a>Decentralized but centralized</h2><p>GIT是一个分布式的版本控制工具，在技术层面是没有中央仓库(不考虑gitlab、github)的概念。但是在此分支模型中，我们在创建使用一个仓库时，设定一个仓库为中央仓库，根据开发者的使用习惯，定义此仓库名称为origin，如图2所示。<br><img src="/2020/07/08/浅析GIT分支模型/git2.png" alt="avatar"><br>项目开发组中的成员都可以在origin分支上拉取上传代码，除了这种集中式的推拉关系外，还可以从项目组的其他成员那儿拉取代码。通过构建不同的子项目组，也就是通过创建不同的分支，可以实现不同功能需求的并行开发，待开发完毕后合并到origin分支上。图2中alice和bob、alice和david、david和clair可以理解为3个不同的子项目组，也可以理解为3个不同的分支。</p>
+<h2 id="The-main-branches"><a href="#The-main-branches" class="headerlink" title="The main branches"></a>The main branches</h2><p>在图3分支模型中，中央仓库在其生命周期中维护着两个分支：master分支和develop分支。master分支上的代码是生产环境稳定运行的代码，开发者不应该在master分支上做任何修改代码的操作；develop分支是新功能迭代中合并的主分支，开发者可以在此分支上进行对应的回归测试和夜构建。当develop分支上的代码达到上线标准并且准备发布时，开发者需要将develop分支上的代码合并到master分支上，并且打上对应的tag。<br><img src="/2020/07/08/浅析GIT分支模型/git3.png" alt="avatar"></p>
+<h2 id="Supporting-branches"><a href="#Supporting-branches" class="headerlink" title="Supporting branches"></a>Supporting branches</h2><p>除了master分支和develop分支以外，分支模型中需要一些额外的分支来支撑项目中新功能的开发、版本的迭代、线上问题的修复。由于这些分支特有的属性，导致它们的生命周期都比较短暂。在此模型中，我们将这些分支定义为feature分支、relaese分支和hotfix分支。</p>
+<h2 id="Feature-branches"><a href="#Feature-branches" class="headerlink" title="Feature branches"></a>Feature branches</h2><p>feature分支用于开发即将推出或未来版本的新功能。如图4所示，feature分支的本质是，只要功能处于开发阶段它就会存在，但最终会被合并到develop分支或丢弃。feature分支的命名规则比较随意，只需要避免”master”、”develop”、”release-<em>“,”hotfix-x</em>“这几类名称就可以。通常我们都从develop分支上创建一个feature分支，<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git checkout -b myfeature develop</span><br></pre></td></tr></table></figure></p>
+<p>当完成功能开发时，需要将feature分支合并到develop分支上，</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">git checkout develop</span><br><span class="line"></span><br><span class="line">git merge --no--ff myfeature</span><br><span class="line"></span><br><span class="line">git branch -d myfeature</span><br><span class="line"></span><br><span class="line">git push origin master</span><br></pre></td></tr></table></figure>
+<p><img src="/2020/07/08/浅析GIT分支模型/git4.png" alt="avatar"></p>
+<h2 id="Release-branches"><a href="#Release-branches" class="headerlink" title="Release branches"></a>Release branches</h2><p>release分支是从准上线的状态的develop分支上创建而来，反映了我们对于新版本的期望。在新版中，一些重要的feature需要合并到develop分支上。此外，在release分支上可以进行小问题的修改，并且为发布版本（版本号，构建日期等）提供元数据信息。正是在release分支开始时，即将发布的版本才会被分配一个版本号 。需要说明的是，开发分支仅反映了“下一个版本”的变化，但是尚不清楚这个“下一个版本”是否最终会变为0.3或1.0，首先创建一个release分支：<br><img src="/2020/07/08/浅析GIT分支模型/git5.png" alt="avatar"><br>然后把release分支上的代码进行合并到master分支上，<br><img src="/2020/07/08/浅析GIT分支模型/git6.png" alt="avatar"><br>此外需要将代码合并到develop分支上，<br><img src="/2020/07/08/浅析GIT分支模型/git7.png" alt="avatar"><br>最后删除release分支<br><img src="/2020/07/08/浅析GIT分支模型/git8.png" alt="avatar"></p>
+<h2 id="Hotfix-branches"><a href="#Hotfix-branches" class="headerlink" title="Hotfix branches"></a>Hotfix branches</h2><p>当生产环境中的代码存在严重bug时，需要从master分支上创建hotfix分支进行bug的修复，修复完毕后在合并到develop分支和master分支上。分支名称一般命名为”hotfix-*”。<br><img src="/2020/07/08/浅析GIT分支模型/git9.png" alt="avatar"></p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>以上便是文章中介绍的git分支模型。在我们实际的项目开发中，根据自己项目特点仅使用master、develop和feature分支构成的阉割版的分支模型。总之，代码规范跟自己团队的规模、项目迭代情况、项目组开发者等各种因素相关，我们需要根据以上各种因素选择最合适的gitflow工作流程。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/git/" rel="tag"># git</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/07/08/git中的对象简介/" rel="next" title="git中的对象简介">
+                <i class="fa fa-chevron-left"></i> git中的对象简介
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">昨非</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">44</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">1</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">27</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Decentralized-but-centralized"><span class="nav-number">1.</span> <span class="nav-text">Decentralized but centralized</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#The-main-branches"><span class="nav-number">2.</span> <span class="nav-text">The main branches</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Supporting-branches"><span class="nav-number">3.</span> <span class="nav-text">Supporting branches</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Feature-branches"><span class="nav-number">4.</span> <span class="nav-text">Feature branches</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Release-branches"><span class="nav-number">5.</span> <span class="nav-text">Release branches</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Hotfix-branches"><span class="nav-number">6.</span> <span class="nav-text">Hotfix branches</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">7.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">昨非</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
