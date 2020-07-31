@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh_CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="springboot,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="1. 前言因为网络传输的不可靠性，以及前端数据控制的可篡改性，后端的参数校验是必须的，应用程序必须通过某种手段来确保输入进来的数据从语义上来讲是正确的。 2. 数据校验的痛点为了保证数据语义的正确，我们需要进行大量的判断来处理验证逻辑。而且项目的分层也会造成一些重复的校验，产生大量与业务无关的代码。不利于代码的维护，增加了开发人员的工作量。 3. JSR 303 校验规范及其实现为了解决上面的痛点">
+<meta name="keywords" content="springboot">
+<meta property="og:type" content="article">
+<meta property="og:title" content="springboot参数校验">
+<meta property="og:url" content="https://alfredliukai.github.io/2020/07/31/springboot参数校验/index.html">
+<meta property="og:site_name" content="昨非的个人网站">
+<meta property="og:description" content="1. 前言因为网络传输的不可靠性，以及前端数据控制的可篡改性，后端的参数校验是必须的，应用程序必须通过某种手段来确保输入进来的数据从语义上来讲是正确的。 2. 数据校验的痛点为了保证数据语义的正确，我们需要进行大量的判断来处理验证逻辑。而且项目的分层也会造成一些重复的校验，产生大量与业务无关的代码。不利于代码的维护，增加了开发人员的工作量。 3. JSR 303 校验规范及其实现为了解决上面的痛点">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:updated_time" content="2020-07-31T02:33:28.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="springboot参数校验">
+<meta name="twitter:description" content="1. 前言因为网络传输的不可靠性，以及前端数据控制的可篡改性，后端的参数校验是必须的，应用程序必须通过某种手段来确保输入进来的数据从语义上来讲是正确的。 2. 数据校验的痛点为了保证数据语义的正确，我们需要进行大量的判断来处理验证逻辑。而且项目的分层也会造成一些重复的校验，产生大量与业务无关的代码。不利于代码的维护，增加了开发人员的工作量。 3. JSR 303 校验规范及其实现为了解决上面的痛点">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://alfredliukai.github.io/2020/07/31/springboot参数校验/">
+
+
+
+
+
+  <title>springboot参数校验 | 昨非的个人网站</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh_CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">昨非的个人网站</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-首页">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-标签">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-归档">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-关于">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://alfredliukai.github.io/2020/07/31/springboot参数校验/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="昨非">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="昨非的个人网站">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">springboot参数校验</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-07-31T10:12:05+08:00">
+                2020-07-31
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="1-前言"><a href="#1-前言" class="headerlink" title="1. 前言"></a>1. 前言</h2><p>因为网络传输的不可靠性，以及前端数据控制的可篡改性，后端的参数校验是必须的，应用程序必须通过某种手段来确保输入进来的数据从语义上来讲是正确的。</p>
+<h2 id="2-数据校验的痛点"><a href="#2-数据校验的痛点" class="headerlink" title="2. 数据校验的痛点"></a>2. 数据校验的痛点</h2><p>为了保证数据语义的正确，我们需要进行大量的判断来处理验证逻辑。而且项目的分层也会造成一些重复的校验，产生大量与业务无关的代码。不利于代码的维护，增加了开发人员的工作量。</p>
+<h2 id="3-JSR-303-校验规范及其实现"><a href="#3-JSR-303-校验规范及其实现" class="headerlink" title="3. JSR 303 校验规范及其实现"></a>3. JSR 303 校验规范及其实现</h2><p>为了解决上面的痛点，将验证逻辑与相应的领域模型进行绑定是十分有必要的。为此产生了JSR 303 – Bean Validation 规范。Hibernate Validator 是JSR-303的参考实现，它提供了JSR 303规范中所有的约束（constraint）的实现，同时也增加了一些扩展。</p>
+<blockquote>
+<p>Hibernate Validator 提供的常用约束注解</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>约束注解</th>
+<th>详细信息</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>@Null</td>
+<td>被注释的元素必须为 null</td>
+</tr>
+<tr>
+<td>@NotNull</td>
+<td>被注释的元素必须不为 null</td>
+</tr>
+<tr>
+<td>@AssertTrue</td>
+<td>被注释的元素必须为 true</td>
+</tr>
+<tr>
+<td>@AssertFalse</td>
+<td>被注释的元素必须为 false</td>
+</tr>
+<tr>
+<td>@Min(value)</td>
+<td>被注释的元素必须是一个数字，其值必须大于等于指定的最小值</td>
+</tr>
+<tr>
+<td>@Max(value)</td>
+<td>被注释的元素必须是一个数字，其值必须小于等于指定的最大值</td>
+</tr>
+<tr>
+<td>@DecimalMin(value)</td>
+<td>被注释的元素必须是一个数字，其值必须大于等于指定的最小值</td>
+</tr>
+<tr>
+<td>@DecimalMax(value)</td>
+<td>被注释的元素必须是一个数字，其值必须小于等于指定的最大值</td>
+</tr>
+<tr>
+<td>@Size(max, min)</td>
+<td>被注释的元素的大小必须在指定的范围内</td>
+</tr>
+<tr>
+<td>@Digits (integer, fraction)</td>
+<td>被注释的元素必须是一个数字，其值必须在可接受的范围内</td>
+</tr>
+<tr>
+<td>@Past</td>
+<td>被注释的元素必须是一个过去的日期</td>
+</tr>
+<tr>
+<td>@Future</td>
+<td>被注释的元素必须是一个将来的日期</td>
+</tr>
+<tr>
+<td>@Pattern(value)</td>
+<td>被注释的元素必须符合指定的正则表达式</td>
+</tr>
+<tr>
+<td>@Email</td>
+<td>被注释的元素必须是电子邮箱地址</td>
+</tr>
+<tr>
+<td>@Length</td>
+<td>被注释的字符串的大小必须在指定的范围内</td>
+</tr>
+<tr>
+<td>@NotEmpty</td>
+<td>被注释的字符串的必须非空</td>
+</tr>
+<tr>
+<td>@Range</td>
+<td>被注释的元素必须在合适的范围内</td>
+</tr>
+</tbody>
+</table>
+<h2 id="4-验证注解的使用"><a href="#4-验证注解的使用" class="headerlink" title="4. 验证注解的使用"></a>4. 验证注解的使用</h2><p>在Spring Boot开发中使用Hibernate Validator是非常容易的，引入下面的starter就可以了：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;spring-boot-starter-validation&lt;/artifactId&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br></pre></td></tr></table></figure>
+<p>一种可以实现接口来定制Validator，一种是使用约束注解。胖哥觉得注解可以满足绝大部分的需求，所以建议使用注解来进行数据校验。而且注解更加灵活，控制的粒度也更加细。接下来我们来学习如何使用注解进行数据校验。</p>
+<blockquote>
+<p>4.1 约束注解的基本使用</p>
+</blockquote>
+<p>我们对需要校验的方法入参进行注解约束标记，例子如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">@Data</span><br><span class="line">public class Student &#123;</span><br><span class="line"></span><br><span class="line">    @NotBlank(message = &quot;姓名必须填&quot;)</span><br><span class="line">    private String name;</span><br><span class="line">    @NotNull(message = &quot;年龄必须填写&quot;)</span><br><span class="line">    @Range(min = 1,max =50, message = &quot;年龄取值范围1-50&quot;)</span><br><span class="line">    private Integer age;</span><br><span class="line">    @NotEmpty(message = &quot;成绩必填&quot;)</span><br><span class="line">    private List&lt;Double&gt; scores;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>POST 请求</strong></p>
+<p>然后定义一个POST请求的Spring MVC接口：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">@RestController</span><br><span class="line">@RequestMapping(&quot;/student&quot;)</span><br><span class="line">public class StudentController &#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    @PostMapping(&quot;/add&quot;)</span><br><span class="line">    public Rest&lt;?&gt; addStudent(@Valid @RequestBody Student student) &#123;</span><br><span class="line">        return RestBody.okData(student);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>通过对addStudent方法入参添加@Valid来启用参数校验。当使用下面数据进行请求将会抛出MethodArgumentNotValidException异常，提示age范围超出1-50。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">POST /student/add HTTP/1.1</span><br><span class="line">Host: localhost:8888</span><br><span class="line">Content-Type: application/json</span><br><span class="line"></span><br><span class="line">&#123;</span><br><span class="line">    &quot;name&quot;: &quot;felord.cn&quot;,</span><br><span class="line">    &quot;age&quot;: 77,</span><br><span class="line">    &quot;scores&quot;: [</span><br><span class="line">        55</span><br><span class="line">    ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>GET 请求</strong></p>
+<p>如法炮制，我们定义一个GET请求的接口：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">@GetMapping(&quot;/get&quot;)</span><br><span class="line">public Rest&lt;?&gt; getStudent(@Valid Student student) &#123;</span><br><span class="line">    return RestBody.okData(student);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>使用下面的请求可以正确对学生分数scores进行了校验，但是抛出的并不是MethodArgumentNotValidException异常，而是BindException异常。这和使用@RequestBody注解有关系，这对我们后面的统一处理非常十分重要。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">GET /student/get?name=felord.cn&amp;age=12 HTTP/1.1</span><br><span class="line">Host: localhost:8888</span><br></pre></td></tr></table></figure>
+<p><strong>自定义注解</strong></p>
+<p>可能有些同学注意到上面的年龄我进行了这样的标记：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">@NotNull(message = &quot;年龄必须填写&quot;)</span><br><span class="line">@Range(min = 1,max =50, message = &quot;年龄取值范围1-50&quot;)</span><br><span class="line">private Integer age;</span><br></pre></td></tr></table></figure>
+<p>这是因为@Range不会去校验为空的情况，它只处理非空的时候是否符合范围约束。所以要用多个注解来约束。如果我们某些场景需要重复的捆绑多个注解来使用时，可以使用自定义注解将它们封装起来组合使用，下面这个注解就是将@NotNull和@Range进行了组合，你可以仿一个出来用用看。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">import org.hibernate.validator.constraints.Range;</span><br><span class="line"></span><br><span class="line">import javax.validation.Constraint;</span><br><span class="line">import javax.validation.Payload;</span><br><span class="line">import javax.validation.ReportAsSingleViolation;</span><br><span class="line">import javax.validation.constraints.NotNull;</span><br><span class="line">import javax.validation.constraintvalidation.SupportedValidationTarget;</span><br><span class="line">import javax.validation.constraintvalidation.ValidationTarget;</span><br><span class="line">import java.lang.annotation.*;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> * @author a</span><br><span class="line"> * @since 17:31</span><br><span class="line"> **/</span><br><span class="line">@Constraint(</span><br><span class="line">        validatedBy = &#123;&#125;</span><br><span class="line">)</span><br><span class="line">@SupportedValidationTarget(&#123;ValidationTarget.ANNOTATED_ELEMENT&#125;)</span><br><span class="line">@Retention(RetentionPolicy.RUNTIME)</span><br><span class="line">@Target(&#123;ElementType.METHOD, ElementType.FIELD,</span><br><span class="line">        ElementType.ANNOTATION_TYPE, ElementType.CONSTRUCTOR,</span><br><span class="line">        ElementType.PARAMETER, ElementType.TYPE_USE&#125;)</span><br><span class="line">@NotNull</span><br><span class="line">@Range(min = 1, max = 50)</span><br><span class="line">@Documented</span><br><span class="line">@ReportAsSingleViolation</span><br><span class="line">public @interface Age &#123;</span><br><span class="line">    // message 必须有</span><br><span class="line">    String message() default &quot;年龄必须填写，且范围为 1-50 &quot;;</span><br><span class="line"></span><br><span class="line">    // 可选</span><br><span class="line">    Class&lt;?&gt;[] groups() default &#123;&#125;;</span><br><span class="line"></span><br><span class="line">    // 可选</span><br><span class="line">    Class&lt;? extends Payload&gt;[] payload() default &#123;&#125;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>还有一种情况，我们在后台定义了枚举值来进行状态的流转，也是需要校验的，比如我们定义了颜色枚举：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">public enum Colors &#123;</span><br><span class="line">    RED, YELLOW, BLUE</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>我们希望入参不能超出Colors的范围[“RED”, “YELLOW”, “BLUE”]，这就需要实现ConstraintValidator<a extends annotation, t>接口来定义一个颜色约束了，其中泛型A为自定义的约束注解，泛型T为入参的类型，这里使用字符串,然后我们的实现如下：</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">public class ColorConstraintValidator implements ConstraintValidator&lt;Color, String&gt; &#123;</span><br><span class="line">    private static final Set&lt;String&gt; COLOR_CONSTRAINTS = new HashSet&lt;&gt;();</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void initialize(Color constraintAnnotation) &#123;</span><br><span class="line">        Colors[] value = constraintAnnotation.value();</span><br><span class="line">        List&lt;String&gt; list = Arrays.stream(value)</span><br><span class="line">                .map(Enum::name)</span><br><span class="line">                .collect(Collectors.toList());</span><br><span class="line">        COLOR_CONSTRAINTS.addAll(list);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public boolean isValid(String value, ConstraintValidatorContext context) &#123;</span><br><span class="line">        return COLOR_CONSTRAINTS.contains(value);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>然后声明对应的约束注解Color，需要在元注解@Constraint中指明使用上面定义好的处理类ColorConstraintValidator进行校验。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">@Constraint(validatedBy = ColorConstraintValidator.class)</span><br><span class="line">@Documented</span><br><span class="line">@Target(&#123;ElementType.METHOD, ElementType.FIELD,</span><br><span class="line">        ElementType.ANNOTATION_TYPE, ElementType.CONSTRUCTOR,</span><br><span class="line">        ElementType.PARAMETER, ElementType.TYPE_USE&#125;)</span><br><span class="line">@Retention(RetentionPolicy.RUNTIME)</span><br><span class="line">public @interface Color &#123;</span><br><span class="line">    // 错误提示信息</span><br><span class="line">    String message() default &quot;颜色不符合规格&quot;;</span><br><span class="line"></span><br><span class="line">    Class&lt;?&gt;[] groups() default &#123;&#125;;</span><br><span class="line"></span><br><span class="line">    Class&lt;? extends Payload&gt;[] payload() default &#123;&#125;;</span><br><span class="line"></span><br><span class="line">    // 约束的类型</span><br><span class="line">    Colors[] value();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>然后我们来试一下，先对参数进行约束：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">@Data</span><br><span class="line">public class Param &#123;</span><br><span class="line">    @Color(&#123;Colors.BLUE,Colors.YELLOW&#125;)</span><br><span class="line">   private String color;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>接口跟上面几个一样，调用下面的接口将抛出BindException异常：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">GET /student/color?color=CAY HTTP/1.1</span><br><span class="line">Host: localhost:8888</span><br></pre></td></tr></table></figure>
+<p>当我们把参数color赋值为BLUE或者YELLOW后，能够成功得到响应。</p>
+<blockquote>
+<p>4.2 常见问题</p>
+</blockquote>
+<p>在实际使用起来我们会遇到一些问题，这里总结了一些常见的问题和处理方式。</p>
+<p><strong>检验基础类型不生效的问题</strong></p>
+<p>上面为了校验颜色我们声明了一个Param对象来包装唯一的字符串参数color，为什么直接使用下面的方式定义呢？</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">@GetMapping(&quot;/color&quot;)</span><br><span class="line">public Rest&lt;?&gt; color(@Valid @Color(&#123;Colors.BLUE,Colors.YELLOW&#125;) String color) &#123;</span><br><span class="line">    return RestBody.okData(color);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>或者使用路径变量：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">@GetMapping(&quot;/rest/&#123;color&#125;&quot;)</span><br><span class="line">public Rest&lt;?&gt; rest(@Valid @Color(&#123;Colors.BLUE, Colors.YELLOW&#125;) @PathVariable String color) &#123;</span><br><span class="line">    return RestBody.okData(color);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>上面两种方式是不会生效的。不信你可以试一试，起码在Spring Boot 2.3.1.RELEASE是不会直接生效的。</p>
+<p>使以上两种生效的方法是在类上添加@Validated注解。注意一定要添加到方法所在的类上才行。这时候会抛出ConstraintViolationException异常。</p>
+<p><strong>集合类型参数中的元素不生效的问题</strong></p>
+<p>就像下面的写法，方法的参数为集合时，如何检验元素的约束呢？</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">@PostMapping(&quot;/batchadd&quot;)</span><br><span class="line">public Rest&lt;?&gt; batchAddStudent(@Valid @RequestBody List&lt;Student&gt; student) &#123;</span><br><span class="line">    return RestBody.okData(student);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>同样是在类上添加@Validated注解。注意一定要添加到方法所在的类上才行。这时候会抛出ConstraintViolationException异常。</p>
+<p><strong>嵌套校验不生效</strong></p>
+<p>嵌套的结构如何校验呢？打个比方，如果我们在学生类Student中添加了其所属的学校信息School并希望对School的属性进行校验。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">@Data</span><br><span class="line">public class Student &#123;</span><br><span class="line"></span><br><span class="line">    @NotBlank(message = &quot;姓名必须填&quot;)</span><br><span class="line">    private String name;</span><br><span class="line">    @Age</span><br><span class="line">    private Integer age;</span><br><span class="line">    @NotEmpty(message = &quot;成绩必填&quot;)</span><br><span class="line">    private List&lt;Double&gt; scores;</span><br><span class="line">    @NotNull(message = &quot;学校不能为空&quot;)</span><br><span class="line">    private School school;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">@Data</span><br><span class="line">public class School &#123;</span><br><span class="line">    @NotBlank(message = &quot;学校名称不能为空&quot;)</span><br><span class="line">    private String name;</span><br><span class="line">    @Min(value = 0,message =&quot;校龄大于0&quot; )</span><br><span class="line">    private Integer age;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>当 GET请求时正常校验了School的属性，但是POST请求却无法对School的属性进行校验。这时我们只需要在该属性上加上@Valid注解即可。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">@Data</span><br><span class="line">public class Student &#123;</span><br><span class="line"></span><br><span class="line">    @NotBlank(message = &quot;姓名必须填&quot;)</span><br><span class="line">    private String name;</span><br><span class="line">    @Age</span><br><span class="line">    private Integer age;</span><br><span class="line">    @NotEmpty(message = &quot;成绩必填&quot;)</span><br><span class="line">    private List&lt;Double&gt; scores;</span><br><span class="line">    @Valid</span><br><span class="line">    @NotNull(message = &quot;学校不能为空&quot;)</span><br><span class="line">    private School school;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>每加一层嵌套都需要加一层@Valid注解。通常在校验对象属性时，@NotNull、@NotEmpty和@Valid配合才能起到校验效果。</p>
+</blockquote>
+<h2 id="参考文献："><a href="#参考文献：" class="headerlink" title="参考文献："></a>参考文献：</h2><ol>
+<li>https://mp.weixin.qq.com/s/wjNO9u8QgHN2XRNj4R8McQ</li>
+</ol>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/springboot/" rel="tag"># springboot</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/07/10/git常见场景操作/" rel="next" title="git常见场景操作">
+                <i class="fa fa-chevron-left"></i> git常见场景操作
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">昨非</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">46</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">1</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">28</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-前言"><span class="nav-number">1.</span> <span class="nav-text">1. 前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-数据校验的痛点"><span class="nav-number">2.</span> <span class="nav-text">2. 数据校验的痛点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-JSR-303-校验规范及其实现"><span class="nav-number">3.</span> <span class="nav-text">3. JSR 303 校验规范及其实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-验证注解的使用"><span class="nav-number">4.</span> <span class="nav-text">4. 验证注解的使用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考文献："><span class="nav-number">5.</span> <span class="nav-text">参考文献：</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">昨非</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
