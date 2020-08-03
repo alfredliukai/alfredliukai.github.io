@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh_CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="python,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="元组的特殊语法如果圆括号里的单一对象是元组对象而不是一个简单的表达式，需要对python进行特别说明。如果确实想得到一个元组，只要在这一单个元素之后、关闭圆括号之前加一个逗号就可以了。 123456&amp;gt;&amp;gt;&amp;gt; x=(40)&amp;gt;&amp;gt;&amp;gt; x40&amp;gt;&amp;gt;&amp;gt; x=(40,)&amp;gt;&amp;gt;&amp;gt; x(40,) 转换、方法以及不可变性元组不提供排序方法，如果想对元">
+<meta name="keywords" content="python">
+<meta property="og:type" content="article">
+<meta property="og:title" content="元组的特殊语法">
+<meta property="og:url" content="https://alfredliukai.github.io/2020/08/03/元组的特殊语法/index.html">
+<meta property="og:site_name" content="昨非的个人网站">
+<meta property="og:description" content="元组的特殊语法如果圆括号里的单一对象是元组对象而不是一个简单的表达式，需要对python进行特别说明。如果确实想得到一个元组，只要在这一单个元素之后、关闭圆括号之前加一个逗号就可以了。 123456&amp;gt;&amp;gt;&amp;gt; x=(40)&amp;gt;&amp;gt;&amp;gt; x40&amp;gt;&amp;gt;&amp;gt; x=(40,)&amp;gt;&amp;gt;&amp;gt; x(40,) 转换、方法以及不可变性元组不提供排序方法，如果想对元">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:updated_time" content="2020-08-03T08:21:55.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="元组的特殊语法">
+<meta name="twitter:description" content="元组的特殊语法如果圆括号里的单一对象是元组对象而不是一个简单的表达式，需要对python进行特别说明。如果确实想得到一个元组，只要在这一单个元素之后、关闭圆括号之前加一个逗号就可以了。 123456&amp;gt;&amp;gt;&amp;gt; x=(40)&amp;gt;&amp;gt;&amp;gt; x40&amp;gt;&amp;gt;&amp;gt; x=(40,)&amp;gt;&amp;gt;&amp;gt; x(40,) 转换、方法以及不可变性元组不提供排序方法，如果想对元">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://alfredliukai.github.io/2020/08/03/元组的特殊语法/">
+
+
+
+
+
+  <title>元组的特殊语法 | 昨非的个人网站</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh_CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">昨非的个人网站</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-首页">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-标签">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-归档">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-关于">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://alfredliukai.github.io/2020/08/03/元组的特殊语法/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="昨非">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="昨非的个人网站">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">元组的特殊语法</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-08-03T15:34:32+08:00">
+                2020-08-03
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="元组的特殊语法"><a href="#元组的特殊语法" class="headerlink" title="元组的特殊语法"></a>元组的特殊语法</h2><p>如果圆括号里的单一对象是元组对象而不是一个简单的表达式，需要对python进行特别说明。如果确实想得到一个元组，只要在这一单个元素之后、关闭圆括号之前加一个逗号就可以了。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; x=(40)</span><br><span class="line">&gt;&gt;&gt; x</span><br><span class="line">40</span><br><span class="line">&gt;&gt;&gt; x=(40,)</span><br><span class="line">&gt;&gt;&gt; x</span><br><span class="line">(40,)</span><br></pre></td></tr></table></figure>
+<h2 id="转换、方法以及不可变性"><a href="#转换、方法以及不可变性" class="headerlink" title="转换、方法以及不可变性"></a>转换、方法以及不可变性</h2><p>元组不提供排序方法，如果想对元组进行排序，通常得先将它转换为列表并使其成为一个可变对象，才能获得使用排序方法调用的权限。或者使用新的sorted的内置方法。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; T=(&apos;cc&apos;,&apos;aa&apos;,&apos;dd&apos;,&apos;bb&apos;)</span><br><span class="line">&gt;&gt;&gt; tmp=list(T)</span><br><span class="line">&gt;&gt;&gt; tmp.sort()</span><br><span class="line">&gt;&gt;&gt; tmp</span><br><span class="line">[&apos;aa&apos;, &apos;bb&apos;, &apos;cc&apos;, &apos;dd&apos;]</span><br><span class="line">&gt;&gt;&gt; T=tuple(tmp)</span><br><span class="line">&gt;&gt;&gt; T</span><br><span class="line">(&apos;aa&apos;, &apos;bb&apos;, &apos;cc&apos;, &apos;dd&apos;)</span><br><span class="line">&gt;&gt;&gt; T=(&apos;cc&apos;,&apos;aa&apos;,&apos;dd&apos;,&apos;bb&apos;)</span><br><span class="line">&gt;&gt;&gt; T</span><br><span class="line">(&apos;cc&apos;, &apos;aa&apos;, &apos;dd&apos;, &apos;bb&apos;)</span><br><span class="line">&gt;&gt;&gt; sorted(T)</span><br><span class="line">[&apos;aa&apos;, &apos;bb&apos;, &apos;cc&apos;, &apos;dd&apos;]</span><br></pre></td></tr></table></figure>
+<h2 id="列表解析"><a href="#列表解析" class="headerlink" title="列表解析"></a>列表解析</h2><p><strong>什么是列表解析？</strong></p>
+<p>简单来说，列表解析（list comprehension）提供了一种优雅的生成列表的方法，能用一行代码代替十几行代码，而且不损失任何可读性。而且，性能还快很多很多</p>
+<p>简单给个例子，如果我们需要0~100所有偶数组成的列表，正常的代码应该是这样的：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">a=[]</span><br><span class="line">for i in range(101):</span><br><span class="line">    if i%2==0:</span><br><span class="line">        a.append(i)</span><br></pre></td></tr></table></figure>
+<p>用列表解析来做就是这样的：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">a=[x for x in range(101) if x%2==0]</span><br></pre></td></tr></table></figure>
+<p>简单的一行代码代替了4行代码</p>
+<p>从上面的例子来看列表解析的语法其实不难，可以分成三个部分来看</p>
+<ul>
+<li>x：我们需要的列表里面的结果(1st part)</li>
+<li>for x in range(101):x来源——0~100的数字(2nd part)</li>
+<li>if x%2==0:x成立的条件，如果不成立就不放在列表里了(3rd part)</li>
+</ul>
+<p><strong>获取文本中所有单词的第1个字符</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">text=&quot;My house is full of flowers&quot;</span><br><span class="line">first_charts=[]</span><br><span class="line">for word in text.split():</span><br><span class="line">    first_charts.append(word[0])</span><br></pre></td></tr></table></figure>
+<p>列表解析的代码:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">first_charts=[word[0] for word in text.split()]</span><br></pre></td></tr></table></figure>
+<p><strong>获取两个列表对应位的乘积</strong></p>
+<p>来个复杂的，list a=[2,3,4,5]; list b=[3,4,5,6],想要得到a，b对应位的乘积:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[i*j for i,j in zip(a,b)]</span><br></pre></td></tr></table></figure>
+<p><strong>带if else的列表解析</strong></p>
+<p>list a=[‘1’,’2’,’3’,’i’,’8’],现在想将a中所有能转化为数字的字符串转化为数字，不为数字的内容都转换成0，用列表解析可以这样写：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[int(i) if i.isdigit() else 0 for i in a]</span><br><span class="line">out&gt;&gt;[1,2,3,0,8]</span><br></pre></td></tr></table></figure>
+<p>增加一点难度，如果list a=[‘1’,’2’,’3’,4,5,’o’,’6’]，如果不能转换成数字则为None，列表解析可以这样写：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[int(i) if str(i).isdigit() else None for i in a]</span><br><span class="line">out&gt;&gt;[1, 2, 3, 4, 5, None, 6]</span><br></pre></td></tr></table></figure>
+<p><strong>获取一个全0列表</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[&apos;ok&apos; for i in range(10)]</span><br></pre></td></tr></table></figure></p>
+<p><strong>略复杂的列表解析，获取列表中嵌套列表的元素，生成一个无嵌套的新列表</strong></p>
+<p>这个例子说起来挺拗口，实际上是想从[[1,2],[3,4,5],[6,7]，[8]]这种列表中，把嵌套在列表中的元素解出来，得到[1,2,3,4,5,6,7,8]，用列表解析可以这样写：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">a=[[1,2],[3,4,5],[6,7],[8]]</span><br><span class="line">[x  for i in a for x in i] </span><br><span class="line">out&gt;&gt;[1,2,3,4,5,6,7,8]</span><br></pre></td></tr></table></figure>
+<p>理解起来略有一点麻烦，for i in a，i为子列表，for x in i，x得到每个子列表中的值。这样的列表解析写法确实很难理解，所以有时候我们不要过分的使用复杂的列表解析。</p>
+<p><strong>获取所有可能的组合</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">from itertools import product</span><br><span class="line">x=[&apos;a&apos;,&apos;b&apos;,&apos;c&apos;]</span><br><span class="line">results = [&quot;&quot;.join(i) for i in product(x, repeat=3)]</span><br><span class="line">out&gt;&gt;[&apos;aaa&apos;, &apos;aab&apos;, &apos;aac&apos;, &apos;aba&apos;, &apos;abb&apos;, &apos;abc&apos;, &apos;aca&apos;, &apos;acb&apos;, &apos;acc&apos;, &apos;baa&apos;, &apos;bab&apos;, &apos;bac&apos;, &apos;bba&apos;, &apos;bbb&apos;, &apos;bbc&apos;, &apos;bca&apos;, &apos;bcb&apos;, &apos;bcc&apos;, &apos;caa&apos;, &apos;cab&apos;, &apos;cac&apos;, &apos;cba&apos;, &apos;cbb&apos;, &apos;cbc&apos;, &apos;cca&apos;, &apos;ccb&apos;, &apos;ccc&apos;]</span><br></pre></td></tr></table></figure>
+<h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><ol>
+<li><a href="https://www.jianshu.com/p/c635d3c798c2" target="_blank" rel="noopener">https://www.jianshu.com/p/c635d3c798c2</a></li>
+</ol>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/python/" rel="tag"># python</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/08/03/python中的yield关键字/" rel="next" title="python中的yield关键字">
+                <i class="fa fa-chevron-left"></i> python中的yield关键字
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">昨非</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">49</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">1</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">28</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#元组的特殊语法"><span class="nav-number">1.</span> <span class="nav-text">元组的特殊语法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#转换、方法以及不可变性"><span class="nav-number">2.</span> <span class="nav-text">转换、方法以及不可变性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#列表解析"><span class="nav-number">3.</span> <span class="nav-text">列表解析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考文献"><span class="nav-number">4.</span> <span class="nav-text">参考文献</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">昨非</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
