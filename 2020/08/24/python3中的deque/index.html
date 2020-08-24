@@ -79,18 +79,18 @@
 
 
 
-<meta name="description" content="基本用法创建双向队列 12import collectionsd = collections.deque() append(往右边添加一个元素) 1234567import collectionsd = collections.deque()d.append(1)d.append(2)print(d)#输出：deque([1, 2]) appendleft（往左边添加一个元素） 1234567im">
+<meta name="description" content="基本用法创建双向队列 使用 deque(maxlen=N) 构造函数会新建一个固定大小的队列。当新的元素加入并且这个队列已满的时候， 最老的元素会自动被移除掉。 更一般的， deque 类可以被用在任何你只需要一个简单队列数据结构的场合。 如果你不设置最大队列大小，那么就会得到一个无限大小队列，你可以在队列的两端执行添加和弹出元素的操作。 在队列两端插入或删除元素时间复杂度都是 O(1) ，区别于">
 <meta name="keywords" content="python3,deque">
 <meta property="og:type" content="article">
 <meta property="og:title" content="python3中的deque">
 <meta property="og:url" content="https://alfredliukai.github.io/2020/08/24/python3中的deque/index.html">
 <meta property="og:site_name" content="昨非的个人网站">
-<meta property="og:description" content="基本用法创建双向队列 12import collectionsd = collections.deque() append(往右边添加一个元素) 1234567import collectionsd = collections.deque()d.append(1)d.append(2)print(d)#输出：deque([1, 2]) appendleft（往左边添加一个元素） 1234567im">
+<meta property="og:description" content="基本用法创建双向队列 使用 deque(maxlen=N) 构造函数会新建一个固定大小的队列。当新的元素加入并且这个队列已满的时候， 最老的元素会自动被移除掉。 更一般的， deque 类可以被用在任何你只需要一个简单队列数据结构的场合。 如果你不设置最大队列大小，那么就会得到一个无限大小队列，你可以在队列的两端执行添加和弹出元素的操作。 在队列两端插入或删除元素时间复杂度都是 O(1) ，区别于">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:updated_time" content="2020-08-24T02:36:55.000Z">
+<meta property="og:updated_time" content="2020-08-24T02:41:24.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="python3中的deque">
-<meta name="twitter:description" content="基本用法创建双向队列 12import collectionsd = collections.deque() append(往右边添加一个元素) 1234567import collectionsd = collections.deque()d.append(1)d.append(2)print(d)#输出：deque([1, 2]) appendleft（往左边添加一个元素） 1234567im">
+<meta name="twitter:description" content="基本用法创建双向队列 使用 deque(maxlen=N) 构造函数会新建一个固定大小的队列。当新的元素加入并且这个队列已满的时候， 最老的元素会自动被移除掉。 更一般的， deque 类可以被用在任何你只需要一个简单队列数据结构的场合。 如果你不设置最大队列大小，那么就会得到一个无限大小队列，你可以在队列的两端执行添加和弹出元素的操作。 在队列两端插入或删除元素时间复杂度都是 O(1) ，区别于">
 
 
 
@@ -321,6 +321,9 @@
 
       
         <h2 id="基本用法"><a href="#基本用法" class="headerlink" title="基本用法"></a>基本用法</h2><p><strong>创建双向队列</strong></p>
+<p>使用 deque(maxlen=N) 构造函数会新建一个固定大小的队列。当新的元素加入并且这个队列已满的时候， 最老的元素会自动被移除掉。</p>
+<p>更一般的， deque 类可以被用在任何你只需要一个简单队列数据结构的场合。 如果你不设置最大队列大小，那么就会得到一个无限大小队列，你可以在队列的两端执行添加和弹出元素的操作。</p>
+<p>在队列两端插入或删除元素时间复杂度都是 O(1) ，区别于列表，在列表的开头插入或删除元素的时间复杂度为 O(N) 。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">import collections</span><br><span class="line">d = collections.deque()</span><br></pre></td></tr></table></figure>
 <p><strong>append(往右边添加一个元素)</strong></p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">import collections</span><br><span class="line">d = collections.deque()</span><br><span class="line">d.append(1)</span><br><span class="line">d.append(2)</span><br><span class="line">print(d)</span><br><span class="line"></span><br><span class="line">#输出：deque([1, 2])</span><br></pre></td></tr></table></figure>
