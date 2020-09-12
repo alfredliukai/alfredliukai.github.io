@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh_CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="python,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="传递元组你可曾希望从一个函数中返回两个不同的值？你能做到的。只需要使用一个元组。 12345678&amp;gt;&amp;gt;&amp;gt; def get_error_details():...     return (2, &amp;apos;details&amp;apos;)...&amp;gt;&amp;gt;&amp;gt; errnum, errstr = get_error_details()&amp;gt;&amp;gt;&amp;gt; errnum2&amp;gt">
+<meta name="keywords" content="python">
+<meta property="og:type" content="article">
+<meta property="og:title" content="python中基本用法">
+<meta property="og:url" content="https://alfredliukai.github.io/2020/09/12/python中基本用法/index.html">
+<meta property="og:site_name" content="昨非的个人网站">
+<meta property="og:description" content="传递元组你可曾希望从一个函数中返回两个不同的值？你能做到的。只需要使用一个元组。 12345678&amp;gt;&amp;gt;&amp;gt; def get_error_details():...     return (2, &amp;apos;details&amp;apos;)...&amp;gt;&amp;gt;&amp;gt; errnum, errstr = get_error_details()&amp;gt;&amp;gt;&amp;gt; errnum2&amp;gt">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:updated_time" content="2020-09-12T08:21:36.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="python中基本用法">
+<meta name="twitter:description" content="传递元组你可曾希望从一个函数中返回两个不同的值？你能做到的。只需要使用一个元组。 12345678&amp;gt;&amp;gt;&amp;gt; def get_error_details():...     return (2, &amp;apos;details&amp;apos;)...&amp;gt;&amp;gt;&amp;gt; errnum, errstr = get_error_details()&amp;gt;&amp;gt;&amp;gt; errnum2&amp;gt">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://alfredliukai.github.io/2020/09/12/python中基本用法/">
+
+
+
+
+
+  <title>python中基本用法 | 昨非的个人网站</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh_CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">昨非的个人网站</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-首页">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-标签">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-归档">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-关于">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://alfredliukai.github.io/2020/09/12/python中基本用法/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="昨非">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="昨非的个人网站">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">python中基本用法</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-09-12T16:13:05+08:00">
+                2020-09-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="传递元组"><a href="#传递元组" class="headerlink" title="传递元组"></a>传递元组</h2><p>你可曾希望从一个函数中返回两个不同的值？你能做到的。只需要使用一个元组。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; def get_error_details():</span><br><span class="line">...     return (2, &apos;details&apos;)</span><br><span class="line">...</span><br><span class="line">&gt;&gt;&gt; errnum, errstr = get_error_details()</span><br><span class="line">&gt;&gt;&gt; errnum</span><br><span class="line">2</span><br><span class="line">&gt;&gt;&gt; errstr</span><br><span class="line">&apos;details&apos;</span><br></pre></td></tr></table></figure>
+<p>要注意到 a, b = <some expression> 的用法会将表达式的结果解释为具有两个值的一个元组。</some></p>
+<p>这也意味着在 Python 中交换两个变量的最快方法是：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; a = 5; b = 8</span><br><span class="line">&gt;&gt;&gt; a, b</span><br><span class="line">(5, 8)</span><br><span class="line">&gt;&gt;&gt; a, b = b, a</span><br><span class="line">&gt;&gt;&gt; a, b</span><br><span class="line">(8, 5)</span><br></pre></td></tr></table></figure>
+<h2 id="特殊方法"><a href="#特殊方法" class="headerlink" title="特殊方法"></a>特殊方法</h2><p>诸如 <strong>init</strong> 和 <strong>del</strong> 等一些方法对于类来说有特殊意义。</p>
+<p>特殊方法用来模拟内置类型的某些行为。举个例子，如果你希望为你的类使用 x[key] 索引操作（就像你在列表与元组中使用的那样），那么你所需要做的只不过是实现 <strong>getitem</strong>() 方法，然后你的工作就完成了。如果你试图理解它，就想想 Python 就是对 list 类这样做的！</p>
+<p>下面的表格列出了一些有用的特殊方法。如果你想了解所有的特殊方法，请参阅手册。</p>
+<p><strong>init</strong>(self, …)</p>
+<p>这一方法在新创建的对象被返回准备使用时被调用。<br><strong>del</strong>(self)</p>
+<p>这一方法在对象被删除之前调用（它的使用时机不可预测，所以避免使用它）<br><strong>str</strong>(self)</p>
+<p>当我们使用 print 函数时，或 str() 被使用时就会被调用。<br><strong>lt</strong>(self, other)</p>
+<p>当小于运算符（&lt;）被使用时被调用。类似地，使用其它所有运算符（+、&gt; 等等）时都会有特殊方法被调用。<br><strong>getitem</strong>(self, key)</p>
+<p>使用 x[key] 索引操作时会被调用。<br><strong>len</strong>(self)</p>
+<p>当针对序列对象使用内置 len() 函数时会被调用</p>
+<h2 id="单语句块"><a href="#单语句块" class="headerlink" title="单语句块"></a>单语句块</h2><p>我们已经见识过每一个语句块都由其自身的缩进级别与其它部分相区分。 是这样没错，不过有一个小小的警告。如果你的语句块只包括单独的一句语句，那么你可以在同一行指定它，例如条件语句与循环语句。下面这个例子应该能比较清楚地解释：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; flag = True</span><br><span class="line">&gt;&gt;&gt; if flag: print(&apos;Yes&apos;)</span><br><span class="line">...</span><br><span class="line">Yes</span><br></pre></td></tr></table></figure>
+<p>注意，单个语句是在原地立即使用的，它不会被看作一个单独的块。尽管，你可以通过这种方式来使你的程序更加小巧，但除非是为了检查错误，我强烈建议你避免使用这种快捷方法，这主要是因为如果你不小心使用了一个“恰到好处”的缩进，它就很容易添加进额外的语句。</p>
+<h2 id="Lambda-表达式"><a href="#Lambda-表达式" class="headerlink" title="Lambda 表达式"></a>Lambda 表达式</h2><p>lambda 语句可以创建一个新的函数对象。从本质上说，lambda 需要一个参数，后跟一个表达式作为函数体，这一表达式执行的值将作为这个新函数的返回值。</p>
+<p>案例（保存为 more_lambda.py）：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">points = [&#123;&apos;x&apos;: 2, &apos;y&apos;: 3&#125;,</span><br><span class="line">          &#123;&apos;x&apos;: 4, &apos;y&apos;: 1&#125;]</span><br><span class="line">points.sort(key=lambda i: i[&apos;y&apos;])</span><br><span class="line">print(points)</span><br></pre></td></tr></table></figure>
+<p>输出：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ python more_lambda.py</span><br><span class="line">[&#123;&apos;y&apos;: 1, &apos;x&apos;: 4&#125;, &#123;&apos;y&apos;: 3, &apos;x&apos;: 2&#125;]</span><br></pre></td></tr></table></figure>
+<p>它是如何工作的</p>
+<p>要注意到一个 list 的 sort 方法可以获得一个 key 参数，用以决定列表的排序方式（通常我们只知道升序与降序）。在我们的案例中，我们希望进行一次自定义排序，为此我们需要编写一个函数，但是又不是为函数编写一个独立的 def 块，只在这一个地方使用，因此我们使用 Lambda 表达式来创建一个新函数。</p>
+<h2 id="列表推导"><a href="#列表推导" class="headerlink" title="列表推导"></a>列表推导</h2><p>列表推导（List Comprehension）用于从一份现有的列表中得到一份新列表。想象一下，现在你已经有了一份数字列表，你想得到一个相应的列表，其中的数字在大于 2 的情况下将乘以 2。列表推导就是这类情况的理想选择。</p>
+<p>案例（保存为 more_list_comprehension.py）：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">listone = [2, 3, 4]</span><br><span class="line">listtwo = [2*i for i in listone if i &gt; 2]</span><br><span class="line">print(listtwo)</span><br></pre></td></tr></table></figure>
+<p>输出：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ python more_list_comprehension.py</span><br><span class="line">[6, 8]</span><br></pre></td></tr></table></figure>
+<p>它是如何工作的</p>
+<p>在本案例中，当满足了某些条件时（if i &gt; 2），我们进行指定的操作（2*i），以此来获得一份新的列表。要注意到原始列表依旧保持不变。</p>
+<p>使用列表推导的优点在于，当我们使用循环来处理列表中的每个元素并将其存储到新的列表中时时，它能减少样板（Boilerplate）代码的数量。</p>
+<h2 id="在函数中接收元组与字典"><a href="#在函数中接收元组与字典" class="headerlink" title="在函数中接收元组与字典"></a>在函数中接收元组与字典</h2><p>有一种特殊方法，即分别使用 * 或 ** 作为元组或字典的前缀，来使它们作为一个参数为函数所接收。当函数需要一个可变数量的实参时，这将颇为有用。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; def powersum(power, *args):</span><br><span class="line">...     &apos;&apos;&apos;Return the sum of each argument raised to the specified power.&apos;&apos;&apos;</span><br><span class="line">...     total = 0</span><br><span class="line">...     for i in args:</span><br><span class="line">...         total += pow(i, power)</span><br><span class="line">...     return total</span><br><span class="line">...</span><br><span class="line">&gt;&gt;&gt; powersum(2, 3, 4)</span><br><span class="line">25</span><br><span class="line">&gt;&gt;&gt; powersum(2, 10)</span><br><span class="line">100</span><br></pre></td></tr></table></figure>
+<p>因为我们在 args 变量前添加了一个 * 前缀，函数的所有其它的额外参数都将传递到 args 中，并作为一个元组予以储存。如果采用的是 ** 前缀，则额外的参数将被视为字典的键值—值配对。</p>
+<h2 id="assert-语句"><a href="#assert-语句" class="headerlink" title="assert 语句"></a>assert 语句</h2><p>assert 语句用以断言（Assert）某事是真的。例如说你非常确定你正在使用的列表中至少包含一个元素，并想确认这一点，如果其不是真的，就抛出一个错误，assert 语句就是这种情况下的理想选择。当语句断言失败时，将会抛出 AssertionError。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; mylist = [&apos;item&apos;]</span><br><span class="line">&gt;&gt;&gt; assert len(mylist) &gt;= 1</span><br><span class="line">&gt;&gt;&gt; mylist.pop()</span><br><span class="line">&apos;item&apos;</span><br><span class="line">&gt;&gt;&gt; assert len(mylist) &gt;= 1</span><br><span class="line">Traceback (most recent call last):</span><br><span class="line">  File &quot;&lt;stdin&gt;&quot;, line 1, in &lt;module&gt;</span><br><span class="line">AssertionError</span><br></pre></td></tr></table></figure>
+<p>你应该明智地选用 assert 语句。在大多数情况下，它好过捕获异常，也好过定位问题或向用户显示错误信息然后退出。</p>
+<h2 id="装饰器"><a href="#装饰器" class="headerlink" title="装饰器"></a>装饰器</h2><p>装饰器（Decorators）是应用包装函数的快捷方式。这有助于将某一功能与一些代码一遍又一遍地“包装”。举个例子，我为自己创建了一个 retry 装饰器，这样我可以将其运用到任何函数之中，如果在一次运行中抛出了任何错误，它就会尝试重新运行，直到最大次数 5 次，并且每次运行期间都会有一定的延迟。这对于你在对一台远程计算机进行网络调用的情况十分有用：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">from time import sleep</span><br><span class="line">from functools import wraps</span><br><span class="line">import logging</span><br><span class="line">logging.basicConfig()</span><br><span class="line">log = logging.getLogger(&quot;retry&quot;)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def retry(f):</span><br><span class="line">    @wraps(f)</span><br><span class="line">    def wrapped_f(*args, **kwargs):</span><br><span class="line">        MAX_ATTEMPTS = 5</span><br><span class="line">        for attempt in range(1, MAX_ATTEMPTS + 1):</span><br><span class="line">            try:</span><br><span class="line">                return f(*args, **kwargs)</span><br><span class="line">            except:</span><br><span class="line">                log.exception(&quot;Attempt %s/%s failed : %s&quot;,</span><br><span class="line">                              attempt,</span><br><span class="line">                              MAX_ATTEMPTS,</span><br><span class="line">                              (args, kwargs))</span><br><span class="line">                sleep(10 * attempt)</span><br><span class="line">        log.critical(&quot;All %s attempts failed : %s&quot;,</span><br><span class="line">                     MAX_ATTEMPTS,</span><br><span class="line">                     (args, kwargs))</span><br><span class="line">    return wrapped_f</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">counter = 0</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">@retry</span><br><span class="line">def save_to_database(arg):</span><br><span class="line">    print(&quot;Write to a database or make a network call or etc.&quot;)</span><br><span class="line">    print(&quot;This will be automatically retried if exception is thrown.&quot;)</span><br><span class="line">    global counter</span><br><span class="line">    counter += 1</span><br><span class="line">    # 这将在第一次调用时抛出异常</span><br><span class="line">    # 在第二次运行时将正常工作（也就是重试）</span><br><span class="line">    if counter &lt; 2:</span><br><span class="line">        raise ValueError(arg)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">if __name__ == &apos;__main__&apos;:</span><br><span class="line">    save_to_database(&quot;Some bad value&quot;)</span><br></pre></td></tr></table></figure>
+<p>输出：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">$ python more_decorator.py</span><br><span class="line">Write to a database or make a network call or etc.</span><br><span class="line">This will be automatically retried if exception is thrown.</span><br><span class="line">ERROR:retry:Attempt 1/5 failed : ((&apos;Some bad value&apos;,), &#123;&#125;)</span><br><span class="line">Traceback (most recent call last):</span><br><span class="line">  File &quot;more_decorator.py&quot;, line 14, in wrapped_f</span><br><span class="line">    return f(*args, **kwargs)</span><br><span class="line">  File &quot;more_decorator.py&quot;, line 39, in save_to_database</span><br><span class="line">    raise ValueError(arg)</span><br><span class="line">ValueError: Some bad value</span><br><span class="line">Write to a database or make a network call or etc.</span><br><span class="line">This will be automatically retried if exception is thrown.</span><br></pre></td></tr></table></figure>
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/python/" rel="tag"># python</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/08/26/python3中re模块/" rel="next" title="python3中re模块">
+                <i class="fa fa-chevron-left"></i> python3中re模块
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/09/12/python中函数用法/" rel="prev" title="python中函数用法">
+                python中函数用法 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">昨非</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">58</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">1</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">33</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#传递元组"><span class="nav-number">1.</span> <span class="nav-text">传递元组</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#特殊方法"><span class="nav-number">2.</span> <span class="nav-text">特殊方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#单语句块"><span class="nav-number">3.</span> <span class="nav-text">单语句块</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Lambda-表达式"><span class="nav-number">4.</span> <span class="nav-text">Lambda 表达式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#列表推导"><span class="nav-number">5.</span> <span class="nav-text">列表推导</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#在函数中接收元组与字典"><span class="nav-number">6.</span> <span class="nav-text">在函数中接收元组与字典</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#assert-语句"><span class="nav-number">7.</span> <span class="nav-text">assert 语句</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#装饰器"><span class="nav-number">8.</span> <span class="nav-text">装饰器</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">昨非</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
