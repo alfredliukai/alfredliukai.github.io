@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh_CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="循环导入的最好的解决方法是从架构上优化，即调整模块和模块成员变量的设计。一个好的原则是：可导出的成员变量，都不应该依赖于导入进来的成员变量。但是在业务开发的过程中，总会遇到通过架构层面解决不了的导入问题，这时候就只能通过语言层面来解决了。 目录结构（下面的案例的目录结构都是这样的）：123456789root.py/pack1    __init__.py    module_a.py/pack2">
+<meta name="keywords" content="java,go,程序猿,数据库，测试，测试开发，架构">
+<meta property="og:type" content="article">
+<meta property="og:title" content="python中的循环导入问题">
+<meta property="og:url" content="https://alfredliukai.github.io/2020/12/03/python中的循环导入问题/index.html">
+<meta property="og:site_name" content="昨非的个人网站">
+<meta property="og:description" content="循环导入的最好的解决方法是从架构上优化，即调整模块和模块成员变量的设计。一个好的原则是：可导出的成员变量，都不应该依赖于导入进来的成员变量。但是在业务开发的过程中，总会遇到通过架构层面解决不了的导入问题，这时候就只能通过语言层面来解决了。 目录结构（下面的案例的目录结构都是这样的）：123456789root.py/pack1    __init__.py    module_a.py/pack2">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:updated_time" content="2020-12-03T09:32:05.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="python中的循环导入问题">
+<meta name="twitter:description" content="循环导入的最好的解决方法是从架构上优化，即调整模块和模块成员变量的设计。一个好的原则是：可导出的成员变量，都不应该依赖于导入进来的成员变量。但是在业务开发的过程中，总会遇到通过架构层面解决不了的导入问题，这时候就只能通过语言层面来解决了。 目录结构（下面的案例的目录结构都是这样的）：123456789root.py/pack1    __init__.py    module_a.py/pack2">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://alfredliukai.github.io/2020/12/03/python中的循环导入问题/">
+
+
+
+
+
+  <title>python中的循环导入问题 | 昨非的个人网站</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh_CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">昨非的个人网站</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-首页">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-标签">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-归档">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-关于">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://alfredliukai.github.io/2020/12/03/python中的循环导入问题/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="昨非">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="昨非的个人网站">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">python中的循环导入问题</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-12-03T16:41:33+08:00">
+                2020-12-03
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>循环导入的最好的解决方法是从架构上优化，即调整模块和模块成员变量的设计。一个好的原则是：可导出的成员变量，都不应该依赖于导入进来的成员变量。<br>但是在业务开发的过程中，总会遇到通过架构层面解决不了的导入问题，这时候就只能通过语言层面来解决了。</p>
+<p>目录结构（下面的案例的目录结构都是这样的）：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">root.py</span><br><span class="line">/pack1</span><br><span class="line">    __init__.py</span><br><span class="line">    module_a.py</span><br><span class="line">/pack2</span><br><span class="line">    __init__.py</span><br><span class="line">    module_b.py</span><br><span class="line">module_c.py</span><br><span class="line">module_d.py</span><br></pre></td></tr></table></figure></p>
+<h2 id="循环导入例子"><a href="#循环导入例子" class="headerlink" title="循环导入例子"></a>循环导入例子</h2><p>首先看一下什么是循环导入和循环导入的原因。<br>root.py<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">from pack1.module_a import class_a</span><br></pre></td></tr></table></figure></p>
+<p>module_a.py<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">print &quot;start init module a&quot;</span><br><span class="line">from pack2.module_b import class_b</span><br><span class="line">class class_a():</span><br><span class="line">    def f(self):</span><br><span class="line">        class_b</span><br><span class="line">print &quot;init module a&quot;</span><br></pre></td></tr></table></figure></p>
+<p>module_b.py<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">print &quot;start init module b&quot;</span><br><span class="line">from pack1.module_a import class_a</span><br><span class="line">class class_b():</span><br><span class="line">    def f(self):</span><br><span class="line">        class_a</span><br><span class="line">print &quot;init module b&quot;</span><br></pre></td></tr></table></figure></p>
+<p>会报错：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">start init module a</span><br><span class="line">start init module b</span><br><span class="line">Traceback (most recent call last):</span><br><span class="line">  File &quot;E:/my_demo/demo2016/bѭ������/s2/root.py&quot;, line 2, in &lt;module&gt;</span><br><span class="line">    from pack1.module_a import class_a</span><br><span class="line">  File &quot;E:\my_demo\demo2016\bѭ������\s2\pack1\module_a.py&quot;, line 2, in &lt;module&gt;</span><br><span class="line">    from pack2.module_b import class_b</span><br><span class="line">  File &quot;E:\my_demo\demo2016\bѭ������\s2\pack2\module_b.py&quot;, line 2, in &lt;module&gt;</span><br><span class="line">    from pack1.module_a import class_a</span><br><span class="line">ImportError: cannot import name class_a</span><br></pre></td></tr></table></figure></p>
+<p>代码执行的流程：</p>
+<ol>
+<li>执行root.py的from pack1.module_a import class_a，发现需要导入模块module_a</li>
+<li>一个空的字典会被创建，对应module_a的globals</li>
+<li>module_a的代码会被执行，当执行到from pack2.module_b import class_b时，发现需要导入模块module_b</li>
+<li>一个空的字典会被创建，对应module_b的globals</li>
+<li>module_b的代码会被执行，当执行到from pack1.module_a import class_a时，发现需要导入模块module_a，但是此时已经有module_a的globals了，所以直接访问字典里的class_a，但是由于module_a的globals还是空的，即里面没有class_a，所以抛出异常</li>
+</ol>
+<p>参考文档<br>所以根本原因是：在导入的时候，module_b需要访问module_a的变量class_a，但是class_a没有初始化完成<br>所以解决方法有两个：</p>
+<p>在导入的时候，让module_b不要访问module_a的变量，也就是方案一<br>class_a初始化完成后，才让module_b访问module_a的变量，也就是方案二和三</p>
+<h2 id="方案一、使用import-…代替-from…import…"><a href="#方案一、使用import-…代替-from…import…" class="headerlink" title="方案一、使用import …代替 from…import…"></a>方案一、使用import …代替 from…import…</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">root.py</span><br><span class="line"></span><br><span class="line">import pack1.module_a</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">module_a.py</span><br><span class="line"></span><br><span class="line">print &quot;start init module a&quot;</span><br><span class="line">import pack2.module_b </span><br><span class="line">class class_a():</span><br><span class="line">    def f(self):</span><br><span class="line">        m_b.class_b</span><br><span class="line">print &quot;init module a&quot;</span><br><span class="line">if __name__ == &apos;__main__&apos;:</span><br><span class="line">    pass</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">module_b.py</span><br><span class="line"></span><br><span class="line">print &quot;start init module b&quot;</span><br><span class="line">import pack1.module_a </span><br><span class="line">class class_b():</span><br><span class="line">    def f(self):</span><br><span class="line">        pack1.module_a.class_a</span><br><span class="line">print &quot;init module b&quot;</span><br></pre></td></tr></table></figure>
+<p>module_a和module_b都会被编译，终端会输出：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">start init module a</span><br><span class="line">start init module b</span><br><span class="line">init module b</span><br><span class="line">init module a</span><br></pre></td></tr></table></figure>
+<p>即首先编译a，编译过程中发现需要编译b，编译b完成后，编译a剩下的部分、</p>
+<p>这个案例不使用from….import….，而使用import,这样是可以成功循环导入的，不过一个缺点是，每次访问module的时候，都需要写全路径，例如pack1.module_a.class_a，非常繁琐。<br>一个优化的方案是导入的时候，使用import….as… 例如：import pack1.module_a as m_a。但是很奇怪的是，在module_a中可以这样用，但是在module_b中不可以，否则就会导致报错。还有如果把roo.py改为import pack2.module_b,就会反过来，即module_b中可以这样用，但是在module_a中不可以。所以准确点应该是在root.py导入的模块中可以使用，但是在其他模块不能使用。所以import….as…这个方案并不好。<br>注意，import…只能import到模块，不能import模块里面的成员变量，例如import pack1.module_a.class_a 是不可以的</p>
+<p>这个方案的缺点就是访问模块里面的成员变量太繁琐</p>
+<h2 id="方案二、把导入放在后面"><a href="#方案二、把导入放在后面" class="headerlink" title="方案二、把导入放在后面"></a>方案二、把导入放在后面</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">from pack1.module_a import class_a</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">print &quot;start init module a&quot;</span><br><span class="line">#from pack2.module_b import class_b #放在这里会报错</span><br><span class="line">class class_a():</span><br><span class="line">    def f(self):</span><br><span class="line">        # m_b.class_b</span><br><span class="line">        pass</span><br><span class="line"></span><br><span class="line">from pack2.module_b import class_b #放在这里不会</span><br><span class="line">class class_c():</span><br><span class="line">    def f(self):</span><br><span class="line">        class_b</span><br><span class="line">print &quot;init module a&quot;</span><br></pre></td></tr></table></figure>
+<p>当存在类似的依赖关系：class_c依赖class_b依赖class_a，然后class_a和class_c在同一个模块时，可以使用这种方案。<br>把from pack2.module_b import class_b这句放在class_a后面，这样在module_b中访问module_a.class_a是成功的，因为class_a的定义代码已经执行完成，并被添加到module_a的globals中。</p>
+<h2 id="方案三、把导入语句放在语句块中"><a href="#方案三、把导入语句放在语句块中" class="headerlink" title="方案三、把导入语句放在语句块中"></a>方案三、把导入语句放在语句块中</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">from pack1.module_a import func_a</span><br><span class="line"></span><br><span class="line">print &apos;root start run func a&apos;</span><br><span class="line">func_a()</span><br><span class="line">print &apos;root end run func a&apos;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">module_a.py</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">print &quot;start init module a&quot;</span><br><span class="line"></span><br><span class="line">def func_a():</span><br><span class="line">    from pack2.module_b import func_b</span><br><span class="line">    func_b()</span><br><span class="line">    print &apos;run func a&apos;</span><br><span class="line">print &quot;init module a&quot;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">module_b.py</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">print &quot;start init module b&quot;</span><br><span class="line"></span><br><span class="line">def func_b():</span><br><span class="line">    from pack1.module_a import func_a</span><br><span class="line">    print &apos;run func b&apos;</span><br><span class="line"></span><br><span class="line">print &quot;init module b&quot;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">start init module a</span><br><span class="line">init module a</span><br><span class="line">root start run func a</span><br><span class="line">start init module b</span><br><span class="line">init module b</span><br><span class="line">run func b</span><br><span class="line">run func a</span><br><span class="line">root end run func a</span><br></pre></td></tr></table></figure>
+<p>输出：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">start init module a</span><br><span class="line">init module a</span><br><span class="line">root start run func a</span><br><span class="line">start init module b</span><br><span class="line">init module b</span><br><span class="line">run func b</span><br><span class="line">run func a</span><br><span class="line">root end run func a</span><br></pre></td></tr></table></figure>
+<p>在需要使用func_b的时候，才进行导入操作，这样在执行module_b的时候，module_a已经初始化完成，module_a的globals已经有func_a了，所以导入不会报错。</p>
+<p>查看已经导入的module情况</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">import sys</span><br><span class="line">from pack1.module_a import func_a</span><br><span class="line">print sys.modules  </span><br><span class="line"># &#123;&apos;pack1&apos;: &lt;module &apos;pack1&apos; from &apos;E:\my_demo\demo2016\bѭ������\s4\pack1\__init__.pyc&apos;&gt;,&#125;</span><br><span class="line">print sys.modules[&apos;pack1.module_a&apos;].__dict__</span><br><span class="line"># &#123;&apos;func_a&apos;: &lt;function func_a at 0x0254FB30&gt;, &apos;__doc__&apos;: None&#125;</span><br><span class="line">sys.modules[&apos;pack1.module_a&apos;].func_a_tmp=sys.modules[&apos;pack1.module_a&apos;].func_a</span><br></pre></td></tr></table></figure>
+<p>通过sys.modules可以访问所有当前已导入的模块。<br>modules是一个字典，key是模块的路径，例如pack1.module_a,value是一个模块对象<br>模块对象中，属性名是模块中全局变量的名字，即sys.modules[‘pack1.module_a’].<strong>dict</strong>等于module_a里面的globals()</p>
+<p>所以，当在module_b中执行from pack1.module_a import class_a时，相当于执行代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">import sys</span><br><span class="line">if &apos;pack1.module_a&apos; in sys.modules:</span><br><span class="line">    if hasattr(sys.modules[&apos;pack1.module_a&apos;],&quot;class_a&quot;):</span><br><span class="line">        sys.modules[&apos;pack2.module_b&apos;].class_a=sys.modules[&apos;pack1.module_a&apos;].class_a</span><br><span class="line">    else:</span><br><span class="line">        raise Exception(u&quot;循环导入异常&quot;)</span><br><span class="line">else:</span><br><span class="line">    #执行导入pack1.module_a的操作，也就是初始化一个module对象，然后令sys.modules[&apos;pack1.module_a&apos;]=这个对象</span><br></pre></td></tr></table></figure>
+<p>所以解决循环导入的问题，就相当于使上面的代码不会执行到raise Exception(u”循环导入异常”)这一句，方案一和方案二都是通过这种方法解决的。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/12/03/python中的动态导入/" rel="next" title="python中的动态导入">
+                <i class="fa fa-chevron-left"></i> python中的动态导入
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">昨非</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">65</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">1</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">33</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#循环导入例子"><span class="nav-number">1.</span> <span class="nav-text">循环导入例子</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#方案一、使用import-…代替-from…import…"><span class="nav-number">2.</span> <span class="nav-text">方案一、使用import …代替 from…import…</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#方案二、把导入放在后面"><span class="nav-number">3.</span> <span class="nav-text">方案二、把导入放在后面</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#方案三、把导入语句放在语句块中"><span class="nav-number">4.</span> <span class="nav-text">方案三、把导入语句放在语句块中</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">昨非</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
