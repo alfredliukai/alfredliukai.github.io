@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh_CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="linux,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="本篇讲述磁盘管理相关的命令。计算机中需要持久化存储的数据一般是保存在硬盘等辅助存储器中。硬盘一般容量较大，为了便于管理和使用，可以将硬盘分成一到多个逻辑磁盘，称为分区；为使分区中的文件组织成操作系统能够处理的形式，需要对分区进行格式化(创建文件系统)；在linux中，对于格式化后的分区，还必须经过挂载(可简单理解为将分区关联至linux目录树中某个已知目录)之后才能使用。 df 显示文件系统磁盘空">
+<meta name="keywords" content="linux">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Linux磁盘与文件系统">
+<meta property="og:url" content="https://alfredliukai.github.io/2021/01/26/Linux磁盘与文件系统/index.html">
+<meta property="og:site_name" content="昨非的个人网站">
+<meta property="og:description" content="本篇讲述磁盘管理相关的命令。计算机中需要持久化存储的数据一般是保存在硬盘等辅助存储器中。硬盘一般容量较大，为了便于管理和使用，可以将硬盘分成一到多个逻辑磁盘，称为分区；为使分区中的文件组织成操作系统能够处理的形式，需要对分区进行格式化(创建文件系统)；在linux中，对于格式化后的分区，还必须经过挂载(可简单理解为将分区关联至linux目录树中某个已知目录)之后才能使用。 df 显示文件系统磁盘空">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:updated_time" content="2021-01-26T04:52:19.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Linux磁盘与文件系统">
+<meta name="twitter:description" content="本篇讲述磁盘管理相关的命令。计算机中需要持久化存储的数据一般是保存在硬盘等辅助存储器中。硬盘一般容量较大，为了便于管理和使用，可以将硬盘分成一到多个逻辑磁盘，称为分区；为使分区中的文件组织成操作系统能够处理的形式，需要对分区进行格式化(创建文件系统)；在linux中，对于格式化后的分区，还必须经过挂载(可简单理解为将分区关联至linux目录树中某个已知目录)之后才能使用。 df 显示文件系统磁盘空">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://alfredliukai.github.io/2021/01/26/Linux磁盘与文件系统/">
+
+
+
+
+
+  <title>Linux磁盘与文件系统 | 昨非的个人网站</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh_CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">昨非的个人网站</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-首页">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-标签">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-归档">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-关于">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://alfredliukai.github.io/2021/01/26/Linux磁盘与文件系统/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="昨非">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="昨非的个人网站">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Linux磁盘与文件系统</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2021-01-26T12:02:01+08:00">
+                2021-01-26
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>本篇讲述磁盘管理相关的命令。计算机中需要持久化存储的数据一般是保存在硬盘等辅助存储器中。硬盘一般容量较大，为了便于管理和使用，可以将硬盘分成一到多个逻辑磁盘，称为分区；为使分区中的文件组织成操作系统能够处理的形式，需要对分区进行格式化(创建文件系统)；在linux中，对于格式化后的分区，还必须经过挂载(可简单理解为将分区关联至linux目录树中某个已知目录)之后才能使用。</p>
+<h3 id="df-显示文件系统磁盘空间使用量"><a href="#df-显示文件系统磁盘空间使用量" class="headerlink" title="df 显示文件系统磁盘空间使用量"></a>df 显示文件系统磁盘空间使用量</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">[root@centos7 temp]# df -h</span><br><span class="line">文件系统                 容量  已用  可用 已用% 挂载点</span><br><span class="line">/dev/mapper/centos-root   49G   18G   31G   36% /</span><br><span class="line">devtmpfs                 3.9G     0  3.9G    0% /dev</span><br><span class="line">tmpfs                    3.9G     0  3.9G    0% /dev/shm</span><br><span class="line">tmpfs                    3.9G  367M  3.5G   10% /run</span><br><span class="line">tmpfs                    3.9G     0  3.9G    0% /sys/fs/cgroup</span><br><span class="line">/dev/sda1                497M  125M  373M   26% /boot</span><br><span class="line">/dev/mapper/centos-home   24G  4.0G   20G   17% /home</span><br><span class="line">tmpfs                    783M     0  783M    0% /run/user/0</span><br></pre></td></tr></table></figure>
+<p>选项-h作用是转换数字的显示单位(默认为KB)。<br>显示信息文件系统列下面带tmpfs字样的是虚拟内存文件系统(此处不做展开)。<br>文件系统/dev/mapper/centos-root的挂载点是/(根目录)，即通常所说的根分区(或根文件系统)；/dev/sda1(boot分区)中保存了内核映像和一些启动时需要的辅助文件；另外，还对用户家目录单独做了分区(/dev/mapper/centos-home)。<br>在linux中还可以做一个特殊的分区：swap分区(交换分区)。作用是：当系统的物理内存不够用时，会将物理内存中一部分暂时不使用的数据交换至swap分区中，当需要使用这些数据时，再从swap空间交换回内存空间。swap在功能上突破了物理内存的限制，使程序可以操纵大于实际物理内存的空间。但由于硬盘的速度远远低于内存，使swap只能作为物理内存的辅助。通常swap空间的大小是实际物理内存大小的1到2倍。使用命令free可以查看swap空间的大小。</p>
+<p>选项-i显示inode信息</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">[root@centos7 tmp]# df -i</span><br><span class="line">文件系统                   Inode 已用(I)  可用(I) 已用(I)% 挂载点</span><br><span class="line">/dev/mapper/centos-root 50425856   78822 50347034       1% /</span><br><span class="line">devtmpfs                  998721     391   998330       1% /dev</span><br><span class="line">tmpfs                    1001340       1  1001339       1% /dev/shm</span><br><span class="line">tmpfs                    1001340     490  1000850       1% /run</span><br><span class="line">tmpfs                    1001340      13  1001327       1% /sys/fs/cgroup</span><br><span class="line">/dev/sda1                 512000     330   511670       1% /boot</span><br><span class="line">/dev/mapper/centos-home 24621056  190391 24430665       1% /home</span><br><span class="line">tmpfs                    1001340       1  1001339       1% /run/user/0</span><br></pre></td></tr></table></figure>
+<p>这里显示的数字是该文件系统中inode数量的使用情况。</p>
+<h3 id="fdisk-磁盘分区工具"><a href="#fdisk-磁盘分区工具" class="headerlink" title="fdisk 磁盘分区工具"></a>fdisk 磁盘分区工具</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">fdisk [options] [device...]</span><br></pre></td></tr></table></figure>
+<p>选项-l表示列出分区表</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">[root@centos7 tmp]# fdisk -l /dev/sda</span><br><span class="line"></span><br><span class="line">磁盘 /dev/sda：85.9 GB, 85899345920 字节，167772160 个扇区</span><br><span class="line">Units = 扇区 of 1 * 512 = 512 bytes</span><br><span class="line">扇区大小(逻辑/物理)：512 字节 / 512 字节</span><br><span class="line">I/O 大小(最小/最佳)：512 字节 / 512 字节</span><br><span class="line">磁盘标签类型：dos</span><br><span class="line">磁盘标识符：0x0001abbc</span><br><span class="line"></span><br><span class="line">   设备   Boot      Start         End      Blocks   Id  System</span><br><span class="line">/dev/sda1   *        2048     1026047      512000   83  Linux</span><br><span class="line">/dev/sda2         1026048   167772159    83373056   8e  Linux LVM</span><br><span class="line">[root@centos7 tmp]#</span><br></pre></td></tr></table></figure>
+<p>当前机械硬盘中包含一到多个固定在主轴(spindle)上的盘片(platter)，盘片由硬质磁性合金材料构成。每张盘片有上下两个表面，每个表面都包含数量巨大的扇区(sector)，扇区是大小为512 byte的区块，这些区块均匀的分布于盘片的同心圆上，这些同心圆被称为磁道(track)。上千个磁道的宽度相当于人类头发的直径。</p>
+<p>硬盘中使用固定于磁臂(disk arm)顶端的磁头(disk head 上下两面均有)读写盘面中的数据。硬盘不工作时，磁头停留在启停区(盘片上靠近主轴的区域)；启停区外是数据区，盘片最外围磁道称为0磁道；硬盘启动后，盘片会围绕主轴高速旋转，盘片旋转产生的气流相当强，足以使磁头托起，并与盘面保持一个微小的距离(大概相当于人类头发直径的千分之一)。磁臂摆动，可以将磁头移动至任意磁道上方。</p>
+<p>当前硬盘转速大概在7200转/分钟到15000转/分钟左右。假设硬盘转速是10000转/分钟，则意味着，转一圈需要的时间是6ms。</p>
+<p>所有盘面上的同一磁道构成一个圆柱，通常称做柱面(Cylinder)，系统将数据存储到磁盘上时，按柱面、磁头、扇区的方式进行，即最上方0磁头最外围0磁道第一个扇区开始写入，写满一个磁道之后，接着在同一柱面的下一个磁头继续写入。同一个柱面都写满之后才推进到内层的下一个柱面。</p>
+<p>fdisk命令中device通常是/dev/hda、/dev/hdb….(IDE接口类型的硬盘设备名)或/dev/sda、/dev/sdb….(SCSI接口类型硬盘设备名)，表示整个硬盘，如果硬盘被分区，则在设备名后追加一个数字表示此设备的第几个分区。如上例中的/dev/sda1和/dev/sda2</p>
+<p>硬盘磁头存取数据是以扇区(512bytes)为单位的(上例中Start和End列)，但操作系统存取数据是以块(Block)为单位的(注意：这里说的Block的大小不同于fdisk命令输出中的Blocks列，fdisk命令输出中Blocks列的大小为1024 bytes)；扇区是硬件级别的，Block是文件系统级别的，也就是说在创建文件系统(格式化)的时候才决定一个block的大小、数量。一个块的大小是一个扇区大小2的n次方倍，本例文件系统Block的默认大小为4096 bytes(格式化时可以指定为其他值)。</p>
+<p>我们在252这台机器上新添加三块硬盘(每块200GB)<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">[root@idc-v-71252 ~]# ls -l /dev/sd[a-d]*</span><br><span class="line">brw-rw---- 1 root disk 8,  0 12月 13 09:49 /dev/sda</span><br><span class="line">brw-rw---- 1 root disk 8,  1 12月 13 09:49 /dev/sda1</span><br><span class="line">brw-rw---- 1 root disk 8,  2 12月 13 09:49 /dev/sda2</span><br><span class="line">brw-rw---- 1 root disk 8, 16 12月 13 09:49 /dev/sdb</span><br><span class="line">brw-rw---- 1 root disk 8, 32 12月 13 09:49 /dev/sdc</span><br><span class="line">brw-rw---- 1 root disk 8, 48 12月 13 09:49 /dev/sdd</span><br><span class="line">#这里看到除了原有被分过区的sda外，多出了设备sdb、sdc、sdd</span><br><span class="line">#这里的第五列由逗号分隔的两个数字组成，它们是内核用来识别具体设备的标识号</span><br></pre></td></tr></table></figure></p>
+<p>下面使用fdisk命令对新磁盘进行分区</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">[root@idc-v-71252 ~]# fdisk /dev/sdb</span><br><span class="line">欢迎使用 fdisk (util-linux 2.23.2)。</span><br><span class="line"></span><br><span class="line">更改将停留在内存中，直到您决定将更改写入磁盘。</span><br><span class="line">使用写入命令前请三思。</span><br><span class="line"></span><br><span class="line">Device does not contain a recognized partition table</span><br><span class="line">使用磁盘标识符 0xc41dfd92 创建新的 DOS 磁盘标签。</span><br><span class="line"></span><br><span class="line">命令(输入 m 获取帮助)：</span><br></pre></td></tr></table></figure>
+<p>在提示符后输入m获取帮助信息（列出了在提示符后可使用的命令及其解释）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">命令(输入 m 获取帮助)：m</span><br><span class="line">命令操作</span><br><span class="line">   a   toggle a bootable flag</span><br><span class="line">   b   edit bsd disklabel</span><br><span class="line">   c   toggle the dos compatibility flag</span><br><span class="line">   d   delete a partition</span><br><span class="line">   g   create a new empty GPT partition table</span><br><span class="line">   G   create an IRIX (SGI) partition table</span><br><span class="line">   l   list known partition types</span><br><span class="line">   m   print this menu</span><br><span class="line">   n   add a new partition</span><br><span class="line">   o   create a new empty DOS partition table</span><br><span class="line">   p   print the partition table</span><br><span class="line">   q   quit without saving changes</span><br><span class="line">   s   create a new empty Sun disklabel</span><br><span class="line">   t   change a partition&apos;s system id</span><br><span class="line">   u   change display/entry units</span><br><span class="line">   v   verify the partition table</span><br><span class="line">   w   write table to disk and exit</span><br><span class="line">   x   extra functionality (experts only)</span><br><span class="line"></span><br><span class="line">命令(输入 m 获取帮助)：</span><br></pre></td></tr></table></figure>
+<p>命令n表示创建一个新分区</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">命令(输入 m 获取帮助)：n</span><br><span class="line">Partition type:</span><br><span class="line">   p   primary (0 primary, 0 extended, 4 free)</span><br><span class="line">   e   extended</span><br><span class="line">Select (default p):</span><br></pre></td></tr></table></figure>
+<p>此处可选项有两个，p表示主分区(primary)，e表示扩展分区(extended)，默认为主分区。</p>
+<p>每块硬盘分区后，位于0磁头0柱面1扇区的是一个特殊区域，称为MBR(Main Boot Record 主引导记录区)，其中前446字节是Bootloader(引导加载程序)，之后的64字节是DPT(Disk Partition Table 硬盘分区表)，最后两个字节的Magic Number(硬盘有效标志)。</p>
+<p>DPT中记录了此块硬盘有哪些分区，由于其大小的限制，使得分区表只能包含4条记录，可以是一到四个主分区或一个扩展分区和一到三个主分区。其中扩展分区可以再分区，称为逻辑分区。</p>
+<p>我们选择默认的主分区：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">Select (default p): </span><br><span class="line">Using default response p</span><br><span class="line">分区号 (1-4，默认 1)：</span><br><span class="line">起始 扇区 (2048-419430399，默认为 2048)：</span><br><span class="line">将使用默认值 2048</span><br><span class="line">Last 扇区, +扇区 or +size&#123;K,M,G&#125; (2048-419430399，默认为 419430399)：+100G</span><br><span class="line">分区 1 已设置为 Linux 类型，大小设为 100 GiB</span><br><span class="line"></span><br><span class="line">命令(输入 m 获取帮助)：</span><br></pre></td></tr></table></figure>
+<p>每一步骤都有相应提示，可以被使用的扇区从2048号开始(前面的扇区包括MBR用做其他用途)，分区结束扇区的指定可以是扇区号，也可以是+size这样的格式。这里我们指定分区大小为100G</p>
+<p>使用p命令打印分区信息：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">命令(输入 m 获取帮助)：p</span><br><span class="line"></span><br><span class="line">磁盘 /dev/sdb：214.7 GB, 214748364800 字节，419430400 个扇区</span><br><span class="line">Units = 扇区 of 1 * 512 = 512 bytes</span><br><span class="line">扇区大小(逻辑/物理)：512 字节 / 512 字节</span><br><span class="line">I/O 大小(最小/最佳)：512 字节 / 512 字节</span><br><span class="line">磁盘标签类型：dos</span><br><span class="line">磁盘标识符：0xc41dfd92</span><br><span class="line"></span><br><span class="line">   设备   Boot      Start         End      Blocks   Id  System</span><br><span class="line">/dev/sdb1            2048   209717247   104857600   83  Linux</span><br><span class="line"></span><br><span class="line">命令(输入 m 获取帮助)：</span><br></pre></td></tr></table></figure></p>
+<p>注意这里的显示的不同，Boot列如果有*标志，表示此分区为boot分区。Id列表示分区类型，可以使用命令l列出所有支持的类型，其中82表示linux swap，83表示linux默认分区类型，8e表示linux lvm(后述)。</p>
+<p>然后我们将信息保存：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">命令(输入 m 获取帮助)：w</span><br><span class="line">The partition table has been altered!</span><br><span class="line"></span><br><span class="line">Calling ioctl() to re-read partition table.</span><br><span class="line">正在同步磁盘。</span><br><span class="line">[root@idc-v-71252 ~]#</span><br></pre></td></tr></table></figure></p>
+<h3 id="mkfs-创建文件系统"><a href="#mkfs-创建文件系统" class="headerlink" title="mkfs 创建文件系统"></a>mkfs 创建文件系统</h3><p>选项-t可以指定文件系统类型(包括ext3 ext4 btrfs xfs reiserfs等)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">[root@idc-v-71252 ~]# mkfs -t ext4 /dev/sdb1 #或者直接执行 mkfs.ext4 /dev/sdb1</span><br><span class="line">mke2fs 1.42.9 (28-Dec-2013)</span><br><span class="line">文件系统标签=</span><br><span class="line">OS type: Linux</span><br><span class="line">块大小=4096 (log=2)</span><br><span class="line">分块大小=4096 (log=2)</span><br><span class="line">Stride=0 blocks, Stripe width=0 blocks</span><br><span class="line">6553600 inodes, 26214400 blocks</span><br><span class="line">1310720 blocks (5.00%) reserved for the super user</span><br><span class="line">第一个数据块=0</span><br><span class="line">Maximum filesystem blocks=2174746624</span><br><span class="line">800 block groups</span><br><span class="line">32768 blocks per group, 32768 fragments per group</span><br><span class="line">8192 inodes per group</span><br><span class="line">Superblock backups stored on blocks: </span><br><span class="line">        32768, 98304, 163840, 229376, 294912, 819200, 884736, 1605632, 2654208, </span><br><span class="line">        4096000, 7962624, 11239424, 20480000, 23887872</span><br><span class="line"></span><br><span class="line">Allocating group tables: 完成                            </span><br><span class="line">正在写入inode表: 完成                            </span><br><span class="line">Creating journal (32768 blocks): 完成</span><br><span class="line">Writing superblocks and filesystem accounting information: 完成   </span><br><span class="line"></span><br><span class="line">[root@idc-v-71252 ~]#</span><br></pre></td></tr></table></figure>
+<p>这样，我们就把刚刚分的区格式化成了ext4文件系统，输出信息中显示了inode和block数量等信息。</p>
+<h3 id="mount-挂载文件系统"><a href="#mount-挂载文件系统" class="headerlink" title="mount 挂载文件系统"></a>mount 挂载文件系统</h3><p>将格式化好的文件系统挂载至/root/temp/tmp</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">[root@idc-v-71252 tmp]# mount /dev/sdb1 /root/temp/tmp</span><br><span class="line">[root@idc-v-71252 tmp]# df -h</span><br><span class="line">文件系统                 容量  已用  可用 已用% 挂载点</span><br><span class="line">/dev/mapper/centos-root   49G   14G   35G   28% /</span><br><span class="line">devtmpfs                 3.9G     0  3.9G    0% /dev</span><br><span class="line">tmpfs                    3.9G     0  3.9G    0% /dev/shm</span><br><span class="line">tmpfs                    3.9G  8.5M  3.9G    1% /run</span><br><span class="line">tmpfs                    3.9G     0  3.9G    0% /sys/fs/cgroup</span><br><span class="line">/dev/sda1                497M  170M  328M   35% /boot</span><br><span class="line">/dev/mapper/centos-home   24G   16G  7.6G   68% /home</span><br><span class="line">tmpfs                    799M     0  799M    0% /run/user/0</span><br><span class="line">/dev/sdb1                 99G   61M   94G    1% /root/temp/tmp</span><br><span class="line">[root@idc-v-71252 tmp]#</span><br></pre></td></tr></table></figure>
+<p>可以看到新分区已经可以使用了，在格式化时，系统会将磁盘上一定空间(此处是5%)保留做其他用途，可以使用命令dumpe2fs /dev/sdb1 2&gt;/dev/null|grep ‘Reserved block count’查看保留块数量。</p>
+<p>这样挂载的分区只是临时有效，当系统重启时，并不会自动挂载该分区。如需要永久生效，可以将分区信息写入分区配置文件/etc/fstab<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">[root@idc-v-71252 ~]# cat /etc/fstab </span><br><span class="line"></span><br><span class="line">#</span><br><span class="line"># /etc/fstab</span><br><span class="line"># Created by anaconda on Fri Jan 15 00:59:59 2016</span><br><span class="line">#</span><br><span class="line"># Accessible filesystems, by reference, are maintained under &apos;/dev/disk&apos;</span><br><span class="line"># See man pages fstab(5), findfs(8), mount(8) and/or blkid(8) for more info</span><br><span class="line">#</span><br><span class="line">/dev/mapper/centos-root /                       xfs     defaults        0 0</span><br><span class="line">UUID=10205c20-bd44-4991-8c84-7b38db63a581 /boot                   xfs     defaults        0 0</span><br><span class="line">/dev/mapper/centos-home /home                   xfs     defaults        0 0</span><br><span class="line">/dev/mapper/centos-swap swap                    swap    defaults        0 0</span><br></pre></td></tr></table></figure></p>
+<p>此文件中记录了原有分区及其挂载信息，#开头的行为注释行，其余行被分为6列：<br>第一列表示文件系统<br>第二列是挂载点<br>第三列为文件系统类型<br>第四列为选项<br>第五列表示是否对该文件系统使用dump工具备份，0表示不备份<br>第六列表示是否使用fsck工具对该文件系统做定时检查，0表示不检查</p>
+<p>在文件中追加如下信息后，系统重启时新分区也会被自动挂载：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/dev/sdb1 /root/temp/tmp ext4 defaults 0 0</span><br></pre></td></tr></table></figure>
+<p>在使用mount命令挂载时，可以使用选项-o options指定挂载选项(/etc/fstab中第四列)<br>如对已挂载的新分区重新以只读方式挂载：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[root@idc-v-71252 home]# mount -o remount,ro /dev/sdb1</span><br><span class="line">[root@idc-v-71252 home]# cd /root/temp/tmp</span><br><span class="line">[root@idc-v-71252 tmp]# touch 1</span><br><span class="line">touch: 无法创建&quot;1&quot;: 只读文件系统</span><br><span class="line">[root@idc-v-71252 tmp]#</span><br></pre></td></tr></table></figure></p>
+<p>此时再在目录/root/temp/tmp中创建文件时显示报错：只读文件系统<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[root@idc-v-71252 tmp]# mount -o remount,rw /dev/sdb1</span><br><span class="line">[root@idc-v-71252 tmp]# touch 2</span><br><span class="line">[root@idc-v-71252 tmp]# ls</span><br><span class="line">2  lost+found</span><br><span class="line">[root@idc-v-71252 tmp]# 重新以读写方式挂载后可以创建文件</span><br></pre></td></tr></table></figure></p>
+<p>配置文件中的defaults指的是选项：rw, suid, dev, exec, auto, nouser, 和 async. 它们的意思请查看mount的man手册<br>选项-a表示读取配置文件中所有记录并重新挂载<br>选项-B或–bind可以使一个目录挂载至另一个目录<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">[root@idc-v-71252 tmp]# ls -l /opt/</span><br><span class="line">总用量 0</span><br><span class="line">[root@idc-v-71252 tmp]# </span><br><span class="line">[root@idc-v-71252 tmp]# mount --bind /root/temp/tmp /opt</span><br><span class="line">[root@idc-v-71252 tmp]# ls /opt -l</span><br><span class="line">总用量 16</span><br><span class="line">-rw-r--r-- 1 root root     0 12月 13 14:44 2</span><br><span class="line">drwx------ 2 root root 16384 12月 13 12:54 lost+found</span><br><span class="line">[root@idc-v-71252 tmp]#</span><br></pre></td></tr></table></figure></p>
+<p>这样挂载的目录使用df命令并不能查看到，可以使用mount命令查看</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@idc-v-71252 tmp]# mount | grep /dev/sdb1</span><br><span class="line">/dev/sdb1 on /root/temp/tmp type ext4 (rw,relatime,data=ordered)</span><br><span class="line">/dev/sdb1 on /opt type ext4 (rw,relatime,data=ordered)</span><br></pre></td></tr></table></figure>
+<p>选项-t表示指定文件系统类型，如挂载光盘：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[root@centos7 tmp]# mount -t iso9660 /dev/cdrom /mnt</span><br><span class="line">mount: /dev/sr0 写保护，将以只读方式挂载</span><br><span class="line">[root@centos7 tmp]# </span><br><span class="line">#或者挂载NFS文件系统(x.x.x.x是NFS服务器IP地址)</span><br><span class="line">mount -t nfs x.x.x.x:/src_dir /path/to/local/dest_dir</span><br></pre></td></tr></table></figure>
+<h3 id="umount-卸载文件系统"><a href="#umount-卸载文件系统" class="headerlink" title="umount 卸载文件系统"></a>umount 卸载文件系统</h3><p>卸载时既可以指定设备名也可以指定挂载点，当文件系统内有进程正在使用某文件时，卸载会报错：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[root@idc-v-71252 ~]# umount /root/temp/tmp</span><br><span class="line">umount: /root/temp/tmp：目标忙。</span><br><span class="line">        (有些情况下通过 lsof(8) 或 fuser(1) 可以</span><br><span class="line">         找到有关使用该设备的进程的有用信息)</span><br><span class="line">[root@idc-v-71252 ~]#</span><br></pre></td></tr></table></figure></p>
+<p>此时可使用lsof或fuser找出进程(见这里)，停止该进程之后再卸载即可。</p>
+<p>如果是卸载光盘还可以用eject命令<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@centos7 tmp]# eject</span><br></pre></td></tr></table></figure></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/linux/" rel="tag"># linux</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2021/01/26/Linux系统-dev-mapper目录/" rel="next" title="Linux系统/dev/mapper目录">
+                <i class="fa fa-chevron-left"></i> Linux系统/dev/mapper目录
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">昨非</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">70</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">1</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">34</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#df-显示文件系统磁盘空间使用量"><span class="nav-number">1.</span> <span class="nav-text">df 显示文件系统磁盘空间使用量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#fdisk-磁盘分区工具"><span class="nav-number">2.</span> <span class="nav-text">fdisk 磁盘分区工具</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#mkfs-创建文件系统"><span class="nav-number">3.</span> <span class="nav-text">mkfs 创建文件系统</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#mount-挂载文件系统"><span class="nav-number">4.</span> <span class="nav-text">mount 挂载文件系统</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#umount-卸载文件系统"><span class="nav-number">5.</span> <span class="nav-text">umount 卸载文件系统</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">昨非</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
