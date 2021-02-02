@@ -79,18 +79,18 @@
 
 
 
-<meta name="description" content="描述： reversed()函数是python中极其常用的函数（我上回面试还被问到了）。reversed()函数的作用是返回一个反转的迭代器（元组、列表、字符串、range）。 语法： 1reversed(seq) 参数介绍：  seq — 需要转换的序列，如元组、列表、字符串、range 返回值： 返回反转的迭代器 下面例子展示reversed()函数使用方法 12345678seqTuple">
+<meta name="description" content="reversed 函数描述： reversed()函数是python中极其常用的函数（我上回面试还被问到了）。reversed()函数的作用是返回一个反转的迭代器（元组、列表、字符串、range）。 语法： 1reversed(seq) 参数介绍：  seq — 需要转换的序列，如元组、列表、字符串、range 返回值： 返回反转的迭代器 下面例子展示reversed()函数使用方法 123456">
 <meta name="keywords" content="python">
 <meta property="og:type" content="article">
 <meta property="og:title" content="reversed函数">
 <meta property="og:url" content="https://alfredliukai.github.io/2021/02/01/reversed函数/index.html">
 <meta property="og:site_name" content="昨非的个人网站">
-<meta property="og:description" content="描述： reversed()函数是python中极其常用的函数（我上回面试还被问到了）。reversed()函数的作用是返回一个反转的迭代器（元组、列表、字符串、range）。 语法： 1reversed(seq) 参数介绍：  seq — 需要转换的序列，如元组、列表、字符串、range 返回值： 返回反转的迭代器 下面例子展示reversed()函数使用方法 12345678seqTuple">
+<meta property="og:description" content="reversed 函数描述： reversed()函数是python中极其常用的函数（我上回面试还被问到了）。reversed()函数的作用是返回一个反转的迭代器（元组、列表、字符串、range）。 语法： 1reversed(seq) 参数介绍：  seq — 需要转换的序列，如元组、列表、字符串、range 返回值： 返回反转的迭代器 下面例子展示reversed()函数使用方法 123456">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:updated_time" content="2021-02-01T15:24:30.000Z">
+<meta property="og:updated_time" content="2021-02-02T15:28:31.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="reversed函数">
-<meta name="twitter:description" content="描述： reversed()函数是python中极其常用的函数（我上回面试还被问到了）。reversed()函数的作用是返回一个反转的迭代器（元组、列表、字符串、range）。 语法： 1reversed(seq) 参数介绍：  seq — 需要转换的序列，如元组、列表、字符串、range 返回值： 返回反转的迭代器 下面例子展示reversed()函数使用方法 12345678seqTuple">
+<meta name="twitter:description" content="reversed 函数描述： reversed()函数是python中极其常用的函数（我上回面试还被问到了）。reversed()函数的作用是返回一个反转的迭代器（元组、列表、字符串、range）。 语法： 1reversed(seq) 参数介绍：  seq — 需要转换的序列，如元组、列表、字符串、range 返回值： 返回反转的迭代器 下面例子展示reversed()函数使用方法 123456">
 
 
 
@@ -320,7 +320,7 @@
       
 
       
-        <p>描述：</p>
+        <h3 id="reversed-函数"><a href="#reversed-函数" class="headerlink" title="reversed 函数"></a>reversed 函数</h3><p>描述：</p>
 <p>reversed()函数是python中极其常用的函数（我上回面试还被问到了）。reversed()函数的作用是返回一个反转的迭代器（元组、列表、字符串、range）。</p>
 <p>语法：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">reversed(seq)</span><br></pre></td></tr></table></figure>
@@ -332,6 +332,13 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">seqTuple = (&apos;H&apos;, &apos;e&apos;, &apos;l&apos;, &apos;l&apos;, &apos;o&apos;) # 元组</span><br><span class="line">print(list(reversed(seqTuple)))</span><br><span class="line">seqList = [7, 8, 4, 5, 6]  # 列表</span><br><span class="line">print(list(reversed(seqList)))</span><br><span class="line">seqString = &apos;HelloWorld&apos; # 字符串</span><br><span class="line">print(list(reversed(seqString)))</span><br><span class="line">seqRange = range(1, 8)    # range</span><br><span class="line">print(list(reversed(seqRange)))</span><br></pre></td></tr></table></figure>
 <p>输出</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[&apos;o&apos;, &apos;l&apos;, &apos;l&apos;, &apos;e&apos;, &apos;H&apos;]</span><br><span class="line">[6, 5, 4, 8, 7]</span><br><span class="line">[&apos;d&apos;, &apos;l&apos;, &apos;r&apos;, &apos;o&apos;, &apos;W&apos;, &apos;o&apos;, &apos;l&apos;, &apos;l&apos;, &apos;e&apos;, &apos;H&apos;]</span><br><span class="line">[7, 6, 5, 4, 3, 2, 1]</span><br></pre></td></tr></table></figure>
+<h3 id="zip-函数"><a href="#zip-函数" class="headerlink" title="zip() 函数"></a>zip() 函数</h3><p>zip() 函数用于将可迭代的对象作为参数，将对象中对应的元素打包成一个个元组，然后返回由这些元组组成的列表。</p>
+<p>语法<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">zip([iterable, ...])</span><br></pre></td></tr></table></figure></p>
+<p>实例<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt;a = [1,2,3]</span><br><span class="line">&gt;&gt;&gt; b = [4,5,6]</span><br><span class="line">&gt;&gt;&gt; c = [4,5,6,7,8]</span><br><span class="line">&gt;&gt;&gt; zipped = zip(a,b)     # 打包为元组的列表</span><br><span class="line">[(1, 4), (2, 5), (3, 6)]</span><br><span class="line">&gt;&gt;&gt; zip(a,c)              # 元素个数与最短的列表一致</span><br><span class="line">[(1, 4), (2, 5), (3, 6)]</span><br><span class="line">&gt;&gt;&gt; zip(*zipped)          # 与 zip 相反，*zipped 可理解为解压，返回二维矩阵式</span><br><span class="line">[(1, 2, 3), (4, 5, 6)]</span><br></pre></td></tr></table></figure></p>
+<h3 id="sorted函数"><a href="#sorted函数" class="headerlink" title="sorted函数"></a>sorted函数</h3><p>sorted() 函数对所有可迭代的对象进行排序操作。</p>
+<p>sort 与 sorted 区别：sort 是应用在 list 上的方法，sorted 可以对所有可迭代的对象进行排序操作。list 的 sort 方法返回的是对已经存在的列表进行操作，无返回值，而内建函数 sorted 方法返回的是一个新的 list，而不是在原来的基础上进行的操作。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">sorted(iterable, cmp=None, key=None, reverse=False)</span><br><span class="line"></span><br><span class="line">iterable -- 可迭代对象。</span><br><span class="line">cmp -- 比较的函数，这个具有两个参数，参数的值都是从可迭代对象中取出，此函数必须遵守的规则为，大于则返回1，小于则返回-1，等于则返回0。</span><br><span class="line">key -- 主要是用来进行比较的元素，只有一个参数，具体的函数的参数就是取自于可迭代对象中，指定可迭代对象中的一个元素来进行排序。</span><br><span class="line">reverse -- 排序规则，reverse = True 降序 ， reverse = False 升序（默认）。</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt;a = [5,7,6,3,4,1,2]</span><br><span class="line">&gt;&gt;&gt; b = sorted(a)       # 保留原列表</span><br><span class="line">&gt;&gt;&gt; a </span><br><span class="line">[5, 7, 6, 3, 4, 1, 2]</span><br><span class="line">&gt;&gt;&gt; b</span><br><span class="line">[1, 2, 3, 4, 5, 6, 7]</span><br><span class="line"></span><br><span class="line">&gt;&gt;&gt; L=[(&apos;b&apos;,2),(&apos;a&apos;,1),(&apos;c&apos;,3),(&apos;d&apos;,4)]</span><br><span class="line">&gt;&gt;&gt; sorted(L, cmp=lambda x,y:cmp(x[1],y[1]))   # 利用cmp函数</span><br><span class="line">[(&apos;a&apos;, 1), (&apos;b&apos;, 2), (&apos;c&apos;, 3), (&apos;d&apos;, 4)]</span><br><span class="line">&gt;&gt;&gt; sorted(L, key=lambda x:x[1])               # 利用key</span><br><span class="line">[(&apos;a&apos;, 1), (&apos;b&apos;, 2), (&apos;c&apos;, 3), (&apos;d&apos;, 4)]</span><br><span class="line"></span><br><span class="line">&gt;&gt;&gt; students = [(&apos;john&apos;, &apos;A&apos;, 15), (&apos;jane&apos;, &apos;B&apos;, 12), (&apos;dave&apos;, &apos;B&apos;, 10)]</span><br><span class="line">&gt;&gt;&gt; sorted(students, key=lambda s: s[2])            # 按年龄排序</span><br><span class="line">[(&apos;dave&apos;, &apos;B&apos;, 10), (&apos;jane&apos;, &apos;B&apos;, 12), (&apos;john&apos;, &apos;A&apos;, 15)]</span><br><span class="line"> </span><br><span class="line">&gt;&gt;&gt; sorted(students, key=lambda s: s[2], reverse=True)       # 按降序</span><br><span class="line">[(&apos;john&apos;, &apos;A&apos;, 15), (&apos;jane&apos;, &apos;B&apos;, 12), (&apos;dave&apos;, &apos;B&apos;, 10)]</span><br></pre></td></tr></table></figure>
       
     </div>
     
@@ -370,6 +377,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2021/02/02/linux下iptables总结/" rel="prev" title="linux下iptables总结">
+                linux下iptables总结 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -421,8 +432,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -437,7 +457,7 @@
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">74</span>
+                  <span class="site-state-item-count">75</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -482,6 +502,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#reversed-函数"><span class="nav-number">1.</span> <span class="nav-text">reversed 函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#zip-函数"><span class="nav-number">2.</span> <span class="nav-text">zip() 函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#sorted函数"><span class="nav-number">3.</span> <span class="nav-text">sorted函数</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       

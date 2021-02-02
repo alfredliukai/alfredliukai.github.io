@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh_CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="linux,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="基本概念在linux操作系统中，Netfilter组件是集成在linux内核中扩展各种网络服务的结构化底层框架，在内核级提供防火墙功能。内核中选取五个位置放了五个hook(勾子) function(INPUT、OUTPUT、FORWARD、PREROUTING、POSTROUTING)，而这五个hook function向用户开放，用户可以通过一个命令工具（iptables）向其写入规则。  报文">
+<meta name="keywords" content="linux">
+<meta property="og:type" content="article">
+<meta property="og:title" content="linux下iptables总结">
+<meta property="og:url" content="https://alfredliukai.github.io/2021/02/02/linux下iptables总结/index.html">
+<meta property="og:site_name" content="昨非的个人网站">
+<meta property="og:description" content="基本概念在linux操作系统中，Netfilter组件是集成在linux内核中扩展各种网络服务的结构化底层框架，在内核级提供防火墙功能。内核中选取五个位置放了五个hook(勾子) function(INPUT、OUTPUT、FORWARD、PREROUTING、POSTROUTING)，而这五个hook function向用户开放，用户可以通过一个命令工具（iptables）向其写入规则。  报文">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://alfredliukai.github.io/2021/02/02/linux下iptables总结/iptables1.png">
+<meta property="og:updated_time" content="2021-02-02T10:28:40.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="linux下iptables总结">
+<meta name="twitter:description" content="基本概念在linux操作系统中，Netfilter组件是集成在linux内核中扩展各种网络服务的结构化底层框架，在内核级提供防火墙功能。内核中选取五个位置放了五个hook(勾子) function(INPUT、OUTPUT、FORWARD、PREROUTING、POSTROUTING)，而这五个hook function向用户开放，用户可以通过一个命令工具（iptables）向其写入规则。  报文">
+<meta name="twitter:image" content="https://alfredliukai.github.io/2021/02/02/linux下iptables总结/iptables1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://alfredliukai.github.io/2021/02/02/linux下iptables总结/">
+
+
+
+
+
+  <title>linux下iptables总结 | 昨非的个人网站</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh_CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">昨非的个人网站</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-首页">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-标签">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-归档">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-关于">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://alfredliukai.github.io/2021/02/02/linux下iptables总结/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="昨非">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="昨非的个人网站">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">linux下iptables总结</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2021-02-02T18:07:57+08:00">
+                2021-02-02
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h3><p>在linux操作系统中，Netfilter组件是集成在linux内核中扩展各种网络服务的结构化底层框架，在内核级提供防火墙功能。内核中选取五个位置放了五个hook(勾子) function(INPUT、OUTPUT、FORWARD、PREROUTING、POSTROUTING)，而这五个hook function向用户开放，用户可以通过一个命令工具（iptables）向其写入规则。</p>
+<p><img src="/2021/02/02/linux下iptables总结/iptables1.png" alt="avatar"></p>
+<p>报文流向：</p>
+<p>流入本机：PREROUTING –&gt; INPUT–&gt;用户空间进程</p>
+<p>流出本机：用户空间进程–&gt;OUTPUT–&gt; POSTROUTING</p>
+<p>转发：PREROUTING –&gt; FORWARD –&gt; POSTROUTING</p>
+<p>内核中数据包的传输过程：</p>
+<ol>
+<li>当一个数据包进入网卡时，数据包首先进入PREROUTING链，内核根据数据包目的IP判断是否需要转送出去</li>
+<li>如果数据包就是进入本机的，数据包就会到达INPUT链。经INPUT链检查后，数据包被发往本地进程。本地进程进行相应处理后发送响应数据包，数据包经过OUTPUT链，然后到达POSTROUTING链输出；如果数据包是要转发出去的，且内核允许转发，数据包就会向右移动，经过FORWARD链，然后到达POSTROUTING链输出。</li>
+</ol>
+<p>企业内部的主机A若配了一个公网地址6.6.6.6，访问互联网上其他网段的公有地址不受限制，但若访问互联网上同网段的地址即6.0.0.0/8网段的地址，由于A的路由表就有到达该网段的路由记录，就直接访问了，不会去查询路由器，但是实际上访问的不是互联网上的主机，而是本地局域网的主机，也就是说该网段的所有公有地址A都将无法访问。所以企业内部的主机一般是私有地址，但是互联网上没有私有地址的路由，也就是说私有地址无法连接互联网，可以利用防火墙的nat表（network address translation 地址转换规则表）将私有地址转换为公有地址再去访问互联网。</p>
+<p>SNAT</p>
+<p>企业内部的主机A想访问互联网上的主机C，首先将请求数据包（源：ipA，目标：ipC）发送到防火墙所在主机B，B收到后将数据包源地址改为本机公网网卡的ip（源：ipA，目标：ipB），然后经互联网发送给C；C收到后将回应包（源：ipC，目标：ipB）转发给C的路由器，经互联网将回应包转发给B，B收到回应包后修改其目的地址，即回应包改为（源：ipC，目标：ipA）然后将数据包转发给A。</p>
+<p>在这个过程中，修改了请求报文的源地址，叫做SNAT（source NAT POSTROUTING），用于局域网访问互联网。</p>
+<p>不能在防火墙B的prerouting链上设置转换源地址的防火墙策略，因为若在B的prerouting链上设置转换源地址的防火墙策略，此时还未检查路由表，还不知道要到达数据包中目标主机需经过本机的哪个网卡接口，即还不知道需将源地址替换为哪个公网网卡的ip，需在postrouting设置转换源地址的防火墙策略。</p>
+<p>DNAT</p>
+<p>互联网主机C想访问企业内部的web服务器A，但A的地址是私有地址，无法直接访问。此时，C可以访问防火墙的公网地址，C的请求数据包（源：ipC，目标：ipB）到达防火墙B后，在B的prerouting上将请求数据包的目标地址进行修改，并将数据包（源：ipC，目标：ipA）发送给A。A收到后进行回复发送响应包（源：ipA，目的ipC）到防火墙，防火墙收到后对数据包源地址进行修改，并将响应包（源：ipB，目标：ipC）给C。利用这种机制可以将企业内部的服务发布到互联网。</p>
+<p>在这个过程中，修改了请求报文的目标地址，叫做DNAT（destination NAT POSTROUTING），用于互联网访问局域网。</p>
+<p>必须在防火墙的prerouting上设置修改目标地址的防火墙策略，因为若不在此处修改，请求数据包通过prerouting和路由表后，由于目标主机是本机，就会将数据包发往input，进而被发往本地进程。</p>
+<p>iptables -t nat -A PREROUTING -d 本机IP -p tcp –dport 本机端口 -j DNAT –to-destination 目标机IP:目标机端口<br>iptables -t nat -A PREROUTING -d 192.168.172.130 -p tcp –dport 8000 -j DNAT –to-destination 192.168.172.131:80<br>iptables -t nat -A POSTROUTING -d 192.168.172.131 -p tcp –dport 80 -j SNAT –to 192.168.172.130</p>
+<p>iptables -t 表名 &lt;-A/I/D/R&gt; 规则链名 [规则号] &lt;-i/o 网卡名&gt; -p 协议名 &lt;-s 源IP/源子网&gt; –sport 源端口 &lt;-d 目标IP/目标子网&gt; –dport 目标端口 -j 动作</p>
+<p>iptables -t nat -A PREROUTING -d 10.175.131.164 -p tcp –dport 8000 -j DNAT –to-destination 192.168.122.232:80<br>iptables -t nat -A POSTROUTING -d 192.168.122.232 -p tcp –dport 80 -j SNAT –to 10.175.131.164</p>
+<h3 id="iptables命令"><a href="#iptables命令" class="headerlink" title="iptables命令"></a>iptables命令</h3><p>iptables命令<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">-t&lt;表&gt;：指定要操纵的表；</span><br><span class="line">-A：向规则链中添加条目；</span><br><span class="line">-D：从规则链中删除条目；</span><br><span class="line">-i：向规则链中插入条目；</span><br><span class="line">-R：替换规则链中的条目；</span><br><span class="line">-L：显示规则链中已有的条目；</span><br><span class="line">-F：清楚规则链中已有的条目；</span><br><span class="line">-Z：清空规则链中的数据包计算器和字节计数器；</span><br><span class="line">-N：创建新的用户自定义规则链；</span><br><span class="line">-P：定义规则链中的默认目标；</span><br><span class="line">-h：显示帮助信息；</span><br><span class="line">-p：指定要匹配的数据包协议类型；</span><br><span class="line">-s：指定要匹配的数据包源ip地址；</span><br><span class="line">-j&lt;目标&gt;：指定要跳转的目标；</span><br><span class="line">-i&lt;网络接口&gt;：指定数据包进入本机的网络接口；</span><br><span class="line">-o&lt;网络接口&gt;：指定数据包要离开本机所使用的网络接口。</span><br></pre></td></tr></table></figure></p>
+<p>iptables命令选项输入顺序：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -t 表名 &lt;-A/I/D/R&gt; 规则链名 [规则号] &lt;-i/o 网卡名&gt; -p 协议名 &lt;-s 源IP/源子网&gt; --sport 源端口 &lt;-d 目标IP/目标子网&gt; --dport 目标端口 -j 动作</span><br></pre></td></tr></table></figure></p>
+<p>表名包括：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">raw：高级功能，如：网址过滤。</span><br><span class="line">mangle：数据包修改（QOS），用于实现服务质量。</span><br><span class="line">nat：地址转换，用于网关路由器。</span><br><span class="line">filter：包过滤，用于防火墙规则。</span><br></pre></td></tr></table></figure>
+<p>规则链名包括：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">INPUT链：处理输入数据包。</span><br><span class="line">OUTPUT链：处理输出数据包。</span><br><span class="line">PORWARD链：处理转发数据包。</span><br><span class="line">PREROUTING链：用于目标地址转换（DNAT）。</span><br><span class="line">POSTOUTING链：用于源地址转换（SNAT）。</span><br></pre></td></tr></table></figure>
+<p>动作包括：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">accept：接收数据包。</span><br><span class="line">DROP：丢弃数据包。</span><br><span class="line">REDIRECT：重定向、映射、透明代理。</span><br><span class="line">SNAT：源地址转换。</span><br><span class="line">DNAT：目标地址转换。</span><br><span class="line">MASQUERADE：IP伪装（NAT），用于ADSL。</span><br><span class="line">LOG：日志记录。</span><br></pre></td></tr></table></figure></p>
+<p>实例<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">iptables -t nat -A PREROUTING -d 10.175.131.164 -p tcp --dport 8000 -j DNAT --to-destination 192.168.122.232:80</span><br><span class="line">iptables -t nat -A POSTROUTING -d 192.168.122.232 -p tcp --dport 80 -j SNAT --to 10.175.131.164</span><br><span class="line"></span><br><span class="line">显示规则</span><br><span class="line">iptables -L INPUT --line-numbers</span><br><span class="line"></span><br><span class="line">删除一条规则</span><br><span class="line">iptables -D INPUT 7</span><br><span class="line">``` </span><br><span class="line"></span><br><span class="line">### rinetd 端口转发</span><br><span class="line"></span><br><span class="line">rinetd是一个轻量级TCP转发工具，简单配置就可以实现端口映射/转发/重定向。</span><br><span class="line"></span><br><span class="line">源码下载</span><br></pre></td></tr></table></figure></p>
+<p>wget <a href="https://li.nux.ro/download/nux/misc/el7/x86_64/rinetd-0.62-9.el7.nux.x86_64.rpm" target="_blank" rel="noopener">https://li.nux.ro/download/nux/misc/el7/x86_64/rinetd-0.62-9.el7.nux.x86_64.rpm</a><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">安装rinetd</span><br></pre></td></tr></table></figure></p>
+<p>rpm -ivh rinetd-0.62-9.el7.nux.x86_64.rpm<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">编辑配置文件</span><br></pre></td></tr></table></figure></p>
+<p>vi rinetd.conf<br>    0.0.0.0 1234 127.0.0.1 22<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">启动转发</span><br></pre></td></tr></table></figure></p>
+<p>rinetd -c /etc/rinetd.conf<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">### ncat 端口转发</span><br><span class="line">netcat（简称nc）被誉为网络安全界的”瑞士军刀“，一个简单而有用的工具，这里介绍一种使用netcat实现端口转发的方法。</span><br><span class="line"></span><br><span class="line">安装ncat</span><br></pre></td></tr></table></figure></p>
+<p>yum install nmap-ncat -y<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">监听本机 9876 端口，将数据转发到 192.168.172.131的 80 端口</span><br></pre></td></tr></table></figure></p>
+<p>ncat –sh-exec “ncat 192.168.172.131 80” -l 9876  –keep-open<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">### socat 端口转发</span><br><span class="line"></span><br><span class="line">socat安装</span><br></pre></td></tr></table></figure></p>
+<p>yum install -y socat<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">在本地监听12345端口，并将请求转发至192.168.172.131的22端口。</span><br></pre></td></tr></table></figure></p>
+<p>socat TCP4-LISTEN:12345,reuseaddr,fork TCP4:192.168.172.131:22<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">### portmap 端口转发</span><br><span class="line"></span><br><span class="line">下载地址</span><br></pre></td></tr></table></figure></p>
+<p><a href="http://www.vuln.cn/wp-content/uploads/2016/06/lcx_vuln.cn_.zip" target="_blank" rel="noopener">http://www.vuln.cn/wp-content/uploads/2016/06/lcx_vuln.cn_.zip</a><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">监听本地1234端口，转发给192.168.172.131的22端口</span><br></pre></td></tr></table></figure></p>
+<p>./portmap -m 1 -p1 1234 -h2 192.168.172.131 -p2 22<br>08、portfwd端口转发<br>portfwd是meterpreter中内置的功能，也提供了单机版，用于TCP/UDP端口转发服务<br>Github 项目地址：<br><a href="https://github.com/rssnsj/portfwd" target="_blank" rel="noopener">https://github.com/rssnsj/portfwd</a><br>（1）下载编译<br>git clone <a href="https://github.com/rssnsj/portfwd.git" target="_blank" rel="noopener">https://github.com/rssnsj/portfwd.git</a><br>cd portfwd/src<br>make<br>（2）将本地的12345端口转发到192.168.172.131：22</p>
+<p>./tcpfwd 0.0.0.0:12345 192.168.172.131:22<br>09、NATBypass端口转发<br>一款lcx（htran）在golang下的实现<br>Gihub项目地址：<br><a href="https://github.com/cw1997/NATBypass" target="_blank" rel="noopener">https://github.com/cw1997/NATBypass</a><br>（1）内网主机主动连接外网主机打通隧道<br>在目标机器上执行：nb -slave 127.0.0.1:3389 公网IP:51<br>在公网的机器执行：nb -listen 51 3340<br>在公网主机上连接 127.0.0.1:3340，即可连接上内网机器的3389端口。<br><code>`</code></p>
+<h3 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h3><ol>
+<li><a href="https://blog.csdn.net/beanewself/article/details/78317626" target="_blank" rel="noopener">https://blog.csdn.net/beanewself/article/details/78317626</a></li>
+<li><a href="https://cloud.tencent.com/developer/article/1688152" target="_blank" rel="noopener">https://cloud.tencent.com/developer/article/1688152</a></li>
+<li><a href="https://www.jianshu.com/p/d3f30fb9ebf6" target="_blank" rel="noopener">https://www.jianshu.com/p/d3f30fb9ebf6</a></li>
+<li><a href="https://blog.csdn.net/lizhigang_bj/article/details/80495395" target="_blank" rel="noopener">https://blog.csdn.net/lizhigang_bj/article/details/80495395</a></li>
+</ol>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/linux/" rel="tag"># linux</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2021/02/01/reversed函数/" rel="next" title="reversed函数">
+                <i class="fa fa-chevron-left"></i> reversed函数
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">昨非</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">75</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">1</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">34</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#基本概念"><span class="nav-number">1.</span> <span class="nav-text">基本概念</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#iptables命令"><span class="nav-number">2.</span> <span class="nav-text">iptables命令</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参考文章"><span class="nav-number">3.</span> <span class="nav-text">参考文章</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">昨非</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
