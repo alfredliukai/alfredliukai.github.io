@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="Hexo, NexT">
+  <meta name="keywords" content="python,">
 
 
 
@@ -79,20 +79,18 @@
 
 
 
-<meta name="description" content="基本概念队列(Queue)两端同意操作的类型不一样：能够进行删除的一端称为队头，这样的操作也叫出队dequeue；能够进行插入的一端称为队尾，这样的操作也叫入队enqueue。1、添加一个属性size用来记录眼下的元素个数。目的是当head=rear的时候。通过size=0还是size=数组长度。来区分队列为空，或者队列已满。2、数组中仅仅存储数组大小-1个元素，保证rear转一圈之后不会和hea">
-<meta name="keywords" content="java,go,程序猿,数据库，测试，测试开发，架构">
+<meta name="description" content="itertools标准化了一个快速、高效利用内存的核心工具集，这些工具本身或组合都很有用。它们一起形成了“迭代器代数”，这使得在纯Python中有可能创建简洁又高效的专用工具。 “无限”迭代器count()会创建一个无限的迭代器，所以上述代码会打印出自然数序列，根本停不下来，只能按Ctrl+C退出1234&amp;gt;&amp;gt;&amp;gt; import itertools&amp;gt;&amp;gt;&amp;gt; natua">
+<meta name="keywords" content="python">
 <meta property="og:type" content="article">
-<meta property="og:title" content="循环队列">
-<meta property="og:url" content="https://alfredliukai.github.io/2019/09/01/循环队列/index.html">
+<meta property="og:title" content="python中的itertools模块">
+<meta property="og:url" content="https://alfredliukai.github.io/2021/02/03/python中的itertools模块/index.html">
 <meta property="og:site_name" content="昨非的个人网站">
-<meta property="og:description" content="基本概念队列(Queue)两端同意操作的类型不一样：能够进行删除的一端称为队头，这样的操作也叫出队dequeue；能够进行插入的一端称为队尾，这样的操作也叫入队enqueue。1、添加一个属性size用来记录眼下的元素个数。目的是当head=rear的时候。通过size=0还是size=数组长度。来区分队列为空，或者队列已满。2、数组中仅仅存储数组大小-1个元素，保证rear转一圈之后不会和hea">
+<meta property="og:description" content="itertools标准化了一个快速、高效利用内存的核心工具集，这些工具本身或组合都很有用。它们一起形成了“迭代器代数”，这使得在纯Python中有可能创建简洁又高效的专用工具。 “无限”迭代器count()会创建一个无限的迭代器，所以上述代码会打印出自然数序列，根本停不下来，只能按Ctrl+C退出1234&amp;gt;&amp;gt;&amp;gt; import itertools&amp;gt;&amp;gt;&amp;gt; natua">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://alfredliukai.github.io/2019/09/01/循环队列/queue.png">
-<meta property="og:updated_time" content="2019-09-01T14:59:34.000Z">
+<meta property="og:updated_time" content="2021-02-03T10:25:00.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="循环队列">
-<meta name="twitter:description" content="基本概念队列(Queue)两端同意操作的类型不一样：能够进行删除的一端称为队头，这样的操作也叫出队dequeue；能够进行插入的一端称为队尾，这样的操作也叫入队enqueue。1、添加一个属性size用来记录眼下的元素个数。目的是当head=rear的时候。通过size=0还是size=数组长度。来区分队列为空，或者队列已满。2、数组中仅仅存储数组大小-1个元素，保证rear转一圈之后不会和hea">
-<meta name="twitter:image" content="https://alfredliukai.github.io/2019/09/01/循环队列/queue.png">
+<meta name="twitter:title" content="python中的itertools模块">
+<meta name="twitter:description" content="itertools标准化了一个快速、高效利用内存的核心工具集，这些工具本身或组合都很有用。它们一起形成了“迭代器代数”，这使得在纯Python中有可能创建简洁又高效的专用工具。 “无限”迭代器count()会创建一个无限的迭代器，所以上述代码会打印出自然数序列，根本停不下来，只能按Ctrl+C退出1234&amp;gt;&amp;gt;&amp;gt; import itertools&amp;gt;&amp;gt;&amp;gt; natua">
 
 
 
@@ -122,13 +120,13 @@
 
 
 
-  <link rel="canonical" href="https://alfredliukai.github.io/2019/09/01/循环队列/">
+  <link rel="canonical" href="https://alfredliukai.github.io/2021/02/03/python中的itertools模块/">
 
 
 
 
 
-  <title>循环队列 | 昨非的个人网站</title>
+  <title>python中的itertools模块 | 昨非的个人网站</title>
   
 
 
@@ -255,7 +253,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://alfredliukai.github.io/2019/09/01/循环队列/">
+    <link itemprop="mainEntityOfPage" href="https://alfredliukai.github.io/2021/02/03/python中的itertools模块/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="昨非">
@@ -272,7 +270,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">循环队列</h1>
+          <h1 class="post-title" itemprop="name headline">python中的itertools模块</h1>
         
 
         <div class="post-meta">
@@ -284,8 +282,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-09-01T22:43:57+08:00">
-                2019-09-01
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2021-02-03T17:55:55+08:00">
+                2021-02-03
               </time>
             
 
@@ -322,9 +320,18 @@
       
 
       
-        <h4 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h4><p>队列(Queue)两端同意操作的类型不一样：<br>能够进行删除的一端称为队头，这样的操作也叫出队dequeue；<br>能够进行插入的一端称为队尾，这样的操作也叫入队enqueue。<br>1、添加一个属性size用来记录眼下的元素个数。<br>目的是当head=rear的时候。通过size=0还是size=数组长度。来区分队列为空，或者队列已满。<br>2、数组中仅仅存储数组大小-1个元素，保证rear转一圈之后不会和head相等。也就是队列满的时候。rear+1=head，中间刚好空一个元素。<br>当rear=head的时候。一定是队列空了。<br>解决这种问题的常见做法是这种：<br>使用一标记，用以区分这样的易混淆的情形。<br>牺牲一个元素空间。当front和rear相等时，为空。当rear的下一个位置是front时，为满。<br><img src="/2019/09/01/循环队列/queue.png" alt="avatar"></p>
-<h4 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line">package com.hyh.datastructure;</span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line">public class CQueue &#123;</span><br><span class="line">    private int front;//指向队首</span><br><span class="line">    private int rear;//指向队尾</span><br><span class="line">    private int[] elem;</span><br><span class="line">    private int maxSize;//最大容量</span><br><span class="line"> </span><br><span class="line">    public CQueue(int maxSize) &#123;</span><br><span class="line">        this.front = 0;</span><br><span class="line">        this.rear = 0;</span><br><span class="line">        this.elem = new int[maxSize];</span><br><span class="line">        this.maxSize = maxSize;</span><br><span class="line">    &#125;</span><br><span class="line">    public boolean isEmpty()&#123;</span><br><span class="line">        return rear==front;</span><br><span class="line">    &#125;</span><br><span class="line">    public boolean isFull()&#123;</span><br><span class="line">        return  (rear+1)%maxSize==front;</span><br><span class="line">    &#125;</span><br><span class="line">    public void offer(int val)&#123;</span><br><span class="line">        if(isFull())return;</span><br><span class="line">        elem[rear++]=val;</span><br><span class="line">        rear=rear%maxSize;</span><br><span class="line">    &#125;</span><br><span class="line">    public void poll()&#123;</span><br><span class="line">        if(isEmpty())return;</span><br><span class="line">        front=++front%maxSize;</span><br><span class="line">    &#125;</span><br><span class="line">    public int peek()&#123;</span><br><span class="line">        if(isEmpty())return -1;</span><br><span class="line">        return elem[front];</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    @Override</span><br><span class="line">    public String toString() &#123;</span><br><span class="line">        String str=&quot;&quot;;</span><br><span class="line">        for (int i:elem</span><br><span class="line">             ) &#123;</span><br><span class="line">            str=str+i;</span><br><span class="line">        &#125;</span><br><span class="line">        return str;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        CQueue c= new CQueue(5);</span><br><span class="line">        System.out.println(c.isEmpty());//true</span><br><span class="line">        for (int i = 0; i &lt; 5; i++) &#123;</span><br><span class="line">            c.offer(i);</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println(c.isFull());//true</span><br><span class="line">        System.out.println(c.toString());//01230   因为实际容量是maxSize-1 所以只存了前4次的值</span><br><span class="line">        c.poll();</span><br><span class="line">        c.offer(4);</span><br><span class="line">        System.out.println(c.toString());//01234</span><br><span class="line">        c.poll();</span><br><span class="line">        c.offer(5);</span><br><span class="line">        System.out.println(c.toString());//51234</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h4 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h4><p><a href="https://www.jb51.net/article/130855.htm" target="_blank" rel="noopener">https://www.jb51.net/article/130855.htm</a></p>
+        <p>itertools标准化了一个快速、高效利用内存的核心工具集，这些工具本身或组合都很有用。它们一起形成了“迭代器代数”，这使得在纯Python中有可能创建简洁又高效的专用工具。</p>
+<h3 id="“无限”迭代器"><a href="#“无限”迭代器" class="headerlink" title="“无限”迭代器"></a>“无限”迭代器</h3><p>count()会创建一个无限的迭代器，所以上述代码会打印出自然数序列，根本停不下来，只能按Ctrl+C退出<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; import itertools</span><br><span class="line">&gt;&gt;&gt; natuals = itertools.count(1)</span><br><span class="line">&gt;&gt;&gt; for n in natuals:</span><br><span class="line">...     print(n)</span><br></pre></td></tr></table></figure></p>
+<p>cycle()会把传入的一个序列无限重复下去<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; import itertools</span><br><span class="line">&gt;&gt;&gt; cs = itertools.cycle(&apos;ABC&apos;) # 注意字符串也是序列的一种</span><br><span class="line">&gt;&gt;&gt; for c in cs:</span><br><span class="line">...     print(c)</span><br></pre></td></tr></table></figure></p>
+<p>repeat()负责把一个元素无限重复下去，不过如果提供第二个参数就可以限定重复次数：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; ns = itertools.repeat(&apos;A&apos;, 3)</span><br><span class="line">&gt;&gt;&gt; for n in ns:</span><br><span class="line">...     print(n)</span><br><span class="line">...</span><br></pre></td></tr></table></figure></p>
+<h3 id="根据最短输入序列长度停止的迭代器"><a href="#根据最短输入序列长度停止的迭代器" class="headerlink" title="根据最短输入序列长度停止的迭代器"></a>根据最短输入序列长度停止的迭代器</h3><p>accumulate()创建一个迭代器，返回累积汇总值或其他双目运算函数的累积结果值<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; ns = itertools.accumulate((1,2,3,4))</span><br><span class="line">&gt;&gt;&gt; for n in ns:</span><br><span class="line">...     print(n)</span><br><span class="line">...</span><br><span class="line">1</span><br><span class="line">3</span><br><span class="line">6</span><br><span class="line">10</span><br></pre></td></tr></table></figure></p>
+<p>chain()可以把一组迭代对象串联起来，形成一个更大的迭代器<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; for c in itertools.chain(&apos;ABC&apos;, &apos;XYZ&apos;):</span><br><span class="line">...     print(c)</span><br><span class="line"># 迭代效果：&apos;A&apos; &apos;B&apos; &apos;C&apos; &apos;X&apos; &apos;Y&apos; &apos;Z&apos;</span><br></pre></td></tr></table></figure></p>
+<p>groupby()把迭代器中相邻的重复元素挑出来放在一起：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; for key, group in itertools.groupby(&apos;AAABBBCCAAA&apos;):</span><br><span class="line">...     print(key, list(group))</span><br><span class="line">...</span><br><span class="line">A [&apos;A&apos;, &apos;A&apos;, &apos;A&apos;]</span><br><span class="line">B [&apos;B&apos;, &apos;B&apos;, &apos;B&apos;]</span><br><span class="line">C [&apos;C&apos;, &apos;C&apos;]</span><br><span class="line">A [&apos;A&apos;, &apos;A&apos;, &apos;A&apos;]</span><br></pre></td></tr></table></figure></p>
+<p>chain.from_iterable 构建类似 chain() 迭代器的另一个选择。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; abc=itertools.chain.from_iterable([&quot;abc&quot;,&quot;cde&quot;])</span><br><span class="line">&gt;&gt;&gt; for a in abc:</span><br><span class="line">...     print(a)</span><br><span class="line">...</span><br><span class="line">a</span><br><span class="line">b</span><br><span class="line">c</span><br><span class="line">c</span><br><span class="line">d</span><br><span class="line">e</span><br></pre></td></tr></table></figure></p>
+<h3 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h3><ol>
+<li><a href="https://docs.python.org/zh-cn/3/library/itertools.html#itertools.chain.from_iterable" target="_blank" rel="noopener">https://docs.python.org/zh-cn/3/library/itertools.html#itertools.chain.from_iterable</a></li>
+<li><a href="https://www.liaoxuefeng.com/wiki/1016959663602400/1017783145987360" target="_blank" rel="noopener">https://www.liaoxuefeng.com/wiki/1016959663602400/1017783145987360</a></li>
+</ol>
 
       
     </div>
@@ -340,6 +347,12 @@
 
     <footer class="post-footer">
       
+        <div class="post-tags">
+          
+            <a href="/tags/python/" rel="tag"># python</a>
+          
+        </div>
+      
 
       
       
@@ -349,8 +362,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/08/17/hash算法总结/" rel="next" title="hash算法总结">
-                <i class="fa fa-chevron-left"></i> hash算法总结
+              <a href="/2021/02/02/linux下iptables总结/" rel="next" title="linux下iptables总结">
+                <i class="fa fa-chevron-left"></i> linux下iptables总结
               </a>
             
           </div>
@@ -358,10 +371,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2019/09/08/hypervisor学习总结/" rel="prev" title="hypervisor学习总结">
-                hypervisor学习总结 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -493,7 +502,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#基本概念"><span class="nav-number">1.</span> <span class="nav-text">基本概念</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#代码实现"><span class="nav-number">2.</span> <span class="nav-text">代码实现</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#参考文章"><span class="nav-number">3.</span> <span class="nav-text">参考文章</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#“无限”迭代器"><span class="nav-number">1.</span> <span class="nav-text">“无限”迭代器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#根据最短输入序列长度停止的迭代器"><span class="nav-number">2.</span> <span class="nav-text">根据最短输入序列长度停止的迭代器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参考文献"><span class="nav-number">3.</span> <span class="nav-text">参考文献</span></a></li></ol></div>
             
 
           </div>
