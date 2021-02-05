@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="昨非的个人网站">
 <meta property="og:description" content="dict基本使用以一个例子开始：统计一个列表里各单词重复次数 1234words = [&amp;apos;hello&amp;apos;, &amp;apos;world&amp;apos;, &amp;apos;nice&amp;apos;, &amp;apos;world&amp;apos;]counter = dict()for kw in words:    counter[kw] += 1 这样写肯定会报错的，因为各词的个数都没有初始值，引发Key">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:updated_time" content="2021-02-04T02:39:14.000Z">
+<meta property="og:updated_time" content="2021-02-05T01:48:50.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="python中dict用法">
 <meta name="twitter:description" content="dict基本使用以一个例子开始：统计一个列表里各单词重复次数 1234words = [&amp;apos;hello&amp;apos;, &amp;apos;world&amp;apos;, &amp;apos;nice&amp;apos;, &amp;apos;world&amp;apos;]counter = dict()for kw in words:    counter[kw] += 1 这样写肯定会报错的，因为各词的个数都没有初始值，引发Key">
@@ -332,7 +332,11 @@
 <h3 id="如何使用defaultdict"><a href="#如何使用defaultdict" class="headerlink" title="如何使用defaultdict"></a>如何使用defaultdict</h3><p>defaultdict接受一个工厂函数作为参数，如下来构造：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dict =defaultdict( factory_function)</span><br></pre></td></tr></table></figure>
 <p>这个factory_function可以是list、set、str等等，作用是当key不存在时，返回的是工厂函数的默认值，比如list对应[ ]，str对应的是空字符串，set对应set( )，int对应0，如下举例：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">from collections import defaultdict</span><br><span class="line"></span><br><span class="line">dict1 = defaultdict(int)</span><br><span class="line">dict2 = defaultdict(set)</span><br><span class="line">dict3 = defaultdict(str)</span><br><span class="line">dict4 = defaultdict(list)</span><br><span class="line">dict1[2] =&apos;two&apos;</span><br><span class="line"></span><br><span class="line">print(dict1[1])</span><br><span class="line">print(dict2[1])</span><br><span class="line">print(dict3[1])</span><br><span class="line">print(dict4[1])</span><br><span class="line"></span><br><span class="line">输出：</span><br><span class="line"></span><br><span class="line">0</span><br><span class="line">set()</span><br><span class="line"></span><br><span class="line">[]</span><br></pre></td></tr></table></figure></p>
-
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; from collections import defaultdict</span><br><span class="line">&gt;&gt;&gt; def zero():</span><br><span class="line">...     return 0</span><br><span class="line">...</span><br><span class="line">&gt;&gt;&gt; dd = defaultdict(zero)</span><br><span class="line">&gt;&gt;&gt; dd</span><br><span class="line">defaultdict(&lt;function zero at 0xb7ed2684&gt;, &#123;&#125;)</span><br><span class="line">&gt;&gt;&gt; dd[&apos;foo&apos;]</span><br><span class="line">0</span><br><span class="line">&gt;&gt;&gt; dd</span><br><span class="line">defaultdict(&lt;function zero at 0xb7ed2684&gt;, &#123;&apos;foo&apos;: 0&#125;)</span><br></pre></td></tr></table></figure>
+<p>最终代码:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">from collections import defaultdict</span><br><span class="line">words = [&apos;hello&apos;, &apos;world&apos;, &apos;nice&apos;, &apos;world&apos;]</span><br><span class="line">#使用lambda来定义简单的函数</span><br><span class="line">counter = defaultdict(lambda: 0) </span><br><span class="line">for kw in words:</span><br><span class="line">    counter[kw] += 1</span><br></pre></td></tr></table></figure></p>
+<h3 id="dict其他函数"><a href="#dict其他函数" class="headerlink" title="dict其他函数"></a>dict其他函数</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">seq = (&apos;Google&apos;, &apos;Runoob&apos;, &apos;Taobao&apos;)</span><br><span class="line"> </span><br><span class="line">dict = dict.fromkeys(seq)</span><br><span class="line">print &quot;新字典为 : %s&quot; %  str(dict)</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">l1=[&quot;a&quot;,&quot;b&quot;,&quot;c&quot;]</span><br><span class="line">l2=[1,2,3]</span><br><span class="line">d1=dict(zip(l1,l2))</span><br><span class="line">print(d1)</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">dict = &#123;&apos;Name&apos;: &apos;Zara&apos;, &apos;Age&apos;: 7&#125;</span><br><span class="line">dict2 = &#123;&apos;Sex&apos;: &apos;female&apos; &#125;</span><br><span class="line"></span><br><span class="line">dict.update(dict2)</span><br><span class="line">print &quot;Value : %s&quot; %  dict</span><br></pre></td></tr></table></figure>
       
     </div>
     
@@ -371,6 +375,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2021/02/04/ks-cfg详解/" rel="prev" title="ks.cfg详解">
+                ks.cfg详解 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -447,7 +455,7 @@
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">77</span>
+                  <span class="site-state-item-count">78</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -502,7 +510,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#dict基本使用"><span class="nav-number">1.</span> <span class="nav-text">dict基本使用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#如何使用defaultdict"><span class="nav-number">2.</span> <span class="nav-text">如何使用defaultdict</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#dict基本使用"><span class="nav-number">1.</span> <span class="nav-text">dict基本使用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#如何使用defaultdict"><span class="nav-number">2.</span> <span class="nav-text">如何使用defaultdict</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#dict其他函数"><span class="nav-number">3.</span> <span class="nav-text">dict其他函数</span></a></li></ol></div>
             
 
           </div>
