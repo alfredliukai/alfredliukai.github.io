@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh_CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="linux,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="ISO镜像版本选择1CentOS-7-x86_64-Minimal-1810.iso 制作工具安装1yum -y install anaconda createrepo mkisofs rsync syslinux 挂载光盘，同步文件1234567891011121314mkdir /mnt/cdrommount -o loop /tmp/CentOS-7-x86_64-Minimal-1708.">
+<meta name="keywords" content="linux">
+<meta property="og:type" content="article">
+<meta property="og:title" content="定制化ISO镜像">
+<meta property="og:url" content="https://alfredliukai.github.io/2021/02/05/定制化ISO镜像/index.html">
+<meta property="og:site_name" content="昨非的个人网站">
+<meta property="og:description" content="ISO镜像版本选择1CentOS-7-x86_64-Minimal-1810.iso 制作工具安装1yum -y install anaconda createrepo mkisofs rsync syslinux 挂载光盘，同步文件1234567891011121314mkdir /mnt/cdrommount -o loop /tmp/CentOS-7-x86_64-Minimal-1708.">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:updated_time" content="2021-02-05T09:58:07.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="定制化ISO镜像">
+<meta name="twitter:description" content="ISO镜像版本选择1CentOS-7-x86_64-Minimal-1810.iso 制作工具安装1yum -y install anaconda createrepo mkisofs rsync syslinux 挂载光盘，同步文件1234567891011121314mkdir /mnt/cdrommount -o loop /tmp/CentOS-7-x86_64-Minimal-1708.">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://alfredliukai.github.io/2021/02/05/定制化ISO镜像/">
+
+
+
+
+
+  <title>定制化ISO镜像 | 昨非的个人网站</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh_CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">昨非的个人网站</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-首页">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-标签">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-归档">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-关于">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://alfredliukai.github.io/2021/02/05/定制化ISO镜像/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="昨非">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="昨非的个人网站">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">定制化ISO镜像</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2021-02-05T16:44:19+08:00">
+                2021-02-05
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="ISO镜像版本选择"><a href="#ISO镜像版本选择" class="headerlink" title="ISO镜像版本选择"></a>ISO镜像版本选择</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">CentOS-7-x86_64-Minimal-1810.iso</span><br></pre></td></tr></table></figure>
+<h3 id="制作工具安装"><a href="#制作工具安装" class="headerlink" title="制作工具安装"></a>制作工具安装</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum -y install anaconda createrepo mkisofs rsync syslinux</span><br></pre></td></tr></table></figure>
+<h3 id="挂载光盘，同步文件"><a href="#挂载光盘，同步文件" class="headerlink" title="挂载光盘，同步文件"></a>挂载光盘，同步文件</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">mkdir /mnt/cdrom</span><br><span class="line"></span><br><span class="line">mount -o loop /tmp/CentOS-7-x86_64-Minimal-1708.iso /mnt/cdrom/</span><br><span class="line">&lt;&lt;&apos;COMMENT&apos;</span><br><span class="line">mount: /dev/loop0 is write-protected, mounting read-only</span><br><span class="line">COMMENT</span><br><span class="line"></span><br><span class="line"># 同步/mnt/cdrom/下的文件到/ISO/路径下，除了Packages和repodata文件夹</span><br><span class="line">/usr/bin/rsync -a /mnt/cdrom/ /ISO/</span><br><span class="line"></span><br><span class="line">ls /ISO/</span><br><span class="line">&lt;&lt;&apos;COMMENT&apos;</span><br><span class="line">CentOS_BuildTag  EFI  EULA  GPL  images  isolinux  LiveOS  RPM-GPG-KEY-CentOS-7  RPM-GPG-KEY-CentOS-Testing-7  TRANS.TBL</span><br><span class="line">COMMENT</span><br></pre></td></tr></table></figure>
+<h3 id="制作ks-cfg文件"><a href="#制作ks-cfg文件" class="headerlink" title="制作ks.cfg文件"></a>制作ks.cfg文件</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line">cd /ISO/isolinux</span><br><span class="line"></span><br><span class="line">cat &gt; ks.cfg &lt;&lt;EOF</span><br><span class="line">#version= CentOS 7</span><br><span class="line">#platform=x86, AMD64, or Intel EM64T</span><br><span class="line"># Install OS instead of upgrade</span><br><span class="line">install</span><br><span class="line"># Keyboard layouts</span><br><span class="line">keyboard --vckeymap=us --xlayouts=&apos;us&apos;</span><br><span class="line"># Root password</span><br><span class="line">rootpw --iscrypted $1$Jg7P7.9/$TT.baSvBhZy/wOkSs9CDT/</span><br><span class="line"># (Required) Wrapper around the authconfig command CCE-14063-2 (row 80)</span><br><span class="line">authconfig --enableshadow --passalgo=sha512</span><br><span class="line"># System language</span><br><span class="line">lang en_US.UTF-8</span><br><span class="line"># Firewall configuration</span><br><span class="line">firewall --disabled</span><br><span class="line"># System authorization information</span><br><span class="line">auth  --useshadow  --passalgo=sha512</span><br><span class="line"># Use CDROM installation media</span><br><span class="line">cdrom</span><br><span class="line"># Use text mode install</span><br><span class="line">text</span><br><span class="line"># Run the Setup Agent on first boot</span><br><span class="line">firstboot --enable</span><br><span class="line">ignoredisk --only-use=sda</span><br><span class="line"># SELinux configuration</span><br><span class="line">selinux --disabled</span><br><span class="line"># Do not configure the X Window System</span><br><span class="line">skipx</span><br><span class="line"></span><br><span class="line"># Network information</span><br><span class="line">network  --bootproto=dhcp --device=ens160 --onboot=yes --ipv6=auto --activate</span><br><span class="line">network  --device=ens160 --hostname=localhost.localdomain</span><br><span class="line"># Reboot after installation</span><br><span class="line">reboot</span><br><span class="line"># System timezone</span><br><span class="line">timezone Asia/Shanghai --isUtc</span><br><span class="line"># System bootloader configuration</span><br><span class="line">bootloader --location=mbr --driveorder=sda --append=&quot;&quot;</span><br><span class="line"># Clear the Master Boot Record</span><br><span class="line">zerombr</span><br><span class="line"># Partition clearing information</span><br><span class="line">clearpart --all --initlabel</span><br><span class="line">autopart --type=lvm</span><br><span class="line"></span><br><span class="line">%packages</span><br><span class="line">@^minimal</span><br><span class="line">@core</span><br><span class="line">@customrpm</span><br><span class="line"></span><br><span class="line">%end</span><br></pre></td></tr></table></figure>
+<h3 id="修改isolinux-cfg"><a href="#修改isolinux-cfg" class="headerlink" title="修改isolinux.cfg"></a>修改isolinux.cfg</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">cd /ISO/isolinux</span><br><span class="line"></span><br><span class="line">chmod 644 isolinux.cfg</span><br><span class="line"></span><br><span class="line">sudo vi isolinux.cfg</span><br></pre></td></tr></table></figure>
+<p>修改的部分内容如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">label linux</span><br><span class="line">  menu label ^Install CentOS 7</span><br><span class="line">  kernel vmlinuz</span><br><span class="line">  append initrd=initrd.img inst.stage2=hd:LABEL=CentOS7 inst.ks=cdrom:/isolinux/ks.cfg quiet</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>inst.ks为ks.cfg文件位置；<br>inst.stage2为安装介质位置，hd:LABEL为介质标签，例如CentOS7。这个和后续生成ISO镜像文件的命令genisoimage的参数-V有关。<br>modprobe.blacklist=nouveau; 禁用nouveau驱动安装，用于NVIDIA驱动的安装准备工作；<br>net.ifnames=0 biosdevname=0； 用于禁用centos7的”一致性网络设备命名法”.</p>
+</blockquote>
+<h3 id="制作comps-xml文件"><a href="#制作comps-xml文件" class="headerlink" title="制作comps.xml文件"></a>制作comps.xml文件</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cp /mnt/cdrom/repodata/*-minimal-x86_64-comps.xml /ISO/comps.xml</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span><br><span class="line">&lt;!DOCTYPE comps PUBLIC &quot;-//CentOS//DTD Comps info//EN&quot; &quot;comps.dtd&quot;&gt;</span><br><span class="line">&lt;comps&gt;</span><br><span class="line">  &lt;group&gt;</span><br><span class="line">    &lt;id&gt;core&lt;/id&gt;</span><br><span class="line">    &lt;name&gt;Core&lt;/name&gt;</span><br><span class="line">    &lt;name xml:lang=&quot;af&quot;&gt;Kern&lt;/name&gt;</span><br><span class="line">    &lt;name xml:lang=&quot;am&quot;&gt;ማዕከላዊ ቦታ&lt;/name&gt;</span><br><span class="line">    &lt;name xml:lang=&quot;ar&quot;&gt;اللبّ&lt;/name&gt;</span><br><span class="line">    &lt;name xml:lang=&quot;as&quot;&gt;ভিত্তি&lt;/name&gt;</span><br><span class="line">    ....</span><br><span class="line">    &lt;name xml:lang=&quot;tr&quot;&gt;Çekirdek&lt;/name&gt;</span><br><span class="line">    &lt;name xml:lang=&quot;uk&quot;&gt;Основа&lt;/name&gt;</span><br><span class="line">    &lt;name xml:lang=&quot;ur&quot;&gt;مرکز&lt;/name&gt;</span><br><span class="line">    &lt;name xml:lang=&quot;vi&quot;&gt;Lõi&lt;/name&gt;</span><br><span class="line">    &lt;name xml:lang=&quot;zh_CN&quot;&gt;核心&lt;/name&gt;</span><br><span class="line">    &lt;name xml:lang=&quot;zh_TW&quot;&gt;核心&lt;/name&gt;</span><br><span class="line">    &lt;name xml:lang=&quot;zu&quot;&gt;Okuyikhona&lt;/name&gt;</span><br><span class="line">    &lt;description&gt;Smallest possible installation.&lt;/description&gt;</span><br><span class="line">    &lt;description xml:lang=&quot;as&quot;&gt;ন্যূনতম ইনস্টল।&lt;/description&gt;</span><br><span class="line">    &lt;description xml:lang=&quot;bn&quot;&gt;ন্যূনতম ইনস্টলেশন।&lt;/description&gt;</span><br><span class="line">    &lt;description xml:lang=&quot;bn_IN&quot;&gt;ন্যূনতম ইনস্টলেশন।&lt;/description&gt;</span><br><span class="line">    &lt;description xml:lang=&quot;cs&quot;&gt;Nejmenší možná instalace.&lt;/description&gt;</span><br><span class="line">    &lt;description xml:lang=&quot;de&quot;&gt;Kleinstmögliche Installation.&lt;/description&gt;</span><br><span class="line">    &lt;description xml:lang=&quot;es&quot;&gt;La instalación más pequeña posible.&lt;/description&gt;</span><br><span class="line">    &lt;description xml:lang=&quot;fr&quot;&gt;Plus petite installation possible.&lt;/description&gt;</span><br><span class="line">    ....</span><br><span class="line">    &lt;description xml:lang=&quot;ru&quot;&gt;Минимально возможная установка&lt;/description&gt;</span><br><span class="line">    &lt;description xml:lang=&quot;sv&quot;&gt;Minsta möjliga installation&lt;/description&gt;</span><br><span class="line">    &lt;description xml:lang=&quot;ta&quot;&gt;மிகச் சிறிய செயல்படுத்தக்கூடிய நிறுவல்.&lt;/description&gt;</span><br><span class="line">    &lt;description xml:lang=&quot;te&quot;&gt;సాధ్యమగు అతిచిన్న సంస్థాపన.&lt;/description&gt;</span><br><span class="line">    &lt;description xml:lang=&quot;uk&quot;&gt;Мінімально можливе встановлення.&lt;/description&gt;</span><br><span class="line">    &lt;description xml:lang=&quot;zh_CN&quot;&gt;最小可能安装。&lt;/description&gt;</span><br><span class="line">    &lt;description xml:lang=&quot;zh_TW&quot;&gt;最小型安裝。&lt;/description&gt;</span><br><span class="line">    &lt;default&gt;false&lt;/default&gt;</span><br><span class="line">    &lt;uservisible&gt;false&lt;/uservisible&gt;</span><br><span class="line">    &lt;packagelist&gt;</span><br><span class="line">      &lt;packagereq type=&quot;mandatory&quot;&gt;audit&lt;/packagereq&gt;</span><br><span class="line">      &lt;packagereq type=&quot;mandatory&quot;&gt;basesystem&lt;/packagereq&gt;</span><br><span class="line">      &lt;packagereq type=&quot;mandatory&quot;&gt;bash&lt;/packagereq&gt;</span><br><span class="line">      &lt;packagereq type=&quot;mandatory&quot;&gt;biosdevname&lt;/packagereq&gt;</span><br><span class="line">      &lt;packagereq type=&quot;mandatory&quot;&gt;irqbalance&lt;/packagereq&gt;</span><br><span class="line">      &lt;packagereq type=&quot;mandatory&quot;&gt;kbd&lt;/packagereq&gt;</span><br><span class="line">      &lt;packagereq type=&quot;mandatory&quot;&gt;kexec-tools&lt;/packagereq&gt;</span><br><span class="line">      &lt;packagereq type=&quot;mandatory&quot;&gt;less&lt;/packagereq&gt;</span><br><span class="line">      ...</span><br><span class="line">      &lt;packagereq type=&quot;default&quot;&gt;rdma&lt;/packagereq&gt;</span><br><span class="line">      &lt;packagereq type=&quot;optional&quot;&gt;dracut-config-generic&lt;/packagereq&gt;</span><br><span class="line">      &lt;packagereq type=&quot;optional&quot;&gt;dracut-fips&lt;/packagereq&gt;</span><br><span class="line">      &lt;packagereq type=&quot;optional&quot;&gt;dracut-fips-aesni&lt;/packagereq&gt;</span><br><span class="line">      &lt;packagereq type=&quot;optional&quot;&gt;dracut-network&lt;/packagereq&gt;</span><br><span class="line">      &lt;packagereq type=&quot;optional&quot;&gt;openssh-keycat&lt;/packagereq&gt;</span><br><span class="line">      &lt;packagereq type=&quot;optional&quot;&gt;selinux-policy-mls&lt;/packagereq&gt;</span><br><span class="line">      &lt;packagereq type=&quot;optional&quot;&gt;tboot&lt;/packagereq&gt;</span><br><span class="line">    &lt;/packagelist&gt;</span><br><span class="line">  &lt;/group&gt;</span><br><span class="line">  &lt;group&gt;</span><br><span class="line">    &lt;id&gt;custom&lt;/id&gt;</span><br><span class="line">    &lt;name&gt;custom&lt;/name&gt;</span><br><span class="line">    &lt;name xml:lang=&quot;af&quot;&gt;custom&lt;/name&gt;</span><br><span class="line">    &lt;name xml:lang=&quot;am&quot;&gt;custom&lt;/name&gt;</span><br><span class="line">    &lt;name xml:lang=&quot;ar&quot;&gt;custom&lt;/name&gt;</span><br><span class="line">    &lt;name xml:lang=&quot;as&quot;&gt;custom&lt;/name&gt;</span><br><span class="line">    &lt;name xml:lang=&quot;bal&quot;&gt;custom&lt;/name&gt;</span><br><span class="line">    ...</span><br><span class="line">    &lt;name xml:lang=&quot;vi&quot;&gt;custom&lt;/name&gt;</span><br><span class="line">    &lt;name xml:lang=&quot;zh_CN&quot;&gt;custom&lt;/name&gt;</span><br><span class="line">    &lt;name xml:lang=&quot;zh_TW&quot;&gt;custom&lt;/name&gt;</span><br><span class="line">    &lt;name xml:lang=&quot;zu&quot;&gt;custom&lt;/name&gt;</span><br><span class="line">    &lt;description&gt;installation custom sofeware.&lt;/description&gt;</span><br><span class="line">    &lt;description xml:lang=&quot;as&quot;&gt;installation custom sofeware.&lt;/description&gt;</span><br><span class="line">    &lt;description xml:lang=&quot;bn&quot;&gt;installation custom sofeware.&lt;/description&gt;</span><br><span class="line">    &lt;description xml:lang=&quot;bn_IN&quot;&gt;installation custom sofeware.&lt;/description&gt;</span><br><span class="line">    &lt;description xml:lang=&quot;cs&quot;&gt;installation custom sofeware.&lt;/description&gt;</span><br><span class="line">    ...</span><br><span class="line">    &lt;description xml:lang=&quot;uk&quot;&gt;installation custom sofeware.&lt;/description&gt;</span><br><span class="line">    &lt;description xml:lang=&quot;zh_CN&quot;&gt;installation custom sofeware.&lt;/description&gt;</span><br><span class="line">    &lt;description xml:lang=&quot;zh_TW&quot;&gt;installation custom sofeware.&lt;/description&gt;</span><br><span class="line">    &lt;default&gt;false&lt;/default&gt;</span><br><span class="line">    &lt;uservisible&gt;false&lt;/uservisible&gt;</span><br><span class="line">    &lt;packagelist&gt;</span><br><span class="line">      &lt;packagereq type=&quot;default&quot;&gt;redis50-5.0.6-1.el7.x86_64&lt;/packagereq&gt;</span><br><span class="line">    &lt;/packagelist&gt;</span><br><span class="line">  &lt;/group&gt;</span><br><span class="line">  &lt;environment&gt;</span><br><span class="line">    &lt;id&gt;minimal&lt;/id&gt;</span><br><span class="line">    &lt;name&gt;Minimal Install&lt;/name&gt;</span><br><span class="line">    &lt;name xml:lang=&quot;as&quot;&gt;নূন্যতম ইনস্টল&lt;/name&gt;</span><br><span class="line">    &lt;name xml:lang=&quot;bn_IN&quot;&gt;ন্যূনতম ইনস্টল&lt;/name&gt;</span><br><span class="line">    &lt;name xml:lang=&quot;cs&quot;&gt;Minimální instalace&lt;/name&gt;</span><br><span class="line">    &lt;name xml:lang=&quot;de&quot;&gt;Minimale Installation&lt;/name&gt;</span><br><span class="line">    &lt;name xml:lang=&quot;es&quot;&gt;Instalación mínima&lt;/name&gt;</span><br><span class="line">    ...</span><br><span class="line">    &lt;description xml:lang=&quot;zh_CN&quot;&gt;基本功能。&lt;/description&gt;</span><br><span class="line">    &lt;description xml:lang=&quot;zh_TW&quot;&gt;基本功能。&lt;/description&gt;</span><br><span class="line">    &lt;display_order&gt;5&lt;/display_order&gt;</span><br><span class="line">    &lt;grouplist&gt;</span><br><span class="line">      &lt;groupid&gt;core&lt;/groupid&gt;</span><br><span class="line">      &lt;groupid&gt;core&lt;/groupid&gt;</span><br><span class="line">      &lt;groupid&gt;custom&lt;/groupid&gt;</span><br><span class="line">    &lt;/grouplist&gt;</span><br><span class="line">  &lt;/environment&gt;</span><br><span class="line">&lt;/comps&gt;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>comps文件以group来区分包，以environment来区分环境，例如centos的mini版本为minimal，其核心包为core。类似于其格式，可定制自己的rpm包，建立自己的group id和name，包含自己的language及描述，最重要的是packagelist，类型default为默认的，mandatory为强制的</p>
+</blockquote>
+<blockquote>
+<p>将定制的rpm安装包放到/ISO/Packages/中。这里需要注意rpm包的依赖性，可以通过以下命令来获得依赖，例如以下需要perl安装rpm，然后同样添加到comps.xml中</p>
+</blockquote>
+<p>由comps.xml生成repodata包。注意当有新包加入，或者更新comps.xml文件，均需要重新生成repodata文件夹</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">cd /ISO</span><br><span class="line"></span><br><span class="line">createrepo -g comps.xml .</span><br><span class="line">&lt;&lt;&apos;COMMENT&apos;</span><br><span class="line">Spawning worker 0 with 369 pkgs</span><br><span class="line">Workers Finished</span><br><span class="line">Saving Primary metadata</span><br><span class="line">Saving file lists metadata</span><br><span class="line">Saving other metadata</span><br><span class="line">Generating sqlite DBs</span><br><span class="line">Sqlite DBs complete</span><br><span class="line">COMMENT</span><br><span class="line"></span><br><span class="line">ls repodata/</span><br><span class="line">&lt;&lt;&apos;COMMENT&apos;</span><br><span class="line">2b873dfb5efcd23c4556c64f85f8752dea89a1b78ac2d81f5a3a2479a6364aed-primary.sqlite.bz2    ba731bbd51e5526bdf722d98e006d633bfd76ec48c283921f4dfd1eeb95c6478-filelists.xml.gz</span><br><span class="line">36f3b0cba95abd61f2f871ed31db124a1b9c7838e29cf992a59a093935ecf626-other.xml.gz          d36769d1a5c1b5480e99904a03b6d487f84d34c8075b5eb6b290e90802e3ea2a-comps.xml</span><br><span class="line">6d916600909af4ba73f09e2c5877a3fa8e2811d8bf8f43909e83c72c27af51f2-comps.xml.gz          e2987de1d65f29e23f8d4ac01f8544b1fe47596dd93928026f4ac4a766cfb018-primary.xml.gz</span><br><span class="line">6e0e0fec735b69e035c67f68ab629182c703ad1840b37dceefaba9e5093a7747-filelists.sqlite.bz2</span><br><span class="line">repomd.xml</span><br><span class="line">ac0924ead0d2101950c99e0670d1b74c8fea364a6bddca6415d04eb6102d0b08-other.sqlite.bz2</span><br><span class="line">COMMENT</span><br></pre></td></tr></table></figure>
+<h3 id="制作ISO镜像"><a href="#制作ISO镜像" class="headerlink" title="制作ISO镜像"></a>制作ISO镜像</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br></pre></td><td class="code"><pre><span class="line">cd /ISO</span><br><span class="line"></span><br><span class="line"># 注意参数中的-V，和上面的isolinux.cfg文件有关</span><br><span class="line">genisoimage -joliet-long -V CentOS7 -o CentOS-7-custom.iso -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -R -J -v -cache-inodes -T -eltorito-alt-boot -e images/efiboot.img -no-emul-boot /ISO</span><br><span class="line"></span><br><span class="line">I: -input-charset not specified, using utf-8 (detected in locale settings)</span><br><span class="line">genisoimage 1.1.11 (Linux)</span><br><span class="line">Scanning /ISO</span><br><span class="line">Scanning /ISO/EFI</span><br><span class="line">Scanning /ISO/EFI/BOOT</span><br><span class="line">Scanning /ISO/EFI/BOOT/fonts</span><br><span class="line">Excluded: /ISO/EFI/BOOT/fonts/TRANS.TBL</span><br><span class="line">Excluded: /ISO/EFI/BOOT/TRANS.TBL</span><br><span class="line">Excluded: /ISO/EFI/TRANS.TBL</span><br><span class="line">Scanning /ISO/LiveOS</span><br><span class="line">Excluded: /ISO/LiveOS/TRANS.TBL</span><br><span class="line">Scanning /ISO/images</span><br><span class="line">Scanning /ISO/images/pxeboot</span><br><span class="line">Excluded: /ISO/images/pxeboot/TRANS.TBL</span><br><span class="line">Excluded: /ISO/images/TRANS.TBL</span><br><span class="line">Scanning /ISO/isolinux</span><br><span class="line">Excluded: /ISO/isolinux/TRANS.TBL</span><br><span class="line">Excluded by match: /ISO/isolinux/boot.cat</span><br><span class="line">Excluded: /ISO/TRANS.TBL</span><br><span class="line">Scanning /ISO/Packages</span><br><span class="line">Scanning /ISO/repodata</span><br><span class="line">Using RPM_G000.;1 for  /RPM-GPG-KEY-CentOS-Testing-7 (RPM-GPG-KEY-CentOS-7)</span><br><span class="line">Using PYTHO000.RPM;1 for  /ISO/Packages/python2-crypto-2.6.1-15.el7.x86_64.rpm (python2-cryptography-1.7.2-1.el7.x86_64.rpm)</span><br><span class="line">...</span><br><span class="line">Using HUNSP002.RPM;1 for  /ISO/Packages/hunspell-en-0.20121024-6.el7.noarch.rpm (hunspell-en-US-0.20121024-6.el7.noarch.rpm)</span><br><span class="line">Using LIBER000.RPM;1 for  /ISO/Packages/liberation-fonts-common-1.07.2-15.el7.noarch.rpm (liberation-sans-fonts-1.07.2-15.el7.noarch.rpm)</span><br><span class="line">Writing:   Initial Padblock                        Start Block 0</span><br><span class="line">Done with: Initial Padblock                        Block(s)    16</span><br><span class="line">Writing:   Primary Volume Descriptor               Start Block 16</span><br><span class="line">Done with: Primary Volume Descriptor               Block(s)    1</span><br><span class="line">Writing:   Eltorito Volume Descriptor              Start Block 17</span><br><span class="line">Size of boot image is 4 sectors -&gt; No emulation</span><br><span class="line">Done with: Eltorito Volume Descriptor              Block(s)    1</span><br><span class="line">Writing:   Joliet Volume Descriptor                Start Block 18</span><br><span class="line">Done with: Joliet Volume Descriptor                Block(s)    1</span><br><span class="line">Writing:   End Volume Descriptor                   Start Block 19</span><br><span class="line">Done with: End Volume Descriptor                   Block(s)    1</span><br><span class="line">Writing:   Version block                           Start Block 20</span><br><span class="line">Done with: Version block                           Block(s)    1</span><br><span class="line">Writing:   Path table                              Start Block 21</span><br><span class="line">Done with: Path table                              Block(s)    4</span><br><span class="line">Writing:   Joliet path table                       Start Block 25</span><br><span class="line">Done with: Joliet path table                       Block(s)    4</span><br><span class="line">Writing:   Directory tree                          Start Block 29</span><br><span class="line">Done with: Directory tree                          Block(s)    42</span><br><span class="line">Writing:   Joliet directory tree                   Start Block 71</span><br><span class="line">Done with: Joliet directory tree                   Block(s)    29</span><br><span class="line">Writing:   Directory tree cleanup                  Start Block 100</span><br><span class="line">Done with: Directory tree cleanup                  Block(s)    0</span><br><span class="line">Writing:   Extension record                        Start Block 100</span><br><span class="line">Done with: Extension record                        Block(s)    1</span><br><span class="line">Writing:   The File(s)                             Start Block 101</span><br><span class="line">  1.43% done, estimate finish Tue Nov 14 17:08:17 2017</span><br><span class="line">  2.87% done, estimate finish Tue Nov 14 17:08:17 2017</span><br><span class="line">  4.30% done, estimate finish Tue Nov 14 17:08:17 2017</span><br><span class="line"> ...</span><br><span class="line"> 95.89% done, estimate finish Tue Nov 14 17:08:18 2017</span><br><span class="line"> 97.33% done, estimate finish Tue Nov 14 17:08:18 2017</span><br><span class="line"> 98.76% done, estimate finish Tue Nov 14 17:08:18 2017</span><br><span class="line">Total translation table size: 106045</span><br><span class="line">Total rockridge attributes bytes: 46850</span><br><span class="line">Total directory bytes: 79872</span><br><span class="line">Path table size(bytes): 140</span><br><span class="line">Done with: The File(s)                             Block(s)    376656</span><br><span class="line">Writing:   Ending Padblock                         Start Block 376757</span><br><span class="line">Done with: Ending Padblock                         Block(s)    150</span><br><span class="line">Max brk space used 85000</span><br><span class="line">349350 extents written (736 MB</span><br></pre></td></tr></table></figure>
+<h3 id="Hybird模式"><a href="#Hybird模式" class="headerlink" title="Hybird模式"></a>Hybird模式</h3><p>采用“hybird模式”（混合模式），操作系统可以直接刻录成物理光盘，也可以直接做成可引导的U盘。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">isohybrid -v /ISO/CentOS-7-custom.iso</span><br></pre></td></tr></table></figure></p>
+<h3 id="制作镜像MD5值"><a href="#制作镜像MD5值" class="headerlink" title="制作镜像MD5值"></a>制作镜像MD5值</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">implantisomd5 /ISO/CentOS-7-ChenjianOS.iso</span><br><span class="line"></span><br><span class="line">&lt;&lt;&apos;COMMENT&apos;</span><br><span class="line">Inserting md5sum into iso image...</span><br><span class="line">md5 = ed6233dc8bf6e59353a646e286b7a51f</span><br><span class="line">Inserting fragment md5sums into iso image...</span><br><span class="line">fragmd5 = 4c9fb671374f6b26bdaf49d5452ec7862f97e3899f9eac23a7e8f4f84d25</span><br><span class="line">frags = 20</span><br><span class="line">Setting supported flag to 0</span><br><span class="line">COMMENT</span><br></pre></td></tr></table></figure>
+<h3 id="安装系统"><a href="#安装系统" class="headerlink" title="安装系统"></a>安装系统</h3><blockquote>
+<p>iso安装系统不再叙述；</p>
+</blockquote>
+<blockquote>
+<p>由于是text模式，则进入安装界面，会有一个类似图形安装界面的排版，里面可以选择。所有选择均为x的时候，表示正常无误;有!的话，则为错误。错误时需要查看日志，其中Alt+F1快捷键可以进入main界面，Alt+F2快捷键可以进入Shell界面等等。在Shell界面中，可以从/tmp/packaging.log中找到rpm包日志，可以从/tmp/anaconda.log中找到安装过程中的报错日志;可以从/run/install/repo路径下找到外部文件夹；</p>
+</blockquote>
+<blockquote>
+<p>当选项均为x时，即表示正常无误，可以不进行操作，其自动进入下一步安装过程，直至安装成功，然后自动重启，显示登录界面。</p>
+</blockquote>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/linux/" rel="tag"># linux</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2021/02/04/ks-cfg详解/" rel="next" title="ks.cfg详解">
+                <i class="fa fa-chevron-left"></i> ks.cfg详解
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2021/02/09/docker环境下使用kafka/" rel="prev" title="docker环境下使用kafka">
+                docker环境下使用kafka <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">昨非</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">80</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">1</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">35</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#ISO镜像版本选择"><span class="nav-number">1.</span> <span class="nav-text">ISO镜像版本选择</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#制作工具安装"><span class="nav-number">2.</span> <span class="nav-text">制作工具安装</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#挂载光盘，同步文件"><span class="nav-number">3.</span> <span class="nav-text">挂载光盘，同步文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#制作ks-cfg文件"><span class="nav-number">4.</span> <span class="nav-text">制作ks.cfg文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#修改isolinux-cfg"><span class="nav-number">5.</span> <span class="nav-text">修改isolinux.cfg</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#制作comps-xml文件"><span class="nav-number">6.</span> <span class="nav-text">制作comps.xml文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#制作ISO镜像"><span class="nav-number">7.</span> <span class="nav-text">制作ISO镜像</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Hybird模式"><span class="nav-number">8.</span> <span class="nav-text">Hybird模式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#制作镜像MD5值"><span class="nav-number">9.</span> <span class="nav-text">制作镜像MD5值</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#安装系统"><span class="nav-number">10.</span> <span class="nav-text">安装系统</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">昨非</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
