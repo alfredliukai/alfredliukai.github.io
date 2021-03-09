@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh_CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="udp程序流程udp是传输层的一种协议，不需要进行连接就可以用来发送和接收数据，但不保证数据的可靠传输。 udp服务端1234567891011121314151617181920212223242526import socket# 1. 创建套接字server_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)#2. bind绑定ip地">
+<meta name="keywords" content="java,go,程序猿,数据库，测试，测试开发，架构">
+<meta property="og:type" content="article">
+<meta property="og:title" content="python网络编程">
+<meta property="og:url" content="https://alfredliukai.github.io/2021/03/08/python网络编程/index.html">
+<meta property="og:site_name" content="昨非的个人网站">
+<meta property="og:description" content="udp程序流程udp是传输层的一种协议，不需要进行连接就可以用来发送和接收数据，但不保证数据的可靠传输。 udp服务端1234567891011121314151617181920212223242526import socket# 1. 创建套接字server_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)#2. bind绑定ip地">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://alfredliukai.github.io/2021/03/08/python网络编程/udp01.png">
+<meta property="og:image" content="https://alfredliukai.github.io/2021/03/08/python网络编程/tcp01.png">
+<meta property="og:image" content="https://alfredliukai.github.io/2021/03/08/python网络编程/tcp02.png">
+<meta property="og:image" content="https://alfredliukai.github.io/2021/03/08/python网络编程/tcp03.png">
+<meta property="og:image" content="https://alfredliukai.github.io/2021/03/08/python网络编程/tcp04.png">
+<meta property="og:image" content="https://alfredliukai.github.io/2021/03/08/python网络编程/tcp05.png">
+<meta property="og:image" content="https://alfredliukai.github.io/2021/03/08/python网络编程/tcp06.png">
+<meta property="og:updated_time" content="2021-03-09T14:48:28.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="python网络编程">
+<meta name="twitter:description" content="udp程序流程udp是传输层的一种协议，不需要进行连接就可以用来发送和接收数据，但不保证数据的可靠传输。 udp服务端1234567891011121314151617181920212223242526import socket# 1. 创建套接字server_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)#2. bind绑定ip地">
+<meta name="twitter:image" content="https://alfredliukai.github.io/2021/03/08/python网络编程/udp01.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://alfredliukai.github.io/2021/03/08/python网络编程/">
+
+
+
+
+
+  <title>python网络编程 | 昨非的个人网站</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh_CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">昨非的个人网站</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-首页">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-标签">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-归档">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-关于">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://alfredliukai.github.io/2021/03/08/python网络编程/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="昨非">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="昨非的个人网站">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">python网络编程</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2021-03-08T22:33:57+08:00">
+                2021-03-08
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="udp程序流程"><a href="#udp程序流程" class="headerlink" title="udp程序流程"></a>udp程序流程</h3><p>udp是传输层的一种协议，不需要进行连接就可以用来发送和接收数据，但不保证数据的可靠传输。<br><img src="/2021/03/08/python网络编程/udp01.png" alt="avatar"></p>
+<h3 id="udp服务端"><a href="#udp服务端" class="headerlink" title="udp服务端"></a>udp服务端</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">import socket</span><br><span class="line"></span><br><span class="line"># 1. 创建套接字</span><br><span class="line">server_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)</span><br><span class="line"></span><br><span class="line">#2. bind绑定ip地址和端口，为元祖tuple类型</span><br><span class="line"># ip如果不指明，表示本机的任何一个ip地址</span><br><span class="line">server_addr = (&quot;&quot;, 8080)</span><br><span class="line">server_sock.bind(server_addr)</span><br><span class="line"></span><br><span class="line">while True:</span><br><span class="line">    # recv方法接收发送过来的数据</span><br><span class="line">    # 返回值为接收到的数据，参数（这里为1024）表示本次收取数据的最大字节数</span><br><span class="line">    # receive_data = server_sock.recv(1024)</span><br><span class="line">    # recvfrom与recv方法类似，不同的是可以将发送数据的客户端的地址也返回</span><br><span class="line">    receive_data, client_addr = server_sock.recvfrom(1024)</span><br><span class="line">    # 注意python3中收到的数据receive_data是bytes类型</span><br><span class="line">    # print(client_addr, &quot;: &quot;, receive_data)</span><br><span class="line">    # 将bytes数据转换为字符串类型</span><br><span class="line">    msg = receive_data.decode(&quot;utf-8&quot;)</span><br><span class="line">    # 将收到的数据显示输出</span><br><span class="line">    print(client_addr, &quot;: &quot;, msg)</span><br><span class="line">    # 我们假定如果客户端发送了quit，我们就关闭服务端的套接字（即关闭服务端）</span><br><span class="line">    if msg == &quot;quit&quot;:</span><br><span class="line">        server_sock.close()</span><br><span class="line">        break</span><br></pre></td></tr></table></figure>
+<p>测试<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># -u 表示使用udp协议</span><br><span class="line"># nc -u 服务器ip 服务器端口</span><br><span class="line">nc -u 127.0.0.1 8080</span><br></pre></td></tr></table></figure></p>
+<h3 id="udp客户端"><a href="#udp客户端" class="headerlink" title="udp客户端"></a>udp客户端</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">import socket</span><br><span class="line"></span><br><span class="line"># 1. 创建套接字</span><br><span class="line">client_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)</span><br><span class="line"></span><br><span class="line"># 服务器地址</span><br><span class="line">server_addr = (&apos;127.0.0.1&apos;, 8080)</span><br><span class="line"></span><br><span class="line">data = input(&quot;请输入要发送的内容：&quot;)</span><br><span class="line"># 只要用户输入的数据不为空，就向服务器端发送</span><br><span class="line">while data:</span><br><span class="line">    # 2. 使用sendto方法向服务器发送数据</span><br><span class="line">    # sendto(bytes类型要发送的数据， 对方的地址)</span><br><span class="line">    client_sock.sendto(data.encode(&quot;utf-8&quot;), server_addr)</span><br><span class="line">    data = input(&quot;请输入要发送的内容：&quot;)</span><br><span class="line"></span><br><span class="line"># 当用户输入的数据为空（&quot;&quot;)时, 关闭客户端套接字</span><br><span class="line">client_sock.close()</span><br></pre></td></tr></table></figure>
+<h3 id="tcp"><a href="#tcp" class="headerlink" title="tcp"></a>tcp</h3><p>TCP协议，传输控制协议（英语：Transmission Control Protocol，缩写为 TCP）是一种面向连接的、可靠的、基于字节流的传输层通信协议，由IETF的RFC 793定义。</p>
+<p>tcp通信需要经过创建连接、数据传送、终止连接三个步骤。</p>
+<p><strong>1. 面向连接</strong><br>通信双方必须先建立连接才能进行数据的传输，双方都必须为该连接分配必要的系统内核资源，以管理连接的状态和连接上的传输。</p>
+<p>双方间的数据传输都可以通过这一个连接进行。</p>
+<p>完成数据交换后，双方必须断开此连接，以释放系统资源。</p>
+<p>这种连接是一对一的，不适用于广播的应用程序，基于广播的应用程序适合使用UDP协议。</p>
+<p><strong>2. 基于数据流（字节流)</strong></p>
+<p>1）tcp数据流<br>发送端执行多次写操作（send）时，TCP模块先把这些数据放入TCP发送缓冲区中，当TCP模块真正可以发送数据时，才把TCP发送缓冲区等待发送的数据封装成一个或多个TCP报文段发出。</p>
+<p>TCP会把数据流切分成一个或多个适当长度的报文段（通常受该计算机连接的网络的数据链路层的最大传输单元（MTU）的限制）。</p>
+<p><strong>TCP模块发出的报文的个数与应用程序的写操作（send）的次数没有固定的数量关系。</strong></p>
+<p><strong>应用程序执行读操作的次数和TCP模块接收到的TCP报文的个数没有固定的数量关系。</strong></p>
+<p><strong>发送端执行的写操作（send）次数与接收端执行的读操作（recv）次数没有数量对应关系。</strong></p>
+<p><img src="/2021/03/08/python网络编程/tcp01.png" alt="avatar"></p>
+<p>2）对比udp数据报<br>UDP发送端执行一次写操作（sendto)，UDP模块把它封装成一个UDP数据报并发送。</p>
+<p>接收端针对每一个数据报执行读操作（recvfrom），否则就会发生丢包，并且如果用户没有指定足够的应用程序缓冲区来读取数据报，则UDP数据报就会被截断（接收不完整）。</p>
+<p><img src="/2021/03/08/python网络编程/tcp02.png" alt="avatar"></p>
+<p><strong>3. 可靠传输</strong><br>1）TCP采用发送应答机制</p>
+<p>TCP发送的每个报文段都必须得到接收方的应答才认为这个TCP报文段传输成功</p>
+<p>2）超时重传</p>
+<p>发送端发出一个报文段之后就启动定时器，如果在定时时间内没有收到应答就重新发送这个报文段。</p>
+<p>TCP为了保证不发生丢包，就给每个包一个序号，同时序号也保证了传送到接收端实体的包的按序接收。然后接收端实体对已成功收到的包发回一个相应的确认（ACK）；如果发送端实体在合理的往返时延（RTT）内未收到确认，那么对应的数据包就被假设为已丢失将会被进行重传。</p>
+<p>3）错误校验</p>
+<p>TCP用一个校验和函数来检验数据是否有错误；在发送和接收时都要计算校验和。</p>
+<p>4)流量控制和阻塞管理</p>
+<p>流量控制用来避免主机发送得过快而使接收方来不及完全收下。</p>
+<p><strong>TCP与UDP的不同点</strong><br>面向连接（确认有创建三方交握，连接已创建才作传输。）<br>有序数据传输<br>重发丢失的数据包<br>舍弃重复的数据包<br>无差错的数据传输<br>阻塞/流量控制</p>
+<p><strong>建立连接（三次握手）</strong></p>
+<p>TCP用三次握手（three-way handshake）过程创建一个连接。在连接创建过程中，很多参数要被初始化，例如序号被初始化以保证按序传输和连接的强壮性。</p>
+<p><img src="/2021/03/08/python网络编程/tcp03.png" alt="avatar"></p>
+<p>我们把tcp通信的报文称为段。<br>客户端发送一个带SYN标志的TCP报文到服务器。这是三次握手过程中的段1。</p>
+<p>客户端发出段1，SYN位表示连接请求。序号是1000（实际是一个随机数，此处以1000为例），这个序号在网络通讯中用作临时的地址，每发一个数据字节，这个序号要加1，这样在接收端可以根据序号排出数据包的正确顺序，也可以发现丢包的情况。mss表示最大段尺寸，如果一个段太大，封装成帧后超过了链路层的最大帧长度，就必须在IP层分片，为了避免这种情况，客户端声明自己的最大段尺寸，建议服务器端发来的段不要超过这个长度。</p>
+<p>服务器端回应客户端，是三次握手中的第2个报文段，同时带ACK标志和SYN标志。它表示对刚才客户端SYN的回应；同时又发送SYN给客户端，询问客户端是否准备好进行数据通讯。</p>
+<p>服务器发出段2，也带有SYN位，同时置ACK位表示确认，确认序号是1001，表示“我接收到序号1000及其以前所有的段，请你下次发送序号为1001的段”，也就是应答了客户端的连接请求，同时也给客户端发出一个连接请求SYN，序号是8000（实际也是一个随机数，此处以8000为例），同时声明最大尺寸为1024。</p>
+<p>客户必须再次回应服务器端一个ACK报文，这是报文段3。</p>
+<p>客户端发出段3，对服务器的连接请求进行应答，确认序号是8001。</p>
+<p>在这个过程中，客户端和服务器分别给对方发了连接请求，也应答了对方的连接请求，其中服务器的请求和应答在一个段中发出，因此一共有三个段用于建立连接，称为“三次握手（three-way-handshake）”。在建立连接的同时，双方协商了一些信息，例如双方发送序号的初始值、最大段尺寸等。</p>
+<p>在TCP通讯中，如果一方收到另一方发来的段，读出其中的目的端口号，发现本机并没有任何进程使用这个端口，就会应答一个包含RST位的段给另一方。例如，服务器并没有任何进程使用8080端口，我们却用telnet客户端去连接它，服务器收到客户端发来的SYN段就会应答一个RST段，客户端的telnet程序收到RST段后报告错误Connection refused。</p>
+<p><strong>数据传输</strong></p>
+<ol>
+<li>客户端发出段4，包含从序号1001开始的20个字节数据。</li>
+<li>服务器发出段5，确认序号为1021，对序号为1001-1020的数据表示确认收到，同时请求发送序号1021开始的数据，服务器在应答的同时也向客户端发送从序号8001开始的10个字节数据。</li>
+<li>客户端发出段6，对服务器发来的序号为8001-8010的数据表示确认收到，请求发送序号8011开始的数据。</li>
+</ol>
+<p>在数据传输过程中，ACK和确认序号是非常重要的，应用程序交给TCP协议发送的数据会暂存在TCP层的发送缓冲区中，发出数据包给对方之后，只有收到对方应答的ACK段才知道该数据包确实发到了对方，可以从发送缓冲区中释放掉了，如果因为网络故障丢失了数据包或者丢失了对方发回的ACK段，经过等待超时后TCP协议自动将发送缓冲区中的数据包重发。</p>
+<p><strong>关闭连接（四次挥手）</strong></p>
+<p>由于TCP连接是可以双向通信的（全双工），因此每个方向都必须单独进行关闭。</p>
+<p>这原则是当一方完成它的数据发送任务后就能发送一个FIN来终止这个方向的连接。收到一个 FIN只意味着这一方向上没有数据流动，一个TCP连接在收到一个FIN后仍能发送数据。首先进行关闭的一方将执行主动关闭，而另一方执行被动关闭。</p>
+<p>客户端发出段7，FIN位表示关闭连接的请求。</p>
+<p>服务器发出段8，应答客户端的关闭连接请求。</p>
+<p>服务器发出段9，其中也包含FIN位，向客户端发送关闭连接请求。</p>
+<p>客户端发出段10，应答服务器的关闭连接请求。</p>
+<p>建立连接的过程是三次握手，而关闭连接通常需要4个段，服务器的应答和关闭连接请求通常不合并在一个段中，因为有连接半关闭的情况，这种情况下客户端关闭连接之后就不能再发送数据给服务器了，但是服务器还可以发送数据给客户端，直到服务器也关闭连接为止。</p>
+<p><strong>tcp程序流程</strong></p>
+<p><img src="/2021/03/08/python网络编程/tcp04.png" alt="avatar"></p>
+<p><strong>tcp服务器</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">import socket</span><br><span class="line"></span><br><span class="line"># 创建socket</span><br><span class="line"># 注意TCP协议对应的为SOCK_STREAM 流式</span><br><span class="line">server_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)</span><br><span class="line"></span><br><span class="line"># 绑定IP地址和端口</span><br><span class="line">address = (&quot;&quot;, 8000)</span><br><span class="line">server_sock.bind(address)</span><br><span class="line"></span><br><span class="line"># 让服务端的socket开启监听，等待客户端的连接请求</span><br><span class="line"># listen中的参数表示已经建立链接和半链接的总数</span><br><span class="line"># 如果当前已建立链接数和半链接数已达到设定值，那么新客户端不会立即connect成功，而是等待服务器能够处理时</span><br><span class="line">server_sock.listen(128)</span><br><span class="line"></span><br><span class="line"># 使用accept方法接收客户端的连接请求</span><br><span class="line"># 如果有新的客户端来连接服务器，那么就产生一个新的套接字专门为这个客户端服务</span><br><span class="line"># client_sock用来为这个客户端服务，与客户端形成一对一的连接</span><br><span class="line"># 而server_sock就可以省下来专门等待其他新客户端的连接请求</span><br><span class="line"># client_addr是请求连接的客户端的地址信息，为元祖，包含用户的IP和端口</span><br><span class="line">client_sock, client_addr = server_sock.accept()</span><br><span class="line">print(&quot;客户端%s:%s进行了连接!&quot; % client_addr)</span><br><span class="line"></span><br><span class="line"># recv()方法可以接收客户端发送过来的数据，指明最大收取1024个字节的数据</span><br><span class="line">recv_data = client_sock.recv(1024)</span><br><span class="line"># python3中收到的数据为bytes类型</span><br><span class="line"># recv_data.decode()将bytes类型转为str类型</span><br><span class="line">print(&quot;接收到的数据为：&quot;, recv_data.decode())</span><br><span class="line"></span><br><span class="line"># send()方法向客户端发送数据，要求发送bytes类型的数据</span><br><span class="line">client_sock.send(&quot;thank you!\n&quot;.encode())</span><br><span class="line"></span><br><span class="line"># 关闭与客户端连接的socket</span><br><span class="line"># 只要关闭了，就意味着为不能再为这个客户端服务了，如果还需要服务，只能再次重新连接</span><br><span class="line">client_sock.close()</span><br><span class="line"></span><br><span class="line"># 关闭服务端的监听socket</span><br><span class="line"># 要这个套接字关闭了，就意味着整个程序不能再接收任何新的客户端的连接</span><br><span class="line">server_sock.close()</span><br></pre></td></tr></table></figure>
+<p><strong>tcp客户端</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">import socket</span><br><span class="line"></span><br><span class="line"># 创建客户端socket用以跟服务器连接通信</span><br><span class="line"># tcp协议对应为SOCK_STREAM</span><br><span class="line">client_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)</span><br><span class="line"></span><br><span class="line"># connect方法用来连接服务器</span><br><span class="line">server_addr = (&quot;127.0.0.1&quot;, 8000)</span><br><span class="line">client_sock.connect(server_addr)</span><br><span class="line"></span><br><span class="line"># 提示用户输入要发送的数据</span><br><span class="line">msg = input(&quot;请输入要发送的内容：&quot;)</span><br><span class="line"># send()方法想服务器发送数据</span><br><span class="line">client_sock.send(msg.encode())</span><br><span class="line"></span><br><span class="line"># recv()接收对方发送过来的数据，最大接收1024个字节</span><br><span class="line">recv_data = client_sock.recv(1024)</span><br><span class="line">print(&quot;收到了服务器的回应信息：%s&quot; % recv_data.decode())</span><br><span class="line"></span><br><span class="line"># 关闭客户端套接字</span><br><span class="line">client_sock.close()</span><br></pre></td></tr></table></figure>
+<p><strong>tcp十种状态</strong></p>
+<p><img src="/2021/03/08/python网络编程/tcp05.png" alt="avatar"></p>
+<p>LISTEN ：该状态表示服务器端的某个SOCKET处于监听状态，可以接受连接。</p>
+<ul>
+<li>SYN_SENT ：这个状态与SYN_RCVD遥相呼应，当客户端SOCKET执行CONNECT连接时，它首先发送SYN报文，随即进入到了SYN_SENT状态，并等待服务端的发送三次握手中的第2个报文。SYN_SENT状态表示客户端已发送SYN报文。</li>
+<li>SYN_RCVD : 该状态表示接收到SYN报文，在正常情况下，这个状态是服务器端的SOCKET在建立TCP连接时的三次握手会话过程中的一个中间状态，很短暂。此种状态时，当收到客户端的ACK报文后，会进入到ESTABLISHED状态。</li>
+<li>ESTABLISHED ：表示连接已经建立。</li>
+<li>FIN_WAIT_1 : FIN_WAIT_1和FIN_WAIT_2状态的真正含义都是表示等待对方的FIN报文。区别是： FIN_WAIT_1状态是当socket在ESTABLISHED状态时，想主动关闭连接，向对方发送了FIN报文，此时该socket进入到FIN_WAIT_1状态。 FIN_WAIT_2状态是当对方回应ACK后，该socket进入到FIN_WAIT_2状态，正常情况下，对方应马上回应ACK报文，所以FIN_WAIT_1状态一般较难见到，而FIN_WAIT_2状态可用netstat看到。</li>
+<li>FIN_WAIT_2 ：主动关闭链接的一方，发出FIN收到ACK以后进入该状态。称之为半连接或半关闭状态。该状态下的socket只能接收数据，不能发。</li>
+<li>TIME_WAIT : 表示收到了对方的FIN报文，并发送出了ACK报文，等2MSL后即可回到CLOSED可用状态。如果FIN_WAIT_1状态下，收到对方同时带 FIN标志和ACK标志的报文时，可以直接进入到TIME_WAIT状态，而无须经过FIN_WAIT_2状态。</li>
+<li>CLOSE_WAIT : 此种状态表示在等待关闭。当对方关闭一个SOCKET后发送FIN报文给自己，系统会回应一个ACK报文给对方，此时则进入到CLOSE_WAIT状态。接下来呢，察看是否还有数据发送给对方，如果没有可以 close这个SOCKET，发送FIN报文给对方，即关闭连接。所以在CLOSE_WAIT状态下，需要关闭连接。</li>
+<li>LAST_ACK : 该状态是被动关闭一方在发送FIN报文后，最后等待对方的ACK报文。当收到ACK报文后，即可以进入到CLOSED可用状态。</li>
+</ul>
+<p><strong>tcp的2MSL问题</strong></p>
+<p><img src="/2021/03/08/python网络编程/tcp06.png" alt="avatar"></p>
+<p>2MSL (Maximum Segment Lifetime)TIME_WAIT状态的存在有两个理由：</p>
+<ol>
+<li><p>让4次挥手关闭流程更加可靠；4次挥手的最后一个ACK是是由主动关闭方发送出去的，若这个ACK丢失，被动关闭方会再次发一个FIN过来。若主动关闭方能够保持一个2MSL的TIME_WAIT状态，则有更大的机会让丢失的ACK被再次发送出去。</p>
+</li>
+<li><p>防止lost duplicate对后续新建正常链接的传输造成破坏。</p>
+</li>
+</ol>
+<p>lost duplicate在实际的网络中非常常见，经常是由于路由器产生故障，路径无法收敛，导致一个packet在路由器A，B，C之间做类似死循环的跳转。IP头部有个TTL，限制了一个包在网络中的最大跳数，因此这个包有两种命运，要么最后TTL变为0，在网络中消失；要么TTL在变为0之前路由器路径收敛，它凭借剩余的TTL跳数终于到达目的地。但非常可惜的是TCP通过超时重传机制在早些时候发送了一个跟它一模一样的包，并先于它达到了目的地，因此它的命运也就注定被TCP协议栈抛弃。</p>
+<p>另外一个概念叫做incarnation connection，指跟上次的socket pair一摸一样的新连接，叫做incarnation of previous connection。lost uplicate加上incarnation connection，则会对我们的传输造成致命的错误。</p>
+<p>TCP是流式的，所有包到达的顺序是不一致的，依靠序列号由TCP协议栈做顺序的拼接；假设一个incarnation connection这时收到的seq=1000, 来了一个lost duplicate为seq=1000，len=1000, 则TCP认为这个lost duplicate合法，并存放入了receive buffer，导致传输出现错误。通过一个2MSL TIME_WAIT状态，确保所有的lost duplicate都会消失掉，避免对新连接造成错误。</p>
+<p><strong>tcp服务器(REUSEADDR)</strong></p>
+<p>为了解决服务器socket可能的2MSL延迟问题，我们可以为服务器socket设置SO_REUSEADDR选项。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">import socket</span><br><span class="line"></span><br><span class="line"># 创建socket</span><br><span class="line"># 注意TCP协议对应的为SOCK_STREAM 流式</span><br><span class="line">server_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)</span><br><span class="line"></span><br><span class="line"># 使用setsockopt()方法设置socket的选项参数</span><br><span class="line"># SOL_SOCKET = Set Option Level _ SOCKET 设置选项级别为socket级</span><br><span class="line"># SO_REUSEADDR = Socket Option _ REUSEADDR 设置socket的选项参数为重用地址功能</span><br><span class="line"># 1 表示开启此选项功能，即开启重用地址功能</span><br><span class="line">server_sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)</span><br><span class="line"></span><br><span class="line"># 绑定IP地址和端口</span><br><span class="line">address = (&quot;&quot;, 8000)</span><br><span class="line">server_sock.bind(address)</span><br><span class="line"></span><br><span class="line"># 让服务端的socket开启监听，等待客户端的连接请求</span><br><span class="line">server_sock.listen(128)</span><br><span class="line"></span><br><span class="line"># 使用accept方法接收客户端的连接请求</span><br><span class="line">client_sock, client_addr = server_sock.accept()</span><br><span class="line">print(&quot;客户端%s:%s进行了连接!&quot; % client_addr)</span><br><span class="line"></span><br><span class="line"># recv()方法可以接收客户端发送过来的数据，指明最大收取1024个字节的数据</span><br><span class="line">recv_data = client_sock.recv(1024)</span><br><span class="line">print(&quot;接收到的数据为：&quot;, recv_data.decode())</span><br><span class="line"></span><br><span class="line"># send()方法向客户端发送数据，要求发送bytes类型的数据</span><br><span class="line">client_sock.send(&quot;thank you!\n&quot;.encode())</span><br><span class="line"></span><br><span class="line"># 关闭与客户端连接的socket</span><br><span class="line">client_sock.close()</span><br><span class="line"></span><br><span class="line"># 关闭服务端的监听socket</span><br><span class="line">server_sock.close()</span><br></pre></td></tr></table></figure>
+<p><strong>tcp长连接和短连接</strong></p>
+<ul>
+<li><p>长连接可以省去较多的TCP建立和关闭的操作，减少浪费，节约时间。对于频繁请求资源的客户来说，较适用长连接。</p>
+</li>
+<li><p>client与server之间的连接如果一直不关闭的话，会存在一个问题，随着客户端连接越来越多，server早晚有扛不住的时候，这时候server端需要采取一些策略，如关闭一些长时间没有读写事件发生的连接，这样可以避免一些恶意连接导致server端服务受损；</p>
+</li>
+</ul>
+<p>如果条件再允许就可以以客户端机器为颗粒度，限制每个客户端的最大长连接数，这样可以完全避免某个蛋疼的客户端连累后端服务。</p>
+<ul>
+<li><p>短连接对于服务器来说管理较为简单，存在的连接都是有用的连接，不需要额外的控制手段。</p>
+</li>
+<li><p>但如果客户请求频繁，将在TCP的建立和关闭操作上浪费时间和带宽。</p>
+</li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2021/02/18/python基础小结/" rel="next" title="python基础小结">
+                <i class="fa fa-chevron-left"></i> python基础小结
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">昨非</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">82</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">1</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">35</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#udp程序流程"><span class="nav-number">1.</span> <span class="nav-text">udp程序流程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#udp服务端"><span class="nav-number">2.</span> <span class="nav-text">udp服务端</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#udp客户端"><span class="nav-number">3.</span> <span class="nav-text">udp客户端</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#tcp"><span class="nav-number">4.</span> <span class="nav-text">tcp</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">昨非</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
