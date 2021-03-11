@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh_CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="python,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="单进程服务器12345678910111213141516171819202122232425import socketserver_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)server_sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)address = (&amp;">
+<meta name="keywords" content="python">
+<meta property="og:type" content="article">
+<meta property="og:title" content="python服务器模型">
+<meta property="og:url" content="https://alfredliukai.github.io/2021/03/10/python服务器模型/index.html">
+<meta property="og:site_name" content="昨非的个人网站">
+<meta property="og:description" content="单进程服务器12345678910111213141516171819202122232425import socketserver_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)server_sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)address = (&amp;">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:updated_time" content="2021-03-11T16:05:53.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="python服务器模型">
+<meta name="twitter:description" content="单进程服务器12345678910111213141516171819202122232425import socketserver_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)server_sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)address = (&amp;">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://alfredliukai.github.io/2021/03/10/python服务器模型/">
+
+
+
+
+
+  <title>python服务器模型 | 昨非的个人网站</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh_CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">昨非的个人网站</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-首页">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-标签">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-归档">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-关于">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://alfredliukai.github.io/2021/03/10/python服务器模型/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="昨非">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="昨非的个人网站">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">python服务器模型</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2021-03-10T22:24:12+08:00">
+                2021-03-10
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="单进程服务器"><a href="#单进程服务器" class="headerlink" title="单进程服务器"></a>单进程服务器</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">import socket</span><br><span class="line"></span><br><span class="line">server_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)</span><br><span class="line"></span><br><span class="line">server_sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">address = (&quot;&quot;, 8000)</span><br><span class="line">server_sock.bind(address)</span><br><span class="line">server_sock.listen(128)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">while True:</span><br><span class="line">    print(&apos;-----主进程，，等待新客户端的到来------&apos;)</span><br><span class="line">    client_sock, client_addr = server_sock.accept()</span><br><span class="line">    print(&quot;客户端%s:%s进行了连接!&quot; % client_addr)</span><br><span class="line">    while True:</span><br><span class="line">        recv_data = client_sock.recv(1024)</span><br><span class="line">        if len(recv_data) &gt; 0:</span><br><span class="line">            print(&quot;接收到的数据为：&quot;, recv_data.decode())</span><br><span class="line">        else:</span><br><span class="line">            print(&apos;[%s]客户端已经关闭&apos; % str(client_addr))</span><br><span class="line">            break</span><br><span class="line">    client_sock.close()</span><br><span class="line">server_sock.close()</span><br></pre></td></tr></table></figure>
+<ul>
+<li>同一时刻只能为一个客户进行服务，不能同时为多个客户服务</li>
+<li>类似于找一个“明星”签字一样，客户需要耐心等待才可以获取到服务</li>
+<li>当服务器为一个客户端服务时，而另外的客户端发起了connect，只要服务器listen的队列有空闲的位置，就会为这个新客户端进行连接，并且客户端可以发送数据，但当服务器为这个新客户端服务时，可能一次性把所有数据接收完毕</li>
+<li>当recv接收数据时，返回值为空，即没有返回数据，那么意味着客户端已经调用了close关闭了；因此服务器通过判断recv接收数据是否为空 来判断客户端是否已经下线</li>
+</ul>
+<h3 id="多进程服务器"><a href="#多进程服务器" class="headerlink" title="多进程服务器"></a>多进程服务器</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">import socket</span><br><span class="line">from multiprocessing import Process</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def handle_client(client_sock, client_addr):</span><br><span class="line">    while True:</span><br><span class="line">        recv_data = client_sock.recv(1024)</span><br><span class="line">        if len(recv_data) &gt; 0:</span><br><span class="line">            print(&apos;recv[%s]:%s&apos; % (str(client_addr), recv_data.decode()))</span><br><span class="line">        else:</span><br><span class="line">            print(&apos;[%s]客户端已经关闭&apos; % str(client_addr))</span><br><span class="line">            break</span><br><span class="line"></span><br><span class="line">    client_sock.close()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def main():</span><br><span class="line">    server_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)</span><br><span class="line">    server_sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)</span><br><span class="line">    address = (&quot;&quot;, 8000)</span><br><span class="line">    server_sock.bind(address)</span><br><span class="line">    server_sock.listen(128)</span><br><span class="line">    while True:</span><br><span class="line">        print(&apos;-----主进程，，等待新客户端的到来------&apos;)</span><br><span class="line">        client_sock, client_addr = server_sock.accept()</span><br><span class="line">        print(&apos;-----主进程，，接下来创建一个新的进程负责数据处理[%s]-----&apos; % str(client_addr))</span><br><span class="line">        process = Process(target=handle_client, args=(client_sock, client_addr))</span><br><span class="line">        process.start()</span><br><span class="line">        # 因为已经向子进程中copy了一份（引用），并且父进程中这个套接字也没有用处了</span><br><span class="line">        # 所以关闭</span><br><span class="line">        client_sock.close()</span><br><span class="line">        # 当为所有的客户端服务完之后再进行关闭，表示不再接收新的客户端的链接</span><br><span class="line">    server_sock.close()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">if __name__ == &apos;__main__&apos;:</span><br><span class="line">    main()</span><br></pre></td></tr></table></figure>
+<ul>
+<li>通过为每个客户端创建一个进程的方式，能够同时为多个客户端进行服务</li>
+<li>当客户端不是特别多的时候，这种方式还行，如果有几百上千个，就不可取了，因为每次创建进程等过程需要好较大的资源</li>
+</ul>
+<h3 id="多线程服务器"><a href="#多线程服务器" class="headerlink" title="多线程服务器"></a>多线程服务器</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">import socket</span><br><span class="line">from threading import Thread</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def handle_client(client_sock, client_addr):</span><br><span class="line">    while True:</span><br><span class="line">        recv_data = client_sock.recv(1024)</span><br><span class="line">        if len(recv_data) &gt; 0:</span><br><span class="line">            print(&apos;recv[%s]:%s&apos; % (str(client_addr), recv_data.decode()))</span><br><span class="line">        else:</span><br><span class="line">            print(&apos;[%s]客户端已经关闭&apos; % str(client_addr))</span><br><span class="line">            break</span><br><span class="line"></span><br><span class="line">    client_sock.close()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def main():</span><br><span class="line">    server_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)</span><br><span class="line">    server_sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)</span><br><span class="line">    address = (&quot;&quot;, 8001)</span><br><span class="line">    server_sock.bind(address)</span><br><span class="line">    server_sock.listen(128)</span><br><span class="line">    while True:</span><br><span class="line">        print(&apos;-----主线程，，等待新客户端的到来------&apos;)</span><br><span class="line">        client_sock, client_addr = server_sock.accept()</span><br><span class="line">        print(&apos;-----主线程，，接下来创建一个新的线程负责数据处理[%s]-----&apos; % str(client_addr))</span><br><span class="line">        thread = Thread(target=handle_client, args=(client_sock, client_addr))</span><br><span class="line">        thread.start()</span><br><span class="line">        # 因为线程中共享这个套接字，如果关闭了会导致这个套接字不可用，</span><br><span class="line">        # 但是此时在线程中这个套接字可能还在收数据，因此不能关闭</span><br><span class="line">        # client_sock.close()</span><br><span class="line">    server_sock.close()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">if __name__ == &apos;__main__&apos;:</span><br><span class="line">    main()</span><br></pre></td></tr></table></figure>
+<h3 id="单进程服务器-非堵塞模式"><a href="#单进程服务器-非堵塞模式" class="headerlink" title="单进程服务器-非堵塞模式"></a>单进程服务器-非堵塞模式</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line">import socket</span><br><span class="line"></span><br><span class="line"># 用来存储所有的新链接的客户端</span><br><span class="line">client_list = []</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def main():</span><br><span class="line">    server_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)</span><br><span class="line">    server_sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)</span><br><span class="line">    address = (&quot;&quot;, 8000)</span><br><span class="line">    server_sock.bind(address)</span><br><span class="line">    server_sock.listen(128)</span><br><span class="line"></span><br><span class="line">    # 将套接字设置为非堵塞</span><br><span class="line">    # 设置为非堵塞后，如果accept时，恰巧没有客户端connect，那么accept会</span><br><span class="line">    # 产生一个异常，所以需要try来进行处理</span><br><span class="line">    server_sock.setblocking(False)</span><br><span class="line"></span><br><span class="line">    while True:</span><br><span class="line"></span><br><span class="line">        try:</span><br><span class="line">            client_info = server_sock.accept()</span><br><span class="line">        except BlockingIOError:</span><br><span class="line">            pass</span><br><span class="line">        else:</span><br><span class="line">            print(&quot;一个新的客户端到来%s：&quot; % str(client_info))</span><br><span class="line">            # 将套接字设置为非堵塞</span><br><span class="line">            client_info[0].setblocking(False)</span><br><span class="line">            client_list.append(client_info)</span><br><span class="line"></span><br><span class="line">        # 用来存储需要删除的客户端信息</span><br><span class="line">        need_del_client_info_list = []</span><br><span class="line"></span><br><span class="line">        for client_socket, client_addr in client_list:</span><br><span class="line">            try:</span><br><span class="line">                recv_data = client_socket.recv(1024)</span><br><span class="line">                if len(recv_data) &gt; 0:</span><br><span class="line">                    print(&apos;recv[%s]:%s&apos; % (str(client_addr), recv_data.decode()))</span><br><span class="line">                else:</span><br><span class="line">                    print(&apos;[%s]客户端已经关闭&apos; % str(client_addr))</span><br><span class="line">                    client_socket.close()</span><br><span class="line">                    need_del_client_info_list.append((client_socket, client_addr))</span><br><span class="line">            except BlockingIOError:</span><br><span class="line">                pass</span><br><span class="line"></span><br><span class="line">        for client in need_del_client_info_list:</span><br><span class="line">            client_list.remove(client)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">if __name__ == &apos;__main__&apos;:</span><br><span class="line">    main()</span><br></pre></td></tr></table></figure>
+<h3 id="select版-TCP服务器"><a href="#select版-TCP服务器" class="headerlink" title="select版-TCP服务器"></a>select版-TCP服务器</h3><p>在多路复用的模型中，比较常用的有select模型和epoll模型。这两个都是系统接口，由操作系统提供。当然，Python的select模块进行了更高级的封装。</p>
+<p>网络通信被Unix系统抽象为文件的读写，通常是一个设备，由设备驱动程序提供，驱动可以知道自身的数据是否可用。支持阻塞操作的设备驱动通常会实现一组自身的等待队列，如读/写等待队列用于支持上层(用户层)所需的block或non-block操作。设备的文件的资源如果可用（可读或者可写）则会通知进程，反之则会让进程睡眠，等到数据到来可用的时候，再唤醒进程。</p>
+<p>这些设备的文件描述符被放在一个数组中，然后select调用的时候遍历这个数组，如果对于的文件描述符可读则会返回改文件描述符。当遍历结束之后，如果仍然没有一个可用设备文件描述符，select让用户进程则会睡眠，直到等待资源可用的时候在唤醒，遍历之前那个监视的数组。每次遍历都是依次进行判断的。</p>
+<p><strong>select 回显服务器</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line">import select</span><br><span class="line">import socket</span><br><span class="line">import sys</span><br><span class="line"></span><br><span class="line">server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)</span><br><span class="line">server.bind((&apos;&apos;, 7788))</span><br><span class="line">server.listen(5)</span><br><span class="line"></span><br><span class="line">inputs = [server, sys.stdin]</span><br><span class="line"></span><br><span class="line">running = True</span><br><span class="line"></span><br><span class="line">while True:</span><br><span class="line">    # 调用 select 函数，阻塞等待</span><br><span class="line">    readable, writeable, exceptional = select.select(inputs, [], [])</span><br><span class="line"></span><br><span class="line">    # 数据抵达，循环</span><br><span class="line">    for sock in readable:</span><br><span class="line">        # 监听到有新的连接</span><br><span class="line">        if sock == server:</span><br><span class="line">            conn, addr = server.accept()</span><br><span class="line">            # select 监听的socket</span><br><span class="line">            inputs.append(conn)</span><br><span class="line">        # 监听到键盘有输入</span><br><span class="line">        elif sock == sys.stdin:</span><br><span class="line">            cmd = sys.stdin.readline()</span><br><span class="line">            running = False</span><br><span class="line">            break</span><br><span class="line">        # 有数据到达</span><br><span class="line">        else:</span><br><span class="line">            # 读取客户端连接发送的数据</span><br><span class="line">            data = sock.recv(1024)</span><br><span class="line">            if data:</span><br><span class="line">                sock.send(data)</span><br><span class="line">            else:</span><br><span class="line">                # 移除select监听的socket</span><br><span class="line">                inputs.remove(sock)</span><br><span class="line">                sock.close()</span><br><span class="line">        # 如果检测到用户输入敲击键盘，那么就退出</span><br><span class="line">    if not running:</span><br><span class="line">        break</span><br><span class="line">server.close()</span><br></pre></td></tr></table></figure></p>
+<p>另外一个服务器（包含writeList）:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br></pre></td><td class="code"><pre><span class="line">import socket</span><br><span class="line">import select</span><br><span class="line">import Queue</span><br><span class="line"></span><br><span class="line">SERVER_IP = (&apos;&apos;, 9999)</span><br><span class="line"></span><br><span class="line"># 保存客户端发送过来的消息,将消息放入队列中</span><br><span class="line">message_queue = &#123;&#125;</span><br><span class="line">input_list = []</span><br><span class="line">output_list = []</span><br><span class="line"></span><br><span class="line">if __name__ == &apos;__main__&apos;:</span><br><span class="line">    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)</span><br><span class="line">    server.bind(SERVER_IP)</span><br><span class="line">    server.listen(8)</span><br><span class="line">    # 设置为非阻塞</span><br><span class="line">    server.setblocking(False)</span><br><span class="line"></span><br><span class="line">    # 初始化将服务端加入监听列表</span><br><span class="line">    input_list.append(server)</span><br><span class="line"></span><br><span class="line">    while True:</span><br><span class="line">        # 开始 select 监听,对input_list中的服务端server进行监听</span><br><span class="line">        stdinput, stdoutput, stderr = select(input_list, output_list, input_list)</span><br><span class="line"></span><br><span class="line">        for obj in stdinput:</span><br><span class="line">            # 判断当前触发的是不是服务端对象, 当触发的对象是服务端对象时,说明有新客户端连接进来了</span><br><span class="line">            if obj == server:</span><br><span class="line">                # 接收客户端的连接, 获取客户端对象和客户端地址信息</span><br><span class="line">                conn, addr = server.accept()</span><br><span class="line">                print(&quot;Client %s connected! &quot; % str(addr))</span><br><span class="line">                # 将客户端对象也加入到监听的列表中, 当客户端发送消息时 select 将触发</span><br><span class="line">                input_list.append(conn)</span><br><span class="line">                # 为连接的客户端单独创建一个消息队列，用来保存客户端发送的消息</span><br><span class="line">                message_queue[conn] = Queue.Queue()</span><br><span class="line">            else:</span><br><span class="line">                # 由于客户端连接进来时服务端接收客户端连接请求，将客户端加入到了监听列表中(input_list)，客户端发送消息将触发</span><br><span class="line">                # 所以判断是否是客户端对象触发</span><br><span class="line">                try:</span><br><span class="line">                    recv_data = obj.recv(1024)</span><br><span class="line">                    # 客户端未断开</span><br><span class="line">                    if recv_data:</span><br><span class="line">                        print(&quot;received %s from client %s&quot; % (recv_data, str(addr)))</span><br><span class="line">                        # 将收到的消息放入到各客户端的消息队列中</span><br><span class="line">                        message_queue[obj].put(recv_data)</span><br><span class="line"></span><br><span class="line">                        # 将回复操作放到output列表中，让select监听</span><br><span class="line">                        if obj not in output_list:</span><br><span class="line">                            output_list.append(obj)</span><br><span class="line">                except ConnectionResetError:</span><br><span class="line">                    # 客户端断开连接了，将客户端的监听从input列表中移除</span><br><span class="line">                    input_list.remove(obj)</span><br><span class="line">                    # 移除客户端对象的消息队列</span><br><span class="line">                    del message_queue[obj]</span><br><span class="line">                    print(&quot;\n[input] Client %s disconnected&quot; % str(addr))</span><br><span class="line">        # 如果现在没有客户端请求,也没有客户端发送消息时，开始对发送消息列表进行处理，是否需要发送消息</span><br><span class="line">        for sendobj in output_list:</span><br><span class="line">            try:</span><br><span class="line">                # 如果消息队列中有消息,从消息队列中获取要发送的消息</span><br><span class="line">                if not message_queue[sendobj].empty():</span><br><span class="line">                    # 从该客户端对象的消息队列中获取要发送的消息</span><br><span class="line">                    send_data = message_queue[sendobj].get()</span><br><span class="line">                    sendobj.send(send_data)</span><br><span class="line">                else:</span><br><span class="line">                    # 将监听移除等待下一次客户端发送消息</span><br><span class="line">                    output_list.remove(sendobj)</span><br><span class="line"></span><br><span class="line">            except ConnectionResetError:</span><br><span class="line">                # 客户端连接断开了</span><br><span class="line">                del message_queue[sendobj]</span><br><span class="line">                output_list.remove(sendobj)</span><br><span class="line">                print(&quot;\n[output] Client  %s disconnected&quot; % str(addr))</span><br></pre></td></tr></table></figure></p>
+<p><strong>总结</strong></p>
+<p>优点：select目前几乎在所有的平台上支持，其良好跨平台支持也是它的一个优点。<br>缺点：</p>
+<p>select的一个缺点在于单个进程能够监视的文件描述符的数量存在最大限制，在Linux上一般为1024，可以通过修改宏定义甚至重新编译内核的方式提升这一限制，但是这样也会造成效率的降低。</p>
+<p>一般来说这个数目和系统内存关系很大，具体数目可以cat /proc/sys/fs/file-max察看。32位机默认是1024个。64位机默认是2048.</p>
+<p>对socket进行扫描时是依次扫描的，即采用轮询的方法，效率较低。</p>
+<p>当套接字比较多的时候，每次select()都要通过遍历FD_SETSIZE个Socket来完成调度，不管哪个Socket是活跃的，都遍历一遍。这会浪费很多CPU时间。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/python/" rel="tag"># python</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2021/03/08/python网络编程/" rel="next" title="python网络编程">
+                <i class="fa fa-chevron-left"></i> python网络编程
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">昨非</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">83</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">1</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">35</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#单进程服务器"><span class="nav-number">1.</span> <span class="nav-text">单进程服务器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#多进程服务器"><span class="nav-number">2.</span> <span class="nav-text">多进程服务器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#多线程服务器"><span class="nav-number">3.</span> <span class="nav-text">多线程服务器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#单进程服务器-非堵塞模式"><span class="nav-number">4.</span> <span class="nav-text">单进程服务器-非堵塞模式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#select版-TCP服务器"><span class="nav-number">5.</span> <span class="nav-text">select版-TCP服务器</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">昨非</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
