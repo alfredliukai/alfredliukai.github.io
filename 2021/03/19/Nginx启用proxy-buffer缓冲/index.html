@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="java,idea,">
+  <meta name="keywords" content="nginx,">
 
 
 
@@ -79,24 +79,18 @@
 
 
 
-<meta name="description" content="困扰Intellij idea是一款非常强大的编辑器，可以很方便地帮我们创建maven项目，有用过的同学应该都深有体会，但我们经常会遇到一个困扰，那就是用idea创建maven项目时，速度很慢，往往需要好几分钟的时间，有时甚至会卡住，主要原因是创建maven项目时默认是下载求网络上的一个文件archetype-catalog.xml，该文件的大小有5-6M，下载的速度很慢，导致创建过程也变得很慢。">
-<meta name="keywords" content="java,idea">
+<meta name="description" content="buffer 是什么buffer ，即缓冲区，它在 Nginx 上发挥的作用就是 启用一个缓冲区，先在这个缓冲区内进行存储，再把数据发送出去 。和在线观看视频有点类似，先把视频文件缓冲一部分到本地再开始播放。 若没有 buffer，数据将会直接从 Nginx 传输到客户端。假设如果客户端的加载速度足够快，你可以直接把 buffer 关掉，让数据尽可能快地到达客户端。 而使用 buffer，Ngin">
+<meta name="keywords" content="nginx">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Idea创建maven项目问题解决">
-<meta property="og:url" content="https://alfredliukai.github.io/2020/05/05/Idea创建maven项目问题解决/index.html">
+<meta property="og:title" content="Nginx启用proxy_buffer缓冲">
+<meta property="og:url" content="https://alfredliukai.github.io/2021/03/19/Nginx启用proxy-buffer缓冲/index.html">
 <meta property="og:site_name" content="昨非的个人网站">
-<meta property="og:description" content="困扰Intellij idea是一款非常强大的编辑器，可以很方便地帮我们创建maven项目，有用过的同学应该都深有体会，但我们经常会遇到一个困扰，那就是用idea创建maven项目时，速度很慢，往往需要好几分钟的时间，有时甚至会卡住，主要原因是创建maven项目时默认是下载求网络上的一个文件archetype-catalog.xml，该文件的大小有5-6M，下载的速度很慢，导致创建过程也变得很慢。">
+<meta property="og:description" content="buffer 是什么buffer ，即缓冲区，它在 Nginx 上发挥的作用就是 启用一个缓冲区，先在这个缓冲区内进行存储，再把数据发送出去 。和在线观看视频有点类似，先把视频文件缓冲一部分到本地再开始播放。 若没有 buffer，数据将会直接从 Nginx 传输到客户端。假设如果客户端的加载速度足够快，你可以直接把 buffer 关掉，让数据尽可能快地到达客户端。 而使用 buffer，Ngin">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://alfredliukai.github.io/2020/05/05/Idea创建maven项目问题解决/idea1.png">
-<meta property="og:image" content="https://alfredliukai.github.io/2020/05/05/Idea创建maven项目问题解决/idea2.png">
-<meta property="og:image" content="https://alfredliukai.github.io/2020/05/05/Idea创建maven项目问题解决/idea3.png">
-<meta property="og:image" content="https://alfredliukai.github.io/2020/05/05/Idea创建maven项目问题解决/idea4.png">
-<meta property="og:image" content="https://alfredliukai.github.io/2020/05/05/Idea创建maven项目问题解决/idea5.png">
-<meta property="og:updated_time" content="2020-05-05T00:22:39.000Z">
+<meta property="og:updated_time" content="2021-03-19T05:29:56.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Idea创建maven项目问题解决">
-<meta name="twitter:description" content="困扰Intellij idea是一款非常强大的编辑器，可以很方便地帮我们创建maven项目，有用过的同学应该都深有体会，但我们经常会遇到一个困扰，那就是用idea创建maven项目时，速度很慢，往往需要好几分钟的时间，有时甚至会卡住，主要原因是创建maven项目时默认是下载求网络上的一个文件archetype-catalog.xml，该文件的大小有5-6M，下载的速度很慢，导致创建过程也变得很慢。">
-<meta name="twitter:image" content="https://alfredliukai.github.io/2020/05/05/Idea创建maven项目问题解决/idea1.png">
+<meta name="twitter:title" content="Nginx启用proxy_buffer缓冲">
+<meta name="twitter:description" content="buffer 是什么buffer ，即缓冲区，它在 Nginx 上发挥的作用就是 启用一个缓冲区，先在这个缓冲区内进行存储，再把数据发送出去 。和在线观看视频有点类似，先把视频文件缓冲一部分到本地再开始播放。 若没有 buffer，数据将会直接从 Nginx 传输到客户端。假设如果客户端的加载速度足够快，你可以直接把 buffer 关掉，让数据尽可能快地到达客户端。 而使用 buffer，Ngin">
 
 
 
@@ -126,13 +120,13 @@
 
 
 
-  <link rel="canonical" href="https://alfredliukai.github.io/2020/05/05/Idea创建maven项目问题解决/">
+  <link rel="canonical" href="https://alfredliukai.github.io/2021/03/19/Nginx启用proxy-buffer缓冲/">
 
 
 
 
 
-  <title>Idea创建maven项目问题解决 | 昨非的个人网站</title>
+  <title>Nginx启用proxy_buffer缓冲 | 昨非的个人网站</title>
   
 
 
@@ -259,7 +253,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://alfredliukai.github.io/2020/05/05/Idea创建maven项目问题解决/">
+    <link itemprop="mainEntityOfPage" href="https://alfredliukai.github.io/2021/03/19/Nginx启用proxy-buffer缓冲/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="昨非">
@@ -276,7 +270,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">Idea创建maven项目问题解决</h1>
+          <h1 class="post-title" itemprop="name headline">Nginx启用proxy_buffer缓冲</h1>
         
 
         <div class="post-meta">
@@ -288,8 +282,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-05-05T08:10:28+08:00">
-                2020-05-05
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2021-03-19T13:02:34+08:00">
+                2021-03-19
               </time>
             
 
@@ -326,36 +320,33 @@
       
 
       
-        <h3 id="困扰"><a href="#困扰" class="headerlink" title="困扰"></a>困扰</h3><p>Intellij idea是一款非常强大的编辑器，可以很方便地帮我们创建maven项目，有用过的同学应该都深有体会，但我们经常会遇到一个困扰，那就是用idea创建maven项目时，速度很慢，往往需要好几分钟的时间，有时甚至会卡住，主要原因是创建maven项目时默认是下载求网络上的一个文件archetype-catalog.xml，该文件的大小有5-6M，下载的速度很慢，导致创建过程也变得很慢。</p>
-<h3 id="解决办法"><a href="#解决办法" class="headerlink" title="解决办法"></a>解决办法</h3><p>解决办法有三种，并且都需要对maven的VM Options参数做配置。</p>
-<p><strong>方法一</strong></p>
-<p>在maven的VM Options加上-DarchetypeCatalog=internal参数，步骤如下：</p>
-<p>打开idea的启动界面，进入全局设置</p>
-<p><img src="/2020/05/05/Idea创建maven项目问题解决/idea1.png" alt="avatar"></p>
-<p>搜索maven，点击Runner一栏，在VM Options输入框里写上 “-DarchetypeCatalog=local”，</p>
-<p><img src="/2020/05/05/Idea创建maven项目问题解决/idea2.png" alt="avatar"></p>
-<p>确定后，再新建maven项目，就能发现项目很快就创建完成。</p>
-<p><strong>方法二</strong></p>
-<p>下载archetype-catalog.xml文件，在maven的VM Options加上-DarchetypeCatalog=local</p>
-<p>默认情况下，创建maven项目是从网络下载catalog文件，我们可以将catalog文件下到本地，然后通过设置archetype的使用方式为local，这样就不用每次都从网络上下载了。</p>
-<p>步骤：</p>
-<p>1、下载archetype-catalog.xml文件到本地。</p>
-<p>文件的位置是<a href="http://repo1.maven.org/maven2/archetype-catalog.xml" target="_blank" rel="noopener">http://repo1.maven.org/maven2/archetype-catalog.xml</a></p>
-<p>2、下载后放到本地仓库中对应的位置</p>
-<p>maven本地仓库的位置与settting.xml中的配置有关，例如我的setting.xml配置仓库的位置是：D:\apache-maven-3.6.0\repository<br><img src="/2020/05/05/Idea创建maven项目问题解决/idea3.png" alt="avatar"></p>
-<p>那么catalog文件就可以放在 D:\apache-maven-3.6.0\repository\org\apache\maven\archetype\archetype-catalog\3.0.1下<br><img src="/2020/05/05/Idea创建maven项目问题解决/idea4.png" alt="avatar"></p>
-<p>如果setting.xml没有配置仓库位置，那么就放到默认本地仓库下面对应的位置即可。本地仓库的默认位置是：Default: ${user.home}/.m2/repository，例如笔者的计算机用户名是Administrator，仓库位置就是 C:\Users\Administrator.m2\repository。</p>
-<p>3、修改maven的VM Options参数</p>
-<p>跟之前方法的步骤一样，打开全局设置中的maven设置栏，然后在VM Options输入框中填入</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-DarchetypeCatalog=local</span><br></pre></td></tr></table></figure>
-<p>这样maven每次就会从本地获取catalog文件，创建项目时就不用等那么久了。</p>
-<p><strong>方法三</strong></p>
-<p>新建maven项目的时候添加上参数archetypeCatalog，值为local，或者是如果本地仓库里有了catalog文件，参数值也可以为local<br><img src="/2020/05/05/Idea创建maven项目问题解决/idea5.png" alt="avatar"></p>
-<p>确定之后，maven项目就能很快的建成了。</p>
-<p><strong>心得</strong><br>最后提点建议，读者们可以先尝试前两种方案，因为一劳永逸，不用创建项目的时候都配置参数，如果行不通的话再采取第三种方案好了。</p>
-<h3 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h3><ol>
-<li>cnblogs.com/yeya/p/10314358.html  </li>
-</ol>
+        <h3 id="buffer-是什么"><a href="#buffer-是什么" class="headerlink" title="buffer 是什么"></a>buffer 是什么</h3><p>buffer ，即缓冲区，它在 Nginx 上发挥的作用就是 启用一个缓冲区，先在这个缓冲区内进行存储，再把数据发送出去 。和在线观看视频有点类似，先把视频文件缓冲一部分到本地再开始播放。</p>
+<p>若没有 buffer，数据将会直接从 Nginx 传输到客户端。假设如果客户端的加载速度足够快，你可以直接把 buffer 关掉，让数据尽可能快地到达客户端。</p>
+<p>而使用 buffer，Nginx 将会临时存储后端 response 到缓冲区，然后慢慢把数据发送到客户端。启用 buffer 的好处在于可以把数据一次性地发送给目标，相较于即时传输可以节约出这部分带宽。</p>
+<p>顺带一提，Nginx 全局配置中的 tcp_nopush 的作用就是 数据包会累计到一定大小之后才会发送 。而 tcp_nodelay 是尽快发送数据，所以若你启用了 buffer，建议关闭 tcp_nodelay。</p>
+<p>下面总结下 nginx buffer 设置：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">proxy_buffer_size 4k;</span><br><span class="line">proxy_buffering on;</span><br><span class="line">proxy_buffers 4 4k;</span><br><span class="line">proxy_busy_buffers_size 8k;</span><br><span class="line">proxy_max_temp_file_size 1024m;</span><br></pre></td></tr></table></figure>
+<p>首先，这些参数都是针对每一个http request ，不是全局的。</p>
+<p><strong>proxy_buffer 的配置</strong></p>
+<p>proxy_buffer 是用于 proxy 模式（一般也可称为反向代理）的 buffer 配置。Nginx 有另外一种适用于 server 模式的 buffer 配置，这里本帖不做介绍。</p>
+<p>proxy_buffer 包括了以下配置项：</p>
+<p>需注意，以下指定的数值都是针对每一个 http request 的上限，而不是对于整个 buffer 区指定的上限。  </p>
+<p><strong>proxy_buffering</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">proxy_buffering on;</span><br></pre></td></tr></table></figure>
+<p>在 proxy_buffering 开启的时候，proxy_buffers 和 proxy_busy_buffers_size 才会起作用。</p>
+<p><strong>proxy_buffers</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">proxy_buffers 4 8k;</span><br></pre></td></tr></table></figure></p>
+<p>指定一个 request 的 buffer 的数量和大小。</p>
+<p><strong>proxy_buffer_size</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">proxy_buffer_size 4k;</span><br></pre></td></tr></table></figure>
+<p>指定后端 response 的 buffer 的大小。它是来自后端 response 的一部分，它包含 Headers，从 response 分离出来。它仅用于限定 headers 的 buffer 区，所以它的值比 proxy_buffers 更低。</p>
+<p>proxy_buffer_size 有一点特殊在于，无论 proxy_buffering 是否开启，proxy_buffer_size 都会起作用。</p>
+<p><strong>proxy_busy_buffers_size</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">proxy_busy_buffers_size 12k;</span><br></pre></td></tr></table></figure>
+<p>忙时 buffer 的最大值。一个客户端一次只能从一个 buffer 中读取数据的同时，剩下的 buffer 会被放到队列中，等待发送到客户端，这个 directive 指定在这个状态下的 buffer 的大小。</p>
+<ul>
+<li>如果 proxy_buffers 关闭<br>Nginx不会尝试获取到后端服务器所有响应数据之后才返回给客户端，Nginx 会尽快把数据传给客户端，在数据传完之前，Nginx 接收到的最大缓存大小不能超过 proxy_buffer_size 。</li>
+<li>如果 proxy_buffers 打开<br>Nginx将会尽可能的读取后端服务器的数据到buffer，直到proxy_buffers设置的所有buffer们被写满或者数据被读取完(EOF)，此时Nginx开始向客户端传输数据，会同时传输这一整串buffer们。如果数据很大的话，Nginx会接收并把他们写入到temp_file里去，大小由proxy_max_temp_file_size 控制。「当数据没有完全读完的时候」，Nginx同时向客户端传送的buffer 大小 不能超过 proxy_busy_buffers_size 「此句可能理解有误」。</li>
+</ul>
 
       
     </div>
@@ -373,9 +364,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/java/" rel="tag"># java</a>
-          
-            <a href="/tags/idea/" rel="tag"># idea</a>
+            <a href="/tags/nginx/" rel="tag"># nginx</a>
           
         </div>
       
@@ -388,8 +377,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2020/05/05/Lombok使用/" rel="next" title="Lombok使用">
-                <i class="fa fa-chevron-left"></i> Lombok使用
+              <a href="/2021/03/18/python面向对象编程/" rel="next" title="python面向对象编程">
+                <i class="fa fa-chevron-left"></i> python面向对象编程
               </a>
             
           </div>
@@ -397,10 +386,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2020/05/05/ConstructorProperties的作用/" rel="prev" title="@ConstructorProperties的作用">
-                @ConstructorProperties的作用 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -532,7 +517,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#困扰"><span class="nav-number">1.</span> <span class="nav-text">困扰</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#解决办法"><span class="nav-number">2.</span> <span class="nav-text">解决办法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参考文献"><span class="nav-number">3.</span> <span class="nav-text">参考文献</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#buffer-是什么"><span class="nav-number">1.</span> <span class="nav-text">buffer 是什么</span></a></li></ol></div>
             
 
           </div>
