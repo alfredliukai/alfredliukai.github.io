@@ -831,6 +831,15 @@
       </tags>
   </entry>
   <entry>
+    <title>mac下的vnc</title>
+    <url>/2021/01/23/mac%E4%B8%8B%E7%9A%84vnc/</url>
+    <content><![CDATA[<p>由于有需要远程VNC的需要，苦苦寻找一款Mac上比较好使的VNC Client，结果经人指点，发现原来MacOS自带了VNC Client，只是没有在Launchpad中显示罢了。使用command+space 调出Spotlight搜索键入screen Sharing.app即可。</p>
+]]></content>
+      <tags>
+        <tag>vnc</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>logrotate小结</title>
     <url>/2021/03/12/logrotate%E5%B0%8F%E7%BB%93/</url>
     <content><![CDATA[<p>对于Linux 的系统安全来说，日志文件是极其重要的工具。系统管理员可以使用logrotate 程序用来管理系统中的最新的事件，对于Linux 的系统安全来说，日志文件是极其重要的工具。系统管理员可以使用logrotate 程序用来管理系统中的最新的事件， 还可以用来备份日志文件。</p>
@@ -847,15 +856,6 @@
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">/var/log/htmlaccess.log &#123; </span><br><span class="line"> errors jim</span><br><span class="line"> notifempty</span><br><span class="line"> nocompress</span><br><span class="line"> weekly</span><br><span class="line"> prerotate</span><br><span class="line"> /usr/bin/chattr -a /var/log/htmlaccess.log</span><br><span class="line"> endscript</span><br><span class="line"></span><br><span class="line"> postrotate</span><br><span class="line"> /usr/bin/chattr +a /var/log/htmlaccess.log</span><br><span class="line"> endscript</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">/var/log/netconf.log &#123; </span><br><span class="line"> nocompress</span><br><span class="line"> monthly</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>]]></content>
       <tags>
         <tag>linux</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>mac下的vnc</title>
-    <url>/2021/01/23/mac%E4%B8%8B%E7%9A%84vnc/</url>
-    <content><![CDATA[<p>由于有需要远程VNC的需要，苦苦寻找一款Mac上比较好使的VNC Client，结果经人指点，发现原来MacOS自带了VNC Client，只是没有在Launchpad中显示罢了。使用command+space 调出Spotlight搜索键入screen Sharing.app即可。</p>
-]]></content>
-      <tags>
-        <tag>vnc</tag>
       </tags>
   </entry>
   <entry>
@@ -944,6 +944,25 @@
 ]]></content>
       <tags>
         <tag>python</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>postgresql中的重复行问题</title>
+    <url>/2021/04/15/postgresql%E4%B8%AD%E7%9A%84%E9%87%8D%E5%A4%8D%E8%A1%8C%E9%97%AE%E9%A2%98/</url>
+    <content><![CDATA[<h3 id="问题描述"><a href="#问题描述" class="headerlink" title="问题描述"></a>问题描述</h3><p>本文主要描述使用各种技术来删除PostgreSQL中的重复行。</p>
+<h3 id="准备示例数据"><a href="#准备示例数据" class="headerlink" title="准备示例数据"></a>准备示例数据</h3><p>首先创建一个表：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">CREATE TABLE basket(</span><br><span class="line">    id SERIAL PRIMARY KEY,</span><br><span class="line">    fruit VARCHAR(50) NOT NULL</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<p>接下来插入一些数据：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">INSERT INTO basket(fruit) values(&apos;apple&apos;);</span><br><span class="line">INSERT INTO basket(fruit) values(&apos;apple&apos;);</span><br><span class="line"></span><br><span class="line">INSERT INTO basket(fruit) values(&apos;orange&apos;);</span><br><span class="line">INSERT INTO basket(fruit) values(&apos;orange&apos;);</span><br><span class="line">INSERT INTO basket(fruit) values(&apos;orange&apos;);</span><br><span class="line"></span><br><span class="line">INSERT INTO basket(fruit) values(&apos;banana&apos;);</span><br></pre></td></tr></table></figure>
+<h3 id="查找重复行"><a href="#查找重复行" class="headerlink" title="查找重复行"></a>查找重复行</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">SELECT</span><br><span class="line">    fruit,</span><br><span class="line">    COUNT( fruit )</span><br><span class="line">FROM</span><br><span class="line">    basket</span><br><span class="line">GROUP BY</span><br><span class="line">    fruit</span><br><span class="line">HAVING</span><br><span class="line">    COUNT( fruit )&gt; 1</span><br><span class="line">ORDER BY</span><br><span class="line">    fruit;</span><br></pre></td></tr></table></figure>
+<h3 id="使用-DELETE-USING-语句删除重复的行"><a href="#使用-DELETE-USING-语句删除重复的行" class="headerlink" title="使用 DELETE USING 语句删除重复的行"></a>使用 DELETE USING 语句删除重复的行</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">DELETE</span><br><span class="line">FROM</span><br><span class="line">    basket a</span><br><span class="line">        USING basket b</span><br><span class="line">WHERE</span><br><span class="line">    a.id &lt; b.id</span><br><span class="line">    AND a.fruit = b.fruit;</span><br></pre></td></tr></table></figure>
+<h3 id="使用子查询删除重复的行"><a href="#使用子查询删除重复的行" class="headerlink" title="使用子查询删除重复的行"></a>使用子查询删除重复的行</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">DELETE FROM basket</span><br><span class="line">WHERE id IN</span><br><span class="line">    (SELECT id</span><br><span class="line">    FROM </span><br><span class="line">        (SELECT id,</span><br><span class="line">         ROW_NUMBER() OVER( PARTITION BY fruit</span><br><span class="line">        ORDER BY  id ) AS row_num</span><br><span class="line">        FROM basket ) t</span><br><span class="line">        WHERE t.row_num &gt; 1 );</span><br></pre></td></tr></table></figure>
+<h3 id="ON和USING和NATURAL"><a href="#ON和USING和NATURAL" class="headerlink" title="ON和USING和NATURAL"></a>ON和USING和NATURAL</h3><p>ON子句是最常见的连接条件的类型：它接收一个和WHERE 子句相同的布尔表达式。如果两个分别来自T1和T2 的行在ON表达式上运算的结果为真，那么它们就算是匹配的行。</p>
+<p>USING是一个连接条件的缩写语法：它接收一个用逗号分隔的字段名列表，这些字段必须是连接表共有的并且其值必须相同。最后，JOIN USING 会将每一对相等的输入字段输出为一个字段，其后跟着所有其它字段。因此，USING (a, b, c) 等效于ON (t1.a = t2.a AND t1.b = t2.b AND t1.c = t2.c) 只不过是如果使用了ON，那么在结果里a, b和c 字段都会有两个，而用USING的时候就只会有一个（如果使用了SELECT * 的话，他们会优先发生）。</p>
+<p>最后，NATURAL是USING的缩写形式：它自动形成一个由两个表中同名的字段组成的USING列表(同名字段只出现一次)。如果没有同名的字段，NATURAL的行为会像CROSS JOIN。</p>
+]]></content>
+      <tags>
+        <tag>postgresql</tag>
       </tags>
   </entry>
   <entry>
@@ -1476,6 +1495,17 @@
       </tags>
   </entry>
   <entry>
+    <title>rpm包制作流程</title>
+    <url>/2020/09/22/rpm%E5%8C%85%E5%88%B6%E4%BD%9C%E6%B5%81%E7%A8%8B/</url>
+    <content><![CDATA[<h2 id="什么是rpm包？"><a href="#什么是rpm包？" class="headerlink" title="什么是rpm包？"></a>什么是rpm包？</h2><p>rpm 相当于windows中的安装文件，它会自动处理软件包之间的依赖关系。</p>
+<p>rpm优点：<br>包管理系统简单，通过几个命令就可以实现包的安装、升级、卸载。<br>安装速度比源码包快的多。<br>缺点：<br>经过编译，不能看到源代码，功能选择不如源码灵活。依赖性强。</p>
+<h2 id="参考文件"><a href="#参考文件" class="headerlink" title="参考文件"></a>参考文件</h2><p><a href="https://blog.csdn.net/u012373815/article/details/73257754" target="_blank" rel="noopener">https://blog.csdn.net/u012373815/article/details/73257754</a></p>
+]]></content>
+      <tags>
+        <tag>linux</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>sqlarchemy和flask_sqlalchemy使用区别</title>
     <url>/2021/04/14/sqlarchemy%E5%92%8Cflask-sqlalchemy%E4%BD%BF%E7%94%A8%E5%8C%BA%E5%88%AB/</url>
     <content><![CDATA[<h3 id="使用-flask-sqlalchemy"><a href="#使用-flask-sqlalchemy" class="headerlink" title="使用 flask_sqlalchemy"></a>使用 flask_sqlalchemy</h3><p>常见情况下对于只有一个 Flask 应用，所有您需要做的事情就是创建 Flask 应用，选择加载配置接着创建 SQLAlchemy 对象时候把 Flask 应用传递给它作为参数。</p>
@@ -1488,17 +1518,6 @@
 ]]></content>
       <tags>
         <tag>flask</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>rpm包制作流程</title>
-    <url>/2020/09/22/rpm%E5%8C%85%E5%88%B6%E4%BD%9C%E6%B5%81%E7%A8%8B/</url>
-    <content><![CDATA[<h2 id="什么是rpm包？"><a href="#什么是rpm包？" class="headerlink" title="什么是rpm包？"></a>什么是rpm包？</h2><p>rpm 相当于windows中的安装文件，它会自动处理软件包之间的依赖关系。</p>
-<p>rpm优点：<br>包管理系统简单，通过几个命令就可以实现包的安装、升级、卸载。<br>安装速度比源码包快的多。<br>缺点：<br>经过编译，不能看到源代码，功能选择不如源码灵活。依赖性强。</p>
-<h2 id="参考文件"><a href="#参考文件" class="headerlink" title="参考文件"></a>参考文件</h2><p><a href="https://blog.csdn.net/u012373815/article/details/73257754" target="_blank" rel="noopener">https://blog.csdn.net/u012373815/article/details/73257754</a></p>
-]]></content>
-      <tags>
-        <tag>linux</tag>
       </tags>
   </entry>
   <entry>

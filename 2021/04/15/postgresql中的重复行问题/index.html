@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="Hexo, NexT">
+  <meta name="keywords" content="postgresql,">
 
 
 
@@ -79,15 +79,18 @@
 
 
 
-<meta name="keywords" content="java,go,程序猿,数据库，测试，测试开发，架构">
-<meta property="og:type" content="website">
-<meta property="og:title" content="categories">
-<meta property="og:url" content="https://alfredliukai.github.io/categories/index.html">
+<meta name="description" content="问题描述本文主要描述使用各种技术来删除PostgreSQL中的重复行。 准备示例数据首先创建一个表： 1234CREATE TABLE basket(    id SERIAL PRIMARY KEY,    fruit VARCHAR(50) NOT NULL); 接下来插入一些数据： 12345678INSERT INTO basket(fruit) values(&amp;apos;apple&amp;ap">
+<meta name="keywords" content="postgresql">
+<meta property="og:type" content="article">
+<meta property="og:title" content="postgresql中的重复行问题">
+<meta property="og:url" content="https://alfredliukai.github.io/2021/04/15/postgresql中的重复行问题/index.html">
 <meta property="og:site_name" content="昨非的个人网站">
+<meta property="og:description" content="问题描述本文主要描述使用各种技术来删除PostgreSQL中的重复行。 准备示例数据首先创建一个表： 1234CREATE TABLE basket(    id SERIAL PRIMARY KEY,    fruit VARCHAR(50) NOT NULL); 接下来插入一些数据： 12345678INSERT INTO basket(fruit) values(&amp;apos;apple&amp;ap">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:updated_time" content="2019-04-14T10:42:28.000Z">
+<meta property="og:updated_time" content="2021-04-15T08:22:52.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="categories">
+<meta name="twitter:title" content="postgresql中的重复行问题">
+<meta name="twitter:description" content="问题描述本文主要描述使用各种技术来删除PostgreSQL中的重复行。 准备示例数据首先创建一个表： 1234CREATE TABLE basket(    id SERIAL PRIMARY KEY,    fruit VARCHAR(50) NOT NULL); 接下来插入一些数据： 12345678INSERT INTO basket(fruit) values(&amp;apos;apple&amp;ap">
 
 
 
@@ -117,13 +120,13 @@
 
 
 
-  <link rel="canonical" href="https://alfredliukai.github.io/categories/">
+  <link rel="canonical" href="https://alfredliukai.github.io/2021/04/15/postgresql中的重复行问题/">
 
 
 
 
 
-  <title>categories | 昨非的个人网站</title>
+  <title>postgresql中的重复行问题 | 昨非的个人网站</title>
   
 
 
@@ -270,40 +273,154 @@
 
   <div id="posts" class="posts-expand">
     
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://alfredliukai.github.io/2021/04/15/postgresql中的重复行问题/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="昨非">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="昨非的个人网站">
+    </span>
+
     
-    
-    <div class="post-block page">
       <header class="post-header">
 
-	<h1 class="post-title" itemprop="name headline">categories</h1>
-
-
-
-</header>
-
-      
-      
-      
-      <div class="post-body">
         
         
-          <div class="category-all-page">
-            <div class="category-all-title">
-                1 category in total
-            </div>
-            <div class="category-all">
-              <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/golang/">golang</a><span class="category-list-count">1</span></li></ul>
-            </div>
-          </div>
+          <h1 class="post-title" itemprop="name headline">postgresql中的重复行问题</h1>
         
-      </div>
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2021-04-15T15:37:43+08:00">
+                2021-04-15
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
       
       
+
+      
+        <h3 id="问题描述"><a href="#问题描述" class="headerlink" title="问题描述"></a>问题描述</h3><p>本文主要描述使用各种技术来删除PostgreSQL中的重复行。</p>
+<h3 id="准备示例数据"><a href="#准备示例数据" class="headerlink" title="准备示例数据"></a>准备示例数据</h3><p>首先创建一个表：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">CREATE TABLE basket(</span><br><span class="line">    id SERIAL PRIMARY KEY,</span><br><span class="line">    fruit VARCHAR(50) NOT NULL</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<p>接下来插入一些数据：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">INSERT INTO basket(fruit) values(&apos;apple&apos;);</span><br><span class="line">INSERT INTO basket(fruit) values(&apos;apple&apos;);</span><br><span class="line"></span><br><span class="line">INSERT INTO basket(fruit) values(&apos;orange&apos;);</span><br><span class="line">INSERT INTO basket(fruit) values(&apos;orange&apos;);</span><br><span class="line">INSERT INTO basket(fruit) values(&apos;orange&apos;);</span><br><span class="line"></span><br><span class="line">INSERT INTO basket(fruit) values(&apos;banana&apos;);</span><br></pre></td></tr></table></figure>
+<h3 id="查找重复行"><a href="#查找重复行" class="headerlink" title="查找重复行"></a>查找重复行</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">SELECT</span><br><span class="line">    fruit,</span><br><span class="line">    COUNT( fruit )</span><br><span class="line">FROM</span><br><span class="line">    basket</span><br><span class="line">GROUP BY</span><br><span class="line">    fruit</span><br><span class="line">HAVING</span><br><span class="line">    COUNT( fruit )&gt; 1</span><br><span class="line">ORDER BY</span><br><span class="line">    fruit;</span><br></pre></td></tr></table></figure>
+<h3 id="使用-DELETE-USING-语句删除重复的行"><a href="#使用-DELETE-USING-语句删除重复的行" class="headerlink" title="使用 DELETE USING 语句删除重复的行"></a>使用 DELETE USING 语句删除重复的行</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">DELETE</span><br><span class="line">FROM</span><br><span class="line">    basket a</span><br><span class="line">        USING basket b</span><br><span class="line">WHERE</span><br><span class="line">    a.id &lt; b.id</span><br><span class="line">    AND a.fruit = b.fruit;</span><br></pre></td></tr></table></figure>
+<h3 id="使用子查询删除重复的行"><a href="#使用子查询删除重复的行" class="headerlink" title="使用子查询删除重复的行"></a>使用子查询删除重复的行</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">DELETE FROM basket</span><br><span class="line">WHERE id IN</span><br><span class="line">    (SELECT id</span><br><span class="line">    FROM </span><br><span class="line">        (SELECT id,</span><br><span class="line">         ROW_NUMBER() OVER( PARTITION BY fruit</span><br><span class="line">        ORDER BY  id ) AS row_num</span><br><span class="line">        FROM basket ) t</span><br><span class="line">        WHERE t.row_num &gt; 1 );</span><br></pre></td></tr></table></figure>
+<h3 id="ON和USING和NATURAL"><a href="#ON和USING和NATURAL" class="headerlink" title="ON和USING和NATURAL"></a>ON和USING和NATURAL</h3><p>ON子句是最常见的连接条件的类型：它接收一个和WHERE 子句相同的布尔表达式。如果两个分别来自T1和T2 的行在ON表达式上运算的结果为真，那么它们就算是匹配的行。</p>
+<p>USING是一个连接条件的缩写语法：它接收一个用逗号分隔的字段名列表，这些字段必须是连接表共有的并且其值必须相同。最后，JOIN USING 会将每一对相等的输入字段输出为一个字段，其后跟着所有其它字段。因此，USING (a, b, c) 等效于ON (t1.a = t2.a AND t1.b = t2.b AND t1.c = t2.c) 只不过是如果使用了ON，那么在结果里a, b和c 字段都会有两个，而用USING的时候就只会有一个（如果使用了SELECT * 的话，他们会优先发生）。</p>
+<p>最后，NATURAL是USING的缩写形式：它自动形成一个由两个表中同名的字段组成的USING列表(同名字段只出现一次)。如果没有同名的字段，NATURAL的行为会像CROSS JOIN。</p>
+
       
     </div>
     
     
     
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/postgresql/" rel="tag"># postgresql</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2021/04/14/sqlarchemy和flask-sqlalchemy使用区别/" rel="next" title="sqlarchemy和flask_sqlalchemy使用区别">
+                <i class="fa fa-chevron-left"></i> sqlarchemy和flask_sqlalchemy使用区别
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
   </div>
 
 
@@ -336,8 +453,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -397,6 +523,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#问题描述"><span class="nav-number">1.</span> <span class="nav-text">问题描述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#准备示例数据"><span class="nav-number">2.</span> <span class="nav-text">准备示例数据</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#查找重复行"><span class="nav-number">3.</span> <span class="nav-text">查找重复行</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用-DELETE-USING-语句删除重复的行"><span class="nav-number">4.</span> <span class="nav-text">使用 DELETE USING 语句删除重复的行</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用子查询删除重复的行"><span class="nav-number">5.</span> <span class="nav-text">使用子查询删除重复的行</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ON和USING和NATURAL"><span class="nav-number">6.</span> <span class="nav-text">ON和USING和NATURAL</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
