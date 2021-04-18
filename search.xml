@@ -1,19 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>BloomFilter小结</title>
-    <url>/2021/04/15/BloomFilter%E5%B0%8F%E7%BB%93/</url>
-    <content><![CDATA[<h3 id="1、基本概念"><a href="#1、基本概念" class="headerlink" title="1、基本概念"></a>1、基本概念</h3><p>布隆过滤器（Bloom Filter）是由布隆（Burton Howard Bloom）在1970年提出的。它实际上是由一个很长的二进制向量（位向量）和一系列随机映射函数组成，布隆过滤器可以用于检索一个元素是否在一个集合中。它的优点是空间效率和查询时间都远远超过一般的算法，缺点是有一定的误识别率（假正例False positives，即Bloom Filter报告某一元素存在于某集合中，但是实际上该元素并不在集合中）和删除困难，但是没有识别错误的情形（即假反例False negatives，如果某个元素确实没有在该集合中，那么Bloom Filter 是不会报告该元素存在于集合中的，所以不会漏报）。因此，Bloom Filter不适合那些“零错误”的应用场合。而在能容忍低错误率的应用场合下，Bloom Filter通过极少的错误换取了存储空间的极大节省。</p>
-<p>如果想判断一个元素是不是在一个集合里，一般想到的是将所有元素保存起来，然后通过比较确定。链表，树等等数据结构都是这种思路. 但是随着集合中元素的增加，我们需要的存储空间越来越大，检索速度也越来越慢。不过世界上还有一种叫作散列表（又叫哈希表，Hash table）的数据结构。它可以通过一个Hash函数将一个元素映射成一个位阵列（Bit Array）中的一个点。这样一来，我们只要看看这个点是不是 1 就知道可以集合中有没有它了。这就是布隆过滤器的基本思想。</p>
-<p>Hash面临的问题就是冲突。假设 Hash 函数是随机的，如果我们的位阵列长度为 m 个点，那么如果我们想将冲突率降低到例如 1%, 这个散列表就只能容纳 m/100 个元素。显然这就不叫空间有效了（Space-efficient）。解决方法也简单，就是使用多个 Hash函数，如果它们有一个说元素不在集合中，那肯定就不在(必须对应位置上都是1)。如果它们都说在，有很小的可能性该元素不在。</p>
-<p>BloomFilter的几个重要参数：</p>
-<p>插入集合的元素个数n，BloomFilter位数组的长度m，hash函数个数k。</p>
-]]></content>
-      <tags>
-        <tag>数据结构</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>@ConstructorProperties的作用</title>
     <url>/2020/05/05/ConstructorProperties%E7%9A%84%E4%BD%9C%E7%94%A8/</url>
     <content><![CDATA[<h3 id="实例展示"><a href="#实例展示" class="headerlink" title="实例展示"></a>实例展示</h3><p>spring中@ConstructorProperties的作用,以具体实例来解释：<br>下面是写的HelloService和NewHello的Bean<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class HelloService &#123;</span><br><span class="line">    public String sayHello()&#123;</span><br><span class="line">        return &quot;hello&quot;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">import java.beans.ConstructorProperties;</span><br><span class="line"></span><br><span class="line">public class NewHello &#123;</span><br><span class="line"></span><br><span class="line">    private HelloService service;</span><br><span class="line"></span><br><span class="line">    private String hello;</span><br><span class="line"></span><br><span class="line">    //@ConstructorProperties(&#123;&quot;service&quot;,&quot;hello&quot;&#125;)</span><br><span class="line">    public NewHello(HelloService service, String hello) &#123;</span><br><span class="line">        this.service = service;</span><br><span class="line">        this.hello = hello;</span><br><span class="line">    &#125;</span><br><span class="line">    public void sayNewHello()&#123;</span><br><span class="line">        System.out.println(&quot;new hello&quot;);</span><br><span class="line">        System.out.println(service.sayHello());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
@@ -26,6 +13,52 @@
       <tags>
         <tag>spring</tag>
         <tag>java</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>BloomFilter小结</title>
+    <url>/2021/04/15/BloomFilter%E5%B0%8F%E7%BB%93/</url>
+    <content><![CDATA[<h3 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h3><p>布隆过滤器（Bloom Filter）是由布隆（Burton Howard Bloom）在1970年提出的。它实际上是由一个很长的二进制向量（位向量）和一系列随机映射函数组成，布隆过滤器可以用于检索一个元素是否在一个集合中。它的优点是空间效率和查询时间都远远超过一般的算法，缺点是有一定的误识别率（假正例False positives，即Bloom Filter报告某一元素存在于某集合中，但是实际上该元素并不在集合中）和删除困难，但是没有识别错误的情形（即假反例False negatives，如果某个元素确实没有在该集合中，那么Bloom Filter 是不会报告该元素存在于集合中的，所以不会漏报）。因此，Bloom Filter不适合那些“零错误”的应用场合。而在能容忍低错误率的应用场合下，Bloom Filter通过极少的错误换取了存储空间的极大节省。</p>
+<p>如果想判断一个元素是不是在一个集合里，一般想到的是将所有元素保存起来，然后通过比较确定。链表，树等等数据结构都是这种思路. 但是随着集合中元素的增加，我们需要的存储空间越来越大，检索速度也越来越慢。不过世界上还有一种叫作散列表（又叫哈希表，Hash table）的数据结构。它可以通过一个Hash函数将一个元素映射成一个位阵列（Bit Array）中的一个点。这样一来，我们只要看看这个点是不是 1 就知道可以集合中有没有它了。这就是布隆过滤器的基本思想。</p>
+<p>Hash面临的问题就是冲突。假设 Hash 函数是随机的，如果我们的位阵列长度为 m 个点，那么如果我们想将冲突率降低到例如 1%, 这个散列表就只能容纳 m/100 个元素。显然这就不叫空间有效了（Space-efficient）。解决方法也简单，就是使用多个 Hash函数，如果它们有一个说元素不在集合中，那肯定就不在(必须对应位置上都是1)。如果它们都说在，有很小的可能性该元素不在。</p>
+<p>BloomFilter的几个重要参数：</p>
+<p>插入集合的元素个数n，BloomFilter位数组的长度m，hash函数个数k。</p>
+<h3 id="基本原理"><a href="#基本原理" class="headerlink" title="基本原理"></a>基本原理</h3><p>布隆过滤器维护一个N位的位数组，其中N是位数组的大小。它还有另一个参数k，表示使用哈希函数的个数。这些哈希函数用来设置位数组的值。当往过滤器中插入元素x时，h1(x), h2(x), …, hk(x)所对应索引位置的值被置“1”，索引值由各个哈希函数计算得到。注意，如果我们增加哈希函数的数量，误报的概率会趋近于0.但是，插入和查找的时间开销更大，布隆过滤器的容量也会减小。</p>
+<p>为了用布隆过滤器检验元素是否存在，我们需要校验是否所有的位置都被置“1”，与我们插入元素的过程非常相似。如果所有位置都被置“1”，那也就意味着该元素很有可能存在于布隆过滤器中。若有位置未被置“1”，那该元素一定不存在。</p>
+<p><strong>记录元素</strong></p>
+<p>下面我们看一下向Bloom Filter插入字符串的具体过，就是把这个字符串str经过K个不同的hash函数计算得到的结果h1、h2、、、hK。然后在BitArrray的第h1、h2、、、hK的位置上置1。<br><img src="/2021/04/15/BloomFilter小结/bloom1.png" alt="avatar"></p>
+<p><strong>判断元素</strong></p>
+<p>那么如何判断一个字符串是否存在呢</p>
+<p>把这个字符串经过K个hash函数计算得到h1、h2、、、hK，然后逐个判断BitArray的第h1、h2、、、hK个位置是否是1</p>
+<p><strong>影响误判率因素</strong></p>
+<p>只要降低Bloom Filter误判率，让它达到你可以接受的程度。BloomFilter当然就是你的利器了。影响它的因素有哪些呢？</p>
+<ol>
+<li>BitArray的位数M</li>
+<li>hash函数的数量K</li>
+<li>每一个不同的hash函数的质量</li>
+</ol>
+<p><strong>优点：</strong></p>
+<p>1.全量存储但是不存储元素本身，在某些对保密要求非常严格的场合有优势<br>2.空间高效率<br>3.插入/查询时间都是常数O(k),远远超过一般的算法</p>
+<p><strong>缺点：</strong></p>
+<ol>
+<li>存在误算率(False Positive)，随着存入的元素数量增加，误算率随之增加布隆过滤器能确保某个元素“肯定不存在”，但是对于一些元素的判断会是“可能存在”</li>
+<li>一般情况下不能从布隆过滤器中删除元素</li>
+<li>数组长度以及hash函数个数确定过程复杂</li>
+<li>无法得到元素本身</li>
+<li>布隆过滤器并不会保存插入元素的内容，只能检索某个元素是否存在</li>
+</ol>
+<h3 id="应用示例"><a href="#应用示例" class="headerlink" title="应用示例"></a>应用示例</h3><p><strong>标准布隆过滤器</strong></p>
+<h4 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">import BitVector as BitVector</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">class SimpleHash(object):</span><br><span class="line"></span><br><span class="line">    def __init__(self, cap, seed):</span><br><span class="line">        self.cap = cap</span><br><span class="line">        self.seed = seed</span><br><span class="line"></span><br><span class="line">    def hash(self, value):</span><br><span class="line">        ret = 0</span><br><span class="line">        for i in range(len(value)):</span><br><span class="line">            ret += self.seed * ret + ord(value[i])</span><br><span class="line">        return (self.cap - 1) &amp; ret</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">class BloomFilter(object):</span><br><span class="line"></span><br><span class="line">    def __init__(self, BIT_SIZE=1 &lt;&lt; 25):</span><br><span class="line">        self.BIT_SIZE = 1 &lt;&lt; 25</span><br><span class="line">        self.seeds = [5, 7, 11, 13, 31, 37, 61]</span><br><span class="line">        self.bitset = BitVector.BitVector(size=self.BIT_SIZE)</span><br><span class="line">        self.hashFunc = []</span><br><span class="line"></span><br><span class="line">        for i in range(len(self.seeds)):</span><br><span class="line">            self.hashFunc.append(SimpleHash(self.BIT_SIZE, self.seeds[i]))</span><br><span class="line">        print(self.hashFunc)</span><br><span class="line"></span><br><span class="line">    def insert(self, value):</span><br><span class="line">        for f in self.hashFunc:</span><br><span class="line">            loc = f.hash(value)</span><br><span class="line">            self.bitset[loc] = 1</span><br><span class="line">        print(self.bitset)</span><br><span class="line"></span><br><span class="line">    def is_contains(self, value):</span><br><span class="line">        if value == None:</span><br><span class="line">            return False</span><br><span class="line">        ret = True</span><br><span class="line"></span><br><span class="line">        for f in self.hashFunc:</span><br><span class="line">            loc = f.hash(value)</span><br><span class="line">            ret = ret &amp; self.bitset[loc]</span><br><span class="line">        return ret</span><br></pre></td></tr></table></figure>
+<h3 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h3><ol>
+<li><a href="https://www.cnblogs.com/-wenli/p/10886182.html" target="_blank" rel="noopener">https://www.cnblogs.com/-wenli/p/10886182.html</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/165494112" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/165494112</a></li>
+<li><a href="https://blog.csdn.net/TENLIU2099/article/details/78298778" target="_blank" rel="noopener">https://blog.csdn.net/TENLIU2099/article/details/78298778</a></li>
+<li><a href="https://www.cnblogs.com/i-love-python/p/11537720.html" target="_blank" rel="noopener">https://www.cnblogs.com/i-love-python/p/11537720.html</a></li>
+<li><a href="https://www.cnblogs.com/i-love-python/p/11537720.html" target="_blank" rel="noopener">https://www.cnblogs.com/i-love-python/p/11537720.html</a></li>
+</ol>
+]]></content>
+      <tags>
+        <tag>数据结构</tag>
       </tags>
   </entry>
   <entry>
@@ -880,6 +913,15 @@
       </tags>
   </entry>
   <entry>
+    <title>mac下的vnc</title>
+    <url>/2021/01/23/mac%E4%B8%8B%E7%9A%84vnc/</url>
+    <content><![CDATA[<p>由于有需要远程VNC的需要，苦苦寻找一款Mac上比较好使的VNC Client，结果经人指点，发现原来MacOS自带了VNC Client，只是没有在Launchpad中显示罢了。使用command+space 调出Spotlight搜索键入screen Sharing.app即可。</p>
+]]></content>
+      <tags>
+        <tag>vnc</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>logrotate小结</title>
     <url>/2021/03/12/logrotate%E5%B0%8F%E7%BB%93/</url>
     <content><![CDATA[<p>对于Linux 的系统安全来说，日志文件是极其重要的工具。系统管理员可以使用logrotate 程序用来管理系统中的最新的事件，对于Linux 的系统安全来说，日志文件是极其重要的工具。系统管理员可以使用logrotate 程序用来管理系统中的最新的事件， 还可以用来备份日志文件。</p>
@@ -896,15 +938,6 @@
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">/var/log/htmlaccess.log &#123; </span><br><span class="line"> errors jim</span><br><span class="line"> notifempty</span><br><span class="line"> nocompress</span><br><span class="line"> weekly</span><br><span class="line"> prerotate</span><br><span class="line"> /usr/bin/chattr -a /var/log/htmlaccess.log</span><br><span class="line"> endscript</span><br><span class="line"></span><br><span class="line"> postrotate</span><br><span class="line"> /usr/bin/chattr +a /var/log/htmlaccess.log</span><br><span class="line"> endscript</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">/var/log/netconf.log &#123; </span><br><span class="line"> nocompress</span><br><span class="line"> monthly</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>]]></content>
       <tags>
         <tag>linux</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>mac下的vnc</title>
-    <url>/2021/01/23/mac%E4%B8%8B%E7%9A%84vnc/</url>
-    <content><![CDATA[<p>由于有需要远程VNC的需要，苦苦寻找一款Mac上比较好使的VNC Client，结果经人指点，发现原来MacOS自带了VNC Client，只是没有在Launchpad中显示罢了。使用command+space 调出Spotlight搜索键入screen Sharing.app即可。</p>
-]]></content>
-      <tags>
-        <tag>vnc</tag>
       </tags>
   </entry>
   <entry>
@@ -1401,6 +1434,26 @@
       </tags>
   </entry>
   <entry>
+    <title>python中的进程</title>
+    <url>/2021/03/15/python%E4%B8%AD%E7%9A%84%E8%BF%9B%E7%A8%8B/</url>
+    <content><![CDATA[<h3 id="1-多进程-vs多任务"><a href="#1-多进程-vs多任务" class="headerlink" title="1. 多进程 vs多任务"></a>1. 多进程 vs多任务</h3><p>多任务：就是操作系统可以同时运行多个任务<br>多进程：正在运行着的代码，就成为进程。多个正在运行的代码。</p>
+<h3 id="2-fork（）"><a href="#2-fork（）" class="headerlink" title="2. fork（）"></a>2. fork（）</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">import os</span><br><span class="line"></span><br><span class="line"># 注意，fork函数，只在Unix/Linux/Mac上运行，windows不可以</span><br><span class="line">pid = os.fork()</span><br><span class="line"></span><br><span class="line">if pid == 0:</span><br><span class="line">    print(&apos;哈哈1&apos;)</span><br><span class="line">else:</span><br><span class="line">    print(&apos;哈哈2&apos;)</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>程序执行到os.fork()时，操作系统会创建一个新的进程（子进程），然后复制父进程的所有信息到子进程中</p>
+</li>
+<li><p>然后父进程和子进程都会从fork()函数中得到一个返回值，在子进程中这个值一定是0，而父进程中是子进程的 id号</p>
+</li>
+</ul>
+<p>普通的函数调用，调用一次，返回一次，但是fork()调用一次，返回两次，因为操作系统自动把当前进程（称为父进程）复制了一份（称为子进程），然后，分别在父进程和子进程内返回。</p>
+<p>子进程永远返回0，而父进程返回子进程的ID。</p>
+<p>这样做的理由是，一个父进程可以fork出很多子进程，所以，父进程要记下每个子进程的ID，而子进程只需要调用getppid()就可以拿到父进程的ID。</p>
+<h3 id="多进程修改全局变量"><a href="#多进程修改全局变量" class="headerlink" title="多进程修改全局变量"></a>多进程修改全局变量</h3><p>多进程中，每个进程中所有数据（包括全局变量）都各有拥有一份，互不影响<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">pid = os.fork()</span><br><span class="line">num = 0</span><br><span class="line"></span><br><span class="line">if pid == 0:</span><br><span class="line">    num += 1</span><br><span class="line">    print(&apos;哈哈1---num=%d&apos; % num)</span><br><span class="line">else:</span><br><span class="line">    time.sleep(1)</span><br><span class="line">    num += 1</span><br><span class="line">    print(&apos;哈哈2---num=%d&apos; % num)</span><br></pre></td></tr></table></figure></p>
+]]></content>
+      <tags>
+        <tag>python</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>python中的循环导入问题</title>
     <url>/2020/12/03/python%E4%B8%AD%E7%9A%84%E5%BE%AA%E7%8E%AF%E5%AF%BC%E5%85%A5%E9%97%AE%E9%A2%98/</url>
     <content><![CDATA[<p>循环导入的最好的解决方法是从架构上优化，即调整模块和模块成员变量的设计。一个好的原则是：可导出的成员变量，都不应该依赖于导入进来的成员变量。<br>但是在业务开发的过程中，总会遇到通过架构层面解决不了的导入问题，这时候就只能通过语言层面来解决了。</p>
@@ -1441,26 +1494,6 @@
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">import sys</span><br><span class="line">if &apos;pack1.module_a&apos; in sys.modules:</span><br><span class="line">    if hasattr(sys.modules[&apos;pack1.module_a&apos;],&quot;class_a&quot;):</span><br><span class="line">        sys.modules[&apos;pack2.module_b&apos;].class_a=sys.modules[&apos;pack1.module_a&apos;].class_a</span><br><span class="line">    else:</span><br><span class="line">        raise Exception(u&quot;循环导入异常&quot;)</span><br><span class="line">else:</span><br><span class="line">    #执行导入pack1.module_a的操作，也就是初始化一个module对象，然后令sys.modules[&apos;pack1.module_a&apos;]=这个对象</span><br></pre></td></tr></table></figure>
 <p>所以解决循环导入的问题，就相当于使上面的代码不会执行到raise Exception(u”循环导入异常”)这一句，方案一和方案二都是通过这种方法解决的。</p>
 ]]></content>
-  </entry>
-  <entry>
-    <title>python中的进程</title>
-    <url>/2021/03/15/python%E4%B8%AD%E7%9A%84%E8%BF%9B%E7%A8%8B/</url>
-    <content><![CDATA[<h3 id="1-多进程-vs多任务"><a href="#1-多进程-vs多任务" class="headerlink" title="1. 多进程 vs多任务"></a>1. 多进程 vs多任务</h3><p>多任务：就是操作系统可以同时运行多个任务<br>多进程：正在运行着的代码，就成为进程。多个正在运行的代码。</p>
-<h3 id="2-fork（）"><a href="#2-fork（）" class="headerlink" title="2. fork（）"></a>2. fork（）</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">import os</span><br><span class="line"></span><br><span class="line"># 注意，fork函数，只在Unix/Linux/Mac上运行，windows不可以</span><br><span class="line">pid = os.fork()</span><br><span class="line"></span><br><span class="line">if pid == 0:</span><br><span class="line">    print(&apos;哈哈1&apos;)</span><br><span class="line">else:</span><br><span class="line">    print(&apos;哈哈2&apos;)</span><br></pre></td></tr></table></figure>
-<ul>
-<li><p>程序执行到os.fork()时，操作系统会创建一个新的进程（子进程），然后复制父进程的所有信息到子进程中</p>
-</li>
-<li><p>然后父进程和子进程都会从fork()函数中得到一个返回值，在子进程中这个值一定是0，而父进程中是子进程的 id号</p>
-</li>
-</ul>
-<p>普通的函数调用，调用一次，返回一次，但是fork()调用一次，返回两次，因为操作系统自动把当前进程（称为父进程）复制了一份（称为子进程），然后，分别在父进程和子进程内返回。</p>
-<p>子进程永远返回0，而父进程返回子进程的ID。</p>
-<p>这样做的理由是，一个父进程可以fork出很多子进程，所以，父进程要记下每个子进程的ID，而子进程只需要调用getppid()就可以拿到父进程的ID。</p>
-<h3 id="多进程修改全局变量"><a href="#多进程修改全局变量" class="headerlink" title="多进程修改全局变量"></a>多进程修改全局变量</h3><p>多进程中，每个进程中所有数据（包括全局变量）都各有拥有一份，互不影响<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">pid = os.fork()</span><br><span class="line">num = 0</span><br><span class="line"></span><br><span class="line">if pid == 0:</span><br><span class="line">    num += 1</span><br><span class="line">    print(&apos;哈哈1---num=%d&apos; % num)</span><br><span class="line">else:</span><br><span class="line">    time.sleep(1)</span><br><span class="line">    num += 1</span><br><span class="line">    print(&apos;哈哈2---num=%d&apos; % num)</span><br></pre></td></tr></table></figure></p>
-]]></content>
-      <tags>
-        <tag>python</tag>
-      </tags>
   </entry>
   <entry>
     <title>python基础小结</title>
@@ -1536,6 +1569,17 @@
       </tags>
   </entry>
   <entry>
+    <title>rpm包制作流程</title>
+    <url>/2020/09/22/rpm%E5%8C%85%E5%88%B6%E4%BD%9C%E6%B5%81%E7%A8%8B/</url>
+    <content><![CDATA[<h2 id="什么是rpm包？"><a href="#什么是rpm包？" class="headerlink" title="什么是rpm包？"></a>什么是rpm包？</h2><p>rpm 相当于windows中的安装文件，它会自动处理软件包之间的依赖关系。</p>
+<p>rpm优点：<br>包管理系统简单，通过几个命令就可以实现包的安装、升级、卸载。<br>安装速度比源码包快的多。<br>缺点：<br>经过编译，不能看到源代码，功能选择不如源码灵活。依赖性强。</p>
+<h2 id="参考文件"><a href="#参考文件" class="headerlink" title="参考文件"></a>参考文件</h2><p><a href="https://blog.csdn.net/u012373815/article/details/73257754" target="_blank" rel="noopener">https://blog.csdn.net/u012373815/article/details/73257754</a></p>
+]]></content>
+      <tags>
+        <tag>linux</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>reversed函数</title>
     <url>/2021/02/01/reversed%E5%87%BD%E6%95%B0/</url>
     <content><![CDATA[<h3 id="reversed-函数"><a href="#reversed-函数" class="headerlink" title="reversed 函数"></a>reversed 函数</h3><p>描述：</p>
@@ -1559,17 +1603,6 @@
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt;a = [5,7,6,3,4,1,2]</span><br><span class="line">&gt;&gt;&gt; b = sorted(a)       # 保留原列表</span><br><span class="line">&gt;&gt;&gt; a </span><br><span class="line">[5, 7, 6, 3, 4, 1, 2]</span><br><span class="line">&gt;&gt;&gt; b</span><br><span class="line">[1, 2, 3, 4, 5, 6, 7]</span><br><span class="line"></span><br><span class="line">&gt;&gt;&gt; L=[(&apos;b&apos;,2),(&apos;a&apos;,1),(&apos;c&apos;,3),(&apos;d&apos;,4)]</span><br><span class="line">&gt;&gt;&gt; sorted(L, cmp=lambda x,y:cmp(x[1],y[1]))   # 利用cmp函数</span><br><span class="line">[(&apos;a&apos;, 1), (&apos;b&apos;, 2), (&apos;c&apos;, 3), (&apos;d&apos;, 4)]</span><br><span class="line">&gt;&gt;&gt; sorted(L, key=lambda x:x[1])               # 利用key</span><br><span class="line">[(&apos;a&apos;, 1), (&apos;b&apos;, 2), (&apos;c&apos;, 3), (&apos;d&apos;, 4)]</span><br><span class="line"></span><br><span class="line">&gt;&gt;&gt; students = [(&apos;john&apos;, &apos;A&apos;, 15), (&apos;jane&apos;, &apos;B&apos;, 12), (&apos;dave&apos;, &apos;B&apos;, 10)]</span><br><span class="line">&gt;&gt;&gt; sorted(students, key=lambda s: s[2])            # 按年龄排序</span><br><span class="line">[(&apos;dave&apos;, &apos;B&apos;, 10), (&apos;jane&apos;, &apos;B&apos;, 12), (&apos;john&apos;, &apos;A&apos;, 15)]</span><br><span class="line"> </span><br><span class="line">&gt;&gt;&gt; sorted(students, key=lambda s: s[2], reverse=True)       # 按降序</span><br><span class="line">[(&apos;john&apos;, &apos;A&apos;, 15), (&apos;jane&apos;, &apos;B&apos;, 12), (&apos;dave&apos;, &apos;B&apos;, 10)]</span><br></pre></td></tr></table></figure>]]></content>
       <tags>
         <tag>python</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>rpm包制作流程</title>
-    <url>/2020/09/22/rpm%E5%8C%85%E5%88%B6%E4%BD%9C%E6%B5%81%E7%A8%8B/</url>
-    <content><![CDATA[<h2 id="什么是rpm包？"><a href="#什么是rpm包？" class="headerlink" title="什么是rpm包？"></a>什么是rpm包？</h2><p>rpm 相当于windows中的安装文件，它会自动处理软件包之间的依赖关系。</p>
-<p>rpm优点：<br>包管理系统简单，通过几个命令就可以实现包的安装、升级、卸载。<br>安装速度比源码包快的多。<br>缺点：<br>经过编译，不能看到源代码，功能选择不如源码灵活。依赖性强。</p>
-<h2 id="参考文件"><a href="#参考文件" class="headerlink" title="参考文件"></a>参考文件</h2><p><a href="https://blog.csdn.net/u012373815/article/details/73257754" target="_blank" rel="noopener">https://blog.csdn.net/u012373815/article/details/73257754</a></p>
-]]></content>
-      <tags>
-        <tag>linux</tag>
       </tags>
   </entry>
   <entry>
