@@ -461,6 +461,17 @@
       </tags>
   </entry>
   <entry>
+    <title>docker环境下使用kafka</title>
+    <url>/2021/02/09/docker%E7%8E%AF%E5%A2%83%E4%B8%8B%E4%BD%BF%E7%94%A8kafka/</url>
+    <content><![CDATA[<h3 id="下载镜像"><a href="#下载镜像" class="headerlink" title="下载镜像"></a>下载镜像</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Copy//下载zookeeper</span><br><span class="line">docker pull wurstmeister/zookeeper</span><br><span class="line"></span><br><span class="line">//下载kafka</span><br><span class="line">docker pull wurstmeister/kafka:2.11-0.11.0.3</span><br></pre></td></tr></table></figure>
+<h3 id="启动镜像"><a href="#启动镜像" class="headerlink" title="启动镜像"></a>启动镜像</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Copy//启动zookeeper</span><br><span class="line">docker run -d --name zookeeper -p 2181:2181  wurstmeister/zookeeper</span><br><span class="line"></span><br><span class="line">//启动kafka</span><br><span class="line">docker run  -d --name kafka -p 9092:9092 -e KAFKA_BROKER_ID=0 -e KAFKA_ZOOKEEPER_CONNECT=192.168.1.106:2181 -e KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://192.168.1.106:9092 -e KAFKA_LISTENERS=PLAINTEXT://0.0.0.0:9092 -t wurstmeister/kafka</span><br></pre></td></tr></table></figure>
+<h3 id="测试kafka"><a href="#测试kafka" class="headerlink" title="测试kafka"></a>测试kafka</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">./kafka-console-producer.sh --broker-list localhost:9092 --topic sun</span><br><span class="line">&gt;123</span><br><span class="line">&gt;asdf</span><br><span class="line">&gt;hahh</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">./kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic sun --from-beginning</span><br></pre></td></tr></table></figure>
+<h3 id="创建查看topic"><a href="#创建查看topic" class="headerlink" title="创建查看topic"></a>创建查看topic</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">bin/kafka-topics.sh --zookeeper 192.168.1.106:2181 --create --topic dalianpai --partitions 2 --replication-factor 1</span><br><span class="line"></span><br><span class="line">bin/kafka-topics.sh --zookeeper 192.168.1.106:2181 --list</span><br></pre></td></tr></table></figure>]]></content>
+      <tags>
+        <tag>kafka</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>es总结1</title>
     <url>/2020/03/22/es%E6%80%BB%E7%BB%931/</url>
     <content><![CDATA[<h4 id="Elasticsearch生态圈"><a href="#Elasticsearch生态圈" class="headerlink" title="Elasticsearch生态圈"></a>Elasticsearch生态圈</h4><p><img src="/2020/03/22/es总结1/es1.png" alt="avatar"></p>
@@ -512,17 +523,6 @@
 ]]></content>
       <tags>
         <tag>Elasticsearch</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>docker环境下使用kafka</title>
-    <url>/2021/02/09/docker%E7%8E%AF%E5%A2%83%E4%B8%8B%E4%BD%BF%E7%94%A8kafka/</url>
-    <content><![CDATA[<h3 id="下载镜像"><a href="#下载镜像" class="headerlink" title="下载镜像"></a>下载镜像</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Copy//下载zookeeper</span><br><span class="line">docker pull wurstmeister/zookeeper</span><br><span class="line"></span><br><span class="line">//下载kafka</span><br><span class="line">docker pull wurstmeister/kafka:2.11-0.11.0.3</span><br></pre></td></tr></table></figure>
-<h3 id="启动镜像"><a href="#启动镜像" class="headerlink" title="启动镜像"></a>启动镜像</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Copy//启动zookeeper</span><br><span class="line">docker run -d --name zookeeper -p 2181:2181  wurstmeister/zookeeper</span><br><span class="line"></span><br><span class="line">//启动kafka</span><br><span class="line">docker run  -d --name kafka -p 9092:9092 -e KAFKA_BROKER_ID=0 -e KAFKA_ZOOKEEPER_CONNECT=192.168.1.106:2181 -e KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://192.168.1.106:9092 -e KAFKA_LISTENERS=PLAINTEXT://0.0.0.0:9092 -t wurstmeister/kafka</span><br></pre></td></tr></table></figure>
-<h3 id="测试kafka"><a href="#测试kafka" class="headerlink" title="测试kafka"></a>测试kafka</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">./kafka-console-producer.sh --broker-list localhost:9092 --topic sun</span><br><span class="line">&gt;123</span><br><span class="line">&gt;asdf</span><br><span class="line">&gt;hahh</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">./kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic sun --from-beginning</span><br></pre></td></tr></table></figure>
-<h3 id="创建查看topic"><a href="#创建查看topic" class="headerlink" title="创建查看topic"></a>创建查看topic</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">bin/kafka-topics.sh --zookeeper 192.168.1.106:2181 --create --topic dalianpai --partitions 2 --replication-factor 1</span><br><span class="line"></span><br><span class="line">bin/kafka-topics.sh --zookeeper 192.168.1.106:2181 --list</span><br></pre></td></tr></table></figure>]]></content>
-      <tags>
-        <tag>kafka</tag>
       </tags>
   </entry>
   <entry>
@@ -1098,24 +1098,6 @@
       </tags>
   </entry>
   <entry>
-    <title>postgres中的序列及自增量</title>
-    <url>/2021/04/17/postgres%E4%B8%AD%E7%9A%84%E5%BA%8F%E5%88%97%E5%8F%8A%E8%87%AA%E5%A2%9E%E9%87%8F/</url>
-    <content><![CDATA[<p>业务中需要调整id字段类型，最开始设置的为SERIAL，后续需要调整至SERIAL8。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">alter table tab_name alter column data_id type SERIAL8;</span><br><span class="line">-- 失败！类型SERIAL8不存在！</span><br></pre></td></tr></table></figure>
-<p>但实际上 create table 语句中的字段类型 SERIAL8，并不存在。 SERIAL8 （或者SERIAL）会创建对应的sequence， 然后将sequence 跟表的主键关联。具体对应过程为：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">create table table_name (dataId bigint not null primary key);</span><br><span class="line">create sequence seq_name;</span><br><span class="line">alter table table_name alter column set default nextval(&apos;seq_name&apos; ::regclass);</span><br></pre></td></tr></table></figure>
-<p>理解了这个过程，就容易明白了，直接修改字段类型 SERIAL8 是不可以的，需要按照上述过程操作：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">-- 先把字段类型调整为 int8, 这一步操作耗时较长，在8核心+SSD固态盘的主机上，2亿条数据耗时超过一刻钟</span><br><span class="line">alter table bw_data alter column dataId type int8;</span><br><span class="line"> </span><br><span class="line">-- 创建sequence, 默认bigint</span><br><span class="line">-- 起始值从当前表中选取</span><br><span class="line">select max(dataId) into max_dataId_from_data from bw_data;</span><br><span class="line">create sequence bw_data_dataid_seq8 start with max_dataId_from_data;</span><br><span class="line"> </span><br><span class="line">-- 先将表的自增量主键字段 默认值置为null</span><br><span class="line">alter table bw_data alter column dataId set default null;</span><br><span class="line"> </span><br><span class="line">-- 设置默认值为新的 sequence</span><br><span class="line">alter table bw_data alter column dataId set default nextval(&apos;bw_data_dataid_seq8&apos; ::regclass);</span><br><span class="line"> </span><br><span class="line">-- 原来的sequence 可以删除</span><br><span class="line">drop sequence bw_data_dataid_seq;</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">                    Sequence &quot;public.bw_data_dataid_seq8&quot;</span><br><span class="line">  Type  |   Start   | Minimum |       Maximum       | Increment | Cycles? | Cache</span><br><span class="line">--------+-----------+---------+---------------------+-----------+---------+-------</span><br><span class="line"> bigint | 265432104 |       1 | 9223372036854775807 |         1 | no      |     1</span><br></pre></td></tr></table></figure>
-<h3 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h3><ol>
-<li><a href="https://blog.csdn.net/kampoo/article/details/113628598" target="_blank" rel="noopener">https://blog.csdn.net/kampoo/article/details/113628598</a></li>
-</ol>
-]]></content>
-      <tags>
-        <tag>postgres</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>postgresql中的重复行问题</title>
     <url>/2021/04/15/postgresql%E4%B8%AD%E7%9A%84%E9%87%8D%E5%A4%8D%E8%A1%8C%E9%97%AE%E9%A2%98/</url>
     <content><![CDATA[<h3 id="问题描述"><a href="#问题描述" class="headerlink" title="问题描述"></a>问题描述</h3><p>本文主要描述使用各种技术来删除PostgreSQL中的重复行。</p>
@@ -1132,6 +1114,24 @@
 ]]></content>
       <tags>
         <tag>postgresql</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>postgres中的序列及自增量</title>
+    <url>/2021/04/17/postgres%E4%B8%AD%E7%9A%84%E5%BA%8F%E5%88%97%E5%8F%8A%E8%87%AA%E5%A2%9E%E9%87%8F/</url>
+    <content><![CDATA[<p>业务中需要调整id字段类型，最开始设置的为SERIAL，后续需要调整至SERIAL8。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">alter table tab_name alter column data_id type SERIAL8;</span><br><span class="line">-- 失败！类型SERIAL8不存在！</span><br></pre></td></tr></table></figure>
+<p>但实际上 create table 语句中的字段类型 SERIAL8，并不存在。 SERIAL8 （或者SERIAL）会创建对应的sequence， 然后将sequence 跟表的主键关联。具体对应过程为：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">create table table_name (dataId bigint not null primary key);</span><br><span class="line">create sequence seq_name;</span><br><span class="line">alter table table_name alter column set default nextval(&apos;seq_name&apos; ::regclass);</span><br></pre></td></tr></table></figure>
+<p>理解了这个过程，就容易明白了，直接修改字段类型 SERIAL8 是不可以的，需要按照上述过程操作：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">-- 先把字段类型调整为 int8, 这一步操作耗时较长，在8核心+SSD固态盘的主机上，2亿条数据耗时超过一刻钟</span><br><span class="line">alter table bw_data alter column dataId type int8;</span><br><span class="line"> </span><br><span class="line">-- 创建sequence, 默认bigint</span><br><span class="line">-- 起始值从当前表中选取</span><br><span class="line">select max(dataId) into max_dataId_from_data from bw_data;</span><br><span class="line">create sequence bw_data_dataid_seq8 start with max_dataId_from_data;</span><br><span class="line"> </span><br><span class="line">-- 先将表的自增量主键字段 默认值置为null</span><br><span class="line">alter table bw_data alter column dataId set default null;</span><br><span class="line"> </span><br><span class="line">-- 设置默认值为新的 sequence</span><br><span class="line">alter table bw_data alter column dataId set default nextval(&apos;bw_data_dataid_seq8&apos; ::regclass);</span><br><span class="line"> </span><br><span class="line">-- 原来的sequence 可以删除</span><br><span class="line">drop sequence bw_data_dataid_seq;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">                    Sequence &quot;public.bw_data_dataid_seq8&quot;</span><br><span class="line">  Type  |   Start   | Minimum |       Maximum       | Increment | Cycles? | Cache</span><br><span class="line">--------+-----------+---------+---------------------+-----------+---------+-------</span><br><span class="line"> bigint | 265432104 |       1 | 9223372036854775807 |         1 | no      |     1</span><br></pre></td></tr></table></figure>
+<h3 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h3><ol>
+<li><a href="https://blog.csdn.net/kampoo/article/details/113628598" target="_blank" rel="noopener">https://blog.csdn.net/kampoo/article/details/113628598</a></li>
+</ol>
+]]></content>
+      <tags>
+        <tag>postgres</tag>
       </tags>
   </entry>
   <entry>
@@ -1437,6 +1437,17 @@
       </tags>
   </entry>
   <entry>
+    <title>python中的动态导入</title>
+    <url>/2020/12/03/python%E4%B8%AD%E7%9A%84%E5%8A%A8%E6%80%81%E5%AF%BC%E5%85%A5/</url>
+    <content><![CDATA[<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>一个函数运行需要根据不同项目的配置，动态导入对应的配置文件运行。</p>
+<h2 id="解决"><a href="#解决" class="headerlink" title="解决"></a>解决</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">文件结构</span><br><span class="line"></span><br><span class="line">a #文件夹</span><br><span class="line">	│a.py</span><br><span class="line">	│__init__.py</span><br><span class="line">b #文件夹</span><br><span class="line">	│b.py</span><br><span class="line">	│__init__.py</span><br><span class="line">	├─c#文件夹</span><br><span class="line">		│c.py</span><br><span class="line">		│__init__.py</span><br><span class="line"></span><br><span class="line"># c.py 中内容</span><br><span class="line">args = &#123;&apos;a&apos;:1&#125;</span><br><span class="line"></span><br><span class="line">class C:</span><br><span class="line">    </span><br><span class="line">    def c(self):</span><br><span class="line">        pass</span><br></pre></td></tr></table></figure>
+<h2 id="目的"><a href="#目的" class="headerlink" title="目的"></a>目的</h2><p>向a模块中导入c.py 中的对象</p>
+<h2 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">import importlib</span><br><span class="line"></span><br><span class="line">params = importlib.import_module(&apos;b.c.c&apos;) #绝对导入</span><br><span class="line">params_ = importlib.import_module(&apos;.c.c&apos;,package=&apos;b&apos;) #相对导入</span><br><span class="line"></span><br><span class="line"># 对象中取出需要的对象</span><br><span class="line">params.args #取出变量</span><br><span class="line">params.C  #取出class C</span><br><span class="line">params.C.c  #取出class C 中的c 方法</span><br></pre></td></tr></table></figure>]]></content>
+      <tags>
+        <tag>python</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>python中的异常</title>
     <url>/2020/09/19/python%E4%B8%AD%E7%9A%84%E5%BC%82%E5%B8%B8/</url>
     <content><![CDATA[<p>当你的程序出现例外情况时就会发生异常（Exception）。例如，当你想要读取一个文件时，而那个文件却不存在，怎么办？又或者你在程序执行时不小心把它删除了，怎么办？这些通过使用异常来进行处理。</p>
@@ -1477,17 +1488,6 @@
 <p>因此，我们在 finally 代码块中编写的代码应该格外留心 <strong>exit</strong> 方法的自动操作。这能够帮助我们避免重复显式使用 try..finally 语句。</p>
 <p>有关该话题的更多讨论已经超出了本书所能涉及的范围，因此请参考 PEP 343 来了解更加全面的解释。</p>
 ]]></content>
-      <tags>
-        <tag>python</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>python中的动态导入</title>
-    <url>/2020/12/03/python%E4%B8%AD%E7%9A%84%E5%8A%A8%E6%80%81%E5%AF%BC%E5%85%A5/</url>
-    <content><![CDATA[<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>一个函数运行需要根据不同项目的配置，动态导入对应的配置文件运行。</p>
-<h2 id="解决"><a href="#解决" class="headerlink" title="解决"></a>解决</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">文件结构</span><br><span class="line"></span><br><span class="line">a #文件夹</span><br><span class="line">	│a.py</span><br><span class="line">	│__init__.py</span><br><span class="line">b #文件夹</span><br><span class="line">	│b.py</span><br><span class="line">	│__init__.py</span><br><span class="line">	├─c#文件夹</span><br><span class="line">		│c.py</span><br><span class="line">		│__init__.py</span><br><span class="line"></span><br><span class="line"># c.py 中内容</span><br><span class="line">args = &#123;&apos;a&apos;:1&#125;</span><br><span class="line"></span><br><span class="line">class C:</span><br><span class="line">    </span><br><span class="line">    def c(self):</span><br><span class="line">        pass</span><br></pre></td></tr></table></figure>
-<h2 id="目的"><a href="#目的" class="headerlink" title="目的"></a>目的</h2><p>向a模块中导入c.py 中的对象</p>
-<h2 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">import importlib</span><br><span class="line"></span><br><span class="line">params = importlib.import_module(&apos;b.c.c&apos;) #绝对导入</span><br><span class="line">params_ = importlib.import_module(&apos;.c.c&apos;,package=&apos;b&apos;) #相对导入</span><br><span class="line"></span><br><span class="line"># 对象中取出需要的对象</span><br><span class="line">params.args #取出变量</span><br><span class="line">params.C  #取出class C</span><br><span class="line">params.C.c  #取出class C 中的c 方法</span><br></pre></td></tr></table></figure>]]></content>
       <tags>
         <tag>python</tag>
       </tags>
@@ -1833,7 +1833,8 @@
 <li>从根节点到某一节点，路径上经过的字符连接起来，为该节点对应的字符串。</li>
 <li>每个节点的所有子节点包含的字符都不相同。</li>
 </ol>
-<h3 id="树的构建"><a href="#树的构建" class="headerlink" title="树的构建"></a>树的构建</h3><h3 id="应用场景"><a href="#应用场景" class="headerlink" title="应用场景"></a>应用场景</h3><p>典型应用是用于统计，排序和公共字符串(不仅限于字符串)，经常被搜索引擎系统用于文本词频统计。</p>
+<h3 id="树的构建"><a href="#树的构建" class="headerlink" title="树的构建"></a>树的构建</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class TireTree(object):</span><br><span class="line"></span><br><span class="line">    def __init__(self):</span><br><span class="line">        &quot;&quot;&quot;</span><br><span class="line">        Initialize your data structure here.</span><br><span class="line">        &quot;&quot;&quot;</span><br><span class="line">        self.root = &#123;&#125;</span><br><span class="line">        self.word_end = -1</span><br><span class="line"></span><br><span class="line">    def insert(self, word):</span><br><span class="line">        &quot;&quot;&quot;</span><br><span class="line">        Inserts a word into the trie.</span><br><span class="line">        :type word: str</span><br><span class="line">        :rtype: void</span><br><span class="line">        &quot;&quot;&quot;</span><br><span class="line">        curNode = self.root</span><br><span class="line">        for c in word:</span><br><span class="line">            if not c in curNode:</span><br><span class="line">                curNode[c] = &#123;&#125;</span><br><span class="line">            curNode = curNode[c]</span><br><span class="line">        curNode[self.word_end] = True</span><br><span class="line"></span><br><span class="line">    def search(self, word):</span><br><span class="line">        &quot;&quot;&quot;</span><br><span class="line">        Returns if the word is in the trie.</span><br><span class="line">        :type word: str</span><br><span class="line">        :rtype: bool</span><br><span class="line">        &quot;&quot;&quot;</span><br><span class="line">        curNode = self.root</span><br><span class="line">        for c in word:</span><br><span class="line">            if not c in word:</span><br><span class="line">                return False</span><br><span class="line">            curNode = curNode[c]</span><br><span class="line"></span><br><span class="line">        if self.word_end not in curNode:</span><br><span class="line">            return False</span><br><span class="line"></span><br><span class="line">        return True</span><br><span class="line"></span><br><span class="line">    def startsWith(self, prefix):</span><br><span class="line"></span><br><span class="line">        &quot;&quot;&quot;</span><br><span class="line">        Returns if there is any word in the trie that starts with the given prefix.</span><br><span class="line">        :type prefix: str</span><br><span class="line">        :rtype: bool</span><br><span class="line">        &quot;&quot;&quot;</span><br><span class="line">        curNode = self.root</span><br><span class="line">        for c in prefix:</span><br><span class="line">            if not c in curNode:</span><br><span class="line">                return False</span><br><span class="line">            curNode = curNode[c]</span><br><span class="line"></span><br><span class="line">        return True</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">if __name__ == &apos;__main__&apos;:</span><br><span class="line">    tire = TireTree()</span><br><span class="line">    tire.insert(&quot;hello world&quot;)</span><br><span class="line">    print(tire.search(&quot;hello world&quot;))</span><br><span class="line">    print(tire.startsWith(&quot;hello&quot;))</span><br></pre></td></tr></table></figure>
+<h3 id="应用场景"><a href="#应用场景" class="headerlink" title="应用场景"></a>应用场景</h3><p>典型应用是用于统计，排序和公共字符串(不仅限于字符串)，经常被搜索引擎系统用于文本词频统计。</p>
 <ol>
 <li>字符串的快速查找</li>
 </ol>
@@ -1849,7 +1850,8 @@
 <h3 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h3><ol>
 <li><a href="https://blog.csdn.net/tuwenqi2013/article/details/89389983" target="_blank" rel="noopener">https://blog.csdn.net/tuwenqi2013/article/details/89389983</a></li>
 <li><a href="https://www.cnblogs.com/iris001999/p/9057988.html" target="_blank" rel="noopener">https://www.cnblogs.com/iris001999/p/9057988.html</a></li>
-<li><a href="https://blog.csdn.net/tuwenqi2013/article/details/89389983" target="_blank" rel="noopener">https://blog.csdn.net/tuwenqi2013/article/details/89389983</a></li>
+<li><a href="https://blog.csdn.net/ANNILingMo/article/details/80879910" target="_blank" rel="noopener">https://blog.csdn.net/ANNILingMo/article/details/80879910</a></li>
+<li><a href="https://blog.csdn.net/danengbinggan33/article/details/82151220?utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7Edefault-8.control&amp;dist_request_id=&amp;depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7Edefault-8.control" target="_blank" rel="noopener">https://blog.csdn.net/danengbinggan33/article/details/82151220?utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7Edefault-8.control&amp;dist_request_id=&amp;depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7Edefault-8.control</a></li>
 </ol>
 ]]></content>
       <tags>
@@ -1889,22 +1891,6 @@
       </tags>
   </entry>
   <entry>
-    <title>架构与开源</title>
-    <url>/2019/09/13/%E6%9E%B6%E6%9E%84%E4%B8%8E%E5%BC%80%E6%BA%90/</url>
-    <content><![CDATA[<h4 id="1-关于架构与技术栈"><a href="#1-关于架构与技术栈" class="headerlink" title="1.关于架构与技术栈"></a>1.关于架构与技术栈</h4><p>技术架构一遍经过三个阶段，创建期、瓶颈期和退化期，就像下面这张图所画:<br><img src="/2019/09/13/架构与开源/arti.png" alt="avatar"><br>架构的选型要注意以下几点：功能预见性（功能性）、系统可用性、容错性、可靠性、性能够快、可伸缩、可维护性、安全性、成本、可度量性;<br>架构的选型的误区：“重复造轮子”、脱离实际业务需求、避免无意义的重构、功能完成是完事了、技术解决一切；</p>
-<h4 id="2-关于开源"><a href="#2-关于开源" class="headerlink" title="2.关于开源"></a>2.关于开源</h4><p>开源软件的优势：</p>
-<ul>
-<li>成本</li>
-<li>效率</li>
-<li>安全、稳健</li>
-<li>大企业的背书</li>
-<li>学习成本、技术支持</li>
-</ul>
-<p>开源协议的选择：</p>
-<p>GPL许可：是 GNU General Public License 的缩写，既GNU通用公共许可协议，是自由软件基金会（GNU）发布的一个软件首选许可，GPL许可一共发布的三个不版本，最新一版是2007年公布的GPLv3，最著名的使用GPL许可的软件就是大Linux。GPL许可的特点就是，使用GPL软件(包括类库)或者源代码（不管多少）的发布的新产品（包括新增源代码和可执行二进制文件）也必须使用GPL协议，也要公开源代码。由于这个许可具有一定的开源强制性，很多大公司对GPL许可的开源软件的选择还是比较谨慎的。GPL 协议有很多变种：比如LGPL, AGPL<br>LGPL : LGPL 是 GNU Lesser General Public License 的缩写 既GNU宽通用公共许可证，相比于GPL，其开源强制性弱一些，对商用软件更加友好，使用该许可的著名软件是Linux下的办公软件 OpenOffice。按照该许可协议的要求，以类库方式引入基于LGPL许可的软件可以不开源其衍生产品的源代码，单对于LGPL许可授权的源代码进行修改或者和修改相关的衍生代码则必须开源且使用LGPL许可进行授权。<br>AGPL：Affero General Public License，简称Affero GPL或AGPL，Affero 是一家公司名称，AGPL最初由该公司撰写，改许可是相当于GPL的增强版本，主要是对通过网络发布服务进行限制。GPL许可本身限制的是软件的“发布”行为，只要是使用了GPL许可的源代码或者二进制文件，必须开源且以同样以GPL许可进行授权，但到了互联网十点，很多互联网公司并不发布软件实体，而是提供“服务”，所以GPL的约束力就明显下降了，AGPL许可的目的就是填补这个所谓的“漏洞”，改许可要求，除了GPL本身的约束以外，所有基于AGPL许可软件提供网络服务，其相关源代码必须开源，所以在AGPL许可下，网络服务也被看做一种分发形式。所以很多互联网公司禁止使用 AGPL 许可的开源软件。<br>BSD许可：BSD（BSD是Berkly Software Distribution的简写）许可最初使用在加州大学伯克利分校发布的 BSD Unix 系统上，随着BSD系统的发展，BSD许可也随之沿用下来。相比于GPL 和 MPL 的严格要求，BSD 许可的的要求就非常宽松，给予使用者非常大的自由度。在该许可下的软件可以自由使用修改，也可以将修改后的代码再次发布，而且可以是按照闭源的私有软件进行发布，只需要在发布的软件和中保留BSD许可协议文件即可，但未经许可不能使用原作者或者机构名义进行宣传和推广。+<br>MPL许可：MPL是 The Mozilla Public License 的做些。是1998年初Netscape的 Mozilla小组为其开源软件项目设计的软件许可证。MPL许可允许经过MPL授权的源代码和其他授权的文件（包括源代码和二进制文件）混合使用，甚至剥和私有软件混合使用，这相当于GPL许可和BSD或类似许可的折中，其既有一定的开源强制性，又保留一定的私有权利。按照该许可要求，使用基于MPL授权源代码的部分，包括对MPL源代码的修改部分，必须保持MPL授权，这一点和GPL协议类似，但新增代码发布的可使用其他方式授权，甚至是私有授权，也可以比闭源的方式。<br>MIT 许可：MIT 许可是来自麻省理工学院（Massachusetts Institute of Technology, MIT），该许可被认为是最自由的开源协议之一，也是应用最为广泛的开源协议(据blackduck——一家对软件源代码进行合规审计的公司，统计，全球有将近1/3的开源软件使用MIT开源协议)，他的协议声明非常简短，他和BSD许可类似，允许自由修改发布基于MIT的代码和软件，只需要你的发行版里包含原始协议文件即可，其他无任何限制，及时使用原始作者的名义进行推广。使用MIT许可的著名软件有ssh 客户端软件jquery,Rails，putty 和 xwindows等。<br>Apache 2.0许可：改协议是由Apache软件基金会发布的许可，最初用在像Apache web Server这样Apache的内部软件中，2004年公布了2.0版本。其限制条件和BSD类似，允许自由修改和使用、发布软件，但要求保留版权，相比于BSD许可，该许可对版权要求的更细，每一个被修改后的原始文件都要著名原始版权声明。使用 Apache 2.0许可 著名的软件有 Android ,Apache web server，swift 等。</p>
-]]></content>
-  </entry>
-  <entry>
     <title>服务器上的MGMT管理口</title>
     <url>/2021/04/15/%E6%9C%8D%E5%8A%A1%E5%99%A8%E4%B8%8A%E7%9A%84MGMT%E7%AE%A1%E7%90%86%E5%8F%A3/</url>
     <content><![CDATA[<h3 id="浪潮服务器管理口地址配置参考"><a href="#浪潮服务器管理口地址配置参考" class="headerlink" title="浪潮服务器管理口地址配置参考"></a>浪潮服务器管理口地址配置参考</h3><p>开机启动按Delete键，进入BIOS集成IPMI 管理卡IP地址，在BIOS 中的“Server Mgmt”选项中选择“BMC networkConfiguration”</p>
@@ -1919,6 +1905,22 @@
       <tags>
         <tag>linux</tag>
       </tags>
+  </entry>
+  <entry>
+    <title>架构与开源</title>
+    <url>/2019/09/13/%E6%9E%B6%E6%9E%84%E4%B8%8E%E5%BC%80%E6%BA%90/</url>
+    <content><![CDATA[<h4 id="1-关于架构与技术栈"><a href="#1-关于架构与技术栈" class="headerlink" title="1.关于架构与技术栈"></a>1.关于架构与技术栈</h4><p>技术架构一遍经过三个阶段，创建期、瓶颈期和退化期，就像下面这张图所画:<br><img src="/2019/09/13/架构与开源/arti.png" alt="avatar"><br>架构的选型要注意以下几点：功能预见性（功能性）、系统可用性、容错性、可靠性、性能够快、可伸缩、可维护性、安全性、成本、可度量性;<br>架构的选型的误区：“重复造轮子”、脱离实际业务需求、避免无意义的重构、功能完成是完事了、技术解决一切；</p>
+<h4 id="2-关于开源"><a href="#2-关于开源" class="headerlink" title="2.关于开源"></a>2.关于开源</h4><p>开源软件的优势：</p>
+<ul>
+<li>成本</li>
+<li>效率</li>
+<li>安全、稳健</li>
+<li>大企业的背书</li>
+<li>学习成本、技术支持</li>
+</ul>
+<p>开源协议的选择：</p>
+<p>GPL许可：是 GNU General Public License 的缩写，既GNU通用公共许可协议，是自由软件基金会（GNU）发布的一个软件首选许可，GPL许可一共发布的三个不版本，最新一版是2007年公布的GPLv3，最著名的使用GPL许可的软件就是大Linux。GPL许可的特点就是，使用GPL软件(包括类库)或者源代码（不管多少）的发布的新产品（包括新增源代码和可执行二进制文件）也必须使用GPL协议，也要公开源代码。由于这个许可具有一定的开源强制性，很多大公司对GPL许可的开源软件的选择还是比较谨慎的。GPL 协议有很多变种：比如LGPL, AGPL<br>LGPL : LGPL 是 GNU Lesser General Public License 的缩写 既GNU宽通用公共许可证，相比于GPL，其开源强制性弱一些，对商用软件更加友好，使用该许可的著名软件是Linux下的办公软件 OpenOffice。按照该许可协议的要求，以类库方式引入基于LGPL许可的软件可以不开源其衍生产品的源代码，单对于LGPL许可授权的源代码进行修改或者和修改相关的衍生代码则必须开源且使用LGPL许可进行授权。<br>AGPL：Affero General Public License，简称Affero GPL或AGPL，Affero 是一家公司名称，AGPL最初由该公司撰写，改许可是相当于GPL的增强版本，主要是对通过网络发布服务进行限制。GPL许可本身限制的是软件的“发布”行为，只要是使用了GPL许可的源代码或者二进制文件，必须开源且以同样以GPL许可进行授权，但到了互联网十点，很多互联网公司并不发布软件实体，而是提供“服务”，所以GPL的约束力就明显下降了，AGPL许可的目的就是填补这个所谓的“漏洞”，改许可要求，除了GPL本身的约束以外，所有基于AGPL许可软件提供网络服务，其相关源代码必须开源，所以在AGPL许可下，网络服务也被看做一种分发形式。所以很多互联网公司禁止使用 AGPL 许可的开源软件。<br>BSD许可：BSD（BSD是Berkly Software Distribution的简写）许可最初使用在加州大学伯克利分校发布的 BSD Unix 系统上，随着BSD系统的发展，BSD许可也随之沿用下来。相比于GPL 和 MPL 的严格要求，BSD 许可的的要求就非常宽松，给予使用者非常大的自由度。在该许可下的软件可以自由使用修改，也可以将修改后的代码再次发布，而且可以是按照闭源的私有软件进行发布，只需要在发布的软件和中保留BSD许可协议文件即可，但未经许可不能使用原作者或者机构名义进行宣传和推广。+<br>MPL许可：MPL是 The Mozilla Public License 的做些。是1998年初Netscape的 Mozilla小组为其开源软件项目设计的软件许可证。MPL许可允许经过MPL授权的源代码和其他授权的文件（包括源代码和二进制文件）混合使用，甚至剥和私有软件混合使用，这相当于GPL许可和BSD或类似许可的折中，其既有一定的开源强制性，又保留一定的私有权利。按照该许可要求，使用基于MPL授权源代码的部分，包括对MPL源代码的修改部分，必须保持MPL授权，这一点和GPL协议类似，但新增代码发布的可使用其他方式授权，甚至是私有授权，也可以比闭源的方式。<br>MIT 许可：MIT 许可是来自麻省理工学院（Massachusetts Institute of Technology, MIT），该许可被认为是最自由的开源协议之一，也是应用最为广泛的开源协议(据blackduck——一家对软件源代码进行合规审计的公司，统计，全球有将近1/3的开源软件使用MIT开源协议)，他的协议声明非常简短，他和BSD许可类似，允许自由修改发布基于MIT的代码和软件，只需要你的发行版里包含原始协议文件即可，其他无任何限制，及时使用原始作者的名义进行推广。使用MIT许可的著名软件有ssh 客户端软件jquery,Rails，putty 和 xwindows等。<br>Apache 2.0许可：改协议是由Apache软件基金会发布的许可，最初用在像Apache web Server这样Apache的内部软件中，2004年公布了2.0版本。其限制条件和BSD类似，允许自由修改和使用、发布软件，但要求保留版权，相比于BSD许可，该许可对版权要求的更细，每一个被修改后的原始文件都要著名原始版权声明。使用 Apache 2.0许可 著名的软件有 Android ,Apache web server，swift 等。</p>
+]]></content>
   </entry>
   <entry>
     <title>浅拷贝与深拷贝以及引用</title>
