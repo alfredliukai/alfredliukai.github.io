@@ -461,17 +461,6 @@
       </tags>
   </entry>
   <entry>
-    <title>docker环境下使用kafka</title>
-    <url>/2021/02/09/docker%E7%8E%AF%E5%A2%83%E4%B8%8B%E4%BD%BF%E7%94%A8kafka/</url>
-    <content><![CDATA[<h3 id="下载镜像"><a href="#下载镜像" class="headerlink" title="下载镜像"></a>下载镜像</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Copy//下载zookeeper</span><br><span class="line">docker pull wurstmeister/zookeeper</span><br><span class="line"></span><br><span class="line">//下载kafka</span><br><span class="line">docker pull wurstmeister/kafka:2.11-0.11.0.3</span><br></pre></td></tr></table></figure>
-<h3 id="启动镜像"><a href="#启动镜像" class="headerlink" title="启动镜像"></a>启动镜像</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Copy//启动zookeeper</span><br><span class="line">docker run -d --name zookeeper -p 2181:2181  wurstmeister/zookeeper</span><br><span class="line"></span><br><span class="line">//启动kafka</span><br><span class="line">docker run  -d --name kafka -p 9092:9092 -e KAFKA_BROKER_ID=0 -e KAFKA_ZOOKEEPER_CONNECT=192.168.1.106:2181 -e KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://192.168.1.106:9092 -e KAFKA_LISTENERS=PLAINTEXT://0.0.0.0:9092 -t wurstmeister/kafka</span><br></pre></td></tr></table></figure>
-<h3 id="测试kafka"><a href="#测试kafka" class="headerlink" title="测试kafka"></a>测试kafka</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">./kafka-console-producer.sh --broker-list localhost:9092 --topic sun</span><br><span class="line">&gt;123</span><br><span class="line">&gt;asdf</span><br><span class="line">&gt;hahh</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">./kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic sun --from-beginning</span><br></pre></td></tr></table></figure>
-<h3 id="创建查看topic"><a href="#创建查看topic" class="headerlink" title="创建查看topic"></a>创建查看topic</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">bin/kafka-topics.sh --zookeeper 192.168.1.106:2181 --create --topic dalianpai --partitions 2 --replication-factor 1</span><br><span class="line"></span><br><span class="line">bin/kafka-topics.sh --zookeeper 192.168.1.106:2181 --list</span><br></pre></td></tr></table></figure>]]></content>
-      <tags>
-        <tag>kafka</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>es总结1</title>
     <url>/2020/03/22/es%E6%80%BB%E7%BB%931/</url>
     <content><![CDATA[<h4 id="Elasticsearch生态圈"><a href="#Elasticsearch生态圈" class="headerlink" title="Elasticsearch生态圈"></a>Elasticsearch生态圈</h4><p><img src="/2020/03/22/es总结1/es1.png" alt="avatar"></p>
@@ -523,6 +512,17 @@
 ]]></content>
       <tags>
         <tag>Elasticsearch</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>docker环境下使用kafka</title>
+    <url>/2021/02/09/docker%E7%8E%AF%E5%A2%83%E4%B8%8B%E4%BD%BF%E7%94%A8kafka/</url>
+    <content><![CDATA[<h3 id="下载镜像"><a href="#下载镜像" class="headerlink" title="下载镜像"></a>下载镜像</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Copy//下载zookeeper</span><br><span class="line">docker pull wurstmeister/zookeeper</span><br><span class="line"></span><br><span class="line">//下载kafka</span><br><span class="line">docker pull wurstmeister/kafka:2.11-0.11.0.3</span><br></pre></td></tr></table></figure>
+<h3 id="启动镜像"><a href="#启动镜像" class="headerlink" title="启动镜像"></a>启动镜像</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Copy//启动zookeeper</span><br><span class="line">docker run -d --name zookeeper -p 2181:2181  wurstmeister/zookeeper</span><br><span class="line"></span><br><span class="line">//启动kafka</span><br><span class="line">docker run  -d --name kafka -p 9092:9092 -e KAFKA_BROKER_ID=0 -e KAFKA_ZOOKEEPER_CONNECT=192.168.1.106:2181 -e KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://192.168.1.106:9092 -e KAFKA_LISTENERS=PLAINTEXT://0.0.0.0:9092 -t wurstmeister/kafka</span><br></pre></td></tr></table></figure>
+<h3 id="测试kafka"><a href="#测试kafka" class="headerlink" title="测试kafka"></a>测试kafka</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">./kafka-console-producer.sh --broker-list localhost:9092 --topic sun</span><br><span class="line">&gt;123</span><br><span class="line">&gt;asdf</span><br><span class="line">&gt;hahh</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">./kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic sun --from-beginning</span><br></pre></td></tr></table></figure>
+<h3 id="创建查看topic"><a href="#创建查看topic" class="headerlink" title="创建查看topic"></a>创建查看topic</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">bin/kafka-topics.sh --zookeeper 192.168.1.106:2181 --create --topic dalianpai --partitions 2 --replication-factor 1</span><br><span class="line"></span><br><span class="line">bin/kafka-topics.sh --zookeeper 192.168.1.106:2181 --list</span><br></pre></td></tr></table></figure>]]></content>
+      <tags>
+        <tag>kafka</tag>
       </tags>
   </entry>
   <entry>
@@ -1029,29 +1029,69 @@
       </tags>
   </entry>
   <entry>
-    <title>postgresql中的replace函数</title>
-    <url>/2021/04/13/postgresql%E4%B8%AD%E7%9A%84replace%E5%87%BD%E6%95%B0/</url>
-    <content><![CDATA[<p>select replace(字段名,E’\r’,’’) from 表名 where 字段名 like E’%\r%’;；  查看修改后结果，并不真实修改数据库</p>
-<p>update 表名 set 字段名=replace(字段名,E’\r’,’’) where 字段名 like E’%\r%’;;  更改字段中包含某个字符为另一个字符，这里是把’\r’替换为空。</p>
+    <title>postgresql中死锁问题排查</title>
+    <url>/2021/04/20/postgresql%E4%B8%AD%E6%AD%BB%E9%94%81%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/</url>
+    <content><![CDATA[<p>最近在做一个业务数据导入导出的功能需求，在导入过程中出现了系统卡死的现象。怀疑为数据库死锁导致，具体排查流程如下。</p>
+<h4 id="排查流程"><a href="#排查流程" class="headerlink" title="排查流程"></a>排查流程</h4><ol>
+<li>查询ACTIVITY的状态等信息</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">SELECT T</span><br><span class="line">	.PID,</span><br><span class="line">	T.STATE,</span><br><span class="line">	T.QUERY,</span><br><span class="line">	T.WAIT_EVENT_TYPE,</span><br><span class="line">	T.WAIT_EVENT,</span><br><span class="line">	T.QUERY_START    </span><br><span class="line">FROM</span><br><span class="line">	PG_STAT_ACTIVITY T</span><br><span class="line">WHERE</span><br><span class="line">	T.DATNAME = &apos;数据库用户名&apos;;</span><br></pre></td></tr></table></figure>
+<p><img src="/2021/04/20/postgresql中死锁问题排查/pg1.png" alt="avatar"></p>
+<p>上面查询结果中：pid就是ACTIVITY的唯一标识，state就是活动状态，query就是正在执行的sql语句，query——start就是开始执行的时间。</p>
+<ol start="2">
+<li>查询死锁的ACTIVITY</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">SELECT T</span><br><span class="line">	.PID,</span><br><span class="line">	T.STATE,</span><br><span class="line">	T.QUERY,</span><br><span class="line">	T.WAIT_EVENT_TYPE,</span><br><span class="line">	T.WAIT_EVENT,</span><br><span class="line">	T.QUERY_START    </span><br><span class="line">FROM</span><br><span class="line">	PG_STAT_ACTIVITY T </span><br><span class="line">WHERE</span><br><span class="line">	T.DATNAME = &apos;数据库用户名&apos; </span><br><span class="line">	AND T.WAIT_EVENT_TYPE = &apos;Lock&apos;;</span><br></pre></td></tr></table></figure>
+<ol start="3">
+<li>将第二条查询语句的pid字段的数字值记录下来，执行下面的查询语句可以解锁：<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">select PG_CANCEL_BACKEND(&apos;6984&apos;);</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>上面的查询语句，执行了pg_cancel_backend()函数，该函数是取消后台操作，回滚未提交事物的用途。</p>
+<ol start="4">
+<li><p>解决idle in transaction</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">select pg_terminate_backend (&apos;21967&apos;)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>小结 </p>
+</li>
+</ol>
+<p>根据以上流程，排查出truncate语句与select语句执行过程中出现了Lock清空。追踪到业务场景中，在执行导入的过程中存在权限校验，校验需要查询当前用户的登录状态。登录过程包含sql如下：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">select id,user_name from user where id=1;</span><br><span class="line"></span><br><span class="line">truncate table user reset identity cascade;</span><br></pre></td></tr></table></figure></p>
+<p>其中select语句的状态一直是“idle in transaction”的状态。</p>
+<p>业务逻辑中存在监控请求，每隔10s请求一次，也存在权限校验的场景：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">select id,user_name from user where id=1;</span><br></pre></td></tr></table></figure></p>
+<p>所以后续的sql也是处于Lock的状态。</p>
+<p>继续排查“idle in transaction”的问题</p>
+<h4 id="PostgreSql中一直有连接长时间处于idle-in-transaction的问题"><a href="#PostgreSql中一直有连接长时间处于idle-in-transaction的问题" class="headerlink" title="PostgreSql中一直有连接长时间处于idle in transaction的问题"></a>PostgreSql中一直有连接长时间处于idle in transaction的问题</h4><p><strong>数据库连接的几种状态</strong></p>
+<p>pg_stat_activity 是一张postgresql的系统视图，它的每一行都表示一个系统进程，显示与当前会话的活动进程的一些信息，比如当前会话的状态和查询等。它的state字段表示当前进程的状态，一共有六种：</p>
+<ul>
+<li>Active(活动): 进程正在执行某个语句</li>
+<li>Idle(空闲): 进程正在等待客户端的指令</li>
+<li>idle in transaction(事务空闲):进程在处理事务的过程中，但当前没有执行任何语句</li>
+<li>idle in transaction (aborted)(事务空闲-退出):除了事务中声明一个错误外，其余情况与idle in transaction相同</li>
+<li>fastpath function call(快速通道函数调用): 后台正在执行某个快速通道函数</li>
+<li>Disabled(禁用): 报告状态被禁用</li>
+</ul>
+<p>Postgresql在9.6版本提供了idle_in_transaction_session_timeout 参数，用于释放一直处于idle in transaction状态下的连接。<br>尝试在postgresql.conf 文件中添加idle_in_transaction_session_timeout参数控制，参数单位为毫秒<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">idle_in_transaction_session_timeout=30000</span><br></pre></td></tr></table></figure></p>
+<h4 id="问题最终解决方案"><a href="#问题最终解决方案" class="headerlink" title="问题最终解决方案"></a>问题最终解决方案</h4><ol>
+<li>导入用户数据功能时，业务加锁处理；</li>
+<li>数据库修改相关配置，添加<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">idle_in_transaction_session_timeout=30000</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<h4 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h4><ol>
+<li><a href="https://blog.csdn.net/DB_su/article/details/78204101" target="_blank" rel="noopener">https://blog.csdn.net/DB_su/article/details/78204101</a></li>
+<li><a href="https://blog.csdn.net/qq_25775675/article/details/104360897" target="_blank" rel="noopener">https://blog.csdn.net/qq_25775675/article/details/104360897</a></li>
+<li><a href="https://blog.csdn.net/cutcue/article/details/89351026" target="_blank" rel="noopener">https://blog.csdn.net/cutcue/article/details/89351026</a></li>
+<li><a href="https://copyfuture.com/blogs-details/20200117234850895p89v43xrnosg9bg" target="_blank" rel="noopener">https://copyfuture.com/blogs-details/20200117234850895p89v43xrnosg9bg</a></li>
+<li><a href="https://www.pianshen.com/article/49201804388/" target="_blank" rel="noopener">https://www.pianshen.com/article/49201804388/</a></li>
+</ol>
 ]]></content>
       <tags>
         <tag>postgresql</tag>
       </tags>
   </entry>
   <entry>
-    <title>postgresql中的重复行问题</title>
-    <url>/2021/04/15/postgresql%E4%B8%AD%E7%9A%84%E9%87%8D%E5%A4%8D%E8%A1%8C%E9%97%AE%E9%A2%98/</url>
-    <content><![CDATA[<h3 id="问题描述"><a href="#问题描述" class="headerlink" title="问题描述"></a>问题描述</h3><p>本文主要描述使用各种技术来删除PostgreSQL中的重复行。</p>
-<h3 id="准备示例数据"><a href="#准备示例数据" class="headerlink" title="准备示例数据"></a>准备示例数据</h3><p>首先创建一个表：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">CREATE TABLE basket(</span><br><span class="line">    id SERIAL PRIMARY KEY,</span><br><span class="line">    fruit VARCHAR(50) NOT NULL</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
-<p>接下来插入一些数据：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">INSERT INTO basket(fruit) values(&apos;apple&apos;);</span><br><span class="line">INSERT INTO basket(fruit) values(&apos;apple&apos;);</span><br><span class="line"></span><br><span class="line">INSERT INTO basket(fruit) values(&apos;orange&apos;);</span><br><span class="line">INSERT INTO basket(fruit) values(&apos;orange&apos;);</span><br><span class="line">INSERT INTO basket(fruit) values(&apos;orange&apos;);</span><br><span class="line"></span><br><span class="line">INSERT INTO basket(fruit) values(&apos;banana&apos;);</span><br></pre></td></tr></table></figure>
-<h3 id="查找重复行"><a href="#查找重复行" class="headerlink" title="查找重复行"></a>查找重复行</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">SELECT</span><br><span class="line">    fruit,</span><br><span class="line">    COUNT( fruit )</span><br><span class="line">FROM</span><br><span class="line">    basket</span><br><span class="line">GROUP BY</span><br><span class="line">    fruit</span><br><span class="line">HAVING</span><br><span class="line">    COUNT( fruit )&gt; 1</span><br><span class="line">ORDER BY</span><br><span class="line">    fruit;</span><br></pre></td></tr></table></figure>
-<h3 id="使用-DELETE-USING-语句删除重复的行"><a href="#使用-DELETE-USING-语句删除重复的行" class="headerlink" title="使用 DELETE USING 语句删除重复的行"></a>使用 DELETE USING 语句删除重复的行</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">DELETE</span><br><span class="line">FROM</span><br><span class="line">    basket a</span><br><span class="line">        USING basket b</span><br><span class="line">WHERE</span><br><span class="line">    a.id &lt; b.id</span><br><span class="line">    AND a.fruit = b.fruit;</span><br></pre></td></tr></table></figure>
-<h3 id="使用子查询删除重复的行"><a href="#使用子查询删除重复的行" class="headerlink" title="使用子查询删除重复的行"></a>使用子查询删除重复的行</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">DELETE FROM basket</span><br><span class="line">WHERE id IN</span><br><span class="line">    (SELECT id</span><br><span class="line">    FROM </span><br><span class="line">        (SELECT id,</span><br><span class="line">         ROW_NUMBER() OVER( PARTITION BY fruit</span><br><span class="line">        ORDER BY  id ) AS row_num</span><br><span class="line">        FROM basket ) t</span><br><span class="line">        WHERE t.row_num &gt; 1 );</span><br></pre></td></tr></table></figure>
-<h3 id="ON和USING和NATURAL"><a href="#ON和USING和NATURAL" class="headerlink" title="ON和USING和NATURAL"></a>ON和USING和NATURAL</h3><p>ON子句是最常见的连接条件的类型：它接收一个和WHERE 子句相同的布尔表达式。如果两个分别来自T1和T2 的行在ON表达式上运算的结果为真，那么它们就算是匹配的行。</p>
-<p>USING是一个连接条件的缩写语法：它接收一个用逗号分隔的字段名列表，这些字段必须是连接表共有的并且其值必须相同。最后，JOIN USING 会将每一对相等的输入字段输出为一个字段，其后跟着所有其它字段。因此，USING (a, b, c) 等效于ON (t1.a = t2.a AND t1.b = t2.b AND t1.c = t2.c) 只不过是如果使用了ON，那么在结果里a, b和c 字段都会有两个，而用USING的时候就只会有一个（如果使用了SELECT * 的话，他们会优先发生）。</p>
-<p>最后，NATURAL是USING的缩写形式：它自动形成一个由两个表中同名的字段组成的USING列表(同名字段只出现一次)。如果没有同名的字段，NATURAL的行为会像CROSS JOIN。</p>
+    <title>postgresql中的replace函数</title>
+    <url>/2021/04/13/postgresql%E4%B8%AD%E7%9A%84replace%E5%87%BD%E6%95%B0/</url>
+    <content><![CDATA[<p>select replace(字段名,E’\r’,’’) from 表名 where 字段名 like E’%\r%’;；  查看修改后结果，并不真实修改数据库</p>
+<p>update 表名 set 字段名=replace(字段名,E’\r’,’’) where 字段名 like E’%\r%’;;  更改字段中包含某个字符为另一个字符，这里是把’\r’替换为空。</p>
 ]]></content>
       <tags>
         <tag>postgresql</tag>
@@ -1073,6 +1113,25 @@
 ]]></content>
       <tags>
         <tag>postgres</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>postgresql中的重复行问题</title>
+    <url>/2021/04/15/postgresql%E4%B8%AD%E7%9A%84%E9%87%8D%E5%A4%8D%E8%A1%8C%E9%97%AE%E9%A2%98/</url>
+    <content><![CDATA[<h3 id="问题描述"><a href="#问题描述" class="headerlink" title="问题描述"></a>问题描述</h3><p>本文主要描述使用各种技术来删除PostgreSQL中的重复行。</p>
+<h3 id="准备示例数据"><a href="#准备示例数据" class="headerlink" title="准备示例数据"></a>准备示例数据</h3><p>首先创建一个表：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">CREATE TABLE basket(</span><br><span class="line">    id SERIAL PRIMARY KEY,</span><br><span class="line">    fruit VARCHAR(50) NOT NULL</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<p>接下来插入一些数据：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">INSERT INTO basket(fruit) values(&apos;apple&apos;);</span><br><span class="line">INSERT INTO basket(fruit) values(&apos;apple&apos;);</span><br><span class="line"></span><br><span class="line">INSERT INTO basket(fruit) values(&apos;orange&apos;);</span><br><span class="line">INSERT INTO basket(fruit) values(&apos;orange&apos;);</span><br><span class="line">INSERT INTO basket(fruit) values(&apos;orange&apos;);</span><br><span class="line"></span><br><span class="line">INSERT INTO basket(fruit) values(&apos;banana&apos;);</span><br></pre></td></tr></table></figure>
+<h3 id="查找重复行"><a href="#查找重复行" class="headerlink" title="查找重复行"></a>查找重复行</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">SELECT</span><br><span class="line">    fruit,</span><br><span class="line">    COUNT( fruit )</span><br><span class="line">FROM</span><br><span class="line">    basket</span><br><span class="line">GROUP BY</span><br><span class="line">    fruit</span><br><span class="line">HAVING</span><br><span class="line">    COUNT( fruit )&gt; 1</span><br><span class="line">ORDER BY</span><br><span class="line">    fruit;</span><br></pre></td></tr></table></figure>
+<h3 id="使用-DELETE-USING-语句删除重复的行"><a href="#使用-DELETE-USING-语句删除重复的行" class="headerlink" title="使用 DELETE USING 语句删除重复的行"></a>使用 DELETE USING 语句删除重复的行</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">DELETE</span><br><span class="line">FROM</span><br><span class="line">    basket a</span><br><span class="line">        USING basket b</span><br><span class="line">WHERE</span><br><span class="line">    a.id &lt; b.id</span><br><span class="line">    AND a.fruit = b.fruit;</span><br></pre></td></tr></table></figure>
+<h3 id="使用子查询删除重复的行"><a href="#使用子查询删除重复的行" class="headerlink" title="使用子查询删除重复的行"></a>使用子查询删除重复的行</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">DELETE FROM basket</span><br><span class="line">WHERE id IN</span><br><span class="line">    (SELECT id</span><br><span class="line">    FROM </span><br><span class="line">        (SELECT id,</span><br><span class="line">         ROW_NUMBER() OVER( PARTITION BY fruit</span><br><span class="line">        ORDER BY  id ) AS row_num</span><br><span class="line">        FROM basket ) t</span><br><span class="line">        WHERE t.row_num &gt; 1 );</span><br></pre></td></tr></table></figure>
+<h3 id="ON和USING和NATURAL"><a href="#ON和USING和NATURAL" class="headerlink" title="ON和USING和NATURAL"></a>ON和USING和NATURAL</h3><p>ON子句是最常见的连接条件的类型：它接收一个和WHERE 子句相同的布尔表达式。如果两个分别来自T1和T2 的行在ON表达式上运算的结果为真，那么它们就算是匹配的行。</p>
+<p>USING是一个连接条件的缩写语法：它接收一个用逗号分隔的字段名列表，这些字段必须是连接表共有的并且其值必须相同。最后，JOIN USING 会将每一对相等的输入字段输出为一个字段，其后跟着所有其它字段。因此，USING (a, b, c) 等效于ON (t1.a = t2.a AND t1.b = t2.b AND t1.c = t2.c) 只不过是如果使用了ON，那么在结果里a, b和c 字段都会有两个，而用USING的时候就只会有一个（如果使用了SELECT * 的话，他们会优先发生）。</p>
+<p>最后，NATURAL是USING的缩写形式：它自动形成一个由两个表中同名的字段组成的USING列表(同名字段只出现一次)。如果没有同名的字段，NATURAL的行为会像CROSS JOIN。</p>
+]]></content>
+      <tags>
+        <tag>postgresql</tag>
       </tags>
   </entry>
   <entry>
@@ -1378,17 +1437,6 @@
       </tags>
   </entry>
   <entry>
-    <title>python中的动态导入</title>
-    <url>/2020/12/03/python%E4%B8%AD%E7%9A%84%E5%8A%A8%E6%80%81%E5%AF%BC%E5%85%A5/</url>
-    <content><![CDATA[<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>一个函数运行需要根据不同项目的配置，动态导入对应的配置文件运行。</p>
-<h2 id="解决"><a href="#解决" class="headerlink" title="解决"></a>解决</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">文件结构</span><br><span class="line"></span><br><span class="line">a #文件夹</span><br><span class="line">	│a.py</span><br><span class="line">	│__init__.py</span><br><span class="line">b #文件夹</span><br><span class="line">	│b.py</span><br><span class="line">	│__init__.py</span><br><span class="line">	├─c#文件夹</span><br><span class="line">		│c.py</span><br><span class="line">		│__init__.py</span><br><span class="line"></span><br><span class="line"># c.py 中内容</span><br><span class="line">args = &#123;&apos;a&apos;:1&#125;</span><br><span class="line"></span><br><span class="line">class C:</span><br><span class="line">    </span><br><span class="line">    def c(self):</span><br><span class="line">        pass</span><br></pre></td></tr></table></figure>
-<h2 id="目的"><a href="#目的" class="headerlink" title="目的"></a>目的</h2><p>向a模块中导入c.py 中的对象</p>
-<h2 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">import importlib</span><br><span class="line"></span><br><span class="line">params = importlib.import_module(&apos;b.c.c&apos;) #绝对导入</span><br><span class="line">params_ = importlib.import_module(&apos;.c.c&apos;,package=&apos;b&apos;) #相对导入</span><br><span class="line"></span><br><span class="line"># 对象中取出需要的对象</span><br><span class="line">params.args #取出变量</span><br><span class="line">params.C  #取出class C</span><br><span class="line">params.C.c  #取出class C 中的c 方法</span><br></pre></td></tr></table></figure>]]></content>
-      <tags>
-        <tag>python</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>python中的异常</title>
     <url>/2020/09/19/python%E4%B8%AD%E7%9A%84%E5%BC%82%E5%B8%B8/</url>
     <content><![CDATA[<p>当你的程序出现例外情况时就会发生异常（Exception）。例如，当你想要读取一个文件时，而那个文件却不存在，怎么办？又或者你在程序执行时不小心把它删除了，怎么办？这些通过使用异常来进行处理。</p>
@@ -1429,6 +1477,17 @@
 <p>因此，我们在 finally 代码块中编写的代码应该格外留心 <strong>exit</strong> 方法的自动操作。这能够帮助我们避免重复显式使用 try..finally 语句。</p>
 <p>有关该话题的更多讨论已经超出了本书所能涉及的范围，因此请参考 PEP 343 来了解更加全面的解释。</p>
 ]]></content>
+      <tags>
+        <tag>python</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>python中的动态导入</title>
+    <url>/2020/12/03/python%E4%B8%AD%E7%9A%84%E5%8A%A8%E6%80%81%E5%AF%BC%E5%85%A5/</url>
+    <content><![CDATA[<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>一个函数运行需要根据不同项目的配置，动态导入对应的配置文件运行。</p>
+<h2 id="解决"><a href="#解决" class="headerlink" title="解决"></a>解决</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">文件结构</span><br><span class="line"></span><br><span class="line">a #文件夹</span><br><span class="line">	│a.py</span><br><span class="line">	│__init__.py</span><br><span class="line">b #文件夹</span><br><span class="line">	│b.py</span><br><span class="line">	│__init__.py</span><br><span class="line">	├─c#文件夹</span><br><span class="line">		│c.py</span><br><span class="line">		│__init__.py</span><br><span class="line"></span><br><span class="line"># c.py 中内容</span><br><span class="line">args = &#123;&apos;a&apos;:1&#125;</span><br><span class="line"></span><br><span class="line">class C:</span><br><span class="line">    </span><br><span class="line">    def c(self):</span><br><span class="line">        pass</span><br></pre></td></tr></table></figure>
+<h2 id="目的"><a href="#目的" class="headerlink" title="目的"></a>目的</h2><p>向a模块中导入c.py 中的对象</p>
+<h2 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">import importlib</span><br><span class="line"></span><br><span class="line">params = importlib.import_module(&apos;b.c.c&apos;) #绝对导入</span><br><span class="line">params_ = importlib.import_module(&apos;.c.c&apos;,package=&apos;b&apos;) #相对导入</span><br><span class="line"></span><br><span class="line"># 对象中取出需要的对象</span><br><span class="line">params.args #取出变量</span><br><span class="line">params.C  #取出class C</span><br><span class="line">params.C.c  #取出class C 中的c 方法</span><br></pre></td></tr></table></figure>]]></content>
       <tags>
         <tag>python</tag>
       </tags>
@@ -1763,6 +1822,41 @@
 ]]></content>
   </entry>
   <entry>
+    <title>数据结构-字典树</title>
+    <url>/2021/04/18/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-%E5%AD%97%E5%85%B8%E6%A0%91/</url>
+    <content><![CDATA[<h3 id="什么是Trie树"><a href="#什么是Trie树" class="headerlink" title="什么是Trie树"></a>什么是Trie树</h3><p>Trie树，即字典树，又称单词查找树或键树，是一种树形结构，是一种哈希树的变种。典型应用是用于统计和排序大量的字符串（但不仅限于字符串），所以经常被搜索引擎系统用于文本词频统计。它的优点是：最大限度地减少无谓的字符串比较，查询效率比哈希表高。</p>
+<p><strong>Trie的核心思想是空间换时间。利用字符串的公共前缀来降低查询时间的开销以达到提高效率的目的。</strong></p>
+<p><img src="/2021/04/18/数据结构-字典树/tire1.png" alt="avatar"></p>
+<p>它有3个基本性质：</p>
+<ol>
+<li>根节点不包含字符，除根节点外每一个节点都只包含一个字符。</li>
+<li>从根节点到某一节点，路径上经过的字符连接起来，为该节点对应的字符串。</li>
+<li>每个节点的所有子节点包含的字符都不相同。</li>
+</ol>
+<h3 id="树的构建"><a href="#树的构建" class="headerlink" title="树的构建"></a>树的构建</h3><h3 id="应用场景"><a href="#应用场景" class="headerlink" title="应用场景"></a>应用场景</h3><p>典型应用是用于统计，排序和公共字符串(不仅限于字符串)，经常被搜索引擎系统用于文本词频统计。</p>
+<ol>
+<li>字符串的快速查找</li>
+</ol>
+<p>给出N个单词组成的熟词表，以及一篇全用小写英文书写的文章，请你按最早出现的顺序写出所有不在熟词表中的生词。在这道题中，我们可以用数组枚举，用哈希，用字典树，先把熟词建一棵树，然后读入文章进行比较，这种方法效率是比较高的。</p>
+<ol start="2">
+<li>字典树在“串”排序方面的应用</li>
+</ol>
+<p>给定N个互不相同的仅由一个单词构成的英文名，让你将他们按字典序从小到大输出用字典树进行排序，采用数组的方式创建字典树，这棵树的每个节点的所有儿子很显然地按照其字母大小排序,对这棵树进行先序遍历即可。</p>
+<ol start="3">
+<li>字典树在最长公共前缀问题的应用</li>
+</ol>
+<p>对所有串建立字典树，对于两个串的最长公共前缀的长度即他们所在的节点的公共前缀。</p>
+<h3 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h3><ol>
+<li><a href="https://blog.csdn.net/tuwenqi2013/article/details/89389983" target="_blank" rel="noopener">https://blog.csdn.net/tuwenqi2013/article/details/89389983</a></li>
+<li><a href="https://www.cnblogs.com/iris001999/p/9057988.html" target="_blank" rel="noopener">https://www.cnblogs.com/iris001999/p/9057988.html</a></li>
+<li><a href="https://blog.csdn.net/tuwenqi2013/article/details/89389983" target="_blank" rel="noopener">https://blog.csdn.net/tuwenqi2013/article/details/89389983</a></li>
+</ol>
+]]></content>
+      <tags>
+        <tag>数据结构</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>文件锁fcntl</title>
     <url>/2020/08/03/%E6%96%87%E4%BB%B6%E9%94%81fcntl/</url>
     <content><![CDATA[<h2 id="python中的文件锁"><a href="#python中的文件锁" class="headerlink" title="python中的文件锁"></a>python中的文件锁</h2><p>我们在写python应用的时候，当涉及到多个进程向同一个文件write(或者read)的情况，如果几个进程同时都对这个文件进行写操作，那么文件的内容就会变得非常混乱，这个时候文件锁就派上用场了。</p>
@@ -1795,22 +1889,6 @@
       </tags>
   </entry>
   <entry>
-    <title>服务器上的MGMT管理口</title>
-    <url>/2021/04/15/%E6%9C%8D%E5%8A%A1%E5%99%A8%E4%B8%8A%E7%9A%84MGMT%E7%AE%A1%E7%90%86%E5%8F%A3/</url>
-    <content><![CDATA[<h3 id="浪潮服务器管理口地址配置参考"><a href="#浪潮服务器管理口地址配置参考" class="headerlink" title="浪潮服务器管理口地址配置参考"></a>浪潮服务器管理口地址配置参考</h3><p>开机启动按Delete键，进入BIOS集成IPMI 管理卡IP地址，在BIOS 中的“Server Mgmt”选项中选择“BMC networkConfiguration”</p>
-<p>将专用管理口的updata BMC LAN Configuration 改为yes 后下面的灰色选项会被激活，将Configuration Address source 配置项从默认的Dynamic 改为static 静态然后配置管理口IP为比如10.1.1.1<br>按F10 保存重启后将电脑与管理口相连，并将电脑的网口设置为与管理口同网段IP（如10.1.1.5），先ping一下是否ping通 </p>
-<p>进入位于windows控制面板的java控制台中，在安全选项下添加服务器管理口对应的IP地址 保存，然后通过火狐浏览器直接登陆即可。</p>
-<h3 id="使用远程管理端口（mgmt或ilo）进行服务器底层远程管理"><a href="#使用远程管理端口（mgmt或ilo）进行服务器底层远程管理" class="headerlink" title="使用远程管理端口（mgmt或ilo）进行服务器底层远程管理"></a>使用远程管理端口（mgmt或ilo）进行服务器底层远程管理</h3><p>服务器上集成的远程管理端口，它是一组芯片内部集成vxworks嵌入式操作系统，通过一个标准RJ45接口连接到工作环境的交换机。只要将服务器接入网络并且没有断开服务器的电源，不管HP服务器的处于何种状态（开机、关机、重启），都可以允许用户通过网络进行远程管理。简单来说，远程管理端口是高级别的远程KVM系统，可以将服务器的显示信息显示在本地，并且使用本地的键盘鼠标控制、操作服务器，并可以将本地的光盘镜像、文件夹作为虚拟光驱映射并加载到服务器中。使用远程管理端口，可以完成低层的BIOS设置、磁盘RAID配置、操作系统的安装等底层的工作，并且可以在完成系统安装后实现系统的远程控制与管理。</p>
-<h3 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h3><ol>
-<li><a href="https://www.cnblogs.com/huazai007/articles/7927644.html" target="_blank" rel="noopener">https://www.cnblogs.com/huazai007/articles/7927644.html</a></li>
-<li><a href="http://blog.sina.com.cn/s/blog_4c86552f0102wd39.html" target="_blank" rel="noopener">http://blog.sina.com.cn/s/blog_4c86552f0102wd39.html</a></li>
-</ol>
-]]></content>
-      <tags>
-        <tag>linux</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>架构与开源</title>
     <url>/2019/09/13/%E6%9E%B6%E6%9E%84%E4%B8%8E%E5%BC%80%E6%BA%90/</url>
     <content><![CDATA[<h4 id="1-关于架构与技术栈"><a href="#1-关于架构与技术栈" class="headerlink" title="1.关于架构与技术栈"></a>1.关于架构与技术栈</h4><p>技术架构一遍经过三个阶段，创建期、瓶颈期和退化期，就像下面这张图所画:<br><img src="/2019/09/13/架构与开源/arti.png" alt="avatar"><br>架构的选型要注意以下几点：功能预见性（功能性）、系统可用性、容错性、可靠性、性能够快、可伸缩、可维护性、安全性、成本、可度量性;<br>架构的选型的误区：“重复造轮子”、脱离实际业务需求、避免无意义的重构、功能完成是完事了、技术解决一切；</p>
@@ -1825,6 +1903,22 @@
 <p>开源协议的选择：</p>
 <p>GPL许可：是 GNU General Public License 的缩写，既GNU通用公共许可协议，是自由软件基金会（GNU）发布的一个软件首选许可，GPL许可一共发布的三个不版本，最新一版是2007年公布的GPLv3，最著名的使用GPL许可的软件就是大Linux。GPL许可的特点就是，使用GPL软件(包括类库)或者源代码（不管多少）的发布的新产品（包括新增源代码和可执行二进制文件）也必须使用GPL协议，也要公开源代码。由于这个许可具有一定的开源强制性，很多大公司对GPL许可的开源软件的选择还是比较谨慎的。GPL 协议有很多变种：比如LGPL, AGPL<br>LGPL : LGPL 是 GNU Lesser General Public License 的缩写 既GNU宽通用公共许可证，相比于GPL，其开源强制性弱一些，对商用软件更加友好，使用该许可的著名软件是Linux下的办公软件 OpenOffice。按照该许可协议的要求，以类库方式引入基于LGPL许可的软件可以不开源其衍生产品的源代码，单对于LGPL许可授权的源代码进行修改或者和修改相关的衍生代码则必须开源且使用LGPL许可进行授权。<br>AGPL：Affero General Public License，简称Affero GPL或AGPL，Affero 是一家公司名称，AGPL最初由该公司撰写，改许可是相当于GPL的增强版本，主要是对通过网络发布服务进行限制。GPL许可本身限制的是软件的“发布”行为，只要是使用了GPL许可的源代码或者二进制文件，必须开源且以同样以GPL许可进行授权，但到了互联网十点，很多互联网公司并不发布软件实体，而是提供“服务”，所以GPL的约束力就明显下降了，AGPL许可的目的就是填补这个所谓的“漏洞”，改许可要求，除了GPL本身的约束以外，所有基于AGPL许可软件提供网络服务，其相关源代码必须开源，所以在AGPL许可下，网络服务也被看做一种分发形式。所以很多互联网公司禁止使用 AGPL 许可的开源软件。<br>BSD许可：BSD（BSD是Berkly Software Distribution的简写）许可最初使用在加州大学伯克利分校发布的 BSD Unix 系统上，随着BSD系统的发展，BSD许可也随之沿用下来。相比于GPL 和 MPL 的严格要求，BSD 许可的的要求就非常宽松，给予使用者非常大的自由度。在该许可下的软件可以自由使用修改，也可以将修改后的代码再次发布，而且可以是按照闭源的私有软件进行发布，只需要在发布的软件和中保留BSD许可协议文件即可，但未经许可不能使用原作者或者机构名义进行宣传和推广。+<br>MPL许可：MPL是 The Mozilla Public License 的做些。是1998年初Netscape的 Mozilla小组为其开源软件项目设计的软件许可证。MPL许可允许经过MPL授权的源代码和其他授权的文件（包括源代码和二进制文件）混合使用，甚至剥和私有软件混合使用，这相当于GPL许可和BSD或类似许可的折中，其既有一定的开源强制性，又保留一定的私有权利。按照该许可要求，使用基于MPL授权源代码的部分，包括对MPL源代码的修改部分，必须保持MPL授权，这一点和GPL协议类似，但新增代码发布的可使用其他方式授权，甚至是私有授权，也可以比闭源的方式。<br>MIT 许可：MIT 许可是来自麻省理工学院（Massachusetts Institute of Technology, MIT），该许可被认为是最自由的开源协议之一，也是应用最为广泛的开源协议(据blackduck——一家对软件源代码进行合规审计的公司，统计，全球有将近1/3的开源软件使用MIT开源协议)，他的协议声明非常简短，他和BSD许可类似，允许自由修改发布基于MIT的代码和软件，只需要你的发行版里包含原始协议文件即可，其他无任何限制，及时使用原始作者的名义进行推广。使用MIT许可的著名软件有ssh 客户端软件jquery,Rails，putty 和 xwindows等。<br>Apache 2.0许可：改协议是由Apache软件基金会发布的许可，最初用在像Apache web Server这样Apache的内部软件中，2004年公布了2.0版本。其限制条件和BSD类似，允许自由修改和使用、发布软件，但要求保留版权，相比于BSD许可，该许可对版权要求的更细，每一个被修改后的原始文件都要著名原始版权声明。使用 Apache 2.0许可 著名的软件有 Android ,Apache web server，swift 等。</p>
 ]]></content>
+  </entry>
+  <entry>
+    <title>服务器上的MGMT管理口</title>
+    <url>/2021/04/15/%E6%9C%8D%E5%8A%A1%E5%99%A8%E4%B8%8A%E7%9A%84MGMT%E7%AE%A1%E7%90%86%E5%8F%A3/</url>
+    <content><![CDATA[<h3 id="浪潮服务器管理口地址配置参考"><a href="#浪潮服务器管理口地址配置参考" class="headerlink" title="浪潮服务器管理口地址配置参考"></a>浪潮服务器管理口地址配置参考</h3><p>开机启动按Delete键，进入BIOS集成IPMI 管理卡IP地址，在BIOS 中的“Server Mgmt”选项中选择“BMC networkConfiguration”</p>
+<p>将专用管理口的updata BMC LAN Configuration 改为yes 后下面的灰色选项会被激活，将Configuration Address source 配置项从默认的Dynamic 改为static 静态然后配置管理口IP为比如10.1.1.1<br>按F10 保存重启后将电脑与管理口相连，并将电脑的网口设置为与管理口同网段IP（如10.1.1.5），先ping一下是否ping通 </p>
+<p>进入位于windows控制面板的java控制台中，在安全选项下添加服务器管理口对应的IP地址 保存，然后通过火狐浏览器直接登陆即可。</p>
+<h3 id="使用远程管理端口（mgmt或ilo）进行服务器底层远程管理"><a href="#使用远程管理端口（mgmt或ilo）进行服务器底层远程管理" class="headerlink" title="使用远程管理端口（mgmt或ilo）进行服务器底层远程管理"></a>使用远程管理端口（mgmt或ilo）进行服务器底层远程管理</h3><p>服务器上集成的远程管理端口，它是一组芯片内部集成vxworks嵌入式操作系统，通过一个标准RJ45接口连接到工作环境的交换机。只要将服务器接入网络并且没有断开服务器的电源，不管HP服务器的处于何种状态（开机、关机、重启），都可以允许用户通过网络进行远程管理。简单来说，远程管理端口是高级别的远程KVM系统，可以将服务器的显示信息显示在本地，并且使用本地的键盘鼠标控制、操作服务器，并可以将本地的光盘镜像、文件夹作为虚拟光驱映射并加载到服务器中。使用远程管理端口，可以完成低层的BIOS设置、磁盘RAID配置、操作系统的安装等底层的工作，并且可以在完成系统安装后实现系统的远程控制与管理。</p>
+<h3 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h3><ol>
+<li><a href="https://www.cnblogs.com/huazai007/articles/7927644.html" target="_blank" rel="noopener">https://www.cnblogs.com/huazai007/articles/7927644.html</a></li>
+<li><a href="http://blog.sina.com.cn/s/blog_4c86552f0102wd39.html" target="_blank" rel="noopener">http://blog.sina.com.cn/s/blog_4c86552f0102wd39.html</a></li>
+</ol>
+]]></content>
+      <tags>
+        <tag>linux</tag>
+      </tags>
   </entry>
   <entry>
     <title>浅拷贝与深拷贝以及引用</title>
