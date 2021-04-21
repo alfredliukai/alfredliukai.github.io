@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="postgresql,">
+  <meta name="keywords" content="python,">
 
 
 
@@ -79,18 +79,18 @@
 
 
 
-<meta name="description" content="问题描述本文主要描述使用各种技术来删除PostgreSQL中的重复行。 准备示例数据首先创建一个表： 1234CREATE TABLE basket(    id SERIAL PRIMARY KEY,    fruit VARCHAR(50) NOT NULL); 接下来插入一些数据： 12345678INSERT INTO basket(fruit) values(&amp;apos;apple&amp;ap">
-<meta name="keywords" content="postgresql">
+<meta name="description" content="什么是装饰器装饰器（Decorator）相对简单，咱们先介绍它：“装饰器的功能是将被装饰的函数当作参数传递给与装饰器对应的函数（名称相同的函数），并返回包装后的被装饰的函数”，听起来有点绕，没关系，直接看示意图,其中 a 为与装饰器 @a 对应的函数， b 为装饰器修饰的函数，装饰器@a的作用是： 简而言之：@a 就是将 b 传递给 a()，并返回新的 b = a(b) 什么是闭包在通过Pytho">
+<meta name="keywords" content="python">
 <meta property="og:type" content="article">
-<meta property="og:title" content="postgresql中的重复行问题">
-<meta property="og:url" content="https://alfredliukai.github.io/2021/04/15/postgresql中的重复行问题/index.html">
+<meta property="og:title" content="python闭包和装饰器小结">
+<meta property="og:url" content="https://alfredliukai.github.io/2021/04/21/python闭包和装饰器小结/index.html">
 <meta property="og:site_name" content="昨非的个人网站">
-<meta property="og:description" content="问题描述本文主要描述使用各种技术来删除PostgreSQL中的重复行。 准备示例数据首先创建一个表： 1234CREATE TABLE basket(    id SERIAL PRIMARY KEY,    fruit VARCHAR(50) NOT NULL); 接下来插入一些数据： 12345678INSERT INTO basket(fruit) values(&amp;apos;apple&amp;ap">
+<meta property="og:description" content="什么是装饰器装饰器（Decorator）相对简单，咱们先介绍它：“装饰器的功能是将被装饰的函数当作参数传递给与装饰器对应的函数（名称相同的函数），并返回包装后的被装饰的函数”，听起来有点绕，没关系，直接看示意图,其中 a 为与装饰器 @a 对应的函数， b 为装饰器修饰的函数，装饰器@a的作用是： 简而言之：@a 就是将 b 传递给 a()，并返回新的 b = a(b) 什么是闭包在通过Pytho">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:updated_time" content="2021-04-15T08:22:52.000Z">
+<meta property="og:updated_time" content="2021-04-21T02:45:18.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="postgresql中的重复行问题">
-<meta name="twitter:description" content="问题描述本文主要描述使用各种技术来删除PostgreSQL中的重复行。 准备示例数据首先创建一个表： 1234CREATE TABLE basket(    id SERIAL PRIMARY KEY,    fruit VARCHAR(50) NOT NULL); 接下来插入一些数据： 12345678INSERT INTO basket(fruit) values(&amp;apos;apple&amp;ap">
+<meta name="twitter:title" content="python闭包和装饰器小结">
+<meta name="twitter:description" content="什么是装饰器装饰器（Decorator）相对简单，咱们先介绍它：“装饰器的功能是将被装饰的函数当作参数传递给与装饰器对应的函数（名称相同的函数），并返回包装后的被装饰的函数”，听起来有点绕，没关系，直接看示意图,其中 a 为与装饰器 @a 对应的函数， b 为装饰器修饰的函数，装饰器@a的作用是： 简而言之：@a 就是将 b 传递给 a()，并返回新的 b = a(b) 什么是闭包在通过Pytho">
 
 
 
@@ -120,13 +120,13 @@
 
 
 
-  <link rel="canonical" href="https://alfredliukai.github.io/2021/04/15/postgresql中的重复行问题/">
+  <link rel="canonical" href="https://alfredliukai.github.io/2021/04/21/python闭包和装饰器小结/">
 
 
 
 
 
-  <title>postgresql中的重复行问题 | 昨非的个人网站</title>
+  <title>python闭包和装饰器小结 | 昨非的个人网站</title>
   
 
 
@@ -285,7 +285,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://alfredliukai.github.io/2021/04/15/postgresql中的重复行问题/">
+    <link itemprop="mainEntityOfPage" href="https://alfredliukai.github.io/2021/04/21/python闭包和装饰器小结/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="昨非">
@@ -302,7 +302,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">postgresql中的重复行问题</h1>
+          <h1 class="post-title" itemprop="name headline">python闭包和装饰器小结</h1>
         
 
         <div class="post-meta">
@@ -314,8 +314,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2021-04-15T15:37:43+08:00">
-                2021-04-15
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2021-04-21T10:19:48+08:00">
+                2021-04-21
               </time>
             
 
@@ -352,17 +352,52 @@
       
 
       
-        <h3 id="问题描述"><a href="#问题描述" class="headerlink" title="问题描述"></a>问题描述</h3><p>本文主要描述使用各种技术来删除PostgreSQL中的重复行。</p>
-<h3 id="准备示例数据"><a href="#准备示例数据" class="headerlink" title="准备示例数据"></a>准备示例数据</h3><p>首先创建一个表：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">CREATE TABLE basket(</span><br><span class="line">    id SERIAL PRIMARY KEY,</span><br><span class="line">    fruit VARCHAR(50) NOT NULL</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
-<p>接下来插入一些数据：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">INSERT INTO basket(fruit) values(&apos;apple&apos;);</span><br><span class="line">INSERT INTO basket(fruit) values(&apos;apple&apos;);</span><br><span class="line"></span><br><span class="line">INSERT INTO basket(fruit) values(&apos;orange&apos;);</span><br><span class="line">INSERT INTO basket(fruit) values(&apos;orange&apos;);</span><br><span class="line">INSERT INTO basket(fruit) values(&apos;orange&apos;);</span><br><span class="line"></span><br><span class="line">INSERT INTO basket(fruit) values(&apos;banana&apos;);</span><br></pre></td></tr></table></figure>
-<h3 id="查找重复行"><a href="#查找重复行" class="headerlink" title="查找重复行"></a>查找重复行</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">SELECT</span><br><span class="line">    fruit,</span><br><span class="line">    COUNT( fruit )</span><br><span class="line">FROM</span><br><span class="line">    basket</span><br><span class="line">GROUP BY</span><br><span class="line">    fruit</span><br><span class="line">HAVING</span><br><span class="line">    COUNT( fruit )&gt; 1</span><br><span class="line">ORDER BY</span><br><span class="line">    fruit;</span><br></pre></td></tr></table></figure>
-<h3 id="使用-DELETE-USING-语句删除重复的行"><a href="#使用-DELETE-USING-语句删除重复的行" class="headerlink" title="使用 DELETE USING 语句删除重复的行"></a>使用 DELETE USING 语句删除重复的行</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">DELETE</span><br><span class="line">FROM</span><br><span class="line">    basket a</span><br><span class="line">        USING basket b</span><br><span class="line">WHERE</span><br><span class="line">    a.id &lt; b.id</span><br><span class="line">    AND a.fruit = b.fruit;</span><br></pre></td></tr></table></figure>
-<h3 id="使用子查询删除重复的行"><a href="#使用子查询删除重复的行" class="headerlink" title="使用子查询删除重复的行"></a>使用子查询删除重复的行</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">DELETE FROM basket</span><br><span class="line">WHERE id IN</span><br><span class="line">    (SELECT id</span><br><span class="line">    FROM </span><br><span class="line">        (SELECT id,</span><br><span class="line">         ROW_NUMBER() OVER( PARTITION BY fruit</span><br><span class="line">        ORDER BY  id ) AS row_num</span><br><span class="line">        FROM basket ) t</span><br><span class="line">        WHERE t.row_num &gt; 1 );</span><br></pre></td></tr></table></figure>
-<h3 id="ON和USING和NATURAL"><a href="#ON和USING和NATURAL" class="headerlink" title="ON和USING和NATURAL"></a>ON和USING和NATURAL</h3><p>ON子句是最常见的连接条件的类型：它接收一个和WHERE 子句相同的布尔表达式。如果两个分别来自T1和T2 的行在ON表达式上运算的结果为真，那么它们就算是匹配的行。</p>
-<p>USING是一个连接条件的缩写语法：它接收一个用逗号分隔的字段名列表，这些字段必须是连接表共有的并且其值必须相同。最后，JOIN USING 会将每一对相等的输入字段输出为一个字段，其后跟着所有其它字段。因此，USING (a, b, c) 等效于ON (t1.a = t2.a AND t1.b = t2.b AND t1.c = t2.c) 只不过是如果使用了ON，那么在结果里a, b和c 字段都会有两个，而用USING的时候就只会有一个（如果使用了SELECT * 的话，他们会优先发生）。</p>
-<p>最后，NATURAL是USING的缩写形式：它自动形成一个由两个表中同名的字段组成的USING列表(同名字段只出现一次)。如果没有同名的字段，NATURAL的行为会像CROSS JOIN。</p>
+        <h4 id="什么是装饰器"><a href="#什么是装饰器" class="headerlink" title="什么是装饰器"></a>什么是装饰器</h4><p>装饰器（Decorator）相对简单，咱们先介绍它：“装饰器的功能是将被装饰的函数当作参数传递给与装饰器对应的函数（名称相同的函数），并返回包装后的被装饰的函数”，听起来有点绕，没关系，直接看示意图,其中 a 为与装饰器 @a 对应的函数， b 为装饰器修饰的函数，装饰器@a的作用是：</p>
+<p>简而言之：@a 就是将 b 传递给 a()，并返回新的 b = a(b)</p>
+<h4 id="什么是闭包"><a href="#什么是闭包" class="headerlink" title="什么是闭包"></a>什么是闭包</h4><p>在通过Python的语言介绍一下，一个闭包就是你调用了一个函数A，这个函数A返回了一个函数B给你。这个返回的函数B就叫做闭包。你在调用函数A的时候传递的参数就是自由变量。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">def func(name):</span><br><span class="line">    def inner_func(age):</span><br><span class="line">        print &apos;name:&apos;, name, &apos;age:&apos;, age</span><br><span class="line">    return inner_func</span><br><span class="line"></span><br><span class="line">bb = func(&apos;the5fire&apos;)bb(26) # &gt;&gt;&gt; name: the5fire age: 26</span><br></pre></td></tr></table></figure>
+<p>这里面调用func的时候就产生了一个闭包——inner_func,并且该闭包持有自由变量——name，因此这也意味着，当函数func的生命周期结束之后，name这个变量依然存在，因为它被闭包引用了，所以不会被回收。</p>
+<p>另外再说一点，闭包并不是Python中特有的概念，所有把函数做为一等公民的语言均有闭包的概念。不过像Java这样以class为一等公民的语言中也可以使用闭包，只是它得用类或接口来实现。</p>
+<h4 id="nonlocal-语句"><a href="#nonlocal-语句" class="headerlink" title="nonlocal 语句"></a>nonlocal 语句</h4><p>在 python 的函数内，可以直接引用外部变量，但不能改写外部变量，因此如果在闭包中直接改写父函数的变量，就会发生错误：</p>
+<p>在 python 2 中可以在函数内使用 global 语句，但全局变量在任何语言中都不被提倡，因为它很难控制，python 3 中引入了 nonlocal 语句解决了这个问题：</p>
+<p>Nonlocal 与 global 的区别在于 nonlocal 语句会去搜寻本地变量与全局变量之间的变量，其会优先寻找层级关系与闭包作用域最近的外部变量。</p>
+<h4 id="闭包与装饰器"><a href="#闭包与装饰器" class="headerlink" title="闭包与装饰器"></a>闭包与装饰器</h4><p>上面已经简单演示了装饰器的功能，事实上，装饰器就是一种的闭包的应用，只不过其传递的是函数：</p>
+<p>@makeitalic 装饰器将函数 hello 传递给函数 makeitalic，函数 makeitalic 执行完毕后返回被包装后的 hello 函数，而这个过程其实就是通过闭包实现的。@makebold 也是如此，只不过其传递的是 @makeitalic 装饰过的 hello 函数，因此最后的执行结果<b> 在 <i> 外层，这个功能如果不用装饰器，其实就是显式的使用闭包：</i></b></p>
+<h4 id="闭包的作用"><a href="#闭包的作用" class="headerlink" title="闭包的作用"></a>闭包的作用</h4><p>闭包的最大特点是可以将父函数的变量与内部函数绑定，并返回绑定变量后的函数（也即闭包），此时即便生成闭包的环境（父函数）已经释放，闭包仍然存在，这个过程很像类（父函数）生成实例（闭包），不同的是父函数只在调用时执行，执行完毕后其环境就会释放，而类则在文件执行时创建，一般程序执行完毕后作用域才释放，因此对一些需要重用的功能且不足以定义为类的行为，使用闭包会比使用类占用更少的资源，且更轻巧灵活，现举一例：假设我们仅仅想打印出各类动物的叫声，分别以类和闭包来实现：</p>
+<p>可以看到输出结果是完全一样的，但显然类的实现相对繁琐，且这里只是想输出一下动物的叫声，定义一个 Animal 类未免小题大做，而且 voice 函数在执行完毕后，其作用域就已经释放，但 Animal 类及其实例 dog 的相应属性却一直贮存在内存中：</p>
+<p>而这种占用对于实现该功能后，则是没有必要的。除此之外，闭包还有很多其他功能，比如用于封装等，另外，闭包有效的减少了函数参数的数目，这对并行计算非常有价值，比如可以让每台电脑负责一个函数，然后串起来，实现流水化的作业等。</p>
+<h4 id="装饰器常用写法"><a href="#装饰器常用写法" class="headerlink" title="装饰器常用写法"></a>装饰器常用写法</h4><ol>
+<li>普通装饰器</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">def decorator(func):</span><br><span class="line">    def wrapper(*args, **kw):</span><br><span class="line">        return func()</span><br><span class="line">    return wrapper</span><br><span class="line"></span><br><span class="line">@decorator</span><br><span class="line">def function():</span><br><span class="line">    print(&quot;hello, decorator&quot;)</span><br></pre></td></tr></table></figure>
+<p>时间计算</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">def timer(func):</span><br><span class="line">    def wrapper(*args, **kw):</span><br><span class="line">        t1=time.time()</span><br><span class="line">        # 这是函数真正执行的地方</span><br><span class="line">        func(*args, **kw)</span><br><span class="line">        t2=time.time()</span><br><span class="line"></span><br><span class="line">        # 计算下时长</span><br><span class="line">        cost_time = t2-t1 </span><br><span class="line">        print(&quot;花费时间：&#123;&#125;秒&quot;.format(cost_time))</span><br><span class="line">    return wrapper</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>带参数的装饰器</li>
+</ol>
+<blockquote>
+<p>装饰器本身是一个函数，做为一个函数，如果不能传参，那这个函数的功能就会很受限，只能执行固定的逻辑。这意味着，如果装饰器的逻辑代码的执行需要根据不同场景进行调整，若不能传参的话，我们就要写两个装饰器，这显然是不合理的。比如我们要实现一个可以定时发送邮件的任务（一分钟发送一封），定时进行时间同步的任务（一天同步一次），就可以自己实现一个periodic_task （定时任务）的装饰器，这个装饰器可以接收一个时间间隔的参数，间隔多长时间执行一次任务。</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">@periodic_task(spacing=60)</span><br><span class="line">def send_mail():</span><br><span class="line">     pass</span><br><span class="line"></span><br><span class="line">@periodic_task(spacing=86400)</span><br><span class="line">def ntp()</span><br><span class="line">    pass</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">def say_hello(contry):</span><br><span class="line">    def wrapper(func):</span><br><span class="line">        def deco(*args, **kwargs):</span><br><span class="line">            if contry == &quot;china&quot;:</span><br><span class="line">                print(&quot;你好!&quot;)</span><br><span class="line">            elif contry == &quot;america&quot;:</span><br><span class="line">                print(&apos;hello.&apos;)</span><br><span class="line">            else:</span><br><span class="line">                return</span><br><span class="line"></span><br><span class="line">            # 真正执行函数的地方</span><br><span class="line">            func(*args, **kwargs)</span><br><span class="line">        return deco</span><br><span class="line">    return wrapper</span><br></pre></td></tr></table></figure>
+<ol start="3">
+<li>不带参数的类装饰器</li>
+</ol>
+<p>基于类装饰器的实现，必须实现 call 和 <strong>init</strong>两个内置函数。 init ：接收被装饰函数 call 实现装饰逻辑。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">class logger(object):</span><br><span class="line">    def __init__(self, func):</span><br><span class="line">        self.func = func</span><br><span class="line"></span><br><span class="line">    def __call__(self, *args, **kwargs):</span><br><span class="line">        print(&quot;[INFO]: the function &#123;func&#125;() is running...&quot;\</span><br><span class="line">            .format(func=self.func.__name__))</span><br><span class="line">        return self.func(*args, **kwargs)</span><br><span class="line"></span><br><span class="line">@logger</span><br><span class="line">def say(something):</span><br><span class="line">    print(&quot;say &#123;&#125;!&quot;.format(something))</span><br><span class="line"></span><br><span class="line">say(&quot;hello&quot;)</span><br></pre></td></tr></table></figure>
+<ol start="4">
+<li>带参数的类装饰器</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">class logger(object):</span><br><span class="line">    def __init__(self, level=&apos;INFO&apos;):</span><br><span class="line">        self.level = level</span><br><span class="line"></span><br><span class="line">    def __call__(self, func): # 接受函数</span><br><span class="line">        def wrapper(*args, **kwargs):</span><br><span class="line">            print(&quot;[&#123;level&#125;]: the function &#123;func&#125;() is running...&quot;\</span><br><span class="line">                .format(level=self.level, func=func.__name__))</span><br><span class="line">            func(*args, **kwargs)</span><br><span class="line">        return wrapper  #返回函数</span><br><span class="line"></span><br><span class="line">@logger(level=&apos;WARNING&apos;)</span><br><span class="line">def say(something):</span><br><span class="line">    print(&quot;say &#123;&#125;!&quot;.format(something))</span><br><span class="line"></span><br><span class="line">say(&quot;hello&quot;)</span><br></pre></td></tr></table></figure>
+<ol start="5">
+<li>使用偏函数与类实现装饰器</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">import time</span><br><span class="line">import functools</span><br><span class="line"></span><br><span class="line">class DelayFunc:</span><br><span class="line">    def __init__(self,  duration, func):</span><br><span class="line">        self.duration = duration</span><br><span class="line">        self.func = func</span><br><span class="line"></span><br><span class="line">    def __call__(self, *args, **kwargs):</span><br><span class="line">        print(f&apos;Wait for &#123;self.duration&#125; seconds...&apos;)</span><br><span class="line">        time.sleep(self.duration)</span><br><span class="line">        return self.func(*args, **kwargs)</span><br><span class="line"></span><br><span class="line">    def eager_call(self, *args, **kwargs):</span><br><span class="line">        print(&apos;Call without delay&apos;)</span><br><span class="line">        return self.func(*args, **kwargs)</span><br><span class="line"></span><br><span class="line">def delay(duration):</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line">    装饰器：推迟某个函数的执行。</span><br><span class="line">    同时提供 .eager_call 方法立即执行</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line">    # 此处为了避免定义额外函数，</span><br><span class="line">    # 直接使用 functools.partial 帮助构造 DelayFunc 实例</span><br><span class="line">    return functools.partial(DelayFunc, duration)</span><br><span class="line"></span><br><span class="line">我们的业务函数很简单，就是相加</span><br><span class="line"></span><br><span class="line">@delay(duration=2)</span><br><span class="line">def add(a, b):</span><br><span class="line">    return a+b</span><br></pre></td></tr></table></figure>
+<h4 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h4><ol>
+<li><a href="https://www.cnblogs.com/l520/p/10254784.html" target="_blank" rel="noopener">https://www.cnblogs.com/l520/p/10254784.html</a></li>
+<li><a href="https://www.cnblogs.com/3me-linux/p/6761635.html" target="_blank" rel="noopener">https://www.cnblogs.com/3me-linux/p/6761635.html</a> </li>
+<li><a href="https://blog.csdn.net/weixin_46457946/article/details/111939076" target="_blank" rel="noopener">https://blog.csdn.net/weixin_46457946/article/details/111939076</a></li>
+</ol>
 
       
     </div>
@@ -380,7 +415,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/postgresql/" rel="tag"># postgresql</a>
+            <a href="/tags/python/" rel="tag"># python</a>
           
         </div>
       
@@ -393,8 +428,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2021/04/14/sqlarchemy和flask-sqlalchemy使用区别/" rel="next" title="sqlarchemy和flask_sqlalchemy使用区别">
-                <i class="fa fa-chevron-left"></i> sqlarchemy和flask_sqlalchemy使用区别
+              <a href="/2021/04/20/postgresql中死锁问题排查/" rel="next" title="postgresql中死锁问题排查">
+                <i class="fa fa-chevron-left"></i> postgresql中死锁问题排查
               </a>
             
           </div>
@@ -402,10 +437,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2021/04/15/ip命令小结/" rel="prev" title="ip命令小结">
-                ip命令小结 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -537,7 +568,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#问题描述"><span class="nav-number">1.</span> <span class="nav-text">问题描述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#准备示例数据"><span class="nav-number">2.</span> <span class="nav-text">准备示例数据</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#查找重复行"><span class="nav-number">3.</span> <span class="nav-text">查找重复行</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用-DELETE-USING-语句删除重复的行"><span class="nav-number">4.</span> <span class="nav-text">使用 DELETE USING 语句删除重复的行</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用子查询删除重复的行"><span class="nav-number">5.</span> <span class="nav-text">使用子查询删除重复的行</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ON和USING和NATURAL"><span class="nav-number">6.</span> <span class="nav-text">ON和USING和NATURAL</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#什么是装饰器"><span class="nav-number">1.</span> <span class="nav-text">什么是装饰器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#什么是闭包"><span class="nav-number">2.</span> <span class="nav-text">什么是闭包</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#nonlocal-语句"><span class="nav-number">3.</span> <span class="nav-text">nonlocal 语句</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#闭包与装饰器"><span class="nav-number">4.</span> <span class="nav-text">闭包与装饰器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#闭包的作用"><span class="nav-number">5.</span> <span class="nav-text">闭包的作用</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#装饰器常用写法"><span class="nav-number">6.</span> <span class="nav-text">装饰器常用写法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#参考文献"><span class="nav-number">7.</span> <span class="nav-text">参考文献</span></a></li></ol></div>
             
 
           </div>
