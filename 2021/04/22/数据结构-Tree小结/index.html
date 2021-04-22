@@ -1,0 +1,1144 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh_CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="数据结构,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="树的基本操作123456789101112131415161718192021222324252627282930313233343536373839class TreeNode(object):    def __init__(self, value):        self.value = value        self.left = None        self.right = N">
+<meta name="keywords" content="数据结构">
+<meta property="og:type" content="article">
+<meta property="og:title" content="数据结构-Tree小结">
+<meta property="og:url" content="https://alfredliukai.github.io/2021/04/22/数据结构-Tree小结/index.html">
+<meta property="og:site_name" content="昨非的个人网站">
+<meta property="og:description" content="树的基本操作123456789101112131415161718192021222324252627282930313233343536373839class TreeNode(object):    def __init__(self, value):        self.value = value        self.left = None        self.right = N">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://alfredliukai.github.io/2021/04/22/数据结构-Tree小结/tree1.png">
+<meta property="og:image" content="https://alfredliukai.github.io/2021/04/22/数据结构-Tree小结/red_tree.png">
+<meta property="og:image" content="https://alfredliukai.github.io/2021/04/22/数据结构-Tree小结/tree2.png">
+<meta property="og:image" content="https://alfredliukai.github.io/2021/04/22/数据结构-Tree小结/tree3.png">
+<meta property="og:updated_time" content="2021-04-22T14:04:02.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="数据结构-Tree小结">
+<meta name="twitter:description" content="树的基本操作123456789101112131415161718192021222324252627282930313233343536373839class TreeNode(object):    def __init__(self, value):        self.value = value        self.left = None        self.right = N">
+<meta name="twitter:image" content="https://alfredliukai.github.io/2021/04/22/数据结构-Tree小结/tree1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://alfredliukai.github.io/2021/04/22/数据结构-Tree小结/">
+
+
+
+
+
+  <title>数据结构-Tree小结 | 昨非的个人网站</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh_CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">昨非的个人网站</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-首页">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-标签">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-归档">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-关于">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>
+            
+            Search
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="Searching..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://alfredliukai.github.io/2021/04/22/数据结构-Tree小结/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="昨非">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="昨非的个人网站">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">数据结构-Tree小结</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2021-04-22T10:54:51+08:00">
+                2021-04-22
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h4 id="树的基本操作"><a href="#树的基本操作" class="headerlink" title="树的基本操作"></a>树的基本操作</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">class TreeNode(object):</span><br><span class="line">    def __init__(self, value):</span><br><span class="line">        self.value = value</span><br><span class="line">        self.left = None</span><br><span class="line">        self.right = None</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">class OperationTree(object):</span><br><span class="line"></span><br><span class="line">    def query(self, root, data):</span><br><span class="line">        if root is None:</span><br><span class="line">            return None</span><br><span class="line">        if root.value == data:</span><br><span class="line">            return root</span><br><span class="line">        elif root.left:</span><br><span class="line">            return self.query(root.left, data)</span><br><span class="line">        elif root.right:</span><br><span class="line">            return self.query(root.right, data)</span><br><span class="line"></span><br><span class="line">    def pre_order(self, root):</span><br><span class="line">        if root is None:</span><br><span class="line">            return None</span><br><span class="line">        print(root.value, end=&quot; &quot;)</span><br><span class="line">        self.pre_order(root.left)</span><br><span class="line">        self.pre_order(root.right)</span><br><span class="line"></span><br><span class="line">    def in_order(self, root):</span><br><span class="line">        if root is None:</span><br><span class="line">            return None</span><br><span class="line">        self.in_order(root.left)</span><br><span class="line">        print(root.value, end=&quot; &quot;)</span><br><span class="line">        self.in_order(root.right)</span><br><span class="line"></span><br><span class="line">    def back_order(self, root):</span><br><span class="line">        if root is None:</span><br><span class="line">            return None</span><br><span class="line">        self.back_order(root.left)</span><br><span class="line">        self.back_order(root.right)</span><br><span class="line">        print(root.value, end=&quot; &quot;)</span><br></pre></td></tr></table></figure>
+<h4 id="二叉查找树-BST"><a href="#二叉查找树-BST" class="headerlink" title="二叉查找树(BST)"></a>二叉查找树(BST)</h4><p>二叉查找树，Binary Search Tree，或者称为二叉搜索树。</p>
+<p><strong>性质：</strong></p>
+<ul>
+<li>若任意节点的左子树不空，则左子树上所有节点的值均小于它的根节点的值；</li>
+<li>若任意节点的右子树不空，则右子树上所有节点的值均大于或等于它的根节点的值；</li>
+<li>任意节点的左、右子树也分别为二叉查找树；</li>
+</ul>
+<p>二叉查找树相比于其他数据结构的优势在于查找、插入的时间复杂度较低。为 O(logn)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br></pre></td><td class="code"><pre><span class="line">class TreeNode(object):</span><br><span class="line"></span><br><span class="line">    def __init__(self, value):</span><br><span class="line">        self.value = value</span><br><span class="line">        self.left = None</span><br><span class="line">        self.right = None</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">class BinarySearchTree(object):</span><br><span class="line"></span><br><span class="line">    def __init__(self, root):</span><br><span class="line">        self.root = root</span><br><span class="line"></span><br><span class="line">    def depth(self, root):</span><br><span class="line">        if root is None:</span><br><span class="line">            return None</span><br><span class="line">        else:</span><br><span class="line">            return 1 + max(self.depth(root.left), self.depth(root.right))</span><br><span class="line"></span><br><span class="line">    def insert(self, root, value):</span><br><span class="line"></span><br><span class="line">        if root is None:</span><br><span class="line">            root = TreeNode(value)</span><br><span class="line">        elif root.value &gt; value:</span><br><span class="line">            root.left = self.insert(root.left, value)</span><br><span class="line">        elif root.value &lt; value:</span><br><span class="line">            root.right = self.insert(root.right, value)</span><br><span class="line">        return root</span><br><span class="line"></span><br><span class="line">    def search1(self, root, value):</span><br><span class="line">        if root is None:</span><br><span class="line">            return None</span><br><span class="line">        if root.value == value:</span><br><span class="line">            return root</span><br><span class="line">        elif root.value &lt; value:</span><br><span class="line">            return self.search1(root.right, value)</span><br><span class="line">        elif root.value &gt; value:</span><br><span class="line">            return self.search1(root.left, value)</span><br><span class="line"></span><br><span class="line">    def search2(self, root, value):</span><br><span class="line">        while root is not None and root.value != value:</span><br><span class="line">            if root.value &gt; value:</span><br><span class="line">                root = root.left</span><br><span class="line">            elif root.value &lt; value:</span><br><span class="line">                root = root.right</span><br><span class="line">        return root</span><br><span class="line"></span><br><span class="line">    def max_value1(self, root):</span><br><span class="line">        if root is None:</span><br><span class="line">            return None</span><br><span class="line"></span><br><span class="line">        if root.right is None:</span><br><span class="line">            return root.value</span><br><span class="line">        else:</span><br><span class="line">            return self.max_value1(root.right)</span><br><span class="line"></span><br><span class="line">    def max_value2(self, root):</span><br><span class="line">        if root is None:</span><br><span class="line">            return None</span><br><span class="line"></span><br><span class="line">        while root.right is not None:</span><br><span class="line">            root = root.right</span><br><span class="line">        return root.value</span><br><span class="line"></span><br><span class="line">    def min_value1(self, root):</span><br><span class="line">        if root is None:</span><br><span class="line">            return None</span><br><span class="line"></span><br><span class="line">        if root.left is None:</span><br><span class="line">            return root.value</span><br><span class="line">        else:</span><br><span class="line">            return self.min_value1(root.left)</span><br><span class="line"></span><br><span class="line">    def min_value2(self, root):</span><br><span class="line">        if root is None:</span><br><span class="line">            return None</span><br><span class="line"></span><br><span class="line">        while root.left is not None:</span><br><span class="line">            root = root.left</span><br><span class="line">        return root.value</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">if __name__ == &apos;__main__&apos;:</span><br><span class="line">    a = TreeNode(15)</span><br><span class="line">    b = TreeNode(6)</span><br><span class="line">    c = TreeNode(18)</span><br><span class="line">    d = TreeNode(4)</span><br><span class="line">    e = TreeNode(8)</span><br><span class="line">    f = TreeNode(17)</span><br><span class="line">    g = TreeNode(20)</span><br><span class="line">    h = TreeNode(13)</span><br><span class="line">    i = TreeNode(9)</span><br><span class="line">    a.left = b</span><br><span class="line">    a.right = c</span><br><span class="line">    b.left = d</span><br><span class="line">    b.right = e</span><br><span class="line">    c.left = f</span><br><span class="line">    c.right = g</span><br><span class="line">    e.right = h</span><br><span class="line">    h.left = i</span><br><span class="line">    bst = BinarySearchTree(a)</span><br><span class="line">    print(bst.search1(a, 13).value)</span><br><span class="line">    print(bst.search2(a, 13))</span><br><span class="line">    print(bst.insert(a, 23))</span><br><span class="line">    print(bst.max_value1(a))</span><br><span class="line">    print(bst.max_value2(a))</span><br><span class="line">    print(bst.min_value1(a))</span><br><span class="line">    print(bst.min_value2(a))</span><br></pre></td></tr></table></figure>
+<h4 id="平衡二叉树-AVL-：旋转耗时"><a href="#平衡二叉树-AVL-：旋转耗时" class="headerlink" title="平衡二叉树(AVL)：旋转耗时"></a>平衡二叉树(AVL)：旋转耗时</h4><p>在AVL树中任何节点的两个子树的高度最大差别为1，所以它也被称为高度平衡树。增加和删除可能需要通过一次或多次树旋转来重新平衡这个树。</p>
+<p>AVL树本质上还是一棵二叉搜索树，它的特点是：</p>
+<ol>
+<li>本身首先是一棵二叉搜索树。</li>
+<li>带有平衡条件：每个结点的左右子树的高度之差的绝对值（平衡因子）最多为1。</li>
+</ol>
+<p>也就是说，AVL树，本质上是带了平衡功能的二叉查找树（二叉排序树，二叉搜索树）。</p>
+<p><strong>旋转</strong></p>
+<ul>
+<li>单向右旋平衡处理LL：由于在<em>a的左子树根结点的左子树上插入结点，</em>a的平衡因子由1增至2，致使以*a为根的子树失去平衡，则需进行一次右旋转操作；</li>
+<li>单向左旋平衡处理RR：由于在<em>a的右子树根结点的右子树上插入结点，</em>a的平衡因子由-1变为-2，致使以*a为根的子树失去平衡，则需进行一次左旋转操作；</li>
+<li>双向旋转（先左后右）平衡处理LR：由于在<em>a的左子树根结点的右子树上插入结点，</em>a的平衡因子由1增至2，致使以*a为根的子树失去平衡，则需进行两次旋转（先左旋后右旋）操作。</li>
+<li>双向旋转（先右后左）平衡处理RL：由于在<em>a的右子树根结点的左子树上插入结点，</em>a的平衡因子由-1变为-2，致使以*a为根的子树失去平衡，则需进行两次旋转（先右旋后左旋）操作。</li>
+</ul>
+<p><img src="/2021/04/22/数据结构-Tree小结/tree1.png" alt="avatar"></p>
+<p>查找、插入和删除在平均和最坏情况下的时间复杂度都是O ( log ⁡ n ) {\displaystyle O(\log {n})}O(logn).</p>
+<p>由于旋转的耗时，AVL树在删除数据时效率很低；在删除操作较多时，维护平衡所需的代价可能高于其带来的好处，因此AVL实际使用并不广泛。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br></pre></td><td class="code"><pre><span class="line">class TreeNode(object):</span><br><span class="line"></span><br><span class="line">    def __init__(self, value):</span><br><span class="line">        self.value = value</span><br><span class="line">        self.left = None</span><br><span class="line">        self.right = None</span><br><span class="line">        self.height = 1</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">class AVLTree(object):</span><br><span class="line"></span><br><span class="line">    def get_height(self, root):</span><br><span class="line">        if root is None:</span><br><span class="line">            return 0</span><br><span class="line"></span><br><span class="line">        return root.height</span><br><span class="line"></span><br><span class="line">    def get_balance(self, root):</span><br><span class="line"></span><br><span class="line">        if root is None:</span><br><span class="line">            return 0</span><br><span class="line"></span><br><span class="line">        return self.get_height(root.left) - self.get_height(root.right)</span><br><span class="line"></span><br><span class="line">    def right_rotate(self, root):</span><br><span class="line"></span><br><span class="line">        new_root = root.left</span><br><span class="line">        new_right = new_root.right</span><br><span class="line"></span><br><span class="line">        new_root.right = root</span><br><span class="line">        root.left = new_right</span><br><span class="line"></span><br><span class="line">        root.height = 1 + max(self.get_height(root.left), self.get_height(root.right))</span><br><span class="line">        new_root.height = 1 + max(self.get_height(root.left), self.get_height(root.right))</span><br><span class="line"></span><br><span class="line">        return new_root</span><br><span class="line"></span><br><span class="line">    def left_rotate(self, root):</span><br><span class="line"></span><br><span class="line">        new_root = root.right</span><br><span class="line">        new_left = new_root.left</span><br><span class="line"></span><br><span class="line">        new_root.left = root</span><br><span class="line">        root.right = new_left</span><br><span class="line"></span><br><span class="line">        root.height = 1 + max(self.get_height(root.left), self.get_height(root.right))</span><br><span class="line">        new_root.height = 1 + max(self.get_height(root.left), self.get_height(root.right))</span><br><span class="line"></span><br><span class="line">        return new_root</span><br><span class="line"></span><br><span class="line">    def insert(self, root, value):</span><br><span class="line"></span><br><span class="line">        if root is None:</span><br><span class="line">            root = TreeNode(value)</span><br><span class="line"></span><br><span class="line">        if root.value &lt; value:</span><br><span class="line">            root.right = self.insert(root.right, value)</span><br><span class="line">        elif root.value &gt; value:</span><br><span class="line">            root.left = self.insert(root.left, value)</span><br><span class="line"></span><br><span class="line">        root.height = 1 + max(self.get_height(root.left), self.get_height(root.right))</span><br><span class="line"></span><br><span class="line">        balance = self.get_balance(root)</span><br><span class="line"></span><br><span class="line">        if balance &gt; 1 and value &lt; root.left.value:</span><br><span class="line">            return self.right_rotate(root)</span><br><span class="line"></span><br><span class="line">        if balance &lt; -1 and value &gt; root.right.value:</span><br><span class="line">            return self.left_rotate(root)</span><br><span class="line"></span><br><span class="line">        if balance &gt; 1 and value &gt; root.left.value:</span><br><span class="line">            root.left = self.left_rotate(root.left)</span><br><span class="line">            return self.right_rotate(root)</span><br><span class="line"></span><br><span class="line">        if balance &lt; -1 and value &lt; root.right.value:</span><br><span class="line">            root.right = self.right_rotate(root.right)</span><br><span class="line">            return self.left_rotate(root)</span><br></pre></td></tr></table></figure>
+<h4 id="2-3-4树"><a href="#2-3-4树" class="headerlink" title="2-3-4树"></a>2-3-4树</h4><p>2-3-4树是一种阶为4的B树。它是一种自平衡的数据结构，可以保证在O(lgn)的时间内完成查找、插入和删除操作。它主要满足以下性质：</p>
+<p>（1）每个节点每个节点有1、2或3个key，分别称为2（孩子）节点，3（孩子）节点，4（孩子）节点。</p>
+<p>（2）所有叶子节点到根节点的长度一致（也就是说叶子节点都在同一层）。</p>
+<p>（3）每个节点的key从左到右保持了从小到大的顺序，两个key之间的子树中所有的</p>
+<p>key一定大于它的父节点的左key，小于父节点的右key。   </p>
+<h4 id="红黑树：树太高"><a href="#红黑树：树太高" class="headerlink" title="红黑树：树太高"></a>红黑树：树太高</h4><p>2-3-4树和红黑树是完全等价的，由于绝大多数编程语言直接实现2-3-4树会非常繁琐，所以一般是通过实现红黑树来实现替代2-3-4树，而红黑树本也同样保证在O(lgn)的时间内完成查找、插入和删除操作。</p>
+<p>红黑树是每个节点都带有颜色属性的平衡二叉查找树 ，颜色为红色或黑色。除了二叉查找树一般要求以外，对于任何有效的红黑树我们增加了如下的额外要求:</p>
+<ul>
+<li>节点是要么红色或要么是黑色。</li>
+<li>根一定是黑色节点。</li>
+<li>每个叶子结点都带有两个空的黑色结点（称之为NIL节点，它又被称为黑哨兵）。</li>
+<li>每个红色节点的两个子节点都是黑色（或者说从每个叶子到根的所有路径上不能有两个连续的红色节点）。</li>
+<li>从任一节点到它所能到达得叶子节点的所有简单路径都包含相同数目的黑色节点。</li>
+</ul>
+<p>这些性质保证了根节点到任意叶子节点的路径长度，最多相差一半（因为路径上的黑色节点相等，差别只是不能相邻的红色节点个数），所以红黑树是一个基本平衡的二叉搜索树，它没有AVL树那么绝对平衡，但是同样的关键字组成的红黑树相比AVL旋转操作要少，而且删除操作也比AVL树效率更高，实际应用效果也比AVL树更出众。当然红黑树的具体实现也复杂的多。</p>
+<p><img src="/2021/04/22/数据结构-Tree小结/red_tree.png" alt="avatar"></p>
+<h4 id="B树"><a href="#B树" class="headerlink" title="B树"></a>B树</h4><p>一个m阶的B树具有如下几个特征：B树中所有结点的孩子结点最大值称为B树的阶，通常用m表示。一个结点有k个孩子时，必有k-1个关键字才能将子树中所有关键字划分为k个子集。</p>
+<ol>
+<li>根结点至少有两个子女。</li>
+<li>每个中间节点都包含k-1个元素和k个孩子，其中 ceil（m/2） ≤ k ≤ m</li>
+<li>每一个叶子节点都包含k-1个元素，其中 ceil（m/2） ≤ k ≤ m</li>
+<li>所有的叶子结点都位于同一层。</li>
+<li>每个节点中的元素从小到大排列，节点当中k-1个元素正好是k个孩子包含的元素的值域划分</li>
+<li>每个结点的结构为：（n，A0，K1，A1，K2，A2，…  ，Kn，An）。其中，Ki(1≤i≤n)为关键字，且Ki&lt;Ki+1(1≤i≤n-1)。<br>Ai(0≤i≤n)为指向子树根结点的指针。且Ai所指子树所有结点中的关键字均小于Ki+1。<br>n为结点中关键字的个数，满足ceil(m/2)-1≤n≤m-1。</li>
+</ol>
+<p><strong>查询</strong></p>
+<p><img src="/2021/04/22/数据结构-Tree小结/tree2.png" alt="avatar"></p>
+<p>以上图为例：若查询的数值为５： </p>
+<p>第一次磁盘IO：在内存中定位（与17、35比较），比17小，左子树；<br>第二次磁盘IO：在内存中定位（与８、12比较），比８小，左子树；<br>第三次磁盘IO：在内存中定位（与3、5比较），找到5，终止。 </p>
+<p>整个过程中，我们可以看出：比较的次数并不比二叉查找树少，尤其适当某一节点中的数据很多时，但是磁盘IO的次数却是大大减少。比较是在内存中进行的，相比于磁盘IO的速度，比较的耗时几乎可以忽略。所以当树的高度足够低的话，就可以极大的提高效率。相比之下，节点中的元素多点也没关系，仅仅是多了几次内存交互而已，只要不超过磁盘页的大小即可。</p>
+<p><strong>插入</strong></p>
+<p>对高度为ｋ的m阶B树，新结点一般是插在叶子层。通过检索可以确定关键码应插入的结点位置。然后分两种情况讨论： </p>
+<ol>
+<li>若该结点中关键码个数小于m-1，则直接插入即可。 </li>
+<li>若该结点中关键码个数等于m-1，则将引起结点的分裂。以中间关键码为界将结点一分为二，产生一个新结点，并把中间关键码插入到父结点(ｋ-1层)中 </li>
+</ol>
+<p>重复上述工作，最坏情况一直分裂到根结点，建立一个新的根结点，整个B树增加一层。</p>
+<h4 id="B-树"><a href="#B-树" class="headerlink" title="B+树"></a>B+树</h4><p>B+树是对B树的一种变形，与B树的差异在于：</p>
+<p>一个m阶的B+树具有如下几个特征：</p>
+<ol>
+<li>有k个子树的中间节点包含有k个元素（B树中是k-1个元素），每个元素不保存数据，只用来索引，所有数据都保存在叶子节点。</li>
+<li>所有的叶子结点中包含了全部元素的信息，及指向含这些元素记录的指针，且叶子结点本身依关键字的大小自小而大顺序链接。</li>
+<li>所有的中间节点元素都同时存在于子节点，在子节点元素中是最大（或最小）元素。</li>
+</ol>
+<p><img src="/2021/04/22/数据结构-Tree小结/tree3.png" alt="avatar"></p>
+<p><strong>插入</strong></p>
+<p>B+树的插入与B树的插入过程类似。不同的是B+树在叶结点上进行，如果叶结点中的关键码个数超过m，就必须分裂成关键码数目大致相同的两个结点，并保证上层结点中有这两个结点的最大关键码。</p>
+<p><strong>删除</strong></p>
+<p>B+树中的关键码在叶结点层删除后，其在上层的复本可以保留，作为一个”分解关键码”存在，如果因为删除而造成结点中关键码数小于ceil(m/2)，其处理过程与B-树的处理一样。在此，我就不多做介绍了。</p>
+<p>B+树相比B树的优势： </p>
+<ol>
+<li>单一节点存储更多的元素，使得查询的IO次数更少； </li>
+<li>所有查询都要查找到叶子节点，查询性能稳定； </li>
+<li>所有叶子节点形成有序链表，便于范围查询。</li>
+</ol>
+<h4 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h4><ol>
+<li><a href="https://www.cnblogs.com/lliuye/p/9118591.html" target="_blank" rel="noopener">https://www.cnblogs.com/lliuye/p/9118591.html</a></li>
+<li><a href="https://blog.csdn.net/qq_34364995/article/details/80787193" target="_blank" rel="noopener">https://blog.csdn.net/qq_34364995/article/details/80787193</a></li>
+<li><a href="https://www.jb51.net/article/166572.htm" target="_blank" rel="noopener">https://www.jb51.net/article/166572.htm</a></li>
+<li><a href="https://blog.csdn.net/rosefun96/article/details/108686365?utm_medium=distribute.pc_relevant.none-task-blog-baidujs_title-0&amp;spm=1001.2101.3001.4242" target="_blank" rel="noopener">https://blog.csdn.net/rosefun96/article/details/108686365?utm_medium=distribute.pc_relevant.none-task-blog-baidujs_title-0&amp;spm=1001.2101.3001.4242</a></li>
+<li><a href="https://blog.csdn.net/dongcai1905/article/details/101890478" target="_blank" rel="noopener">https://blog.csdn.net/dongcai1905/article/details/101890478</a></li>
+<li><a href="https://blog.csdn.net/u010853261/article/details/78217823" target="_blank" rel="noopener">https://blog.csdn.net/u010853261/article/details/78217823</a></li>
+</ol>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/数据结构/" rel="tag"># 数据结构</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2021/04/21/HashTree小结/" rel="next" title="HashTree小结">
+                <i class="fa fa-chevron-left"></i> HashTree小结
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">昨非</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">111</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">1</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">45</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#树的基本操作"><span class="nav-number">1.</span> <span class="nav-text">树的基本操作</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#二叉查找树-BST"><span class="nav-number">2.</span> <span class="nav-text">二叉查找树(BST)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#平衡二叉树-AVL-：旋转耗时"><span class="nav-number">3.</span> <span class="nav-text">平衡二叉树(AVL)：旋转耗时</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-3-4树"><span class="nav-number">4.</span> <span class="nav-text">2-3-4树</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#红黑树：树太高"><span class="nav-number">5.</span> <span class="nav-text">红黑树：树太高</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#B树"><span class="nav-number">6.</span> <span class="nav-text">B树</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#B-树"><span class="nav-number">7.</span> <span class="nav-text">B+树</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#参考文章"><span class="nav-number">8.</span> <span class="nav-text">参考文章</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">昨非</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
