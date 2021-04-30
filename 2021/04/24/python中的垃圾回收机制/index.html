@@ -79,15 +79,30 @@
 
 
 
+<meta name="description" content="小整数对象池 小整数[-5,257)共用对象，常驻内存  单个字符共用对象，常驻内存   123456789101112131415161718&amp;gt;&amp;gt; a=1&amp;gt;&amp;gt;&amp;gt; b=1&amp;gt;&amp;gt;&amp;gt; id(a)4394670128&amp;gt;&amp;gt;&amp;gt; id(b)4394670128&amp;gt;&amp;gt;&amp;gt; a=256&amp;gt;&amp;gt;&amp;gt; b=256&amp;gt;&amp;gt;">
 <meta name="keywords" content="python">
 <meta property="og:type" content="article">
 <meta property="og:title" content="python中的垃圾回收机制">
 <meta property="og:url" content="https://alfredliukai.github.io/2021/04/24/python中的垃圾回收机制/index.html">
 <meta property="og:site_name" content="昨非的个人网站">
+<meta property="og:description" content="小整数对象池 小整数[-5,257)共用对象，常驻内存  单个字符共用对象，常驻内存   123456789101112131415161718&amp;gt;&amp;gt; a=1&amp;gt;&amp;gt;&amp;gt; b=1&amp;gt;&amp;gt;&amp;gt; id(a)4394670128&amp;gt;&amp;gt;&amp;gt; id(b)4394670128&amp;gt;&amp;gt;&amp;gt; a=256&amp;gt;&amp;gt;&amp;gt; b=256&amp;gt;&amp;gt;">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:updated_time" content="2021-04-30T07:42:47.000Z">
+<meta property="og:image" content="https://alfredliukai.github.io/2021/04/24/python中的垃圾回收机制/gc1.png">
+<meta property="og:image" content="https://alfredliukai.github.io/2021/04/24/python中的垃圾回收机制/gc2.png">
+<meta property="og:image" content="https://alfredliukai.github.io/2021/04/24/python中的垃圾回收机制/gc3.png">
+<meta property="og:image" content="https://alfredliukai.github.io/2021/04/24/python中的垃圾回收机制/gc4.png">
+<meta property="og:image" content="https://alfredliukai.github.io/2021/04/24/python中的垃圾回收机制/gc5.png">
+<meta property="og:image" content="https://alfredliukai.github.io/2021/04/24/python中的垃圾回收机制/gc6.png">
+<meta property="og:image" content="https://alfredliukai.github.io/2021/04/24/python中的垃圾回收机制/gc7.png">
+<meta property="og:image" content="https://alfredliukai.github.io/2021/04/24/python中的垃圾回收机制/gc8.png">
+<meta property="og:image" content="https://alfredliukai.github.io/2021/04/24/python中的垃圾回收机制/gc9.png">
+<meta property="og:image" content="https://alfredliukai.github.io/2021/04/24/python中的垃圾回收机制/gc10.png">
+<meta property="og:image" content="https://alfredliukai.github.io/2021/04/24/python中的垃圾回收机制/gc11.png">
+<meta property="og:updated_time" content="2021-04-30T15:55:13.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="python中的垃圾回收机制">
+<meta name="twitter:description" content="小整数对象池 小整数[-5,257)共用对象，常驻内存  单个字符共用对象，常驻内存   123456789101112131415161718&amp;gt;&amp;gt; a=1&amp;gt;&amp;gt;&amp;gt; b=1&amp;gt;&amp;gt;&amp;gt; id(a)4394670128&amp;gt;&amp;gt;&amp;gt; id(b)4394670128&amp;gt;&amp;gt;&amp;gt; a=256&amp;gt;&amp;gt;&amp;gt; b=256&amp;gt;&amp;gt;">
+<meta name="twitter:image" content="https://alfredliukai.github.io/2021/04/24/python中的垃圾回收机制/gc1.png">
 
 
 
@@ -349,7 +364,57 @@
       
 
       
-        
+        <h4 id="小整数对象池"><a href="#小整数对象池" class="headerlink" title="小整数对象池"></a>小整数对象池</h4><ol>
+<li><p>小整数[-5,257)共用对象，常驻内存</p>
+</li>
+<li><p>单个字符共用对象，常驻内存</p>
+</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt; a=1</span><br><span class="line">&gt;&gt;&gt; b=1</span><br><span class="line">&gt;&gt;&gt; id(a)</span><br><span class="line">4394670128</span><br><span class="line">&gt;&gt;&gt; id(b)</span><br><span class="line">4394670128</span><br><span class="line">&gt;&gt;&gt; a=256</span><br><span class="line">&gt;&gt;&gt; b=256</span><br><span class="line">&gt;&gt;&gt; id(a)</span><br><span class="line">4394678288</span><br><span class="line">&gt;&gt;&gt; id(b)</span><br><span class="line">4394678288</span><br><span class="line">&gt;&gt;&gt; b=257</span><br><span class="line">&gt;&gt;&gt; a=257</span><br><span class="line">&gt;&gt;&gt; id(a)</span><br><span class="line">4398855184</span><br><span class="line">&gt;&gt;&gt; id(b)</span><br><span class="line">4396990128</span><br></pre></td></tr></table></figure>
+<h4 id="大整数对象池"><a href="#大整数对象池" class="headerlink" title="大整数对象池"></a>大整数对象池</h4><p>每一个大整数，均创建一个新的对象。大整数不共用内存，引用计数为0，销毁</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; a=1234</span><br><span class="line">&gt;&gt;&gt; b=1234</span><br><span class="line">&gt;&gt;&gt; id(a)</span><br><span class="line">4396990128</span><br><span class="line">&gt;&gt;&gt; id(b)</span><br><span class="line">4398855088</span><br></pre></td></tr></table></figure>
+<h4 id="intern机制"><a href="#intern机制" class="headerlink" title="intern机制"></a>intern机制</h4><ol>
+<li>单个单词，不可修改，默认开启intern机制，共用对象，引用计数为0，则销毁</li>
+<li>字符串（含有空格），不可修改，没开启intern机制，不共用对象，引用计数为0，销毁</li>
+<li>数值类型和字符串类型在 Python 中都是不可变的，这意味着你无法修改这个对象的值，每次对变量的修改，实际上是创建一个新的对象</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; a=&quot;helloworld&quot;</span><br><span class="line">&gt;&gt;&gt; b=&quot;helloworld&quot;</span><br><span class="line">&gt;&gt;&gt; id(a)</span><br><span class="line">4532801648</span><br><span class="line">&gt;&gt;&gt; id(b)</span><br><span class="line">4532801648</span><br><span class="line">&gt;&gt;&gt; b=&quot;hello world&quot;</span><br><span class="line">&gt;&gt;&gt; a=&quot;hello world&quot;</span><br><span class="line">&gt;&gt;&gt; id(b)</span><br><span class="line">4532802416</span><br><span class="line">&gt;&gt;&gt; id(a)</span><br><span class="line">4532802480</span><br></pre></td></tr></table></figure>
+<h4 id="Garbage-collection-GC垃圾回收"><a href="#Garbage-collection-GC垃圾回收" class="headerlink" title="Garbage collection(GC垃圾回收)"></a>Garbage collection(GC垃圾回收)</h4><p>Python里也同java一样采用了垃圾收集机制，不过不一样的是: python采用的是引用计数机制为主，标记-清除和分代收集两种机制为辅的策略。</p>
+<p>引用计数机制：</p>
+<p>python里每一个东西都是对象，它们的核心就是一个结构体：PyObject</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">typedef struct_object &#123;</span><br><span class="line">    int ob_refcnt;</span><br><span class="line">    struct_typeobject *ob_type;</span><br><span class="line">&#125; PyObject;</span><br></pre></td></tr></table></figure>
+<p>PyObject是每个对象必有的内容，其中ob_refcnt就是做为引用计数。当一个对象有新的引用时，它的ob_refcnt就会增加，当引用它的对象被删除，它的ob_refcnt就会减少.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">#define Py_INCREF(op)   ((op)-&gt;ob_refcnt++) //增加计数</span><br><span class="line">#define Py_DECREF(op) \ //减少计数</span><br><span class="line">    if (--(op)-&gt;ob_refcnt != 0) \</span><br><span class="line">        ; \</span><br><span class="line">    else \</span><br><span class="line">        __Py_Dealloc((PyObject *)(op))</span><br></pre></td></tr></table></figure>
+<p>当引用计数为0时，该对象生命就结束了。</p>
+<p><strong>引用计数机制的优点：</strong></p>
+<ol>
+<li>简单</li>
+<li>实时性：一旦没有引用，内存就直接释放了。不用像其他机制等到特定时机。实时性还带来一个好处：处理回收内存的时间分摊到了平时。</li>
+</ol>
+<p><strong>引用计数机制的缺点：</strong></p>
+<ol>
+<li>维护引用计数消耗资源</li>
+<li>循环引用</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">list1 = []</span><br><span class="line">list2 = []</span><br><span class="line">list1.append(list2)</span><br><span class="line">list2.append(list1)</span><br></pre></td></tr></table></figure>
+<p>list1与list2相互引用，如果不存在其他对象对它们的引用，list1与list2的引用计数也仍然为1，所占用的内存永远无法被回收，这将是致命的。 对于如今的强大硬件，缺点1尚可接受，但是循环引用导致内存泄露，注定python还将引入新的回收机制。(标记清除和分代收集)</p>
+<h4 id="Python-的对象分配"><a href="#Python-的对象分配" class="headerlink" title="Python 的对象分配"></a>Python 的对象分配</h4><p>用Pyhon来创建一个Node对象：<br><img src="/2021/04/24/python中的垃圾回收机制/gc1.png" alt="avatar"></p>
+<p>与Ruby不同，当创建对象时Python立即向操作系统请求内存。(Python实际上实现了一套自己的内存分配系统，在操作系统堆之上提供了一个抽象层。但是我今天不展开说了。)<br>当我们创建第二个对象的时候，再次像OS请求内存：<br><img src="/2021/04/24/python中的垃圾回收机制/gc2.png" alt="avatar"></p>
+<p>在内部，创建一个对象时，Python总是在对象的C结构体里保存一个整数，称为引用数。期初，Python将这个值设置为1：<br><img src="/2021/04/24/python中的垃圾回收机制/gc3.png" alt="avatar"></p>
+<p>值为1说明分别有个一个指针指向或是引用这三个对象。假如我们现在创建一个新的Node实例，JKL：<br><img src="/2021/04/24/python中的垃圾回收机制/gc4.png" alt="avatar"></p>
+<p>与之前一样，Python设置JKL的引用数为1。然而，请注意由于我们改变了n1指向了JKL，不再指向ABC，Python就把ABC的引用数置为0了。 此刻，Python垃圾回收器立刻挺身而出！每当对象的引用数减为0，Python立即将其释放，把内存还给操作系统：</p>
+<p><img src="/2021/04/24/python中的垃圾回收机制/gc5.png" alt="avatar"></p>
+<p>上面Python回收了ABC Node实例使用的内存。记住，Ruby弃旧对象原地于不顾，也不释放它们的内存。</p>
+<p>Python的这种垃圾回收算法被称为引用计数。是George-Collins在1960年发明的，恰巧与John McCarthy发明的可用列表算法在同一年出现。就像Mike-Bernstein在6月份哥谭市Ruby大会杰出的垃圾回收机制演讲中说的: “1960年是垃圾收集器的黄金年代…”</p>
+<p>现在来看第二例子。加入我们让n2引用n1：<br><img src="/2021/04/24/python中的垃圾回收机制/gc6.png" alt="avatar"><br>上图中左边的DEF的引用数已经被Python减少了，垃圾回收器会立即回收DEF实例。同时JKL的引用数已经变为了2 ，因为n1和n2都指向它。</p>
+<h4 id="标记-清除"><a href="#标记-清除" class="headerlink" title="标记-清除"></a>标记-清除</h4><p>首先Ruby把程序停下来，Ruby用”地球停转垃圾回收大法”。之后Ruby轮询所有指针，变量和代码产生别的引用对象和其他值。同时Ruby通过自身的虚拟机便利内部指针。标记出这些指针引用的每个对象。<br><img src="/2021/04/24/python中的垃圾回收机制/gc7.png" alt="avatar"></p>
+<p>如果说被标记的对象是存活的，剩下的未被标记的对象只能是垃圾，这意味着我们的代码不再会使用它了。我会在下图中用白格子表示垃圾对象：<br><img src="/2021/04/24/python中的垃圾回收机制/gc8.png" alt="avatar"></p>
+<p>接下来Ruby清除这些无用的垃圾对象，把它们送回到可用列表中：<br><img src="/2021/04/24/python中的垃圾回收机制/gc9.png" alt="avatar"></p>
+<p>在内部这一切发生得迅雷不及掩耳，因为Ruby实际上不会吧对象从这拷贝到那。而是通过调整内部指针，将其指向一个新链表的方式，来将垃圾对象归位到可用列表中的。</p>
+<h4 id="Python中的零代-Generation-Zero"><a href="#Python中的零代-Generation-Zero" class="headerlink" title="Python中的零代(Generation Zero)"></a>Python中的零代(Generation Zero)</h4><p>python使用一种不同的链表来持续追踪活跃的对象。而不将其称之为“活跃列表”，Python的内部C代码将其称为零代(Generation Zero)。每次当你创建一个对象或其他什么值的时候，Python会将其加入零代链表:<br><img src="/2021/04/24/python中的垃圾回收机制/gc10.png" alt="avatar"></p>
+<p>从上边可以看到当我们创建ABC节点的时候，Python将其加入零代链表。请注意到这并不是一个真正的列表，并不能直接在你的代码中访问，事实上这个链表是一个完全内部的Python运行时。 相似的，当我们创建DEF节点的时候，Python将其加入同样的链表：<br><img src="/2021/04/24/python中的垃圾回收机制/gc11.png" alt="avatar"></p>
+<p>现在零代包含了两个节点对象。(他还将包含Python创建的每个其他值，与一些Python自己使用的内部值。)</p>
+
       
     </div>
     
@@ -443,8 +508,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -504,6 +578,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#小整数对象池"><span class="nav-number">1.</span> <span class="nav-text">小整数对象池</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#大整数对象池"><span class="nav-number">2.</span> <span class="nav-text">大整数对象池</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#intern机制"><span class="nav-number">3.</span> <span class="nav-text">intern机制</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Garbage-collection-GC垃圾回收"><span class="nav-number">4.</span> <span class="nav-text">Garbage collection(GC垃圾回收)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Python-的对象分配"><span class="nav-number">5.</span> <span class="nav-text">Python 的对象分配</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#标记-清除"><span class="nav-number">6.</span> <span class="nav-text">标记-清除</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Python中的零代-Generation-Zero"><span class="nav-number">7.</span> <span class="nav-text">Python中的零代(Generation Zero)</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       

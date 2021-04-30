@@ -606,8 +606,14 @@
       
         
           
-          
-          
+          小整数对象池
+小整数[-5,257)共用对象，常驻内存
+
+单个字符共用对象，常驻内存
+
+
+123456789101112131415161718&gt;&gt; a=1&gt;&gt;&gt; b=1&gt;&gt;&gt; id(a)4394670128&gt;&gt;&gt; id(b)4394
+          ...
           <!--noindex-->
           <div class="post-button text-center">
             <a class="btn" href="/2021/04/24/python中的垃圾回收机制/#more" rel="contents">

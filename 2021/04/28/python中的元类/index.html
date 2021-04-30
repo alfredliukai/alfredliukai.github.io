@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="昨非的个人网站">
 <meta property="og:description" content="类也是对象在大多数编程语言中，类就是一组用来描述如何生成一个对象的代码段。在Python中这一点仍然成立： 123456&amp;gt;&amp;gt;&amp;gt; class ObjectCreator(object):…       pass…&amp;gt;&amp;gt;&amp;gt; my_object = ObjectCreator()&amp;gt;&amp;gt;&amp;gt; print my_object&amp;lt;__main__.Objec">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:updated_time" content="2021-04-30T05:06:27.000Z">
+<meta property="og:updated_time" content="2021-04-30T15:26:05.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="python中的元类">
 <meta name="twitter:description" content="类也是对象在大多数编程语言中，类就是一组用来描述如何生成一个对象的代码段。在Python中这一点仍然成立： 123456&amp;gt;&amp;gt;&amp;gt; class ObjectCreator(object):…       pass…&amp;gt;&amp;gt;&amp;gt; my_object = ObjectCreator()&amp;gt;&amp;gt;&amp;gt; print my_object&amp;lt;__main__.Objec">
@@ -387,9 +387,6 @@
 <p>你已经看到了type可以让你像这样做：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">MyClass = type(&apos;MyClass&apos;, (), &#123;&#125;)</span><br></pre></td></tr></table></figure>
 <p>这是因为函数type实际上是一个元类。type就是Python在背后用来创建所有类的元类。现在你想知道那为什么type会全部采用小写形式而不是Type呢？好吧，我猜这是为了和str保持一致性，str是用来创建字符串对象的类，而int是用来创建整数对象的类。type就是创建类对象的类。你可以通过检查<strong>class</strong>属性来看到这一点。Python中所有的东西，注意，我是指所有的东西——都是对象。这包括整数、字符串、函数以及类。它们全部都是对象，而且它们都是从一个类创建而来，这个类就是type。</p>
-<h4 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h4><ol>
-<li><a href="https://aceld.gitbooks.io/python/content/516d29-python-qi-ta-zhi-shi-dian/7-yuan-lei.html" target="_blank" rel="noopener">https://aceld.gitbooks.io/python/content/516d29-python-qi-ta-zhi-shi-dian/7-yuan-lei.html</a></li>
-</ol>
 
       
     </div>
@@ -564,7 +561,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#类也是对象"><span class="nav-number">1.</span> <span class="nav-text">类也是对象</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#动态地创建类"><span class="nav-number">2.</span> <span class="nav-text">动态地创建类</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#使用type创建类"><span class="nav-number">3.</span> <span class="nav-text">使用type创建类</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#使用type创建带有属性的类"><span class="nav-number">4.</span> <span class="nav-text">使用type创建带有属性的类</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#使用type创建带有方法的类"><span class="nav-number">5.</span> <span class="nav-text">使用type创建带有方法的类</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#什么是元类"><span class="nav-number">6.</span> <span class="nav-text">什么是元类</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#参考文章"><span class="nav-number">7.</span> <span class="nav-text">参考文章</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#类也是对象"><span class="nav-number">1.</span> <span class="nav-text">类也是对象</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#动态地创建类"><span class="nav-number">2.</span> <span class="nav-text">动态地创建类</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#使用type创建类"><span class="nav-number">3.</span> <span class="nav-text">使用type创建类</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#使用type创建带有属性的类"><span class="nav-number">4.</span> <span class="nav-text">使用type创建带有属性的类</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#使用type创建带有方法的类"><span class="nav-number">5.</span> <span class="nav-text">使用type创建带有方法的类</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#什么是元类"><span class="nav-number">6.</span> <span class="nav-text">什么是元类</span></a></li></ol></div>
             
 
           </div>
