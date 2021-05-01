@@ -1630,6 +1630,30 @@
 <p>子进程永远返回0，而父进程返回子进程的ID。</p>
 <p>这样做的理由是，一个父进程可以fork出很多子进程，所以，父进程要记下每个子进程的ID，而子进程只需要调用getppid()就可以拿到父进程的ID。</p>
 <h3 id="多进程修改全局变量"><a href="#多进程修改全局变量" class="headerlink" title="多进程修改全局变量"></a>多进程修改全局变量</h3><p>多进程中，每个进程中所有数据（包括全局变量）都各有拥有一份，互不影响<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">pid = os.fork()</span><br><span class="line">num = 0</span><br><span class="line"></span><br><span class="line">if pid == 0:</span><br><span class="line">    num += 1</span><br><span class="line">    print(&apos;哈哈1---num=%d&apos; % num)</span><br><span class="line">else:</span><br><span class="line">    time.sleep(1)</span><br><span class="line">    num += 1</span><br><span class="line">    print(&apos;哈哈2---num=%d&apos; % num)</span><br></pre></td></tr></table></figure></p>
+<h3 id="multiprocessing"><a href="#multiprocessing" class="headerlink" title="multiprocessing"></a>multiprocessing</h3><p>创建子进程时，只需要传入一个执行函数和函数的参数，创建一个Process实例，用start()方法启动，这样创建进程比fork()还要简单。<br>join()方法可以等待子进程结束后再继续往下运行，通常用于进程间的同步</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">from multiprocessing import Process</span><br><span class="line">import os</span><br><span class="line">from time import sleep</span><br><span class="line"></span><br><span class="line"># 子进程要执行的代码</span><br><span class="line">def run_proc(name, age, **kwargs):</span><br><span class="line">    for i in range(10):</span><br><span class="line">        print(&apos;子进程运行中，name= %s,age=%d ,pid=%d...&apos; % (name, age,os.getpid()))</span><br><span class="line">        print(kwargs)</span><br><span class="line">        sleep(0.5)</span><br><span class="line"></span><br><span class="line">if __name__==&apos;__main__&apos;:</span><br><span class="line">    print(&apos;父进程 %d.&apos; % os.getpid())</span><br><span class="line">    p = Process(target=run_proc, args=(&apos;test&apos;,18), kwargs=&#123;&quot;m&quot;:20&#125;)</span><br><span class="line">    print(&apos;子进程将要执行&apos;)</span><br><span class="line">    p.start()</span><br><span class="line">    sleep(1)</span><br><span class="line">    p.terminate()</span><br><span class="line">    p.join()</span><br><span class="line">    print(&apos;子进程已结束&apos;)</span><br></pre></td></tr></table></figure>
+<p><strong>Process语法结构如下：</strong></p>
+<p>Process([group [, target [, name [, args [, kwargs]]]]])</p>
+<ul>
+<li>target：表示这个进程实例所调用对象；</li>
+<li>args：表示调用对象的位置参数元组；</li>
+<li>kwargs：表示调用对象的关键字参数字典；</li>
+<li>name：为当前进程实例的别名；</li>
+<li>group：大多数情况下用不到；</li>
+</ul>
+<p>Process类常用方法：</p>
+<ul>
+<li>is_alive()：判断进程实例是否还在执行；</li>
+<li>join([timeout])：是否等待进程实例执行结束，或等待多少秒；</li>
+<li>start()：启动进程实例（创建子进程）；</li>
+<li>run()：如果没有给定target参数，对这个对象调用start()方法时，就将执行对象中的run()方法；</li>
+<li>terminate()：不管任务是否完成，立即终止；</li>
+</ul>
+<p>Process类常用属性：</p>
+<ul>
+<li>name：当前进程实例别名，默认为Process-N，N为从1开始递增的整数；</li>
+<li>pid：当前进程实例的PID值；</li>
+</ul>
 ]]></content>
       <tags>
         <tag>python</tag>
@@ -3499,6 +3523,102 @@
       </tags>
   </entry>
   <entry>
+    <title>持续交付总结一</title>
+    <url>/2019/10/04/%E6%8C%81%E7%BB%AD%E4%BA%A4%E4%BB%98%E6%80%BB%E7%BB%93%E4%B8%80/</url>
+    <content><![CDATA[<h4 id="持续交付的难点"><a href="#持续交付的难点" class="headerlink" title="持续交付的难点"></a>持续交付的难点</h4><ol>
+<li>实施“持续交付”，将会影响整个的研发生命周期，会涉及到流程、团队、工具等多个方面。因为，实施“持续交付”需要组织从上到下的认可，需要有大勇气将一些可能属于黑箱操作的工作，公开出来给大家监督。所以这样的事情很难推进。</li>
+<li>实施“持续交付”，对实施者和参与者的要求都很高，他们不仅需要了解开发，还要了解流程，了解测试，了解运维，甚至还需要有一定的架构知识和管理知识。</li>
+<li>实施“持续交付”，大多数团队都希望能够快速见效，立竿见影。但是，“持续交付”的改进过程本身就是一个持续迭代的过程，需要多次循环才能体现效果。</li>
+</ol>
+<h4 id="持续交付的误区"><a href="#持续交付的误区" class="headerlink" title="持续交付的误区"></a>持续交付的误区</h4><ol>
+<li>过度强调自动化。</li>
+<li>过度强调流程化。</li>
+<li>过度强调特殊化。</li>
+</ol>
+<h4 id="持续交付的价值"><a href="#持续交付的价值" class="headerlink" title="持续交付的价值"></a>持续交付的价值</h4><ol>
+<li>从编码到构建再到测试的反复持续过程，就叫作“持续集成”。</li>
+<li>在“持续集成”之后，获取外部对软件的反馈再通过“持续集成”进行优化的过程就叫作“持续交付”，它是“持续集成”的自然延续。</li>
+<li>持续部署”就是将可交付产品，快速且安全地交付用户使用的一套方法和系统，它是“持续交付”的最后“一公里”。</li>
+</ol>
+<p>持续交付也通常以“发布流水线”的方式来解释，即研发团队从开发，到测试，再到部署，最终将产品交付给最终用户使用的过程。<br><img src="/2019/10/04/持续交付总结一/cd1.png" alt="avatar"><br>持续交付的价值不仅仅局限于简单地提高产品交付的效率，它还通过统一标准、规范流程、工具化、自动化等等方式，影响着整个研发生命周期。<br>持续交付最终的使命是打破一切影响研发的“阻碍墙”，为软件研发工作本身赋能。无论你是持续交付的老朋友还是新朋友，无论你在公司担任管理工作还是普通的研发人员，持续交付都会对你的工作产生积极的作用。</p>
+<h4 id="影响持续集成的因素"><a href="#影响持续集成的因素" class="headerlink" title="影响持续集成的因素"></a>影响持续集成的因素</h4><ol>
+<li>组织和文化因素</li>
+</ol>
+<ul>
+<li>紧密配合，这是组织发展，部门合作的基础。</li>
+<li>集思广益，这就需要组织内各个不同部门，或不同职能的角色，跳出自身的“舒适区”。</li>
+<li>自我驱动，是理想中的完美组织形式。</li>
+</ul>
+<ol start="2">
+<li>流程因素</li>
+</ol>
+<ul>
+<li>耗时较长的流程。</li>
+<li>完全人工类的流程。</li>
+<li>信息报备类的流程。</li>
+</ul>
+<ol start="3">
+<li>架构因素<br><strong>系统架构</strong><br>系统架构指系统的组成结构，它决定了系统的运行模式，层次结构，调用关系等。我们通常会遇到的系统架构包括：</li>
+</ol>
+<ul>
+<li>单体架构，一个部署包，包含了应用所有功能；</li>
+<li>SOA 架构，面向服务，通过服务间的接口和契约联系；</li>
+<li>微服务架构，按业务领域划分为独立的服务单元，可独立部署，松耦合。<br><strong>部署架构</strong><br>部署架构指的是，系统在各种环境下的部署方法，验收标准，编排次序等的集合。它将直接影响你持续交付的“最后一公里”。</li>
+<li>首先，你需要考虑，是否有统一的部署标准和方式。</li>
+<li>其次，需要考虑发布的编排次序。</li>
+<li>再次，是 markdown 与 markup 机制。</li>
+<li>最后，是预热与自检。</li>
+</ul>
+<h4 id="DevOps"><a href="#DevOps" class="headerlink" title="DevOps"></a>DevOps</h4><p>目前，人们对 DevOps 的看法，可以大致概括为 DevOps 是一组技术，一个职能、一种文化，和一种组织架构四种。</p>
+<ol>
+<li>DevOps 的本质其实是一种鼓励协作的研发文化；</li>
+<li>持续交付与 DevOps 所追求的最终目标是一致的，即快速向用户交付高质量的软件产品；</li>
+<li>DevOps 的概念比持续交付更宽泛，是持续交付的继续延伸；</li>
+<li>持续交付更专注于技术与实践，是 DevOps 的工具及技术实现。</li>
+</ol>
+<h4 id="配置管理"><a href="#配置管理" class="headerlink" title="配置管理"></a>配置管理</h4><ol>
+<li>代码分支策略</li>
+</ol>
+<ul>
+<li>主干开发（TBD）是一个源代码控制的分支模型，开发者在一个称为 “trunk” 的分支（Git 称 master） 中对代码进行协作，除了发布分支外没有其他开发分支。<br><img src="/2019/10/04/持续交付总结一/cd2.png" alt="avatar"></li>
+<li>Git Flow<br><img src="/2019/10/04/持续交付总结一/cd3.png" alt="avatar"></li>
+<li>GitHub Flow<br>在 GitHub Flow 中，master 分支中包含稳定的代码，它已经或即将被部署到生产环境。任何开发人员都不允许把未测试或未审查的代码直接提交到 master 分支。对代码的任何修改，包括 Bug 修复、热修复、新功能开发等都在单独的分支中进行。不管是一行代码的小改动，还是需要几个星期开发的新功能，都采用同样的方式来管理。<br><img src="/2019/10/04/持续交付总结一/cd4.png" alt="avatar"></li>
+<li>GitLab Flow<br><img src="/2019/10/04/持续交付总结一/cd5.png" alt="avatar"><br>通过 Git Flow、GitHub Flow 和 GitLab Flow（3 个衍生类别） 这几个具体模型的介绍，我给你总结一下特性分支开发的优缺点。<br><img src="/2019/10/04/持续交付总结一/cd6.png" alt="avatar"></li>
+<li>选出最适合的分支策略<br>总体归纳一下什么情况下应该选择什么样的分支策略<br><img src="/2019/10/04/持续交付总结一/cd7.png" alt="avatar"></li>
+</ul>
+<ol start="2">
+<li>依赖管理</li>
+</ol>
+<ul>
+<li>统一的命名规则，也可以说是坐标，在仓库中是唯一的，可以被准确定位到；</li>
+<li>统一的中心仓库可以存储管理依赖和元数据；</li>
+<li>统一的依赖配置描述文件；</li>
+<li>本地使用的客户端可以解析上述的文件以及拉取所需的依赖。</li>
+</ul>
+<ol start="3">
+<li>Maven最佳实践</li>
+</ol>
+<ul>
+<li>生产环境尽量不使用 SNAPSHOT 或者是带有范围的依赖版本，可以减少上线后的不确定性，我们必须保证，测试环境的包和生产环境是一致的。</li>
+<li>将 POM 分成多个层次的继承关系，这样做的好处是每一层都可以定义这一级别的依赖。</li>
+<li>在父模块多使用 dependencyManagement来定义依赖，子模块在使用该依赖时，就可以不用指定依赖的版本，这样做可以使多个子模块的依赖版本高度统一，同时还能简化子模块配置。</li>
+<li>对于一组依赖的控制，可以使用 BOM（Bill of Materials） 进行版本定义。一般情况下，框架部门有一个统一的 BOM 来管理公共组件的版本，当用户引用了该BOM后，在使用框架提供的组件时无需指定版本。即使使用了多个组件，也不会有版本冲突的问题，因为框架部门的专家们已经在BOM中为各个组件配置了经过测试的稳定版本。</li>
+<li>对于版本相同的依赖使用 properties 定义，可以大大减少重复劳动，且易于改动。上面的 pom.xml 片段，就是使用了 properties 来定义两个一样的版本号的依赖。</li>
+<li>不要在在线编译环境中使用 mvn install 命令，否则会埋下很多意想不到并且非常难以排查的坑：该命令会将同项目中编译产生的 jar 包缓存在编译系统本地，覆盖 mvn 仓库中真正应该被引用的 jar 包。</li>
+<li>禁止变更了代码不改版本号就上传到中央仓库的行为。否则，会覆盖原有版本，使得一个版本出现二义性的问题。</li>
+</ul>
+<ol start="4">
+<li>代码回滚<br><strong> 代码回滚定义 </strong><br>包回滚是指，线上运行的系统，从现在的版本回滚到以前稳定的老版本。<br>代码回滚是指，Git 分支的指针（游标），从指向当前有问题的版本改为指向一个该分支历史树上没问题的版本，而这个版本可以是曾经的 commit，也可以是新建的 commit。<br><strong> 回滚场景 </strong><br>第一种情况：开发人员独立使用的分支上，如果最近产生的 commit 都没有价值，应该废弃掉，此时就需要把代码回滚到以前的版本。<br>第二种情况：代码集成到团队的集成分支且尚未发布，但在后续测试中发现这部分代码有问题，且一时半会儿解决不掉，为了不把问题传递给下次的集成，此时就需要把有问题的代码从集成分支中回滚掉。<br>第三种情况：代码已经发布到线上，线上包回滚后发现是新上线的代码引起的问题，且需要一段时间修复，此时又有其他功能需要上线，那么主干分支必须把代码回滚到产品包 V0529 对应的 commit。<br><strong> 代码回滚必须遵循的原则 </strong><br>集成分支上的代码回滚坚决不用 reset –hard 的方式，原因如下：<br>集成分支上的 commit 都是项目阶段性的成果，即使最近的发布不需要某些 commit 的功能，但仍然需要保留这些 commit ，以备后续之需。<br>开发人员会基于集成分支上的 commit 拉取新分支，如果集成分支采用 reset 的方式清除了该 commit ，下次开发人员把新分支合并回集成分支时，又会把被清除的 commit 申请合入，很可能导致不需要的功能再次被引入到集成分支。<br><strong> 回滚场景及回滚策略 </strong><br><img src="/2019/10/04/持续交付总结一/cd8.png" alt="avatar"><br>第一，个人分支回滚<br><img src="/2019/10/04/持续交付总结一/cd9.png" alt="avatar"><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ git checkout feature-x   </span><br><span class="line">$ git reset --hard  C3 的 HASH 值</span><br><span class="line">$ git push -f origin  feature-x</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>第二，集成分支上线前回滚<br><img src="/2019/10/04/持续交付总结一/cd10.png" alt="avatar"><br>假定走特性分支开发模式，上面的 commit 都是特性分支通过 merge request 合入 master 产生的 commit。<br>集成后，测试环境中发现 C4 和 C6 的功能有问题，不能上线，需马上回滚代码，以便 C5 的功能上线。<br>团队成员可以在 GitLab 上找到 C4 和 C6 合入 master 的合并请求，然后点击 revert 。如下图所示。<br><img src="/2019/10/04/持续交付总结一/cd11.png" alt="avatar"><br>回滚后 master 分支变成如图 5 所示，C4’是 revert C4 产生的 commit，C6’是 revert C6 产生的 commit。通过 revert 操作，C4 和 C6 变更的内容在 master 分支上就被清除掉了，而 C5 变更的内容还保留在 master 分支上。<br><img src="/2019/10/04/持续交付总结一/cd12.png" alt="avatar"><br>第三，集成分支上线后回滚<br><img src="/2019/10/04/持续交付总结一/cd13.png" alt="avatar"><br>C3 打包并上线，生成线上的版本 V0529，运行正确。之后 C6 也打包并上线，生成线上版本 V0530，运行一段时间后发现有问题。C4 和 C5 并没有单独打包上线，所以没有对应的线上版本。<br>项目组把产品包从 V0530 回滚到 V0529，经过定位，V0530 的代码有问题，但短时间不能修复，于是，项目组决定回滚代码。<br>C4 和 C5 没有单独上过线，因此从线上包的角度看，不能回滚到 C4 或 C5，应该回滚到 C3。<br>考虑到线上包可以回滚到曾发布过的任意一个正确的版本。为了适应线上包的这个特点，线上包回滚触发的代码回滚我们决定不用 一个个 revert C4、C5 和 C6 的方式，而是直接创建一个新的 commit，它的内容等于 C3 的内容。<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ git fetch origin  </span><br><span class="line">$ git checkout master</span><br><span class="line">$ git reset --hard  V0529         # 把本地的 master 分支的指针回退到 V0529，此时暂存区 (index) 里就指向 V0529 里的内容了。</span><br><span class="line">$ git reset --soft  origin/master  # --soft 使得本地的 master 分支的指针重新回到 V0530，而暂存区 (index) 变成 V0529 的内容。</span><br><span class="line">$ git commit -m &quot;rollback to V0529&quot;  # 把暂存区里的内容提交，这样一来新生成的 commit 的内容和 V0529 相同。 </span><br><span class="line">$ git push origin  master        # 远端的 master 也被回滚。</span><br></pre></td></tr></table></figure></p>
+<p>回滚后如下图所示。<br><img src="/2019/10/04/持续交付总结一/cd14.png" alt="avatar"><br>C3’的内容等于 C3，master 分支已清除 C4、C5 和 C6 的变更。<br>现在 master 又回到了正确的状态，其他功能可以继续上线。<br>如果要修复 C4、C5 和 C6 的问题，可以在开发分支上先 revert 掉 C3’ ，这样被清除的几个 commit 的内容又恢复了。</p>
+]]></content>
+      <tags>
+        <tag>持续交付</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>持续交付总结二</title>
     <url>/2019/10/05/%E6%8C%81%E7%BB%AD%E4%BA%A4%E4%BB%98%E6%80%BB%E7%BB%93%E4%BA%8C/</url>
     <content><![CDATA[<h5 id="环境管理"><a href="#环境管理" class="headerlink" title="环境管理"></a>环境管理</h5><ol>
@@ -3740,102 +3860,6 @@
 ]]></content>
       <tags>
         <tag>数据结构</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>持续交付总结一</title>
-    <url>/2019/10/04/%E6%8C%81%E7%BB%AD%E4%BA%A4%E4%BB%98%E6%80%BB%E7%BB%93%E4%B8%80/</url>
-    <content><![CDATA[<h4 id="持续交付的难点"><a href="#持续交付的难点" class="headerlink" title="持续交付的难点"></a>持续交付的难点</h4><ol>
-<li>实施“持续交付”，将会影响整个的研发生命周期，会涉及到流程、团队、工具等多个方面。因为，实施“持续交付”需要组织从上到下的认可，需要有大勇气将一些可能属于黑箱操作的工作，公开出来给大家监督。所以这样的事情很难推进。</li>
-<li>实施“持续交付”，对实施者和参与者的要求都很高，他们不仅需要了解开发，还要了解流程，了解测试，了解运维，甚至还需要有一定的架构知识和管理知识。</li>
-<li>实施“持续交付”，大多数团队都希望能够快速见效，立竿见影。但是，“持续交付”的改进过程本身就是一个持续迭代的过程，需要多次循环才能体现效果。</li>
-</ol>
-<h4 id="持续交付的误区"><a href="#持续交付的误区" class="headerlink" title="持续交付的误区"></a>持续交付的误区</h4><ol>
-<li>过度强调自动化。</li>
-<li>过度强调流程化。</li>
-<li>过度强调特殊化。</li>
-</ol>
-<h4 id="持续交付的价值"><a href="#持续交付的价值" class="headerlink" title="持续交付的价值"></a>持续交付的价值</h4><ol>
-<li>从编码到构建再到测试的反复持续过程，就叫作“持续集成”。</li>
-<li>在“持续集成”之后，获取外部对软件的反馈再通过“持续集成”进行优化的过程就叫作“持续交付”，它是“持续集成”的自然延续。</li>
-<li>持续部署”就是将可交付产品，快速且安全地交付用户使用的一套方法和系统，它是“持续交付”的最后“一公里”。</li>
-</ol>
-<p>持续交付也通常以“发布流水线”的方式来解释，即研发团队从开发，到测试，再到部署，最终将产品交付给最终用户使用的过程。<br><img src="/2019/10/04/持续交付总结一/cd1.png" alt="avatar"><br>持续交付的价值不仅仅局限于简单地提高产品交付的效率，它还通过统一标准、规范流程、工具化、自动化等等方式，影响着整个研发生命周期。<br>持续交付最终的使命是打破一切影响研发的“阻碍墙”，为软件研发工作本身赋能。无论你是持续交付的老朋友还是新朋友，无论你在公司担任管理工作还是普通的研发人员，持续交付都会对你的工作产生积极的作用。</p>
-<h4 id="影响持续集成的因素"><a href="#影响持续集成的因素" class="headerlink" title="影响持续集成的因素"></a>影响持续集成的因素</h4><ol>
-<li>组织和文化因素</li>
-</ol>
-<ul>
-<li>紧密配合，这是组织发展，部门合作的基础。</li>
-<li>集思广益，这就需要组织内各个不同部门，或不同职能的角色，跳出自身的“舒适区”。</li>
-<li>自我驱动，是理想中的完美组织形式。</li>
-</ul>
-<ol start="2">
-<li>流程因素</li>
-</ol>
-<ul>
-<li>耗时较长的流程。</li>
-<li>完全人工类的流程。</li>
-<li>信息报备类的流程。</li>
-</ul>
-<ol start="3">
-<li>架构因素<br><strong>系统架构</strong><br>系统架构指系统的组成结构，它决定了系统的运行模式，层次结构，调用关系等。我们通常会遇到的系统架构包括：</li>
-</ol>
-<ul>
-<li>单体架构，一个部署包，包含了应用所有功能；</li>
-<li>SOA 架构，面向服务，通过服务间的接口和契约联系；</li>
-<li>微服务架构，按业务领域划分为独立的服务单元，可独立部署，松耦合。<br><strong>部署架构</strong><br>部署架构指的是，系统在各种环境下的部署方法，验收标准，编排次序等的集合。它将直接影响你持续交付的“最后一公里”。</li>
-<li>首先，你需要考虑，是否有统一的部署标准和方式。</li>
-<li>其次，需要考虑发布的编排次序。</li>
-<li>再次，是 markdown 与 markup 机制。</li>
-<li>最后，是预热与自检。</li>
-</ul>
-<h4 id="DevOps"><a href="#DevOps" class="headerlink" title="DevOps"></a>DevOps</h4><p>目前，人们对 DevOps 的看法，可以大致概括为 DevOps 是一组技术，一个职能、一种文化，和一种组织架构四种。</p>
-<ol>
-<li>DevOps 的本质其实是一种鼓励协作的研发文化；</li>
-<li>持续交付与 DevOps 所追求的最终目标是一致的，即快速向用户交付高质量的软件产品；</li>
-<li>DevOps 的概念比持续交付更宽泛，是持续交付的继续延伸；</li>
-<li>持续交付更专注于技术与实践，是 DevOps 的工具及技术实现。</li>
-</ol>
-<h4 id="配置管理"><a href="#配置管理" class="headerlink" title="配置管理"></a>配置管理</h4><ol>
-<li>代码分支策略</li>
-</ol>
-<ul>
-<li>主干开发（TBD）是一个源代码控制的分支模型，开发者在一个称为 “trunk” 的分支（Git 称 master） 中对代码进行协作，除了发布分支外没有其他开发分支。<br><img src="/2019/10/04/持续交付总结一/cd2.png" alt="avatar"></li>
-<li>Git Flow<br><img src="/2019/10/04/持续交付总结一/cd3.png" alt="avatar"></li>
-<li>GitHub Flow<br>在 GitHub Flow 中，master 分支中包含稳定的代码，它已经或即将被部署到生产环境。任何开发人员都不允许把未测试或未审查的代码直接提交到 master 分支。对代码的任何修改，包括 Bug 修复、热修复、新功能开发等都在单独的分支中进行。不管是一行代码的小改动，还是需要几个星期开发的新功能，都采用同样的方式来管理。<br><img src="/2019/10/04/持续交付总结一/cd4.png" alt="avatar"></li>
-<li>GitLab Flow<br><img src="/2019/10/04/持续交付总结一/cd5.png" alt="avatar"><br>通过 Git Flow、GitHub Flow 和 GitLab Flow（3 个衍生类别） 这几个具体模型的介绍，我给你总结一下特性分支开发的优缺点。<br><img src="/2019/10/04/持续交付总结一/cd6.png" alt="avatar"></li>
-<li>选出最适合的分支策略<br>总体归纳一下什么情况下应该选择什么样的分支策略<br><img src="/2019/10/04/持续交付总结一/cd7.png" alt="avatar"></li>
-</ul>
-<ol start="2">
-<li>依赖管理</li>
-</ol>
-<ul>
-<li>统一的命名规则，也可以说是坐标，在仓库中是唯一的，可以被准确定位到；</li>
-<li>统一的中心仓库可以存储管理依赖和元数据；</li>
-<li>统一的依赖配置描述文件；</li>
-<li>本地使用的客户端可以解析上述的文件以及拉取所需的依赖。</li>
-</ul>
-<ol start="3">
-<li>Maven最佳实践</li>
-</ol>
-<ul>
-<li>生产环境尽量不使用 SNAPSHOT 或者是带有范围的依赖版本，可以减少上线后的不确定性，我们必须保证，测试环境的包和生产环境是一致的。</li>
-<li>将 POM 分成多个层次的继承关系，这样做的好处是每一层都可以定义这一级别的依赖。</li>
-<li>在父模块多使用 dependencyManagement来定义依赖，子模块在使用该依赖时，就可以不用指定依赖的版本，这样做可以使多个子模块的依赖版本高度统一，同时还能简化子模块配置。</li>
-<li>对于一组依赖的控制，可以使用 BOM（Bill of Materials） 进行版本定义。一般情况下，框架部门有一个统一的 BOM 来管理公共组件的版本，当用户引用了该BOM后，在使用框架提供的组件时无需指定版本。即使使用了多个组件，也不会有版本冲突的问题，因为框架部门的专家们已经在BOM中为各个组件配置了经过测试的稳定版本。</li>
-<li>对于版本相同的依赖使用 properties 定义，可以大大减少重复劳动，且易于改动。上面的 pom.xml 片段，就是使用了 properties 来定义两个一样的版本号的依赖。</li>
-<li>不要在在线编译环境中使用 mvn install 命令，否则会埋下很多意想不到并且非常难以排查的坑：该命令会将同项目中编译产生的 jar 包缓存在编译系统本地，覆盖 mvn 仓库中真正应该被引用的 jar 包。</li>
-<li>禁止变更了代码不改版本号就上传到中央仓库的行为。否则，会覆盖原有版本，使得一个版本出现二义性的问题。</li>
-</ul>
-<ol start="4">
-<li>代码回滚<br><strong> 代码回滚定义 </strong><br>包回滚是指，线上运行的系统，从现在的版本回滚到以前稳定的老版本。<br>代码回滚是指，Git 分支的指针（游标），从指向当前有问题的版本改为指向一个该分支历史树上没问题的版本，而这个版本可以是曾经的 commit，也可以是新建的 commit。<br><strong> 回滚场景 </strong><br>第一种情况：开发人员独立使用的分支上，如果最近产生的 commit 都没有价值，应该废弃掉，此时就需要把代码回滚到以前的版本。<br>第二种情况：代码集成到团队的集成分支且尚未发布，但在后续测试中发现这部分代码有问题，且一时半会儿解决不掉，为了不把问题传递给下次的集成，此时就需要把有问题的代码从集成分支中回滚掉。<br>第三种情况：代码已经发布到线上，线上包回滚后发现是新上线的代码引起的问题，且需要一段时间修复，此时又有其他功能需要上线，那么主干分支必须把代码回滚到产品包 V0529 对应的 commit。<br><strong> 代码回滚必须遵循的原则 </strong><br>集成分支上的代码回滚坚决不用 reset –hard 的方式，原因如下：<br>集成分支上的 commit 都是项目阶段性的成果，即使最近的发布不需要某些 commit 的功能，但仍然需要保留这些 commit ，以备后续之需。<br>开发人员会基于集成分支上的 commit 拉取新分支，如果集成分支采用 reset 的方式清除了该 commit ，下次开发人员把新分支合并回集成分支时，又会把被清除的 commit 申请合入，很可能导致不需要的功能再次被引入到集成分支。<br><strong> 回滚场景及回滚策略 </strong><br><img src="/2019/10/04/持续交付总结一/cd8.png" alt="avatar"><br>第一，个人分支回滚<br><img src="/2019/10/04/持续交付总结一/cd9.png" alt="avatar"><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ git checkout feature-x   </span><br><span class="line">$ git reset --hard  C3 的 HASH 值</span><br><span class="line">$ git push -f origin  feature-x</span><br></pre></td></tr></table></figure>
-</li>
-</ol>
-<p>第二，集成分支上线前回滚<br><img src="/2019/10/04/持续交付总结一/cd10.png" alt="avatar"><br>假定走特性分支开发模式，上面的 commit 都是特性分支通过 merge request 合入 master 产生的 commit。<br>集成后，测试环境中发现 C4 和 C6 的功能有问题，不能上线，需马上回滚代码，以便 C5 的功能上线。<br>团队成员可以在 GitLab 上找到 C4 和 C6 合入 master 的合并请求，然后点击 revert 。如下图所示。<br><img src="/2019/10/04/持续交付总结一/cd11.png" alt="avatar"><br>回滚后 master 分支变成如图 5 所示，C4’是 revert C4 产生的 commit，C6’是 revert C6 产生的 commit。通过 revert 操作，C4 和 C6 变更的内容在 master 分支上就被清除掉了，而 C5 变更的内容还保留在 master 分支上。<br><img src="/2019/10/04/持续交付总结一/cd12.png" alt="avatar"><br>第三，集成分支上线后回滚<br><img src="/2019/10/04/持续交付总结一/cd13.png" alt="avatar"><br>C3 打包并上线，生成线上的版本 V0529，运行正确。之后 C6 也打包并上线，生成线上版本 V0530，运行一段时间后发现有问题。C4 和 C5 并没有单独打包上线，所以没有对应的线上版本。<br>项目组把产品包从 V0530 回滚到 V0529，经过定位，V0530 的代码有问题，但短时间不能修复，于是，项目组决定回滚代码。<br>C4 和 C5 没有单独上过线，因此从线上包的角度看，不能回滚到 C4 或 C5，应该回滚到 C3。<br>考虑到线上包可以回滚到曾发布过的任意一个正确的版本。为了适应线上包的这个特点，线上包回滚触发的代码回滚我们决定不用 一个个 revert C4、C5 和 C6 的方式，而是直接创建一个新的 commit，它的内容等于 C3 的内容。<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ git fetch origin  </span><br><span class="line">$ git checkout master</span><br><span class="line">$ git reset --hard  V0529         # 把本地的 master 分支的指针回退到 V0529，此时暂存区 (index) 里就指向 V0529 里的内容了。</span><br><span class="line">$ git reset --soft  origin/master  # --soft 使得本地的 master 分支的指针重新回到 V0530，而暂存区 (index) 变成 V0529 的内容。</span><br><span class="line">$ git commit -m &quot;rollback to V0529&quot;  # 把暂存区里的内容提交，这样一来新生成的 commit 的内容和 V0529 相同。 </span><br><span class="line">$ git push origin  master        # 远端的 master 也被回滚。</span><br></pre></td></tr></table></figure></p>
-<p>回滚后如下图所示。<br><img src="/2019/10/04/持续交付总结一/cd14.png" alt="avatar"><br>C3’的内容等于 C3，master 分支已清除 C4、C5 和 C6 的变更。<br>现在 master 又回到了正确的状态，其他功能可以继续上线。<br>如果要修复 C4、C5 和 C6 的问题，可以在开发分支上先 revert 掉 C3’ ，这样被清除的几个 commit 的内容又恢复了。</p>
-]]></content>
-      <tags>
-        <tag>持续交付</tag>
       </tags>
   </entry>
   <entry>

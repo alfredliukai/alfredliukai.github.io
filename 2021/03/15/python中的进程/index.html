@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="昨非的个人网站">
 <meta property="og:description" content="1. 多进程 vs多任务多任务：就是操作系统可以同时运行多个任务多进程：正在运行着的代码，就成为进程。多个正在运行的代码。 2. fork（）123456789import os# 注意，fork函数，只在Unix/Linux/Mac上运行，windows不可以pid = os.fork()if pid == 0:    print(&amp;apos;哈哈1&amp;apos;)else:    print(&amp;">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:updated_time" content="2021-03-29T15:10:36.000Z">
+<meta property="og:updated_time" content="2021-05-01T16:13:09.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="python中的进程">
 <meta name="twitter:description" content="1. 多进程 vs多任务多任务：就是操作系统可以同时运行多个任务多进程：正在运行着的代码，就成为进程。多个正在运行的代码。 2. fork（）123456789import os# 注意，fork函数，只在Unix/Linux/Mac上运行，windows不可以pid = os.fork()if pid == 0:    print(&amp;apos;哈哈1&amp;apos;)else:    print(&amp;">
@@ -364,6 +364,30 @@
 <p>子进程永远返回0，而父进程返回子进程的ID。</p>
 <p>这样做的理由是，一个父进程可以fork出很多子进程，所以，父进程要记下每个子进程的ID，而子进程只需要调用getppid()就可以拿到父进程的ID。</p>
 <h3 id="多进程修改全局变量"><a href="#多进程修改全局变量" class="headerlink" title="多进程修改全局变量"></a>多进程修改全局变量</h3><p>多进程中，每个进程中所有数据（包括全局变量）都各有拥有一份，互不影响<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">pid = os.fork()</span><br><span class="line">num = 0</span><br><span class="line"></span><br><span class="line">if pid == 0:</span><br><span class="line">    num += 1</span><br><span class="line">    print(&apos;哈哈1---num=%d&apos; % num)</span><br><span class="line">else:</span><br><span class="line">    time.sleep(1)</span><br><span class="line">    num += 1</span><br><span class="line">    print(&apos;哈哈2---num=%d&apos; % num)</span><br></pre></td></tr></table></figure></p>
+<h3 id="multiprocessing"><a href="#multiprocessing" class="headerlink" title="multiprocessing"></a>multiprocessing</h3><p>创建子进程时，只需要传入一个执行函数和函数的参数，创建一个Process实例，用start()方法启动，这样创建进程比fork()还要简单。<br>join()方法可以等待子进程结束后再继续往下运行，通常用于进程间的同步</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">from multiprocessing import Process</span><br><span class="line">import os</span><br><span class="line">from time import sleep</span><br><span class="line"></span><br><span class="line"># 子进程要执行的代码</span><br><span class="line">def run_proc(name, age, **kwargs):</span><br><span class="line">    for i in range(10):</span><br><span class="line">        print(&apos;子进程运行中，name= %s,age=%d ,pid=%d...&apos; % (name, age,os.getpid()))</span><br><span class="line">        print(kwargs)</span><br><span class="line">        sleep(0.5)</span><br><span class="line"></span><br><span class="line">if __name__==&apos;__main__&apos;:</span><br><span class="line">    print(&apos;父进程 %d.&apos; % os.getpid())</span><br><span class="line">    p = Process(target=run_proc, args=(&apos;test&apos;,18), kwargs=&#123;&quot;m&quot;:20&#125;)</span><br><span class="line">    print(&apos;子进程将要执行&apos;)</span><br><span class="line">    p.start()</span><br><span class="line">    sleep(1)</span><br><span class="line">    p.terminate()</span><br><span class="line">    p.join()</span><br><span class="line">    print(&apos;子进程已结束&apos;)</span><br></pre></td></tr></table></figure>
+<p><strong>Process语法结构如下：</strong></p>
+<p>Process([group [, target [, name [, args [, kwargs]]]]])</p>
+<ul>
+<li>target：表示这个进程实例所调用对象；</li>
+<li>args：表示调用对象的位置参数元组；</li>
+<li>kwargs：表示调用对象的关键字参数字典；</li>
+<li>name：为当前进程实例的别名；</li>
+<li>group：大多数情况下用不到；</li>
+</ul>
+<p>Process类常用方法：</p>
+<ul>
+<li>is_alive()：判断进程实例是否还在执行；</li>
+<li>join([timeout])：是否等待进程实例执行结束，或等待多少秒；</li>
+<li>start()：启动进程实例（创建子进程）；</li>
+<li>run()：如果没有给定target参数，对这个对象调用start()方法时，就将执行对象中的run()方法；</li>
+<li>terminate()：不管任务是否完成，立即终止；</li>
+</ul>
+<p>Process类常用属性：</p>
+<ul>
+<li>name：当前进程实例别名，默认为Process-N，N为从1开始递增的整数；</li>
+<li>pid：当前进程实例的PID值；</li>
+</ul>
 
       
     </div>
@@ -538,7 +562,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-多进程-vs多任务"><span class="nav-number">1.</span> <span class="nav-text">1. 多进程 vs多任务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-fork（）"><span class="nav-number">2.</span> <span class="nav-text">2. fork（）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#多进程修改全局变量"><span class="nav-number">3.</span> <span class="nav-text">多进程修改全局变量</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-多进程-vs多任务"><span class="nav-number">1.</span> <span class="nav-text">1. 多进程 vs多任务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-fork（）"><span class="nav-number">2.</span> <span class="nav-text">2. fork（）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#多进程修改全局变量"><span class="nav-number">3.</span> <span class="nav-text">多进程修改全局变量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#multiprocessing"><span class="nav-number">4.</span> <span class="nav-text">multiprocessing</span></a></li></ol></div>
             
 
           </div>
