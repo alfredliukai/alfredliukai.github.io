@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="Hexo, NexT">
+  <meta name="keywords" content="python,">
 
 
 
@@ -79,15 +79,18 @@
 
 
 
-<meta name="keywords" content="java,go,程序猿,数据库，测试，测试开发，架构">
+<meta name="description" content="用法简介函数原型： eval(expression, globals=None, locals=None) 参数： expression：这个参数是一个字符串，python会使用globals字典和locals字典作为全局和局部的命名空间，将expression当做一个python表达式（从技术上讲，是一个条件列表）进行解析和计算。 globals:这个参数管控的是一个全局的命名空间，也就是我们在">
+<meta name="keywords" content="python">
 <meta property="og:type" content="article">
 <meta property="og:title" content="python中eval函数">
 <meta property="og:url" content="https://alfredliukai.github.io/2021/04/28/python中eval函数/index.html">
 <meta property="og:site_name" content="昨非的个人网站">
+<meta property="og:description" content="用法简介函数原型： eval(expression, globals=None, locals=None) 参数： expression：这个参数是一个字符串，python会使用globals字典和locals字典作为全局和局部的命名空间，将expression当做一个python表达式（从技术上讲，是一个条件列表）进行解析和计算。 globals:这个参数管控的是一个全局的命名空间，也就是我们在">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:updated_time" content="2021-04-27T16:10:18.000Z">
+<meta property="og:updated_time" content="2021-05-01T14:21:49.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="python中eval函数">
+<meta name="twitter:description" content="用法简介函数原型： eval(expression, globals=None, locals=None) 参数： expression：这个参数是一个字符串，python会使用globals字典和locals字典作为全局和局部的命名空间，将expression当做一个python表达式（从技术上讲，是一个条件列表）进行解析和计算。 globals:这个参数管控的是一个全局的命名空间，也就是我们在">
 
 
 
@@ -349,7 +352,36 @@
       
 
       
-        
+        <h4 id="用法简介"><a href="#用法简介" class="headerlink" title="用法简介"></a>用法简介</h4><p>函数原型：</p>
+<p>eval(expression, globals=None, locals=None)</p>
+<p>参数：</p>
+<p>expression：这个参数是一个字符串，python会使用globals字典和locals字典作为全局和局部的命名空间，将expression当做一个python表达式（从技术上讲，是一个条件列表）进行解析和计算。</p>
+<p>globals:这个参数管控的是一个全局的命名空间，也就是我们在计算表达式的时候可以使用全局的命名空间中的函数，如果这个参数被提供了，并且没有提供自定义的<strong>builtins</strong>，那么会将当前环境中的<strong>builtins</strong>拷贝到自己提供的globals里，然后才会进行计算。关于<strong>builtins</strong>，它是python的内建模块，也就是python自带的模块，不需要我们import就可以使用的，例如我们平时使用的int、str、abs等都在这个模块中。关于它的说明可以参照这篇文章：点击打开链接。如果globals没有被提供，则使用python的全局命名空间。</p>
+<p>locals：这个参数管控的是一个局部的命名空间，和globals类似，不过当它和globals中有重复的部分时，locals里的定义会覆盖掉globals中的，也就是当globals和locals中有冲突的部分时，locals说了算，它有决定权，以它的为准。如果locals没有被 提供的话，则默认为globals。</p>
+<p>eval函数也可以被用来执行任意的代码对象（如那些由compile()创建的对象）。在这种情况下，expression参数是一个代码对象而不是一个字符串。如果代码对象已经被‘exec‘编译为模式参数，eavl（）的返回值是None。</p>
+<p>三个参数的使用：</p>
+<p><strong>1、在前两个参数省略的情况下，eval在当前的作用域执行：</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">a=10;</span><br><span class="line">print(eval(&quot;a+1&quot;))</span><br></pre></td></tr></table></figure>
+<p>执行结果为：11</p>
+<p><strong>2、在globals指定的情况下：</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">a=10;</span><br><span class="line">g=&#123;&apos;a&apos;:4&#125;</span><br><span class="line">print(eval(&quot;a+1&quot;,g))</span><br></pre></td></tr></table></figure>
+<p>执行结果为：5</p>
+<p>这里面可能有点绕啊，初学者得理理清楚。在这次的代码中，我们在 eval中提供了globals参数，这时候eval的作用域就是g指定的这个字典了，也就是外面的a=10被屏蔽掉了，eval是看不见的，所以使用了a为4的值。</p>
+<p><strong>3、在 locals指定的情况下 ：</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">a=10</span><br><span class="line">b=20</span><br><span class="line">c=30</span><br><span class="line">g=&#123;&apos;a&apos;:6,&apos;b&apos;:8&#125;</span><br><span class="line">t=&#123;&apos;b&apos;:100,&apos;c&apos;:10&#125;</span><br><span class="line">print(eval(&apos;a+b+c&apos;,g,t))</span><br></pre></td></tr></table></figure>
+<p>执行的结果为：116</p>
+<p>这里面就更有点绕人了，此次执行的结果中，a是6，b是100，c是10。我们首先来看一下，对于a为6我们是没有疑问的，因为在上个例子中已经说了，g会屏蔽程序中的全局变量的，而这里最主要的是为什么b是100呢？还记得我们在参数介绍的时候说过，当locals和globals起冲突时，locals是起决定作用的，这在很多编程语言里都是一样的，是作用域的覆盖问题，当前指定的小的作用域会覆盖以前大的作用域，这可以理解为一张小的纸盖在了一张大的纸上，纸是透明的，上面写的东西是不透明的，而它们重合的地方就可以理解成两个作用域冲突的地方，自然是小的显现出来了。</p>
+<p><strong>使用的场合</strong></p>
+<p>对于eval的使用，我们一定要确保第一个参数expression满足表达式的要求，它是可以被解析然后计算的。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">s=&quot;abck&quot;</span><br><span class="line">print(eval(s))</span><br></pre></td></tr></table></figure>
+<p>执行的结果为：NameError: name ‘abck’ is not defined</p>
+<p>对于当面的代码，我们可以看到，字符串s并不满足表达式的要求。当eval剥去了”abck”的外面的引号的时候，它会对它进行解析，然后满足要求后进行计算，然后它解析到的是abcd，请注意，程序报出的错误是NameError，也就是说，当它解析到这个表达式是不可以计算后，它就会查找它是不是一个变量的名字，如果是一个变量的名字，那么它会输出这个变量的内容，否则就会产生这种报错。</p>
+<h4 id="应用举例"><a href="#应用举例" class="headerlink" title="应用举例"></a>应用举例</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">a = &quot;[[1,2], [3,4], [5,6], [7,8], [9,0]]&quot;</span><br><span class="line">b = eval(a)</span><br><span class="line">b</span><br><span class="line">Out[3]: [[1, 2], [3, 4], [5, 6], [7, 8], [9, 0]]</span><br><span class="line">type(b)</span><br><span class="line">Out[4]: list</span><br><span class="line">a = &quot;&#123;1: &apos;a&apos;, 2: &apos;b&apos;&#125;&quot;</span><br><span class="line">b = eval(a)</span><br><span class="line">b</span><br><span class="line">Out[7]: &#123;1: &apos;a&apos;, 2: &apos;b&apos;&#125;</span><br><span class="line">type(b)</span><br><span class="line">Out[8]: dict</span><br><span class="line">a = &quot;([1,2], [3,4], [5,6], [7,8], (9,0))&quot;</span><br><span class="line">b = eval(a)</span><br><span class="line">b</span><br><span class="line">Out[11]: ([1, 2], [3, 4], [5, 6], [7, 8], (9, 0))</span><br></pre></td></tr></table></figure>
+<h4 id="危害"><a href="#危害" class="headerlink" title="危害"></a>危害</h4><p>eval虽然方便，但是要注意安全性，可以将字符串转成表达式并执行，就可以利用执行系统命令，删除文件等操作。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">eval(&quot;__import__(&apos;os&apos;).system(&apos;ls /Users/chunming.liu/Downloads/&apos;)&quot;)</span><br><span class="line"></span><br><span class="line">os.system(&apos;ls /Users/chunming.liu/Downloads/&apos;)</span><br></pre></td></tr></table></figure></p>
+<h4 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h4><ol>
+<li><a href="https://blog.csdn.net/qq_29883591/article/details/53443062" target="_blank" rel="noopener">https://blog.csdn.net/qq_29883591/article/details/53443062</a></li>
+</ol>
+
       
     </div>
     
@@ -363,6 +395,12 @@
     
 
     <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/python/" rel="tag"># python</a>
+          
+        </div>
       
 
       
@@ -433,8 +471,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -494,6 +541,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#用法简介"><span class="nav-number">1.</span> <span class="nav-text">用法简介</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#应用举例"><span class="nav-number">2.</span> <span class="nav-text">应用举例</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#危害"><span class="nav-number">3.</span> <span class="nav-text">危害</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#参考文章"><span class="nav-number">4.</span> <span class="nav-text">参考文章</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
