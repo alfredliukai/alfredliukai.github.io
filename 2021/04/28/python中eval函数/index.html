@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="昨非的个人网站">
 <meta property="og:description" content="用法简介函数原型： eval(expression, globals=None, locals=None) 参数： expression：这个参数是一个字符串，python会使用globals字典和locals字典作为全局和局部的命名空间，将expression当做一个python表达式（从技术上讲，是一个条件列表）进行解析和计算。 globals:这个参数管控的是一个全局的命名空间，也就是我们在">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:updated_time" content="2021-05-01T14:21:49.000Z">
+<meta property="og:updated_time" content="2021-05-01T14:22:29.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="python中eval函数">
 <meta name="twitter:description" content="用法简介函数原型： eval(expression, globals=None, locals=None) 参数： expression：这个参数是一个字符串，python会使用globals字典和locals字典作为全局和局部的命名空间，将expression当做一个python表达式（从技术上讲，是一个条件列表）进行解析和计算。 globals:这个参数管控的是一个全局的命名空间，也就是我们在">
@@ -380,6 +380,7 @@
 <h4 id="危害"><a href="#危害" class="headerlink" title="危害"></a>危害</h4><p>eval虽然方便，但是要注意安全性，可以将字符串转成表达式并执行，就可以利用执行系统命令，删除文件等操作。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">eval(&quot;__import__(&apos;os&apos;).system(&apos;ls /Users/chunming.liu/Downloads/&apos;)&quot;)</span><br><span class="line"></span><br><span class="line">os.system(&apos;ls /Users/chunming.liu/Downloads/&apos;)</span><br></pre></td></tr></table></figure></p>
 <h4 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h4><ol>
 <li><a href="https://blog.csdn.net/qq_29883591/article/details/53443062" target="_blank" rel="noopener">https://blog.csdn.net/qq_29883591/article/details/53443062</a></li>
+<li><a href="https://blog.csdn.net/liuchunming033/article/details/87643041" target="_blank" rel="noopener">https://blog.csdn.net/liuchunming033/article/details/87643041</a></li>
 </ol>
 
       
