@@ -132,6 +132,22 @@
       </tags>
   </entry>
   <entry>
+    <title>Linux系统/dev/mapper目录</title>
+    <url>/2021/01/26/Linux%E7%B3%BB%E7%BB%9F-dev-mapper%E7%9B%AE%E5%BD%95/</url>
+    <content><![CDATA[<p> Linux系统的一般的文件系统名称类似于/dev/sda1或/dev/hda1，但是今天在进行系统维护的时候，利用df -h 命令敲出了/dev/mapper/VolGroup-lv_root和/dev/mapper/Volume-lv_home两个文件系统名，不解，在网上查找资料后，在此浅谈/dev/mapper目录。</p>
+<h3 id="理解Linux系统的Device-mapper机制"><a href="#理解Linux系统的Device-mapper机制" class="headerlink" title="理解Linux系统的Device mapper机制"></a>理解Linux系统的Device mapper机制</h3><p>Device mapper是Linux2.6内核中提供的一种从逻辑设备到物理设备的映射机制，在该机制下，用户能够很方便的根据自己的需要实现对存储资源的管理。在具体管理时需要用到Linux下的逻辑卷管理器，当前比较流行的逻辑卷管理器有 LVM2（Linux Volume Manager 2 version)、EVMS(Enterprise Volume Management System)、dmraid(Device Mapper Raid Tool)等。</p>
+<p>想要详细了解Device mapper机制，可参考博文 <a href="http://blog.sina.com.cn/s/blog_6237dcca0100hnwb.html" target="_blank" rel="noopener">http://blog.sina.com.cn/s/blog_6237dcca0100hnwb.html</a> ，此处不再赘述。</p>
+<h3 id="dev-mapper目录的解释"><a href="#dev-mapper目录的解释" class="headerlink" title="/dev/mapper目录的解释"></a>/dev/mapper目录的解释</h3><p>为了方便叙述，假设一台服务器有三块硬盘分别为a，b，c，每块硬盘的容量为1T。在安装Linux的时候，先根据系统及自身的需要建立基本的分区，假设对硬盘a进行了分区，分出去了0.1T的空间挂载在/boot目录下，其他硬盘未进行分区。系统利用Device mapper机制建立了一个卷组（volume group，VG），你可以把VG当做一个资源池来看待，最后在VG上面再创建逻辑卷（logical volume，LV）。若要将硬盘a的剩余空间、硬盘b和硬盘c都加入到VG中，则硬盘a的剩余空间首先会被系统建立为一个物理卷（physical volume，PV），并且这个物理卷的大小就是0.9T，之后硬盘a的剩余的空间、硬盘b和硬盘c以PV的身份加入到VG这个资源池中，然后你需要多大的空间，就可以从VG中划出多大的空间（当然最大不能超过VG的容量）。比如此时池中的空间就是2.9T，此时你就可以建立一个1T以上的空间出来，而不像以前最大的容量空间只能为1T。</p>
+<p>/dev/mapper/Volume-lv_root的意思是说你有一个VG (volume group卷组)叫作Volume, 这个Volume里面有一个LV叫作lv_root。其实这个/dev/mapper/Volume-lv_root文件是一个连接文件，是连接到/dev/dm-0的，你可以用命令ll /dev/mapper/Volume-lv_root进行查看。</p>
+<p>其实在系统里/dev/Volume/lv_root 和 /dev/mapper/Volume-lv_root以及/dev/dm-0都是一个东西，都可当作一个分区来对待。</p>
+<p>若要了解硬盘的具体情况，可通过fdisk或者pvdisplay命令进行查看。</p>
+<p>若你想要重装系统到/dev/sda下，且安装时有些东西不想被格式化想转移到/dev/sdb下，但此时/dev/sda和/dev/sdb被放到VG中了，那该如何解决该问题呢？这种情况下，由于此时根本没办法确定数据在哪一个硬盘上,因为这两个硬盘就如同加到池里，被Device mapper管理，所以解决方案就是再建个逻辑卷出来，把数据移到新的卷里，这样你就可以重装系统时只删掉之前分区里的东西，而新的卷里的东西不动，就不会丢失了。</p>
+]]></content>
+      <tags>
+        <tag>linux</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Nginx启用proxy_buffer缓冲</title>
     <url>/2021/03/19/Nginx%E5%90%AF%E7%94%A8proxy-buffer%E7%BC%93%E5%86%B2/</url>
     <content><![CDATA[<h3 id="buffer-是什么"><a href="#buffer-是什么" class="headerlink" title="buffer 是什么"></a>buffer 是什么</h3><p>buffer ，即缓冲区，它在 Nginx 上发挥的作用就是 启用一个缓冲区，先在这个缓冲区内进行存储，再把数据发送出去 。和在线观看视频有点类似，先把视频文件缓冲一部分到本地再开始播放。</p>
@@ -164,22 +180,6 @@
 ]]></content>
       <tags>
         <tag>nginx</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Linux系统/dev/mapper目录</title>
-    <url>/2021/01/26/Linux%E7%B3%BB%E7%BB%9F-dev-mapper%E7%9B%AE%E5%BD%95/</url>
-    <content><![CDATA[<p> Linux系统的一般的文件系统名称类似于/dev/sda1或/dev/hda1，但是今天在进行系统维护的时候，利用df -h 命令敲出了/dev/mapper/VolGroup-lv_root和/dev/mapper/Volume-lv_home两个文件系统名，不解，在网上查找资料后，在此浅谈/dev/mapper目录。</p>
-<h3 id="理解Linux系统的Device-mapper机制"><a href="#理解Linux系统的Device-mapper机制" class="headerlink" title="理解Linux系统的Device mapper机制"></a>理解Linux系统的Device mapper机制</h3><p>Device mapper是Linux2.6内核中提供的一种从逻辑设备到物理设备的映射机制，在该机制下，用户能够很方便的根据自己的需要实现对存储资源的管理。在具体管理时需要用到Linux下的逻辑卷管理器，当前比较流行的逻辑卷管理器有 LVM2（Linux Volume Manager 2 version)、EVMS(Enterprise Volume Management System)、dmraid(Device Mapper Raid Tool)等。</p>
-<p>想要详细了解Device mapper机制，可参考博文 <a href="http://blog.sina.com.cn/s/blog_6237dcca0100hnwb.html" target="_blank" rel="noopener">http://blog.sina.com.cn/s/blog_6237dcca0100hnwb.html</a> ，此处不再赘述。</p>
-<h3 id="dev-mapper目录的解释"><a href="#dev-mapper目录的解释" class="headerlink" title="/dev/mapper目录的解释"></a>/dev/mapper目录的解释</h3><p>为了方便叙述，假设一台服务器有三块硬盘分别为a，b，c，每块硬盘的容量为1T。在安装Linux的时候，先根据系统及自身的需要建立基本的分区，假设对硬盘a进行了分区，分出去了0.1T的空间挂载在/boot目录下，其他硬盘未进行分区。系统利用Device mapper机制建立了一个卷组（volume group，VG），你可以把VG当做一个资源池来看待，最后在VG上面再创建逻辑卷（logical volume，LV）。若要将硬盘a的剩余空间、硬盘b和硬盘c都加入到VG中，则硬盘a的剩余空间首先会被系统建立为一个物理卷（physical volume，PV），并且这个物理卷的大小就是0.9T，之后硬盘a的剩余的空间、硬盘b和硬盘c以PV的身份加入到VG这个资源池中，然后你需要多大的空间，就可以从VG中划出多大的空间（当然最大不能超过VG的容量）。比如此时池中的空间就是2.9T，此时你就可以建立一个1T以上的空间出来，而不像以前最大的容量空间只能为1T。</p>
-<p>/dev/mapper/Volume-lv_root的意思是说你有一个VG (volume group卷组)叫作Volume, 这个Volume里面有一个LV叫作lv_root。其实这个/dev/mapper/Volume-lv_root文件是一个连接文件，是连接到/dev/dm-0的，你可以用命令ll /dev/mapper/Volume-lv_root进行查看。</p>
-<p>其实在系统里/dev/Volume/lv_root 和 /dev/mapper/Volume-lv_root以及/dev/dm-0都是一个东西，都可当作一个分区来对待。</p>
-<p>若要了解硬盘的具体情况，可通过fdisk或者pvdisplay命令进行查看。</p>
-<p>若你想要重装系统到/dev/sda下，且安装时有些东西不想被格式化想转移到/dev/sdb下，但此时/dev/sda和/dev/sdb被放到VG中了，那该如何解决该问题呢？这种情况下，由于此时根本没办法确定数据在哪一个硬盘上,因为这两个硬盘就如同加到池里，被Device mapper管理，所以解决方案就是再建个逻辑卷出来，把数据移到新的卷里，这样你就可以重装系统时只删掉之前分区里的东西，而新的卷里的东西不动，就不会丢失了。</p>
-]]></content>
-      <tags>
-        <tag>linux</tag>
       </tags>
   </entry>
   <entry>
@@ -605,6 +605,43 @@
       </tags>
   </entry>
   <entry>
+    <title>git中的对象简介</title>
+    <url>/2020/07/08/git%E4%B8%AD%E7%9A%84%E5%AF%B9%E8%B1%A1%E7%AE%80%E4%BB%8B/</url>
+    <content><![CDATA[<p>为了加深git中底层对象的理解，特意整理如下文章。<br>Git 保存的不是文件的变化或者差异，而是一系列不同时刻的 快照 。</p>
+<p>在进行提交操作时，Git 会保存一个提交对象（commit object）。 知道了 Git 保存数据的方式，我们可以很自然的想到——该提交对象会包含一个指向暂存内容快照的指针。 但不仅仅是这样，该提交对象还包含了作者的姓名和邮箱、提交时输入的信息以及指向它的父对象的指针。 首次提交产生的提交对象没有父对象，普通提交操作产生的提交对象有一个父对象， 而由多个分支合并产生的提交对象有多个父对象，</p>
+<p>为了更加形象地说明，我们假设现在有一个工作目录，里面包含了三个将要被暂存和提交的文件。 暂存操作会为每一个文件计算校验和（使用我们在 起步 中提到的 SHA-1 哈希算法），然后会把当前版本的文件快照保存到 Git 仓库中 （Git 使用 blob 对象来保存它们），最终将校验和加入到暂存区域等待提交：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ git add README test.rb LICENSE</span><br><span class="line">$ git commit -m &apos;The initial commit of my project&apos;</span><br></pre></td></tr></table></figure>
+<p>当使用 git commit 进行提交操作时，Git 会先计算每一个子目录（本例中只有项目根目录）的校验和， 然后在 Git 仓库中这些校验和保存为树对象。随后，Git 便会创建一个提交对象， 它除了包含上面提到的那些信息外，还包含指向这个树对象（项目根目录）的指针。 如此一来，Git 就可以在需要的时候重现此次保存的快照。</p>
+<p>现在，Git 仓库中有五个对象：三个 blob 对象（保存着文件快照）、一个 树 对象 （记录着目录结构和 blob 对象索引）以及一个 提交 对象（包含着指向前述树对象的指针和所有提交信息）。<br><img src="/2020/07/08/git中的对象简介/git1.png" alt="avatar"><br>Figure 9. 首次提交对象及其树结构<br>做些修改后再次提交，那么这次产生的提交对象会包含一个指向上次提交对象（父对象）的指针。<br><img src="/2020/07/08/git中的对象简介/git2.png" alt="avatar"><br>Figure 10. 提交对象及其父对象<br>Git 的分支，其实本质上仅仅是指向提交对象的可变指针。 Git 的默认分支名字是 master。 在多次提交操作之后，你其实已经有一个指向最后那个提交对象的 master 分支。 master 分支会在每次提交时自动向前移动。<br><img src="/2020/07/08/git中的对象简介/git3.png" alt="avatar"><br>Figure 11. 分支及其提交历史</p>
+<h2 id="分支创建"><a href="#分支创建" class="headerlink" title="分支创建"></a>分支创建</h2><p>Git 是怎么创建新分支的呢？ 很简单，它只是为你创建了一个可以移动的新的指针。 比如，创建一个 testing 分支， 你需要使用 git branch 命令：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ git branch testing</span><br></pre></td></tr></table></figure></p>
+<p>这会在当前所在的提交对象上创建一个指针。<br><img src="/2020/07/08/git中的对象简介/git4.png" alt="avatar"></p>
+<p>Figure 12. 两个指向相同提交历史的分支<br>那么，Git 又是怎么知道当前在哪一个分支上呢？ 也很简单，它有一个名为 HEAD 的特殊指针。 请注意它和许多其它版本控制系统（如 Subversion 或 CVS）里的 HEAD 概念完全不同。 在 Git 中，它是一个指针，指向当前所在的本地分支（译注：将 HEAD 想象为当前分支的别名）。 在本例中，你仍然在 master 分支上。 因为 git branch 命令仅仅 创建 一个新分支，并不会自动切换到新分支中去。</p>
+<p><img src="/2020/07/08/git中的对象简介/git5.png" alt="avatar"></p>
+<p>Figure 13. HEAD 指向当前所在的分支<br>你可以简单地使用 git log 命令查看各个分支当前所指的对象。 提供这一功能的参数是 –decorate<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ git log --oneline --decorate</span><br><span class="line">f30ab (HEAD -&gt; master, testing) add feature #32 - ability to add new formats to the central interface</span><br><span class="line">34ac2 Fixed bug #1328 - stack overflow under certain conditions</span><br><span class="line">98ca9 The initial commit of my project</span><br></pre></td></tr></table></figure></p>
+<p>正如你所见，当前 master 和 testing 分支均指向校验和以 f30ab 开头的提交对象。</p>
+<h2 id="分支切换"><a href="#分支切换" class="headerlink" title="分支切换"></a>分支切换</h2><p>要切换到一个已存在的分支，你需要使用 git checkout 命令。 我们现在切换到新创建的 testing 分支去：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ git checkout testing</span><br></pre></td></tr></table></figure>
+<p>这样 HEAD 就指向 testing 分支了。</p>
+<p><img src="/2020/07/08/git中的对象简介/git6.png" alt="avatar"></p>
+<p>Figure 14. HEAD 指向当前所在的分支<br>那么，这样的实现方式会给我们带来什么好处呢？ 现在不妨再提交一次：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ vim test.rb</span><br><span class="line">$ git commit -a -m &apos;made a change&apos;</span><br></pre></td></tr></table></figure>
+<p><img src="/2020/07/08/git中的对象简介/git7.png" alt="avatar"></p>
+<p>Figure 15. HEAD 分支随着提交操作自动向前移动<br>如图所示，你的 testing 分支向前移动了，但是 master 分支却没有，它仍然指向运行 git checkout 时所指的对象。 这就有意思了，现在我们切换回 master 分支看看：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ git checkout master</span><br></pre></td></tr></table></figure>
+<p><img src="/2020/07/08/git中的对象简介/git8.png" alt="avatar"><br>Figure 16. 检出时 HEAD 随之移动<br>这条命令做了两件事。 一是使 HEAD 指回 master 分支，二是将工作目录恢复成 master 分支所指向的快照内容。 也就是说，你现在做修改的话，项目将始于一个较旧的版本。 本质上来讲，这就是忽略 testing 分支所做的修改，以便于向另一个方向进行开发。</p>
+<p>我们不妨再稍微做些修改并提交：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ vim test.rb</span><br><span class="line">$ git commit -a -m &apos;made other changes&apos;</span><br></pre></td></tr></table></figure>
+<p>现在，这个项目的提交历史已经产生了分叉（参见 项目分叉历史）。 因为刚才你创建了一个新分支，并切换过去进行了一些工作，随后又切换回 master 分支进行了另外一些工作。 上述两次改动针对的是不同分支：你可以在不同分支间不断地来回切换和工作，并在时机成熟时将它们合并起来。 而所有这些工作，你需要的命令只有 branch、checkout 和 commit。<br><img src="/2020/07/08/git中的对象简介/git9.png" alt="avatar"><br>Figure 17. 项目分叉历史<br>你可以简单地使用 git log 命令查看分叉历史。 运行 git log –oneline –decorate –graph –all ，它会输出你的提交历史、各个分支的指向以及项目的分支分叉情况。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ git log --oneline --decorate --graph --all</span><br><span class="line">* c2b9e (HEAD, master) made other changes</span><br><span class="line">| * 87ab2 (testing) made a change</span><br><span class="line">|/</span><br><span class="line">* f30ab add feature #32 - ability to add new formats to the</span><br><span class="line">* 34ac2 fixed bug #1328 - stack overflow under certain conditions</span><br><span class="line">* 98ca9 initial commit of my project</span><br></pre></td></tr></table></figure>
+<p>由于 Git 的分支实质上仅是包含所指对象校验和（长度为 40 的 SHA-1 值字符串）的文件，所以它的创建和销毁都异常高效。 创建一个新分支就相当于往一个文件中写入 41 个字节（40 个字符和 1 个换行符），如此的简单能不快吗？</p>
+<p>这与过去大多数版本控制系统形成了鲜明的对比，它们在创建分支时，将所有的项目文件都复制一遍，并保存到一个特定的目录。 完成这样繁琐的过程通常需要好几秒钟，有时甚至需要好几分钟。所需时间的长短，完全取决于项目的规模。 而在 Git 中，任何规模的项目都能在瞬间创建新分支。 同时，由于每次提交都会记录父对象，所以寻找恰当的合并基础（译注：即共同祖先）也是同样的简单和高效。 这些高效的特性使得 Git 鼓励开发人员频繁地创建和使用分支。</p>
+<h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><p><a href="https://git-scm.com/book/zh/v2/Git-%E5%88%86%E6%94%AF-%E5%88%86%E6%94%AF%E7%AE%80%E4%BB%8B" target="_blank" rel="noopener">https://git-scm.com/book/zh/v2/Git-%E5%88%86%E6%94%AF-%E5%88%86%E6%94%AF%E7%AE%80%E4%BB%8B</a></p>
+]]></content>
+      <tags>
+        <tag>git</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>git常用命令</title>
     <url>/2020/04/05/git%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/</url>
     <content><![CDATA[<h4 id="git-branch"><a href="#git-branch" class="headerlink" title="git branch"></a>git branch</h4><ul>
@@ -665,43 +702,6 @@
 <li>git pull –rebase<br>如果远程git服务器仓库分支已经有了更新上，通常git pull时候将会默认执行merge合并提交。相当于执行两个操作<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">git fetch origin</span><br><span class="line">git merge origin/master</span><br><span class="line"></span><br><span class="line">实际上除了合并外还有一种方法，那就是执行rebase来同步变化，它通常更有用，git提交历史也更清晰，</span><br><span class="line">rebase方法需要显性指定--rebase参数：</span><br><span class="line"></span><br><span class="line">git pull --rebase ，他相当执行:</span><br><span class="line">git fetch origin</span><br><span class="line">git rebase origin/master</span><br><span class="line"></span><br><span class="line">合并方法更简单，更容易理解。但是很多时候我们更需要的是rebase，我们也可以通过设置，设置rebase为</span><br><span class="line">pull时候默认执行的动作：git config --global pull.rebase true</span><br></pre></td></tr></table></figure>
 </li>
 </ul>
-]]></content>
-      <tags>
-        <tag>git</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>git中的对象简介</title>
-    <url>/2020/07/08/git%E4%B8%AD%E7%9A%84%E5%AF%B9%E8%B1%A1%E7%AE%80%E4%BB%8B/</url>
-    <content><![CDATA[<p>为了加深git中底层对象的理解，特意整理如下文章。<br>Git 保存的不是文件的变化或者差异，而是一系列不同时刻的 快照 。</p>
-<p>在进行提交操作时，Git 会保存一个提交对象（commit object）。 知道了 Git 保存数据的方式，我们可以很自然的想到——该提交对象会包含一个指向暂存内容快照的指针。 但不仅仅是这样，该提交对象还包含了作者的姓名和邮箱、提交时输入的信息以及指向它的父对象的指针。 首次提交产生的提交对象没有父对象，普通提交操作产生的提交对象有一个父对象， 而由多个分支合并产生的提交对象有多个父对象，</p>
-<p>为了更加形象地说明，我们假设现在有一个工作目录，里面包含了三个将要被暂存和提交的文件。 暂存操作会为每一个文件计算校验和（使用我们在 起步 中提到的 SHA-1 哈希算法），然后会把当前版本的文件快照保存到 Git 仓库中 （Git 使用 blob 对象来保存它们），最终将校验和加入到暂存区域等待提交：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ git add README test.rb LICENSE</span><br><span class="line">$ git commit -m &apos;The initial commit of my project&apos;</span><br></pre></td></tr></table></figure>
-<p>当使用 git commit 进行提交操作时，Git 会先计算每一个子目录（本例中只有项目根目录）的校验和， 然后在 Git 仓库中这些校验和保存为树对象。随后，Git 便会创建一个提交对象， 它除了包含上面提到的那些信息外，还包含指向这个树对象（项目根目录）的指针。 如此一来，Git 就可以在需要的时候重现此次保存的快照。</p>
-<p>现在，Git 仓库中有五个对象：三个 blob 对象（保存着文件快照）、一个 树 对象 （记录着目录结构和 blob 对象索引）以及一个 提交 对象（包含着指向前述树对象的指针和所有提交信息）。<br><img src="/2020/07/08/git中的对象简介/git1.png" alt="avatar"><br>Figure 9. 首次提交对象及其树结构<br>做些修改后再次提交，那么这次产生的提交对象会包含一个指向上次提交对象（父对象）的指针。<br><img src="/2020/07/08/git中的对象简介/git2.png" alt="avatar"><br>Figure 10. 提交对象及其父对象<br>Git 的分支，其实本质上仅仅是指向提交对象的可变指针。 Git 的默认分支名字是 master。 在多次提交操作之后，你其实已经有一个指向最后那个提交对象的 master 分支。 master 分支会在每次提交时自动向前移动。<br><img src="/2020/07/08/git中的对象简介/git3.png" alt="avatar"><br>Figure 11. 分支及其提交历史</p>
-<h2 id="分支创建"><a href="#分支创建" class="headerlink" title="分支创建"></a>分支创建</h2><p>Git 是怎么创建新分支的呢？ 很简单，它只是为你创建了一个可以移动的新的指针。 比如，创建一个 testing 分支， 你需要使用 git branch 命令：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ git branch testing</span><br></pre></td></tr></table></figure></p>
-<p>这会在当前所在的提交对象上创建一个指针。<br><img src="/2020/07/08/git中的对象简介/git4.png" alt="avatar"></p>
-<p>Figure 12. 两个指向相同提交历史的分支<br>那么，Git 又是怎么知道当前在哪一个分支上呢？ 也很简单，它有一个名为 HEAD 的特殊指针。 请注意它和许多其它版本控制系统（如 Subversion 或 CVS）里的 HEAD 概念完全不同。 在 Git 中，它是一个指针，指向当前所在的本地分支（译注：将 HEAD 想象为当前分支的别名）。 在本例中，你仍然在 master 分支上。 因为 git branch 命令仅仅 创建 一个新分支，并不会自动切换到新分支中去。</p>
-<p><img src="/2020/07/08/git中的对象简介/git5.png" alt="avatar"></p>
-<p>Figure 13. HEAD 指向当前所在的分支<br>你可以简单地使用 git log 命令查看各个分支当前所指的对象。 提供这一功能的参数是 –decorate<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ git log --oneline --decorate</span><br><span class="line">f30ab (HEAD -&gt; master, testing) add feature #32 - ability to add new formats to the central interface</span><br><span class="line">34ac2 Fixed bug #1328 - stack overflow under certain conditions</span><br><span class="line">98ca9 The initial commit of my project</span><br></pre></td></tr></table></figure></p>
-<p>正如你所见，当前 master 和 testing 分支均指向校验和以 f30ab 开头的提交对象。</p>
-<h2 id="分支切换"><a href="#分支切换" class="headerlink" title="分支切换"></a>分支切换</h2><p>要切换到一个已存在的分支，你需要使用 git checkout 命令。 我们现在切换到新创建的 testing 分支去：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ git checkout testing</span><br></pre></td></tr></table></figure>
-<p>这样 HEAD 就指向 testing 分支了。</p>
-<p><img src="/2020/07/08/git中的对象简介/git6.png" alt="avatar"></p>
-<p>Figure 14. HEAD 指向当前所在的分支<br>那么，这样的实现方式会给我们带来什么好处呢？ 现在不妨再提交一次：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ vim test.rb</span><br><span class="line">$ git commit -a -m &apos;made a change&apos;</span><br></pre></td></tr></table></figure>
-<p><img src="/2020/07/08/git中的对象简介/git7.png" alt="avatar"></p>
-<p>Figure 15. HEAD 分支随着提交操作自动向前移动<br>如图所示，你的 testing 分支向前移动了，但是 master 分支却没有，它仍然指向运行 git checkout 时所指的对象。 这就有意思了，现在我们切换回 master 分支看看：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ git checkout master</span><br></pre></td></tr></table></figure>
-<p><img src="/2020/07/08/git中的对象简介/git8.png" alt="avatar"><br>Figure 16. 检出时 HEAD 随之移动<br>这条命令做了两件事。 一是使 HEAD 指回 master 分支，二是将工作目录恢复成 master 分支所指向的快照内容。 也就是说，你现在做修改的话，项目将始于一个较旧的版本。 本质上来讲，这就是忽略 testing 分支所做的修改，以便于向另一个方向进行开发。</p>
-<p>我们不妨再稍微做些修改并提交：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ vim test.rb</span><br><span class="line">$ git commit -a -m &apos;made other changes&apos;</span><br></pre></td></tr></table></figure>
-<p>现在，这个项目的提交历史已经产生了分叉（参见 项目分叉历史）。 因为刚才你创建了一个新分支，并切换过去进行了一些工作，随后又切换回 master 分支进行了另外一些工作。 上述两次改动针对的是不同分支：你可以在不同分支间不断地来回切换和工作，并在时机成熟时将它们合并起来。 而所有这些工作，你需要的命令只有 branch、checkout 和 commit。<br><img src="/2020/07/08/git中的对象简介/git9.png" alt="avatar"><br>Figure 17. 项目分叉历史<br>你可以简单地使用 git log 命令查看分叉历史。 运行 git log –oneline –decorate –graph –all ，它会输出你的提交历史、各个分支的指向以及项目的分支分叉情况。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ git log --oneline --decorate --graph --all</span><br><span class="line">* c2b9e (HEAD, master) made other changes</span><br><span class="line">| * 87ab2 (testing) made a change</span><br><span class="line">|/</span><br><span class="line">* f30ab add feature #32 - ability to add new formats to the</span><br><span class="line">* 34ac2 fixed bug #1328 - stack overflow under certain conditions</span><br><span class="line">* 98ca9 initial commit of my project</span><br></pre></td></tr></table></figure>
-<p>由于 Git 的分支实质上仅是包含所指对象校验和（长度为 40 的 SHA-1 值字符串）的文件，所以它的创建和销毁都异常高效。 创建一个新分支就相当于往一个文件中写入 41 个字节（40 个字符和 1 个换行符），如此的简单能不快吗？</p>
-<p>这与过去大多数版本控制系统形成了鲜明的对比，它们在创建分支时，将所有的项目文件都复制一遍，并保存到一个特定的目录。 完成这样繁琐的过程通常需要好几秒钟，有时甚至需要好几分钟。所需时间的长短，完全取决于项目的规模。 而在 Git 中，任何规模的项目都能在瞬间创建新分支。 同时，由于每次提交都会记录父对象，所以寻找恰当的合并基础（译注：即共同祖先）也是同样的简单和高效。 这些高效的特性使得 Git 鼓励开发人员频繁地创建和使用分支。</p>
-<h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><p><a href="https://git-scm.com/book/zh/v2/Git-%E5%88%86%E6%94%AF-%E5%88%86%E6%94%AF%E7%AE%80%E4%BB%8B" target="_blank" rel="noopener">https://git-scm.com/book/zh/v2/Git-%E5%88%86%E6%94%AF-%E5%88%86%E6%94%AF%E7%AE%80%E4%BB%8B</a></p>
 ]]></content>
       <tags>
         <tag>git</tag>
@@ -1574,6 +1574,11 @@
       </tags>
   </entry>
   <entry>
+    <title>python中的异步IO</title>
+    <url>/2021/05/05/python%E4%B8%AD%E7%9A%84%E5%BC%82%E6%AD%A5IO/</url>
+    <content><![CDATA[]]></content>
+  </entry>
+  <entry>
     <title>python中的循环导入问题</title>
     <url>/2020/12/03/python%E4%B8%AD%E7%9A%84%E5%BE%AA%E7%8E%AF%E5%AF%BC%E5%85%A5%E9%97%AE%E9%A2%98/</url>
     <content><![CDATA[<p>循环导入的最好的解决方法是从架构上优化，即调整模块和模块成员变量的设计。一个好的原则是：可导出的成员变量，都不应该依赖于导入进来的成员变量。<br>但是在业务开发的过程中，总会遇到通过架构层面解决不了的导入问题，这时候就只能通过语言层面来解决了。</p>
@@ -1614,6 +1619,49 @@
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">import sys</span><br><span class="line">if &apos;pack1.module_a&apos; in sys.modules:</span><br><span class="line">    if hasattr(sys.modules[&apos;pack1.module_a&apos;],&quot;class_a&quot;):</span><br><span class="line">        sys.modules[&apos;pack2.module_b&apos;].class_a=sys.modules[&apos;pack1.module_a&apos;].class_a</span><br><span class="line">    else:</span><br><span class="line">        raise Exception(u&quot;循环导入异常&quot;)</span><br><span class="line">else:</span><br><span class="line">    #执行导入pack1.module_a的操作，也就是初始化一个module对象，然后令sys.modules[&apos;pack1.module_a&apos;]=这个对象</span><br></pre></td></tr></table></figure>
 <p>所以解决循环导入的问题，就相当于使上面的代码不会执行到raise Exception(u”循环导入异常”)这一句，方案一和方案二都是通过这种方法解决的。</p>
 ]]></content>
+  </entry>
+  <entry>
+    <title>python中的线程小结</title>
+    <url>/2021/05/05/python%E4%B8%AD%E7%9A%84%E7%BA%BF%E7%A8%8B%E5%B0%8F%E7%BB%93/</url>
+    <content><![CDATA[<h4 id="单线程"><a href="#单线程" class="headerlink" title="单线程"></a>单线程</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">def say_hello(name):</span><br><span class="line">    print(&quot;hello world! %d&quot; % name)</span><br><span class="line">    time.sleep(3)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">if __name__ == &apos;__main__&apos;:</span><br><span class="line">    for i in range(5):</span><br><span class="line">        say_hello(i)</span><br></pre></td></tr></table></figure>
+<h4 id="多线程"><a href="#多线程" class="headerlink" title="多线程"></a>多线程</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">import threading</span><br><span class="line">import time</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def say_hello(name):</span><br><span class="line">    print(&quot;hello world! %d&quot; % name)</span><br><span class="line">    time.sleep(3)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">if __name__ == &apos;__main__&apos;:</span><br><span class="line">    start_time = time.time()</span><br><span class="line">    t_list = []</span><br><span class="line">    for i in range(1000):</span><br><span class="line">        t = threading.Thread(target=say_hello, args=(i,))</span><br><span class="line">        t_list.append(t)</span><br><span class="line"></span><br><span class="line">    for t_thread in t_list:</span><br><span class="line">        t_thread.start()</span><br><span class="line"></span><br><span class="line">    for t_thread in t_list:</span><br><span class="line">        t_thread.join()</span><br><span class="line"></span><br><span class="line">    end_time = time.time()</span><br><span class="line">    print(&quot;time used %0.2f&quot; % (end_time - start_time))</span><br></pre></td></tr></table></figure>
+<h4 id="查看线程数量"><a href="#查看线程数量" class="headerlink" title="查看线程数量"></a>查看线程数量</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">import threading</span><br><span class="line">from time import sleep, ctime</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def sing():</span><br><span class="line">    for i in range(3):</span><br><span class="line">        print(&quot;正在唱歌...%d&quot; % i)</span><br><span class="line">        sleep(1)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def dance():</span><br><span class="line">    for i in range(3):</span><br><span class="line">        print(&quot;正在跳舞...%d&quot; % i)</span><br><span class="line">        sleep(1)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">if __name__ == &apos;__main__&apos;:</span><br><span class="line">    print(&apos;---开始---:&apos;, ctime())</span><br><span class="line"></span><br><span class="line">    t1 = threading.Thread(target=sing)</span><br><span class="line">    t2 = threading.Thread(target=dance)</span><br><span class="line"></span><br><span class="line">    t1.start()</span><br><span class="line">    t2.start()</span><br><span class="line"></span><br><span class="line">    while True:</span><br><span class="line">        length = len(threading.enumerate())</span><br><span class="line">        print(&apos;当前运行的线程数为：%d&apos; % length)</span><br><span class="line">        if length &lt;= 1:</span><br><span class="line">            break</span><br><span class="line"></span><br><span class="line">        sleep(0.5)</span><br></pre></td></tr></table></figure>
+<h4 id="线程执行代码的封装"><a href="#线程执行代码的封装" class="headerlink" title="线程执行代码的封装"></a>线程执行代码的封装</h4><p>通过使用threading模块能完成多任务的程序开发，为了让每个线程的封装性更完美，所以使用threading模块时，往往会定义一个新的子类class，只要继承threading.Thread就可以了，然后重写run方法.</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class MyThread(threading.Thread):</span><br><span class="line"></span><br><span class="line">    def run(self):</span><br><span class="line">        for i in range(5):</span><br><span class="line">            print(&quot;hello my custom thread %d&quot; % i)</span><br><span class="line">            sleep(5)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">if __name__ == &apos;__main__&apos;:</span><br><span class="line">    t = MyThread()</span><br><span class="line">    t.start()</span><br></pre></td></tr></table></figure>
+<p>python的threading.Thread类有一个run方法，用于定义线程的功能函数，可以在自己的线程类中覆盖该方法。而创建自己的线程实例后，通过Thread类的start方法，可以启动该线程，交给python虚拟机进行调度，当该线程获得执行的机会时，就会调用run方法执行线程。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class MyThread(threading.Thread):</span><br><span class="line"></span><br><span class="line">    def run(self):</span><br><span class="line">        for i in range(3):</span><br><span class="line">            msg = &quot;I&apos;m &quot; + self.name + &apos; @ &apos; + str(i)</span><br><span class="line">            print(msg)</span><br><span class="line">            sleep(2)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">if __name__ == &apos;__main__&apos;:</span><br><span class="line">    for i in range(5):</span><br><span class="line">        t = MyThread()</span><br><span class="line">        t.start()</span><br></pre></td></tr></table></figure>
+<p>从代码和执行结果我们可以看出，多线程程序的执行顺序是不确定的。当执行到sleep语句时，线程将被阻塞（Blocked），到sleep结束后，线程进入就绪（Runnable）状态，等待调度。而线程调度将自行选择一个线程执行。上面的代码中只能保证每个线程都运行完整个run函数，但是线程的启动顺序、run函数中每次循环的执行顺序都不能确定。</p>
+<ul>
+<li>每个线程一定会有一个名字，尽管上面的例子中没有指定线程对象的name，但是python会自动为线程指定一个名字。</li>
+<li>当线程的run()方法结束时该线程完成。</li>
+<li>无法控制线程调度程序，但可以通过别的方式来影响线程调度的方式。</li>
+<li>线程的几种状态</li>
+</ul>
+<p><img src="/2021/05/05/python中的线程小结/thread.png" alt="avatar"></p>
+<h4 id="多线程-共享全局变量"><a href="#多线程-共享全局变量" class="headerlink" title="多线程-共享全局变量"></a>多线程-共享全局变量</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">num = 1</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">class MyThread(threading.Thread):</span><br><span class="line"></span><br><span class="line">    def run(self):</span><br><span class="line">        global num</span><br><span class="line">        num += 1</span><br><span class="line">        print(&quot;I&apos;m &quot; + self.name + &apos; @ &apos; + str(i) + &apos;num=&apos; + str(num))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">if __name__ == &apos;__main__&apos;:</span><br><span class="line">    for i in range(5):</span><br><span class="line">        t = MyThread()</span><br><span class="line">        t.start()</span><br></pre></td></tr></table></figure>
+<h4 id="同步"><a href="#同步" class="headerlink" title="同步"></a>同步</h4><p><strong>多线程开发可能遇到的问题</strong></p>
+<p>假设两个线程t1和t2都要对num=0进行增1运算，t1和t2都各对num修改10次，num的最终的结果应该为20。</p>
+<p>但是由于是多线程访问，有可能出现下面情况：</p>
+<p>在num=0时，t1取得num=0。此时系统把t1调度为”sleeping”状态，把t2转换为”running”状态，t2也获得num=0。然后t2对得到的值进行加1并赋给num，使得num=1。然后系统又把t2调度为”sleeping”，把t1转为”running”。线程t1又把它之前得到的0加1后赋值给num。这样，明明t1和t2都完成了1次加1工作，但结果仍然是num=1。</p>
+<p><strong>什么是同步</strong></p>
+<p>如进程、线程同步，可理解为进程或线程A和B一块配合，A执行到一定程度时要依靠B的某个结果，于是停下来，示意B运行;B依言执行，再将结果给A;A再继续操作。    </p>
+<p><strong>解决问题的思路</strong></p>
+<ol>
+<li>系统调用t1，然后获取到num的值为0，此时上一把锁，即不允许其他现在操作num</li>
+<li>对num的值进行+1</li>
+<li>解锁，此时num的值为1，其他的线程就可以使用num了，而且是num的值不是0而是1</li>
+<li>同理其他线程在对num进行修改时，都要先上锁，处理完后再解锁，在上锁的整个过程中不允许其他线程访问，就保证了数据的正确性</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">import threading</span><br><span class="line">import time</span><br><span class="line"></span><br><span class="line">num = 0</span><br><span class="line">    </span><br><span class="line"></span><br><span class="line">class MyThread(threading.Thread):</span><br><span class="line">    def run(self):</span><br><span class="line">        global num</span><br><span class="line"></span><br><span class="line">        num = num + 1</span><br><span class="line">        time.sleep(0.5)  # 用来模拟适当的数据处理</span><br><span class="line">        print(self.name + &apos; set num to &apos; + str(num))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def test():</span><br><span class="line">    for i in range(5):</span><br><span class="line">        t = MyThread()</span><br><span class="line">        t.start()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">if __name__ == &apos;__main__&apos;:</span><br><span class="line">    test()</span><br></pre></td></tr></table></figure>
+<p>问题产生的原因就是没有控制多个线程对同一资源的访问，对数据造成破坏，使得线程运行的结果不可预期。这种现象称为“线程不安全”。</p>
+<h4 id="互斥锁"><a href="#互斥锁" class="headerlink" title="互斥锁"></a>互斥锁</h4><p><strong>当多个线程几乎同时修改某一个共享数据的时候，需要进行同步控制</strong></p>
+<p>线程同步能够保证多个线程安全访问竞争资源，最简单的同步机制是引入互斥锁。</p>
+<p>互斥锁为资源引入一个状态：锁定/非锁定。</p>
+<p>某个线程要更改共享数据时，先将其锁定，此时资源的状态为“锁定”，其他线程不能更改；直到该线程释放资源，将资源的状态变成“非锁定”，其他的线程才能再次锁定该资源。互斥锁保证了每次只有一个线程进行写入操作，从而保证了多线程情况下数据的正确性。</p>
+]]></content>
+      <tags>
+        <tag>python</tag>
+      </tags>
   </entry>
   <entry>
     <title>python中的魔法函数</title>
@@ -2912,6 +2960,65 @@
       </tags>
   </entry>
   <entry>
+    <title>python中的模块</title>
+    <url>/2020/09/13/python%E4%B8%AD%E7%9A%84%E6%A8%A1%E5%9D%97/</url>
+    <content><![CDATA[<p>编写模块有很多种方法，其中最简单的一种便是创建一个包含函数与变量、以 .py 为后缀的文件。</p>
+<p>另一种方法是使用撰写 Python 解释器本身的本地语言来编写模块。举例来说，你可以使用 C 语言来撰写 Python 模块，并且在编译后，你可以通过标准 Python 解释器在你的 Python 代码中使用它们。</p>
+<p>一个模块可以被其它程序导入并运用其功能。我们在使用 Python 标准库的功能时也同样如此。首先，我们要了解如何使用标准库模块。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">import sys</span><br><span class="line"></span><br><span class="line">print(&apos;The command line arguments are:&apos;)</span><br><span class="line">for i in sys.argv:</span><br><span class="line">    print(i)</span><br><span class="line"></span><br><span class="line">print(&apos;\n\nThe PYTHONPATH is&apos;, sys.path, &apos;\n&apos;)</span><br><span class="line"></span><br><span class="line">输出：</span><br><span class="line"></span><br><span class="line">$ python module_using_sys.py we are arguments</span><br><span class="line">The command line arguments are:</span><br><span class="line">module_using_sys.py</span><br><span class="line">we</span><br><span class="line">are</span><br><span class="line">arguments</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">The PYTHONPATH is [&apos;/tmp/py&apos;,</span><br><span class="line"># many entries here, not shown here</span><br><span class="line">&apos;/Library/Python/2.7/site-packages&apos;,</span><br><span class="line">&apos;/usr/local/lib/python2.7/site-packages&apos;]</span><br></pre></td></tr></table></figure>
+<p>首先，我们通过 import 语句导入 sys 模块。基本上，这句代码将转化为我们告诉 Python 我们希望使用这一模块。sys 模块包含了与 Python 解释器及其环境相关的功能，也就是所谓的系统功能（system）。</p>
+<p>当 Python 运行 import sys 这一语句时，它会开始寻找 sys 模块。在这一案例中，由于其是一个内置模块，因此 Python 知道应该在哪里找到它。</p>
+<p>如果它不是一个已编译好的模块，即用 Python 编写的模块，那么 Python 解释器将从它的 sys.path 变量所提供的目录中进行搜索。如果找到了对应模块，则该模块中的语句将在开始运行，并能够为你所使用。在这里需要注意的是，初始化工作只需在我们第一次导入模块时完成。</p>
+<p>sys 模块中的 argv 变量通过使用点号予以指明，也就是 sys.argv 这样的形式。它清晰地表明了这一名称是 sys 模块的一部分。这一处理方式的另一个优点是这个名称不会与你程序中的其它任何一个 argv 变量冲突。</p>
+<p>sys.argv 变量是一系列字符串的列表（List）（列表将在后面的章节予以详细解释）。具体而言，sys.argv 包含了命令行参数（Command Line Arguments）这一列表，也就是使用命令行传递给你的程序的参数。</p>
+<p>如果你正在使用一款 IDE 来编写并运行这些程序，请在程序菜单中寻找相关指定命令行参数的选项。</p>
+<p>在这里，当我们运行 python module_using_sys.py we are arguments 时，我们通过 python 命令来运行 module_using_sys.py 模块，后面的内容则是传递给程序的参数。 Python 将命令行参数存储在 sys.argv 变量中供我们使用。</p>
+<p>在这里要记住的是，运行的脚本名称在 sys.argv 的列表中总会位列第一。因此，在这一案例中我们将会有如下对应关系：’module_using_sys.py’ 对应 sys.argv[0]，’we’ 对应 sys.argv[1]，’are’ 对应 sys.argv[2]，’arguments’ 对应 sys.argv[3]。要注意到 Python 从 0 开始计数，而不是 1。</p>
+<p>sys.path 内包含了导入模块的字典名称列表。你能观察到 sys.path 的第一段字符串是空的——这一空字符串代表当前目录也是 sys.path 的一部分，它与 PYTHONPATH 环境变量等同。这意味着你可以直接导入位于当前目录的模块。否则，你必须将你的模块放置在 sys.path 内所列出的目录中。</p>
+<p>另外要注意的是当前目录指的是程序启动的目录。你可以通过运行 import os; print(os.getcwd()) 来查看你的程序目前所处在的目录。</p>
+<h2 id="按字节码编译的-pyc-文件"><a href="#按字节码编译的-pyc-文件" class="headerlink" title="按字节码编译的 .pyc 文件"></a>按字节码编译的 .pyc 文件</h2><p>导入一个模块是一件代价高昂的事情，因此 Python 引入了一些技巧使其能够更快速的完成。其中一种方式便是创建按字节码编译的（Byte-Compiled）文件，这一文件以 .pyc 为其扩展名，是将 Python 转换成中间形式的文件（还记得《介绍》一章中介绍的 Python 是如何工作的吗？）。这一 .pyc 文件在你下一次从其它不同的程序导入模块时非常有用——它将更加快速，因为导入模块时所需要的一部分处理工作已经完成了。同时，这些按字节码编译的文件是独立于运行平台的。</p>
+<p>注意：这些 .pyc 文件通常会创建在与对应的 .py 文件所处的目录中。如果 Python 没有相应的权限对这一目录进行写入文件的操作，那么 .pyc 文件将不会被创建。</p>
+<h2 id="from-import-语句"><a href="#from-import-语句" class="headerlink" title="from..import 语句"></a>from..import 语句</h2><p>如果你希望直接将 argv 变量导入你的程序（为了避免每次都要输入 sys.），那么你可以通过使用 from sys import argv 语句来实现这一点。</p>
+<p>警告：一般来说，你应该尽量避免使用 from…import 语句，而去使用 import 语句。这是为了避免在你的程序中出现名称冲突，同时也为了使程序更加易读。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">from math import sqrt</span><br><span class="line">print(&quot;Square root of 16 is&quot;, sqrt(16))</span><br></pre></td></tr></table></figure>
+<h2 id="模块的-name"><a href="#模块的-name" class="headerlink" title="模块的 name"></a>模块的 <strong>name</strong></h2><p>每个模块都有一个名称，而模块中的语句可以找到它们所处的模块的名称。这对于确定模块是独立运行的还是被导入进来运行的这一特定目的来说大为有用。正如先前所提到的，当模块第一次被导入时，它所包含的代码将被执行。我们可以通过这一特性来使模块以不同的方式运行，这取决于它是为自己所用还是从其它从的模块中导入而来。这可以通过使用模块的 <strong>name</strong> 属性来实现。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">if __name__ == &apos;__main__&apos;:</span><br><span class="line">    print(&apos;This program is being run by itself&apos;)</span><br><span class="line">else:</span><br><span class="line">    print(&apos;I am being imported from another module&apos;)</span><br><span class="line"></span><br><span class="line">输出：</span><br><span class="line"></span><br><span class="line">$ python module_using_name.py</span><br><span class="line">This program is being run by itself</span><br><span class="line"></span><br><span class="line">$ python</span><br><span class="line">&gt;&gt;&gt; import module_using_name</span><br><span class="line">I am being imported from another module</span><br><span class="line">&gt;&gt;&gt;</span><br></pre></td></tr></table></figure>
+<p>每一个 Python 模块都定义了它的 <strong>name</strong> 属性。如果它与 <strong>main</strong> 属性相同则代表这一模块是由用户独立运行的，因此我们便可以采取适当的行动。</p>
+<h2 id="编写你自己的模块"><a href="#编写你自己的模块" class="headerlink" title="编写你自己的模块"></a>编写你自己的模块</h2><p>编写你自己的模块很简单，这其实就是你一直在做的事情！这是因为每一个 Python 程序同时也是一个模块。你只需要保证它以 .py 为扩展名即可。下面的案例会作出清晰的解释。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">def say_hi():</span><br><span class="line">    print(&apos;Hi, this is mymodule speaking.&apos;)</span><br><span class="line"></span><br><span class="line">__version__ = &apos;0.1&apos;</span><br></pre></td></tr></table></figure>
+<p>上方所呈现的就是一个简单的模块。正如你所看见的，与我们一般所使用的 Python 的程序相比其实并没有什么特殊的区别。我们接下来将看到如何在其它 Python 程序中使用这一模块。</p>
+<p>要记住该模块应该放置于与其它我们即将导入这一模块的程序相同的目录下，或者是放置在 sys.path 所列出的其中一个目录下。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">import mymodule</span><br><span class="line"></span><br><span class="line">mymodule.say_hi()</span><br><span class="line">print(&apos;Version&apos;, mymodule.__version__)</span><br><span class="line"></span><br><span class="line">输出：</span><br><span class="line"></span><br><span class="line">$ python mymodule_demo.py</span><br><span class="line">Hi, this is mymodule speaking.</span><br><span class="line">Version 0.1</span><br></pre></td></tr></table></figure>
+<p>你会注意到我们使用相同的点符来访问模块中的成员。Python 很好地重用了其中的符号，这充满了“Pythonic”式的气息，这使得我们可以不必学习新的方式来完成同样的事情。</p>
+<p>下面是一个使用 from…import 语法的范本（保存为 mymodule_demo2.py）：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">from mymodule import say_hi, __version__</span><br><span class="line"></span><br><span class="line">say_hi()</span><br><span class="line">print(&apos;Version&apos;, __version__)</span><br></pre></td></tr></table></figure>
+<p>mymodule_demo2.py 所输出的内容与 mymodule_demo.py 所输出的内容是一样的。</p>
+<p>在这里需要注意的是，如果导入到 mymodule 中的模块里已经存在了 <strong>version</strong> 这一名称，那将产生冲突。这可能是因为每个模块通常都会使用这一名称来声明它们各自的版本号。因此，我们大都推荐最好去使用 import 语句，尽管这会使你的程序变得稍微长一些。</p>
+<p>你还可以使用：</p>
+<p>from mymodule import *<br>这将导入诸如 say_hi 等所有公共名称，但不会导入 <strong>version</strong> 名称，因为后者以双下划线开头。</p>
+<h2 id="dir-函数"><a href="#dir-函数" class="headerlink" title="dir 函数"></a>dir 函数</h2><p>内置的 dir() 函数能够返回由对象所定义的名称列表。 如果这一对象是一个模块，则该列表会包括函数内所定义的函数、类与变量。</p>
+<p>该函数接受参数。 如果参数是模块名称，函数将返回这一指定模块的名称列表。 如果没有提供参数，函数将返回当前模块的名称列表。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ python</span><br><span class="line">&gt;&gt;&gt; import sys</span><br><span class="line"></span><br><span class="line"># 给出 sys 模块中的属性名称</span><br><span class="line">&gt;&gt;&gt; dir(sys)</span><br><span class="line">[&apos;__displayhook__&apos;, &apos;__doc__&apos;,</span><br><span class="line">&apos;argv&apos;, &apos;builtin_module_names&apos;,</span><br><span class="line">&apos;version&apos;, &apos;version_info&apos;]</span><br><span class="line"># 此处只展示部分条目</span><br><span class="line"></span><br><span class="line"># 给出当前模块的属性名称</span><br><span class="line">&gt;&gt;&gt; dir()</span><br><span class="line">[&apos;__builtins__&apos;, &apos;__doc__&apos;,</span><br><span class="line">&apos;__name__&apos;, &apos;__package__&apos;,&apos;sys&apos;]</span><br><span class="line"></span><br><span class="line"># 创建一个新的变量 &apos;a&apos;</span><br><span class="line">&gt;&gt;&gt; a = 5</span><br><span class="line"></span><br><span class="line">&gt;&gt;&gt; dir()</span><br><span class="line">[&apos;__builtins__&apos;, &apos;__doc__&apos;, &apos;__name__&apos;, &apos;__package__&apos;, &apos;a&apos;]</span><br><span class="line"></span><br><span class="line"># 删除或移除一个名称</span><br><span class="line">&gt;&gt;&gt; del a</span><br><span class="line"></span><br><span class="line">&gt;&gt;&gt; dir()</span><br><span class="line">[&apos;__builtins__&apos;, &apos;__doc__&apos;, &apos;__name__&apos;, &apos;__package__&apos;]</span><br></pre></td></tr></table></figure>
+<p>首先我们看到的是 dir 在被导入的 sys 模块上的用法。我们能够看见它所包含的一个巨大的属性列表。</p>
+<p>随后，我们以不传递参数的形式使用 dir 函数。在默认情况下，它将返回当前模块的属性列表。要注意到被导入模块的列表也会是这一列表的一部分。</p>
+<p>给了观察 dir 函数的操作，我们定义了一个新的变量 a 并为其赋予了一个值，然后在检查 dir 返回的结果，我们就能发现，同名列表中出现了一个新的值。我们通过 del 语句移除了一个变量或是属性，这一变化再次反映在 dir 函数所处的内容中。</p>
+<p>关于 del 的一个小小提示——这一语句用于删除一个变量或名称，当这一语句运行后，在本例中即 del a，你便不再能访问变量 a——它将如同从未存在过一般。</p>
+<p>要注意到 dir() 函数能对任何对象工作。例如运行 dir(str) 可以访问 str（String，字符串）类的属性。</p>
+<p>同时，还有一个 vars() 函数也可以返回给你这些值的属性，但只是可能，它并不能针对所有类都能正常工作。</p>
+<h2 id="包"><a href="#包" class="headerlink" title="包"></a>包</h2><p>现在，你必须开始遵守用以组织你的程序的层次结构。变量通常位于函数内部，函数与全局变量通常位于模块内部。如果你希望组织起这些模块的话，应该怎么办？这便是包（Packages）应当登场的时刻。</p>
+<p>包是指一个包含模块与一个特殊的 <strong>init</strong>.py 文件的文件夹，后者向 Python 表明这一文件夹是特别的，因为其包含了 Python 模块。</p>
+<p>让我们这样设想：你想创建一个名为“world”的包，其中还包含着 “asia”、“africa”等其它子包，同时这些子包都包含了诸如“india”、 “madagascar”等模块。</p>
+<p>下面是你会构建出的文件夹的结构：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;some folder present in the sys.path&gt;/</span><br><span class="line">    - world/</span><br><span class="line">        - __init__.py</span><br><span class="line">        - asia/</span><br><span class="line">            - __init__.py</span><br><span class="line">            - india/</span><br><span class="line">                - __init__.py</span><br><span class="line">                - foo.py</span><br><span class="line">        - africa/</span><br><span class="line">            - __init__.py</span><br><span class="line">            - madagascar/</span><br><span class="line">                - __init__.py</span><br><span class="line">                - bar.py</span><br></pre></td></tr></table></figure>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>如同函数是程序中的可重用部分那般，模块是一种可重用的程序。包是用以组织模块的另一种层次结构。Python 所附带的标准库就是这样一组有关包与模块的例子。</p>
+<p>我们已经了解了如何使用这些模块并创建你自己的模块。</p>
+<p>接下来，我们将学习一些有趣的概念，它们被称作数据结构。</p>
+]]></content>
+      <tags>
+        <tag>python</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>python中的进程</title>
     <url>/2021/03/15/python%E4%B8%AD%E7%9A%84%E8%BF%9B%E7%A8%8B/</url>
     <content><![CDATA[<h3 id="1-多进程-vs多任务"><a href="#1-多进程-vs多任务" class="headerlink" title="1. 多进程 vs多任务"></a>1. 多进程 vs多任务</h3><p>多任务：就是操作系统可以同时运行多个任务<br>多进程：正在运行着的代码，就成为进程。多个正在运行的代码。</p>
@@ -2970,65 +3077,6 @@
 <h4 id="进程池中的Queue"><a href="#进程池中的Queue" class="headerlink" title="进程池中的Queue"></a>进程池中的Queue</h4><p>如果要使用Pool创建进程，就需要使用multiprocessing.Manager()中的Queue()，而不是multiprocessing.Queue()，否则会得到一条如下的错误信息：</p>
 <p>RuntimeError: Queue objects should only be shared between processes through inheritance</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#coding=utf-8</span><br><span class="line"></span><br><span class="line">#修改import中的Queue为Manager</span><br><span class="line">from multiprocessing import Manager,Pool</span><br><span class="line">import os,time,random</span><br><span class="line"></span><br><span class="line">def reader(q):</span><br><span class="line">    print(&quot;reader启动(%s),父进程为(%s)&quot;%(os.getpid(),os.getppid()))</span><br><span class="line">    for i in range(q.qsize()):</span><br><span class="line">        print(&quot;reader从Queue获取到消息：%s&quot;%q.get(True))</span><br><span class="line"></span><br><span class="line">def writer(q):</span><br><span class="line">    print(&quot;writer启动(%s),父进程为(%s)&quot;%(os.getpid(),os.getppid()))</span><br><span class="line">    for i in &quot;dongGe&quot;:</span><br><span class="line">        q.put(i)</span><br><span class="line"></span><br><span class="line">if __name__==&quot;__main__&quot;:</span><br><span class="line">    print(&quot;(%s) start&quot;%os.getpid())</span><br><span class="line">    q=Manager().Queue() #使用Manager中的Queue来初始化</span><br><span class="line">    po=Pool()</span><br><span class="line">    #使用阻塞模式创建进程，这样就不需要在reader中使用死循环了，可以让writer完全执行完成后，再用reader去读取</span><br><span class="line">    po.apply(writer,(q,))</span><br><span class="line">    po.apply(reader,(q,))</span><br><span class="line">    po.close()</span><br><span class="line">    po.join()</span><br><span class="line">    print(&quot;(%s) End&quot;%os.getpid())</span><br></pre></td></tr></table></figure>]]></content>
-      <tags>
-        <tag>python</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>python中的模块</title>
-    <url>/2020/09/13/python%E4%B8%AD%E7%9A%84%E6%A8%A1%E5%9D%97/</url>
-    <content><![CDATA[<p>编写模块有很多种方法，其中最简单的一种便是创建一个包含函数与变量、以 .py 为后缀的文件。</p>
-<p>另一种方法是使用撰写 Python 解释器本身的本地语言来编写模块。举例来说，你可以使用 C 语言来撰写 Python 模块，并且在编译后，你可以通过标准 Python 解释器在你的 Python 代码中使用它们。</p>
-<p>一个模块可以被其它程序导入并运用其功能。我们在使用 Python 标准库的功能时也同样如此。首先，我们要了解如何使用标准库模块。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">import sys</span><br><span class="line"></span><br><span class="line">print(&apos;The command line arguments are:&apos;)</span><br><span class="line">for i in sys.argv:</span><br><span class="line">    print(i)</span><br><span class="line"></span><br><span class="line">print(&apos;\n\nThe PYTHONPATH is&apos;, sys.path, &apos;\n&apos;)</span><br><span class="line"></span><br><span class="line">输出：</span><br><span class="line"></span><br><span class="line">$ python module_using_sys.py we are arguments</span><br><span class="line">The command line arguments are:</span><br><span class="line">module_using_sys.py</span><br><span class="line">we</span><br><span class="line">are</span><br><span class="line">arguments</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">The PYTHONPATH is [&apos;/tmp/py&apos;,</span><br><span class="line"># many entries here, not shown here</span><br><span class="line">&apos;/Library/Python/2.7/site-packages&apos;,</span><br><span class="line">&apos;/usr/local/lib/python2.7/site-packages&apos;]</span><br></pre></td></tr></table></figure>
-<p>首先，我们通过 import 语句导入 sys 模块。基本上，这句代码将转化为我们告诉 Python 我们希望使用这一模块。sys 模块包含了与 Python 解释器及其环境相关的功能，也就是所谓的系统功能（system）。</p>
-<p>当 Python 运行 import sys 这一语句时，它会开始寻找 sys 模块。在这一案例中，由于其是一个内置模块，因此 Python 知道应该在哪里找到它。</p>
-<p>如果它不是一个已编译好的模块，即用 Python 编写的模块，那么 Python 解释器将从它的 sys.path 变量所提供的目录中进行搜索。如果找到了对应模块，则该模块中的语句将在开始运行，并能够为你所使用。在这里需要注意的是，初始化工作只需在我们第一次导入模块时完成。</p>
-<p>sys 模块中的 argv 变量通过使用点号予以指明，也就是 sys.argv 这样的形式。它清晰地表明了这一名称是 sys 模块的一部分。这一处理方式的另一个优点是这个名称不会与你程序中的其它任何一个 argv 变量冲突。</p>
-<p>sys.argv 变量是一系列字符串的列表（List）（列表将在后面的章节予以详细解释）。具体而言，sys.argv 包含了命令行参数（Command Line Arguments）这一列表，也就是使用命令行传递给你的程序的参数。</p>
-<p>如果你正在使用一款 IDE 来编写并运行这些程序，请在程序菜单中寻找相关指定命令行参数的选项。</p>
-<p>在这里，当我们运行 python module_using_sys.py we are arguments 时，我们通过 python 命令来运行 module_using_sys.py 模块，后面的内容则是传递给程序的参数。 Python 将命令行参数存储在 sys.argv 变量中供我们使用。</p>
-<p>在这里要记住的是，运行的脚本名称在 sys.argv 的列表中总会位列第一。因此，在这一案例中我们将会有如下对应关系：’module_using_sys.py’ 对应 sys.argv[0]，’we’ 对应 sys.argv[1]，’are’ 对应 sys.argv[2]，’arguments’ 对应 sys.argv[3]。要注意到 Python 从 0 开始计数，而不是 1。</p>
-<p>sys.path 内包含了导入模块的字典名称列表。你能观察到 sys.path 的第一段字符串是空的——这一空字符串代表当前目录也是 sys.path 的一部分，它与 PYTHONPATH 环境变量等同。这意味着你可以直接导入位于当前目录的模块。否则，你必须将你的模块放置在 sys.path 内所列出的目录中。</p>
-<p>另外要注意的是当前目录指的是程序启动的目录。你可以通过运行 import os; print(os.getcwd()) 来查看你的程序目前所处在的目录。</p>
-<h2 id="按字节码编译的-pyc-文件"><a href="#按字节码编译的-pyc-文件" class="headerlink" title="按字节码编译的 .pyc 文件"></a>按字节码编译的 .pyc 文件</h2><p>导入一个模块是一件代价高昂的事情，因此 Python 引入了一些技巧使其能够更快速的完成。其中一种方式便是创建按字节码编译的（Byte-Compiled）文件，这一文件以 .pyc 为其扩展名，是将 Python 转换成中间形式的文件（还记得《介绍》一章中介绍的 Python 是如何工作的吗？）。这一 .pyc 文件在你下一次从其它不同的程序导入模块时非常有用——它将更加快速，因为导入模块时所需要的一部分处理工作已经完成了。同时，这些按字节码编译的文件是独立于运行平台的。</p>
-<p>注意：这些 .pyc 文件通常会创建在与对应的 .py 文件所处的目录中。如果 Python 没有相应的权限对这一目录进行写入文件的操作，那么 .pyc 文件将不会被创建。</p>
-<h2 id="from-import-语句"><a href="#from-import-语句" class="headerlink" title="from..import 语句"></a>from..import 语句</h2><p>如果你希望直接将 argv 变量导入你的程序（为了避免每次都要输入 sys.），那么你可以通过使用 from sys import argv 语句来实现这一点。</p>
-<p>警告：一般来说，你应该尽量避免使用 from…import 语句，而去使用 import 语句。这是为了避免在你的程序中出现名称冲突，同时也为了使程序更加易读。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">from math import sqrt</span><br><span class="line">print(&quot;Square root of 16 is&quot;, sqrt(16))</span><br></pre></td></tr></table></figure>
-<h2 id="模块的-name"><a href="#模块的-name" class="headerlink" title="模块的 name"></a>模块的 <strong>name</strong></h2><p>每个模块都有一个名称，而模块中的语句可以找到它们所处的模块的名称。这对于确定模块是独立运行的还是被导入进来运行的这一特定目的来说大为有用。正如先前所提到的，当模块第一次被导入时，它所包含的代码将被执行。我们可以通过这一特性来使模块以不同的方式运行，这取决于它是为自己所用还是从其它从的模块中导入而来。这可以通过使用模块的 <strong>name</strong> 属性来实现。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">if __name__ == &apos;__main__&apos;:</span><br><span class="line">    print(&apos;This program is being run by itself&apos;)</span><br><span class="line">else:</span><br><span class="line">    print(&apos;I am being imported from another module&apos;)</span><br><span class="line"></span><br><span class="line">输出：</span><br><span class="line"></span><br><span class="line">$ python module_using_name.py</span><br><span class="line">This program is being run by itself</span><br><span class="line"></span><br><span class="line">$ python</span><br><span class="line">&gt;&gt;&gt; import module_using_name</span><br><span class="line">I am being imported from another module</span><br><span class="line">&gt;&gt;&gt;</span><br></pre></td></tr></table></figure>
-<p>每一个 Python 模块都定义了它的 <strong>name</strong> 属性。如果它与 <strong>main</strong> 属性相同则代表这一模块是由用户独立运行的，因此我们便可以采取适当的行动。</p>
-<h2 id="编写你自己的模块"><a href="#编写你自己的模块" class="headerlink" title="编写你自己的模块"></a>编写你自己的模块</h2><p>编写你自己的模块很简单，这其实就是你一直在做的事情！这是因为每一个 Python 程序同时也是一个模块。你只需要保证它以 .py 为扩展名即可。下面的案例会作出清晰的解释。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">def say_hi():</span><br><span class="line">    print(&apos;Hi, this is mymodule speaking.&apos;)</span><br><span class="line"></span><br><span class="line">__version__ = &apos;0.1&apos;</span><br></pre></td></tr></table></figure>
-<p>上方所呈现的就是一个简单的模块。正如你所看见的，与我们一般所使用的 Python 的程序相比其实并没有什么特殊的区别。我们接下来将看到如何在其它 Python 程序中使用这一模块。</p>
-<p>要记住该模块应该放置于与其它我们即将导入这一模块的程序相同的目录下，或者是放置在 sys.path 所列出的其中一个目录下。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">import mymodule</span><br><span class="line"></span><br><span class="line">mymodule.say_hi()</span><br><span class="line">print(&apos;Version&apos;, mymodule.__version__)</span><br><span class="line"></span><br><span class="line">输出：</span><br><span class="line"></span><br><span class="line">$ python mymodule_demo.py</span><br><span class="line">Hi, this is mymodule speaking.</span><br><span class="line">Version 0.1</span><br></pre></td></tr></table></figure>
-<p>你会注意到我们使用相同的点符来访问模块中的成员。Python 很好地重用了其中的符号，这充满了“Pythonic”式的气息，这使得我们可以不必学习新的方式来完成同样的事情。</p>
-<p>下面是一个使用 from…import 语法的范本（保存为 mymodule_demo2.py）：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">from mymodule import say_hi, __version__</span><br><span class="line"></span><br><span class="line">say_hi()</span><br><span class="line">print(&apos;Version&apos;, __version__)</span><br></pre></td></tr></table></figure>
-<p>mymodule_demo2.py 所输出的内容与 mymodule_demo.py 所输出的内容是一样的。</p>
-<p>在这里需要注意的是，如果导入到 mymodule 中的模块里已经存在了 <strong>version</strong> 这一名称，那将产生冲突。这可能是因为每个模块通常都会使用这一名称来声明它们各自的版本号。因此，我们大都推荐最好去使用 import 语句，尽管这会使你的程序变得稍微长一些。</p>
-<p>你还可以使用：</p>
-<p>from mymodule import *<br>这将导入诸如 say_hi 等所有公共名称，但不会导入 <strong>version</strong> 名称，因为后者以双下划线开头。</p>
-<h2 id="dir-函数"><a href="#dir-函数" class="headerlink" title="dir 函数"></a>dir 函数</h2><p>内置的 dir() 函数能够返回由对象所定义的名称列表。 如果这一对象是一个模块，则该列表会包括函数内所定义的函数、类与变量。</p>
-<p>该函数接受参数。 如果参数是模块名称，函数将返回这一指定模块的名称列表。 如果没有提供参数，函数将返回当前模块的名称列表。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ python</span><br><span class="line">&gt;&gt;&gt; import sys</span><br><span class="line"></span><br><span class="line"># 给出 sys 模块中的属性名称</span><br><span class="line">&gt;&gt;&gt; dir(sys)</span><br><span class="line">[&apos;__displayhook__&apos;, &apos;__doc__&apos;,</span><br><span class="line">&apos;argv&apos;, &apos;builtin_module_names&apos;,</span><br><span class="line">&apos;version&apos;, &apos;version_info&apos;]</span><br><span class="line"># 此处只展示部分条目</span><br><span class="line"></span><br><span class="line"># 给出当前模块的属性名称</span><br><span class="line">&gt;&gt;&gt; dir()</span><br><span class="line">[&apos;__builtins__&apos;, &apos;__doc__&apos;,</span><br><span class="line">&apos;__name__&apos;, &apos;__package__&apos;,&apos;sys&apos;]</span><br><span class="line"></span><br><span class="line"># 创建一个新的变量 &apos;a&apos;</span><br><span class="line">&gt;&gt;&gt; a = 5</span><br><span class="line"></span><br><span class="line">&gt;&gt;&gt; dir()</span><br><span class="line">[&apos;__builtins__&apos;, &apos;__doc__&apos;, &apos;__name__&apos;, &apos;__package__&apos;, &apos;a&apos;]</span><br><span class="line"></span><br><span class="line"># 删除或移除一个名称</span><br><span class="line">&gt;&gt;&gt; del a</span><br><span class="line"></span><br><span class="line">&gt;&gt;&gt; dir()</span><br><span class="line">[&apos;__builtins__&apos;, &apos;__doc__&apos;, &apos;__name__&apos;, &apos;__package__&apos;]</span><br></pre></td></tr></table></figure>
-<p>首先我们看到的是 dir 在被导入的 sys 模块上的用法。我们能够看见它所包含的一个巨大的属性列表。</p>
-<p>随后，我们以不传递参数的形式使用 dir 函数。在默认情况下，它将返回当前模块的属性列表。要注意到被导入模块的列表也会是这一列表的一部分。</p>
-<p>给了观察 dir 函数的操作，我们定义了一个新的变量 a 并为其赋予了一个值，然后在检查 dir 返回的结果，我们就能发现，同名列表中出现了一个新的值。我们通过 del 语句移除了一个变量或是属性，这一变化再次反映在 dir 函数所处的内容中。</p>
-<p>关于 del 的一个小小提示——这一语句用于删除一个变量或名称，当这一语句运行后，在本例中即 del a，你便不再能访问变量 a——它将如同从未存在过一般。</p>
-<p>要注意到 dir() 函数能对任何对象工作。例如运行 dir(str) 可以访问 str（String，字符串）类的属性。</p>
-<p>同时，还有一个 vars() 函数也可以返回给你这些值的属性，但只是可能，它并不能针对所有类都能正常工作。</p>
-<h2 id="包"><a href="#包" class="headerlink" title="包"></a>包</h2><p>现在，你必须开始遵守用以组织你的程序的层次结构。变量通常位于函数内部，函数与全局变量通常位于模块内部。如果你希望组织起这些模块的话，应该怎么办？这便是包（Packages）应当登场的时刻。</p>
-<p>包是指一个包含模块与一个特殊的 <strong>init</strong>.py 文件的文件夹，后者向 Python 表明这一文件夹是特别的，因为其包含了 Python 模块。</p>
-<p>让我们这样设想：你想创建一个名为“world”的包，其中还包含着 “asia”、“africa”等其它子包，同时这些子包都包含了诸如“india”、 “madagascar”等模块。</p>
-<p>下面是你会构建出的文件夹的结构：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;some folder present in the sys.path&gt;/</span><br><span class="line">    - world/</span><br><span class="line">        - __init__.py</span><br><span class="line">        - asia/</span><br><span class="line">            - __init__.py</span><br><span class="line">            - india/</span><br><span class="line">                - __init__.py</span><br><span class="line">                - foo.py</span><br><span class="line">        - africa/</span><br><span class="line">            - __init__.py</span><br><span class="line">            - madagascar/</span><br><span class="line">                - __init__.py</span><br><span class="line">                - bar.py</span><br></pre></td></tr></table></figure>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>如同函数是程序中的可重用部分那般，模块是一种可重用的程序。包是用以组织模块的另一种层次结构。Python 所附带的标准库就是这样一组有关包与模块的例子。</p>
-<p>我们已经了解了如何使用这些模块并创建你自己的模块。</p>
-<p>接下来，我们将学习一些有趣的概念，它们被称作数据结构。</p>
-]]></content>
       <tags>
         <tag>python</tag>
       </tags>
@@ -3271,6 +3319,32 @@
       </tags>
   </entry>
   <entry>
+    <title>strconv包学习整理(golang)</title>
+    <url>/2019/04/01/strconv%E5%8C%85%E5%AD%A6%E4%B9%A0%E6%95%B4%E7%90%86(golang)/</url>
+    <content><![CDATA[<h3 id="atob-go"><a href="#atob-go" class="headerlink" title="atob.go"></a>atob.go</h3><p>// 将布尔值转换为字符串 true 或 false<br>func FormatBool(b bool) string</p>
+<p>// 将字符串转换为布尔值<br>// 它接受真值：1, t, T, TRUE, true, True<br>// 它接受假值：0, f, F, FALSE, false, False<br>// 其它任何值都返回一个错误。<br>func ParseBool(str string) (bool, error)<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">// ParseBool returns the boolean value represented by the string.</span><br><span class="line">// It accepts 1, t, T, TRUE, true, True, 0, f, F, FALSE, false, False.</span><br><span class="line">// Any other value returns an error.</span><br><span class="line">func ParseBool(str string) (bool, error) &#123;</span><br><span class="line">	switch str &#123;</span><br><span class="line">	case &quot;1&quot;, &quot;t&quot;, &quot;T&quot;, &quot;true&quot;, &quot;TRUE&quot;, &quot;True&quot;:</span><br><span class="line">		return true, nil</span><br><span class="line">	case &quot;0&quot;, &quot;f&quot;, &quot;F&quot;, &quot;false&quot;, &quot;FALSE&quot;, &quot;False&quot;:</span><br><span class="line">		return false, nil</span><br><span class="line">	&#125;</span><br><span class="line">	return false, syntaxError(&quot;ParseBool&quot;, str)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// FormatBool returns &quot;true&quot; or &quot;false&quot; according to the value of b.</span><br><span class="line">func FormatBool(b bool) string &#123;</span><br><span class="line">	if b &#123;</span><br><span class="line">		return &quot;true&quot;</span><br><span class="line">	&#125;</span><br><span class="line">	return &quot;false&quot;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// AppendBool appends &quot;true&quot; or &quot;false&quot;, according to the value of b,</span><br><span class="line">// to dst and returns the extended buffer.</span><br><span class="line">func AppendBool(dst []byte, b bool) []byte &#123;</span><br><span class="line">	if b &#123;</span><br><span class="line">		return append(dst, &quot;true&quot;...)</span><br><span class="line">	&#125;</span><br><span class="line">	return append(dst, &quot;false&quot;...)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="atof-go-amp-amp-ftoa-go"><a href="#atof-go-amp-amp-ftoa-go" class="headerlink" title="atof.go &amp;&amp; ftoa.go"></a>atof.go &amp;&amp; ftoa.go</h3><p>// FormatFloat 将浮点数 f 转换为字符串形式<br>// f：要转换的浮点数<br>// fmt：格式标记（b、e、E、f、g、G）<br>// prec：精度（数字部分的长度，不包括指数部分）<br>// bitSize：指定浮点类型（32:float32、64:float64），结果会据此进行舍入。<br>//<br>// 格式标记：<br>// ‘b’ (-ddddp±ddd，二进制指数)<br>// ‘e’ (-d.dddde±dd，十进制指数)<br>// ‘E’ (-d.ddddE±dd，十进制指数)<br>// ‘f’ (-ddd.dddd，没有指数)<br>// ‘g’ (‘e’:大指数，’f’:其它情况)<br>// ‘G’ (‘E’:大指数，’f’:其它情况)<br>//<br>// 如果格式标记为 ‘e’，’E’和’f’，则 prec 表示小数点后的数字位数<br>// 如果格式标记为 ‘g’，’G’，则 prec 表示总的数字位数（整数部分+小数部分）<br>// 参考格式化输入输出中的旗标和精度说明<br>func FormatFloat(f float64, fmt byte, prec, bitSize int) string</p>
+<p>// 将字符串解析为浮点数，使用 IEEE754 规范进行舍入。<br>// bigSize 取值有 32 和 64 两种，表示转换结果的精度。<br>// 如果有语法错误，则 err.Error = ErrSyntax<br>// 如果结果超出范围，则返回 ±Inf，err.Error = ErrRange<br>func ParseFloat(s string, bitSize int) (float64, error)<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">// ParseFloat converts the string s to a floating-point number</span><br><span class="line">// with the precision specified by bitSize: 32 for float32, or 64 for float64.</span><br><span class="line">// When bitSize=32, the result still has type float64, but it will be</span><br><span class="line">// convertible to float32 without changing its value.</span><br><span class="line">//</span><br><span class="line">// If s is well-formed and near a valid floating point number,</span><br><span class="line">// ParseFloat returns the nearest floating point number rounded</span><br><span class="line">// using IEEE754 unbiased rounding.</span><br><span class="line">//</span><br><span class="line">// The errors that ParseFloat returns have concrete type *NumError</span><br><span class="line">// and include err.Num = s.</span><br><span class="line">//</span><br><span class="line">// If s is not syntactically well-formed, ParseFloat returns err.Err = ErrSyntax.</span><br><span class="line">//</span><br><span class="line">// If s is syntactically well-formed but is more than 1/2 ULP</span><br><span class="line">// away from the largest floating point number of the given size,</span><br><span class="line">// ParseFloat returns f = ±Inf, err.Err = ErrRange.</span><br><span class="line">func ParseFloat(s string, bitSize int) (float64, error) &#123;</span><br><span class="line">	if bitSize == 32 &#123;</span><br><span class="line">		f, err := atof32(s)</span><br><span class="line">		return float64(f), err</span><br><span class="line">	&#125;</span><br><span class="line">	return atof64(s)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">// FormatFloat converts the floating-point number f to a string,</span><br><span class="line">// according to the format fmt and precision prec. It rounds the</span><br><span class="line">// result assuming that the original was obtained from a floating-point</span><br><span class="line">// value of bitSize bits (32 for float32, 64 for float64).</span><br><span class="line">//</span><br><span class="line">// The format fmt is one of</span><br><span class="line">// &apos;b&apos; (-ddddp±ddd, a binary exponent),</span><br><span class="line">// &apos;e&apos; (-d.dddde±dd, a decimal exponent),</span><br><span class="line">// &apos;E&apos; (-d.ddddE±dd, a decimal exponent),</span><br><span class="line">// &apos;f&apos; (-ddd.dddd, no exponent),</span><br><span class="line">// &apos;g&apos; (&apos;e&apos; for large exponents, &apos;f&apos; otherwise), or</span><br><span class="line">// &apos;G&apos; (&apos;E&apos; for large exponents, &apos;f&apos; otherwise).</span><br><span class="line">//</span><br><span class="line">// The precision prec controls the number of digits (excluding the exponent)</span><br><span class="line">// printed by the &apos;e&apos;, &apos;E&apos;, &apos;f&apos;, &apos;g&apos;, and &apos;G&apos; formats.</span><br><span class="line">// For &apos;e&apos;, &apos;E&apos;, and &apos;f&apos; it is the number of digits after the decimal point.</span><br><span class="line">// For &apos;g&apos; and &apos;G&apos; it is the maximum number of significant digits (trailing</span><br><span class="line">// zeros are removed).</span><br><span class="line">// The special precision -1 uses the smallest number of digits</span><br><span class="line">// necessary such that ParseFloat will return f exactly.</span><br><span class="line">func FormatFloat(f float64, fmt byte, prec, bitSize int) string &#123;</span><br><span class="line">	return string(genericFtoa(make([]byte, 0, max(prec+4, 24)), f, fmt, prec, bitSize))</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// AppendFloat appends the string form of the floating-point number f,</span><br><span class="line">// as generated by FormatFloat, to dst and returns the extended buffer.</span><br><span class="line">func AppendFloat(dst []byte, f float64, fmt byte, prec, bitSize int) []byte &#123;</span><br><span class="line">	return genericFtoa(dst, f, fmt, prec, bitSize)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="atoi-go-amp-amp-itoa-go"><a href="#atoi-go-amp-amp-itoa-go" class="headerlink" title="atoi.go &amp;&amp; itoa.go"></a>atoi.go &amp;&amp; itoa.go</h3><p>// ErrRange 表示值超出范围<br>var ErrRange = errors.New(“value out of range”)</p>
+<p>// ErrSyntax 表示语法不正确<br>var ErrSyntax = errors.New(“invalid syntax”)</p>
+<p>// 将整数转换为字符串形式。base 表示转换进制，取值在 2 到 36 之间。<br>// 结果中大于 10 的数字用小写字母 a - z 表示。<br>func FormatInt(i int64, base int) string<br>func FormatUint(i uint64, base int) string</p>
+<p>// 将字符串解析为整数，ParseInt 支持正负号，ParseUint 不支持正负号。<br>// base 表示进位制（2 到 36），如果 base 为 0，则根据字符串前缀判断，<br>// 前缀 0x 表示 16 进制，前缀 0 表示 8 进制，否则是 10 进制。<br>// bitSize 表示结果的位宽（包括符号位），0 表示最大位宽。<br>func ParseInt(s string, base int, bitSize int) (i int64, err error)<br>func ParseUint(s string, base int, bitSize int) (uint64, error)</p>
+<p>// 将整数转换为十进制字符串形式（即：FormatInt(i, 10) 的简写）<br>func Itoa(i int) string</p>
+<p>// 将字符串转换为十进制整数，即：ParseInt(s, 10, 0) 的简写）<br>func Atoi(s string) (int, error)<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">// ErrRange indicates that a value is out of range for the target type.</span><br><span class="line">var ErrRange = errors.New(&quot;value out of range&quot;)</span><br><span class="line"></span><br><span class="line">// ErrSyntax indicates that a value does not have the right syntax for the target type.</span><br><span class="line">var ErrSyntax = errors.New(&quot;invalid syntax&quot;)</span><br><span class="line">// Atoi returns the result of ParseInt(s, 10, 0) converted to type int.</span><br><span class="line">func Atoi(s string) (int, error) &#123;</span><br><span class="line">	const fnAtoi = &quot;Atoi&quot;</span><br><span class="line"></span><br><span class="line">	sLen := len(s)</span><br><span class="line">	if intSize == 32 &amp;&amp; (0 &lt; sLen &amp;&amp; sLen &lt; 10) ||</span><br><span class="line">		intSize == 64 &amp;&amp; (0 &lt; sLen &amp;&amp; sLen &lt; 19) &#123;</span><br><span class="line">		// Fast path for small integers that fit int type.</span><br><span class="line">		s0 := s</span><br><span class="line">		if s[0] == &apos;-&apos; || s[0] == &apos;+&apos; &#123;</span><br><span class="line">			s = s[1:]</span><br><span class="line">			if len(s) &lt; 1 &#123;</span><br><span class="line">				return 0, &amp;NumError&#123;fnAtoi, s0, ErrSyntax&#125;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		n := 0</span><br><span class="line">		for _, ch := range []byte(s) &#123;</span><br><span class="line">			ch -= &apos;0&apos;</span><br><span class="line">			if ch &gt; 9 &#123;</span><br><span class="line">				return 0, &amp;NumError&#123;fnAtoi, s0, ErrSyntax&#125;</span><br><span class="line">			&#125;</span><br><span class="line">			n = n*10 + int(ch)</span><br><span class="line">		&#125;</span><br><span class="line">		if s0[0] == &apos;-&apos; &#123;</span><br><span class="line">			n = -n</span><br><span class="line">		&#125;</span><br><span class="line">		return n, nil</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	// Slow path for invalid or big integers.</span><br><span class="line">	i64, err := ParseInt(s, 10, 0)</span><br><span class="line">	if nerr, ok := err.(*NumError); ok &#123;</span><br><span class="line">		nerr.Func = fnAtoi</span><br><span class="line">	&#125;</span><br><span class="line">	return int(i64), err</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">// FormatInt returns the string representation of i in the given base,</span><br><span class="line">// for 2 &lt;= base &lt;= 36. The result uses the lower-case letters &apos;a&apos; to &apos;z&apos;</span><br><span class="line">// for digit values &gt;= 10.</span><br><span class="line">func FormatInt(i int64, base int) string &#123;</span><br><span class="line">	if fastSmalls &amp;&amp; 0 &lt;= i &amp;&amp; i &lt; nSmalls &amp;&amp; base == 10 &#123;</span><br><span class="line">		return small(int(i))</span><br><span class="line">	&#125;</span><br><span class="line">	_, s := formatBits(nil, uint64(i), base, i &lt; 0, false)</span><br><span class="line">	return s</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// Itoa is shorthand for FormatInt(int64(i), 10).</span><br><span class="line">func Itoa(i int) string &#123;</span><br><span class="line">	return FormatInt(int64(i), 10)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// AppendInt appends the string form of the integer i,</span><br><span class="line">// as generated by FormatInt, to dst and returns the extended buffer.</span><br><span class="line">func AppendInt(dst []byte, i int64, base int) []byte &#123;</span><br><span class="line">	if fastSmalls &amp;&amp; 0 &lt;= i &amp;&amp; i &lt; nSmalls &amp;&amp; base == 10 &#123;</span><br><span class="line">		return append(dst, small(int(i))...)</span><br><span class="line">	&#125;</span><br><span class="line">	dst, _ = formatBits(dst, uint64(i), base, i &lt; 0, true)</span><br><span class="line">	return dst</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h3><p>// 判断字符串是否可以不被修改的表示为一个单行的反引号字符串。<br>// 字符串中不能含有控制字符（除了 \t）和“反引号”字符，否则返回 false<br>func CanBackquote(s string) bool</p>
+<p>// 判断 r 是否为可打印字符<br>// 可否打印并不是你想象的那样，比如空格可以打印，而\t则不能打印<br>func IsPrint(r rune) bool</p>
+<p>// 判断 r 是否为 Unicode 定义的图形字符。<br>func IsGraphic(r rune) bool</p>
+<p>// 将 s 转换为双引号字符串<br>func Quote(s string) string</p>
+<p>// 功能同上，非 ASCII 字符和不可打印字符会被转义<br>func QuoteToASCII(s string) string</p>
+<p>// 功能同上，非图形字符会被转义<br>func QuoteToGraphic(s string) string</p>
+<p>// 将 r 转换为单引号字符<br>func QuoteRune(r rune) string</p>
+<p>// 功能同上，非 ASCII 字符和不可打印字符会被转义<br>func QuoteRuneToASCII(r rune) string</p>
+<p>// 功能同上，非图形字符会被转义<br>func QuoteRuneToGraphic(r rune) string</p>
+]]></content>
+  </entry>
+  <entry>
     <title>systemd小结</title>
     <url>/2021/03/12/systemd%E5%B0%8F%E7%BB%93/</url>
     <content><![CDATA[<h3 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h3><p>历史上，Linux 的启动一直采用init进程。下面的命令用来启动服务。</p>
@@ -3339,32 +3413,6 @@
       <tags>
         <tag>linux</tag>
       </tags>
-  </entry>
-  <entry>
-    <title>strconv包学习整理(golang)</title>
-    <url>/2019/04/01/strconv%E5%8C%85%E5%AD%A6%E4%B9%A0%E6%95%B4%E7%90%86(golang)/</url>
-    <content><![CDATA[<h3 id="atob-go"><a href="#atob-go" class="headerlink" title="atob.go"></a>atob.go</h3><p>// 将布尔值转换为字符串 true 或 false<br>func FormatBool(b bool) string</p>
-<p>// 将字符串转换为布尔值<br>// 它接受真值：1, t, T, TRUE, true, True<br>// 它接受假值：0, f, F, FALSE, false, False<br>// 其它任何值都返回一个错误。<br>func ParseBool(str string) (bool, error)<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">// ParseBool returns the boolean value represented by the string.</span><br><span class="line">// It accepts 1, t, T, TRUE, true, True, 0, f, F, FALSE, false, False.</span><br><span class="line">// Any other value returns an error.</span><br><span class="line">func ParseBool(str string) (bool, error) &#123;</span><br><span class="line">	switch str &#123;</span><br><span class="line">	case &quot;1&quot;, &quot;t&quot;, &quot;T&quot;, &quot;true&quot;, &quot;TRUE&quot;, &quot;True&quot;:</span><br><span class="line">		return true, nil</span><br><span class="line">	case &quot;0&quot;, &quot;f&quot;, &quot;F&quot;, &quot;false&quot;, &quot;FALSE&quot;, &quot;False&quot;:</span><br><span class="line">		return false, nil</span><br><span class="line">	&#125;</span><br><span class="line">	return false, syntaxError(&quot;ParseBool&quot;, str)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// FormatBool returns &quot;true&quot; or &quot;false&quot; according to the value of b.</span><br><span class="line">func FormatBool(b bool) string &#123;</span><br><span class="line">	if b &#123;</span><br><span class="line">		return &quot;true&quot;</span><br><span class="line">	&#125;</span><br><span class="line">	return &quot;false&quot;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// AppendBool appends &quot;true&quot; or &quot;false&quot;, according to the value of b,</span><br><span class="line">// to dst and returns the extended buffer.</span><br><span class="line">func AppendBool(dst []byte, b bool) []byte &#123;</span><br><span class="line">	if b &#123;</span><br><span class="line">		return append(dst, &quot;true&quot;...)</span><br><span class="line">	&#125;</span><br><span class="line">	return append(dst, &quot;false&quot;...)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h3 id="atof-go-amp-amp-ftoa-go"><a href="#atof-go-amp-amp-ftoa-go" class="headerlink" title="atof.go &amp;&amp; ftoa.go"></a>atof.go &amp;&amp; ftoa.go</h3><p>// FormatFloat 将浮点数 f 转换为字符串形式<br>// f：要转换的浮点数<br>// fmt：格式标记（b、e、E、f、g、G）<br>// prec：精度（数字部分的长度，不包括指数部分）<br>// bitSize：指定浮点类型（32:float32、64:float64），结果会据此进行舍入。<br>//<br>// 格式标记：<br>// ‘b’ (-ddddp±ddd，二进制指数)<br>// ‘e’ (-d.dddde±dd，十进制指数)<br>// ‘E’ (-d.ddddE±dd，十进制指数)<br>// ‘f’ (-ddd.dddd，没有指数)<br>// ‘g’ (‘e’:大指数，’f’:其它情况)<br>// ‘G’ (‘E’:大指数，’f’:其它情况)<br>//<br>// 如果格式标记为 ‘e’，’E’和’f’，则 prec 表示小数点后的数字位数<br>// 如果格式标记为 ‘g’，’G’，则 prec 表示总的数字位数（整数部分+小数部分）<br>// 参考格式化输入输出中的旗标和精度说明<br>func FormatFloat(f float64, fmt byte, prec, bitSize int) string</p>
-<p>// 将字符串解析为浮点数，使用 IEEE754 规范进行舍入。<br>// bigSize 取值有 32 和 64 两种，表示转换结果的精度。<br>// 如果有语法错误，则 err.Error = ErrSyntax<br>// 如果结果超出范围，则返回 ±Inf，err.Error = ErrRange<br>func ParseFloat(s string, bitSize int) (float64, error)<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">// ParseFloat converts the string s to a floating-point number</span><br><span class="line">// with the precision specified by bitSize: 32 for float32, or 64 for float64.</span><br><span class="line">// When bitSize=32, the result still has type float64, but it will be</span><br><span class="line">// convertible to float32 without changing its value.</span><br><span class="line">//</span><br><span class="line">// If s is well-formed and near a valid floating point number,</span><br><span class="line">// ParseFloat returns the nearest floating point number rounded</span><br><span class="line">// using IEEE754 unbiased rounding.</span><br><span class="line">//</span><br><span class="line">// The errors that ParseFloat returns have concrete type *NumError</span><br><span class="line">// and include err.Num = s.</span><br><span class="line">//</span><br><span class="line">// If s is not syntactically well-formed, ParseFloat returns err.Err = ErrSyntax.</span><br><span class="line">//</span><br><span class="line">// If s is syntactically well-formed but is more than 1/2 ULP</span><br><span class="line">// away from the largest floating point number of the given size,</span><br><span class="line">// ParseFloat returns f = ±Inf, err.Err = ErrRange.</span><br><span class="line">func ParseFloat(s string, bitSize int) (float64, error) &#123;</span><br><span class="line">	if bitSize == 32 &#123;</span><br><span class="line">		f, err := atof32(s)</span><br><span class="line">		return float64(f), err</span><br><span class="line">	&#125;</span><br><span class="line">	return atof64(s)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">// FormatFloat converts the floating-point number f to a string,</span><br><span class="line">// according to the format fmt and precision prec. It rounds the</span><br><span class="line">// result assuming that the original was obtained from a floating-point</span><br><span class="line">// value of bitSize bits (32 for float32, 64 for float64).</span><br><span class="line">//</span><br><span class="line">// The format fmt is one of</span><br><span class="line">// &apos;b&apos; (-ddddp±ddd, a binary exponent),</span><br><span class="line">// &apos;e&apos; (-d.dddde±dd, a decimal exponent),</span><br><span class="line">// &apos;E&apos; (-d.ddddE±dd, a decimal exponent),</span><br><span class="line">// &apos;f&apos; (-ddd.dddd, no exponent),</span><br><span class="line">// &apos;g&apos; (&apos;e&apos; for large exponents, &apos;f&apos; otherwise), or</span><br><span class="line">// &apos;G&apos; (&apos;E&apos; for large exponents, &apos;f&apos; otherwise).</span><br><span class="line">//</span><br><span class="line">// The precision prec controls the number of digits (excluding the exponent)</span><br><span class="line">// printed by the &apos;e&apos;, &apos;E&apos;, &apos;f&apos;, &apos;g&apos;, and &apos;G&apos; formats.</span><br><span class="line">// For &apos;e&apos;, &apos;E&apos;, and &apos;f&apos; it is the number of digits after the decimal point.</span><br><span class="line">// For &apos;g&apos; and &apos;G&apos; it is the maximum number of significant digits (trailing</span><br><span class="line">// zeros are removed).</span><br><span class="line">// The special precision -1 uses the smallest number of digits</span><br><span class="line">// necessary such that ParseFloat will return f exactly.</span><br><span class="line">func FormatFloat(f float64, fmt byte, prec, bitSize int) string &#123;</span><br><span class="line">	return string(genericFtoa(make([]byte, 0, max(prec+4, 24)), f, fmt, prec, bitSize))</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// AppendFloat appends the string form of the floating-point number f,</span><br><span class="line">// as generated by FormatFloat, to dst and returns the extended buffer.</span><br><span class="line">func AppendFloat(dst []byte, f float64, fmt byte, prec, bitSize int) []byte &#123;</span><br><span class="line">	return genericFtoa(dst, f, fmt, prec, bitSize)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="atoi-go-amp-amp-itoa-go"><a href="#atoi-go-amp-amp-itoa-go" class="headerlink" title="atoi.go &amp;&amp; itoa.go"></a>atoi.go &amp;&amp; itoa.go</h3><p>// ErrRange 表示值超出范围<br>var ErrRange = errors.New(“value out of range”)</p>
-<p>// ErrSyntax 表示语法不正确<br>var ErrSyntax = errors.New(“invalid syntax”)</p>
-<p>// 将整数转换为字符串形式。base 表示转换进制，取值在 2 到 36 之间。<br>// 结果中大于 10 的数字用小写字母 a - z 表示。<br>func FormatInt(i int64, base int) string<br>func FormatUint(i uint64, base int) string</p>
-<p>// 将字符串解析为整数，ParseInt 支持正负号，ParseUint 不支持正负号。<br>// base 表示进位制（2 到 36），如果 base 为 0，则根据字符串前缀判断，<br>// 前缀 0x 表示 16 进制，前缀 0 表示 8 进制，否则是 10 进制。<br>// bitSize 表示结果的位宽（包括符号位），0 表示最大位宽。<br>func ParseInt(s string, base int, bitSize int) (i int64, err error)<br>func ParseUint(s string, base int, bitSize int) (uint64, error)</p>
-<p>// 将整数转换为十进制字符串形式（即：FormatInt(i, 10) 的简写）<br>func Itoa(i int) string</p>
-<p>// 将字符串转换为十进制整数，即：ParseInt(s, 10, 0) 的简写）<br>func Atoi(s string) (int, error)<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">// ErrRange indicates that a value is out of range for the target type.</span><br><span class="line">var ErrRange = errors.New(&quot;value out of range&quot;)</span><br><span class="line"></span><br><span class="line">// ErrSyntax indicates that a value does not have the right syntax for the target type.</span><br><span class="line">var ErrSyntax = errors.New(&quot;invalid syntax&quot;)</span><br><span class="line">// Atoi returns the result of ParseInt(s, 10, 0) converted to type int.</span><br><span class="line">func Atoi(s string) (int, error) &#123;</span><br><span class="line">	const fnAtoi = &quot;Atoi&quot;</span><br><span class="line"></span><br><span class="line">	sLen := len(s)</span><br><span class="line">	if intSize == 32 &amp;&amp; (0 &lt; sLen &amp;&amp; sLen &lt; 10) ||</span><br><span class="line">		intSize == 64 &amp;&amp; (0 &lt; sLen &amp;&amp; sLen &lt; 19) &#123;</span><br><span class="line">		// Fast path for small integers that fit int type.</span><br><span class="line">		s0 := s</span><br><span class="line">		if s[0] == &apos;-&apos; || s[0] == &apos;+&apos; &#123;</span><br><span class="line">			s = s[1:]</span><br><span class="line">			if len(s) &lt; 1 &#123;</span><br><span class="line">				return 0, &amp;NumError&#123;fnAtoi, s0, ErrSyntax&#125;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		n := 0</span><br><span class="line">		for _, ch := range []byte(s) &#123;</span><br><span class="line">			ch -= &apos;0&apos;</span><br><span class="line">			if ch &gt; 9 &#123;</span><br><span class="line">				return 0, &amp;NumError&#123;fnAtoi, s0, ErrSyntax&#125;</span><br><span class="line">			&#125;</span><br><span class="line">			n = n*10 + int(ch)</span><br><span class="line">		&#125;</span><br><span class="line">		if s0[0] == &apos;-&apos; &#123;</span><br><span class="line">			n = -n</span><br><span class="line">		&#125;</span><br><span class="line">		return n, nil</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	// Slow path for invalid or big integers.</span><br><span class="line">	i64, err := ParseInt(s, 10, 0)</span><br><span class="line">	if nerr, ok := err.(*NumError); ok &#123;</span><br><span class="line">		nerr.Func = fnAtoi</span><br><span class="line">	&#125;</span><br><span class="line">	return int(i64), err</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">// FormatInt returns the string representation of i in the given base,</span><br><span class="line">// for 2 &lt;= base &lt;= 36. The result uses the lower-case letters &apos;a&apos; to &apos;z&apos;</span><br><span class="line">// for digit values &gt;= 10.</span><br><span class="line">func FormatInt(i int64, base int) string &#123;</span><br><span class="line">	if fastSmalls &amp;&amp; 0 &lt;= i &amp;&amp; i &lt; nSmalls &amp;&amp; base == 10 &#123;</span><br><span class="line">		return small(int(i))</span><br><span class="line">	&#125;</span><br><span class="line">	_, s := formatBits(nil, uint64(i), base, i &lt; 0, false)</span><br><span class="line">	return s</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// Itoa is shorthand for FormatInt(int64(i), 10).</span><br><span class="line">func Itoa(i int) string &#123;</span><br><span class="line">	return FormatInt(int64(i), 10)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// AppendInt appends the string form of the integer i,</span><br><span class="line">// as generated by FormatInt, to dst and returns the extended buffer.</span><br><span class="line">func AppendInt(dst []byte, i int64, base int) []byte &#123;</span><br><span class="line">	if fastSmalls &amp;&amp; 0 &lt;= i &amp;&amp; i &lt; nSmalls &amp;&amp; base == 10 &#123;</span><br><span class="line">		return append(dst, small(int(i))...)</span><br><span class="line">	&#125;</span><br><span class="line">	dst, _ = formatBits(dst, uint64(i), base, i &lt; 0, true)</span><br><span class="line">	return dst</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h3><p>// 判断字符串是否可以不被修改的表示为一个单行的反引号字符串。<br>// 字符串中不能含有控制字符（除了 \t）和“反引号”字符，否则返回 false<br>func CanBackquote(s string) bool</p>
-<p>// 判断 r 是否为可打印字符<br>// 可否打印并不是你想象的那样，比如空格可以打印，而\t则不能打印<br>func IsPrint(r rune) bool</p>
-<p>// 判断 r 是否为 Unicode 定义的图形字符。<br>func IsGraphic(r rune) bool</p>
-<p>// 将 s 转换为双引号字符串<br>func Quote(s string) string</p>
-<p>// 功能同上，非 ASCII 字符和不可打印字符会被转义<br>func QuoteToASCII(s string) string</p>
-<p>// 功能同上，非图形字符会被转义<br>func QuoteToGraphic(s string) string</p>
-<p>// 将 r 转换为单引号字符<br>func QuoteRune(r rune) string</p>
-<p>// 功能同上，非 ASCII 字符和不可打印字符会被转义<br>func QuoteRuneToASCII(r rune) string</p>
-<p>// 功能同上，非图形字符会被转义<br>func QuoteRuneToGraphic(r rune) string</p>
-]]></content>
   </entry>
   <entry>
     <title>tomcat系统架构及实现</title>
@@ -3638,106 +3686,6 @@
       </tags>
   </entry>
   <entry>
-    <title>数据结构-Tree小结</title>
-    <url>/2021/04/22/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-Tree%E5%B0%8F%E7%BB%93/</url>
-    <content><![CDATA[<h4 id="树的基本操作"><a href="#树的基本操作" class="headerlink" title="树的基本操作"></a>树的基本操作</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class TreeNode(object):</span><br><span class="line">    def __init__(self, value):</span><br><span class="line">        self.value = value</span><br><span class="line">        self.left = None</span><br><span class="line">        self.right = None</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">class OperationTree(object):</span><br><span class="line"></span><br><span class="line">    def query(self, root, data):</span><br><span class="line">        if root is None:</span><br><span class="line">            return None</span><br><span class="line">        if root.value == data:</span><br><span class="line">            return root</span><br><span class="line">        elif root.left:</span><br><span class="line">            return self.query(root.left, data)</span><br><span class="line">        elif root.right:</span><br><span class="line">            return self.query(root.right, data)</span><br><span class="line"></span><br><span class="line">    def pre_order(self, root):</span><br><span class="line">        if root is None:</span><br><span class="line">            return None</span><br><span class="line">        print(root.value, end=&quot; &quot;)</span><br><span class="line">        self.pre_order(root.left)</span><br><span class="line">        self.pre_order(root.right)</span><br><span class="line"></span><br><span class="line">    def in_order(self, root):</span><br><span class="line">        if root is None:</span><br><span class="line">            return None</span><br><span class="line">        self.in_order(root.left)</span><br><span class="line">        print(root.value, end=&quot; &quot;)</span><br><span class="line">        self.in_order(root.right)</span><br><span class="line"></span><br><span class="line">    def back_order(self, root):</span><br><span class="line">        if root is None:</span><br><span class="line">            return None</span><br><span class="line">        self.back_order(root.left)</span><br><span class="line">        self.back_order(root.right)</span><br><span class="line">        print(root.value, end=&quot; &quot;)</span><br></pre></td></tr></table></figure>
-<h4 id="二叉查找树-BST"><a href="#二叉查找树-BST" class="headerlink" title="二叉查找树(BST)"></a>二叉查找树(BST)</h4><p>二叉查找树，Binary Search Tree，或者称为二叉搜索树。</p>
-<p><strong>性质：</strong></p>
-<ul>
-<li>若任意节点的左子树不空，则左子树上所有节点的值均小于它的根节点的值；</li>
-<li>若任意节点的右子树不空，则右子树上所有节点的值均大于或等于它的根节点的值；</li>
-<li>任意节点的左、右子树也分别为二叉查找树；</li>
-</ul>
-<p>二叉查找树相比于其他数据结构的优势在于查找、插入的时间复杂度较低。为 O(logn)</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class TreeNode(object):</span><br><span class="line"></span><br><span class="line">    def __init__(self, value):</span><br><span class="line">        self.value = value</span><br><span class="line">        self.left = None</span><br><span class="line">        self.right = None</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">class BinarySearchTree(object):</span><br><span class="line"></span><br><span class="line">    def __init__(self, root):</span><br><span class="line">        self.root = root</span><br><span class="line"></span><br><span class="line">    def depth(self, root):</span><br><span class="line">        if root is None:</span><br><span class="line">            return None</span><br><span class="line">        else:</span><br><span class="line">            return 1 + max(self.depth(root.left), self.depth(root.right))</span><br><span class="line"></span><br><span class="line">    def insert(self, root, value):</span><br><span class="line"></span><br><span class="line">        if root is None:</span><br><span class="line">            root = TreeNode(value)</span><br><span class="line">        elif root.value &gt; value:</span><br><span class="line">            root.left = self.insert(root.left, value)</span><br><span class="line">        elif root.value &lt; value:</span><br><span class="line">            root.right = self.insert(root.right, value)</span><br><span class="line">        return root</span><br><span class="line"></span><br><span class="line">    def search1(self, root, value):</span><br><span class="line">        if root is None:</span><br><span class="line">            return None</span><br><span class="line">        if root.value == value:</span><br><span class="line">            return root</span><br><span class="line">        elif root.value &lt; value:</span><br><span class="line">            return self.search1(root.right, value)</span><br><span class="line">        elif root.value &gt; value:</span><br><span class="line">            return self.search1(root.left, value)</span><br><span class="line"></span><br><span class="line">    def search2(self, root, value):</span><br><span class="line">        while root is not None and root.value != value:</span><br><span class="line">            if root.value &gt; value:</span><br><span class="line">                root = root.left</span><br><span class="line">            elif root.value &lt; value:</span><br><span class="line">                root = root.right</span><br><span class="line">        return root</span><br><span class="line"></span><br><span class="line">    def max_value1(self, root):</span><br><span class="line">        if root is None:</span><br><span class="line">            return None</span><br><span class="line"></span><br><span class="line">        if root.right is None:</span><br><span class="line">            return root.value</span><br><span class="line">        else:</span><br><span class="line">            return self.max_value1(root.right)</span><br><span class="line"></span><br><span class="line">    def max_value2(self, root):</span><br><span class="line">        if root is None:</span><br><span class="line">            return None</span><br><span class="line"></span><br><span class="line">        while root.right is not None:</span><br><span class="line">            root = root.right</span><br><span class="line">        return root.value</span><br><span class="line"></span><br><span class="line">    def min_value1(self, root):</span><br><span class="line">        if root is None:</span><br><span class="line">            return None</span><br><span class="line"></span><br><span class="line">        if root.left is None:</span><br><span class="line">            return root.value</span><br><span class="line">        else:</span><br><span class="line">            return self.min_value1(root.left)</span><br><span class="line"></span><br><span class="line">    def min_value2(self, root):</span><br><span class="line">        if root is None:</span><br><span class="line">            return None</span><br><span class="line"></span><br><span class="line">        while root.left is not None:</span><br><span class="line">            root = root.left</span><br><span class="line">        return root.value</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">if __name__ == &apos;__main__&apos;:</span><br><span class="line">    a = TreeNode(15)</span><br><span class="line">    b = TreeNode(6)</span><br><span class="line">    c = TreeNode(18)</span><br><span class="line">    d = TreeNode(4)</span><br><span class="line">    e = TreeNode(8)</span><br><span class="line">    f = TreeNode(17)</span><br><span class="line">    g = TreeNode(20)</span><br><span class="line">    h = TreeNode(13)</span><br><span class="line">    i = TreeNode(9)</span><br><span class="line">    a.left = b</span><br><span class="line">    a.right = c</span><br><span class="line">    b.left = d</span><br><span class="line">    b.right = e</span><br><span class="line">    c.left = f</span><br><span class="line">    c.right = g</span><br><span class="line">    e.right = h</span><br><span class="line">    h.left = i</span><br><span class="line">    bst = BinarySearchTree(a)</span><br><span class="line">    print(bst.search1(a, 13).value)</span><br><span class="line">    print(bst.search2(a, 13))</span><br><span class="line">    print(bst.insert(a, 23))</span><br><span class="line">    print(bst.max_value1(a))</span><br><span class="line">    print(bst.max_value2(a))</span><br><span class="line">    print(bst.min_value1(a))</span><br><span class="line">    print(bst.min_value2(a))</span><br></pre></td></tr></table></figure>
-<h4 id="平衡二叉树-AVL-：旋转耗时"><a href="#平衡二叉树-AVL-：旋转耗时" class="headerlink" title="平衡二叉树(AVL)：旋转耗时"></a>平衡二叉树(AVL)：旋转耗时</h4><p>在AVL树中任何节点的两个子树的高度最大差别为1，所以它也被称为高度平衡树。增加和删除可能需要通过一次或多次树旋转来重新平衡这个树。</p>
-<p>AVL树本质上还是一棵二叉搜索树，它的特点是：</p>
-<ol>
-<li>本身首先是一棵二叉搜索树。</li>
-<li>带有平衡条件：每个结点的左右子树的高度之差的绝对值（平衡因子）最多为1。</li>
-</ol>
-<p>也就是说，AVL树，本质上是带了平衡功能的二叉查找树（二叉排序树，二叉搜索树）。</p>
-<p><strong>旋转</strong></p>
-<ul>
-<li>单向右旋平衡处理LL：由于在<em>a的左子树根结点的左子树上插入结点，</em>a的平衡因子由1增至2，致使以*a为根的子树失去平衡，则需进行一次右旋转操作；</li>
-<li>单向左旋平衡处理RR：由于在<em>a的右子树根结点的右子树上插入结点，</em>a的平衡因子由-1变为-2，致使以*a为根的子树失去平衡，则需进行一次左旋转操作；</li>
-<li>双向旋转（先左后右）平衡处理LR：由于在<em>a的左子树根结点的右子树上插入结点，</em>a的平衡因子由1增至2，致使以*a为根的子树失去平衡，则需进行两次旋转（先左旋后右旋）操作。</li>
-<li>双向旋转（先右后左）平衡处理RL：由于在<em>a的右子树根结点的左子树上插入结点，</em>a的平衡因子由-1变为-2，致使以*a为根的子树失去平衡，则需进行两次旋转（先右旋后左旋）操作。</li>
-</ul>
-<p><img src="/2021/04/22/数据结构-Tree小结/tree1.png" alt="avatar"></p>
-<p>查找、插入和删除在平均和最坏情况下的时间复杂度都是O ( log ⁡ n ) {\displaystyle O(\log {n})}O(logn).</p>
-<p>由于旋转的耗时，AVL树在删除数据时效率很低；在删除操作较多时，维护平衡所需的代价可能高于其带来的好处，因此AVL实际使用并不广泛。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class TreeNode(object):</span><br><span class="line"></span><br><span class="line">    def __init__(self, value):</span><br><span class="line">        self.value = value</span><br><span class="line">        self.left = None</span><br><span class="line">        self.right = None</span><br><span class="line">        self.height = 1</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">class AVLTree(object):</span><br><span class="line"></span><br><span class="line">    def get_height(self, root):</span><br><span class="line">        if root is None:</span><br><span class="line">            return 0</span><br><span class="line"></span><br><span class="line">        return root.height</span><br><span class="line"></span><br><span class="line">    def get_balance(self, root):</span><br><span class="line"></span><br><span class="line">        if root is None:</span><br><span class="line">            return 0</span><br><span class="line"></span><br><span class="line">        return self.get_height(root.left) - self.get_height(root.right)</span><br><span class="line"></span><br><span class="line">    def right_rotate(self, root):</span><br><span class="line"></span><br><span class="line">        new_root = root.left</span><br><span class="line">        new_right = new_root.right</span><br><span class="line"></span><br><span class="line">        new_root.right = root</span><br><span class="line">        root.left = new_right</span><br><span class="line"></span><br><span class="line">        root.height = 1 + max(self.get_height(root.left), self.get_height(root.right))</span><br><span class="line">        new_root.height = 1 + max(self.get_height(root.left), self.get_height(root.right))</span><br><span class="line"></span><br><span class="line">        return new_root</span><br><span class="line"></span><br><span class="line">    def left_rotate(self, root):</span><br><span class="line"></span><br><span class="line">        new_root = root.right</span><br><span class="line">        new_left = new_root.left</span><br><span class="line"></span><br><span class="line">        new_root.left = root</span><br><span class="line">        root.right = new_left</span><br><span class="line"></span><br><span class="line">        root.height = 1 + max(self.get_height(root.left), self.get_height(root.right))</span><br><span class="line">        new_root.height = 1 + max(self.get_height(root.left), self.get_height(root.right))</span><br><span class="line"></span><br><span class="line">        return new_root</span><br><span class="line"></span><br><span class="line">    def insert(self, root, value):</span><br><span class="line"></span><br><span class="line">        if root is None:</span><br><span class="line">            root = TreeNode(value)</span><br><span class="line"></span><br><span class="line">        if root.value &lt; value:</span><br><span class="line">            root.right = self.insert(root.right, value)</span><br><span class="line">        elif root.value &gt; value:</span><br><span class="line">            root.left = self.insert(root.left, value)</span><br><span class="line"></span><br><span class="line">        root.height = 1 + max(self.get_height(root.left), self.get_height(root.right))</span><br><span class="line"></span><br><span class="line">        balance = self.get_balance(root)</span><br><span class="line"></span><br><span class="line">        if balance &gt; 1 and value &lt; root.left.value:</span><br><span class="line">            return self.right_rotate(root)</span><br><span class="line"></span><br><span class="line">        if balance &lt; -1 and value &gt; root.right.value:</span><br><span class="line">            return self.left_rotate(root)</span><br><span class="line"></span><br><span class="line">        if balance &gt; 1 and value &gt; root.left.value:</span><br><span class="line">            root.left = self.left_rotate(root.left)</span><br><span class="line">            return self.right_rotate(root)</span><br><span class="line"></span><br><span class="line">        if balance &lt; -1 and value &lt; root.right.value:</span><br><span class="line">            root.right = self.right_rotate(root.right)</span><br><span class="line">            return self.left_rotate(root)</span><br></pre></td></tr></table></figure>
-<h4 id="2-3-4树"><a href="#2-3-4树" class="headerlink" title="2-3-4树"></a>2-3-4树</h4><p>2-3-4树是一种阶为4的B树。它是一种自平衡的数据结构，可以保证在O(lgn)的时间内完成查找、插入和删除操作。它主要满足以下性质：</p>
-<p>（1）每个节点每个节点有1、2或3个key，分别称为2（孩子）节点，3（孩子）节点，4（孩子）节点。</p>
-<p>（2）所有叶子节点到根节点的长度一致（也就是说叶子节点都在同一层）。</p>
-<p>（3）每个节点的key从左到右保持了从小到大的顺序，两个key之间的子树中所有的</p>
-<p>key一定大于它的父节点的左key，小于父节点的右key。   </p>
-<h4 id="红黑树：树太高"><a href="#红黑树：树太高" class="headerlink" title="红黑树：树太高"></a>红黑树：树太高</h4><p>2-3-4树和红黑树是完全等价的，由于绝大多数编程语言直接实现2-3-4树会非常繁琐，所以一般是通过实现红黑树来实现替代2-3-4树，而红黑树本也同样保证在O(lgn)的时间内完成查找、插入和删除操作。</p>
-<p>红黑树是每个节点都带有颜色属性的平衡二叉查找树 ，颜色为红色或黑色。除了二叉查找树一般要求以外，对于任何有效的红黑树我们增加了如下的额外要求:</p>
-<ul>
-<li>节点是要么红色或要么是黑色。</li>
-<li>根一定是黑色节点。</li>
-<li>每个叶子结点都带有两个空的黑色结点（称之为NIL节点，它又被称为黑哨兵）。</li>
-<li>每个红色节点的两个子节点都是黑色（或者说从每个叶子到根的所有路径上不能有两个连续的红色节点）。</li>
-<li>从任一节点到它所能到达得叶子节点的所有简单路径都包含相同数目的黑色节点。</li>
-</ul>
-<p>这些性质保证了根节点到任意叶子节点的路径长度，最多相差一半（因为路径上的黑色节点相等，差别只是不能相邻的红色节点个数），所以红黑树是一个基本平衡的二叉搜索树，它没有AVL树那么绝对平衡，但是同样的关键字组成的红黑树相比AVL旋转操作要少，而且删除操作也比AVL树效率更高，实际应用效果也比AVL树更出众。当然红黑树的具体实现也复杂的多。</p>
-<p><img src="/2021/04/22/数据结构-Tree小结/red_tree.png" alt="avatar"></p>
-<h4 id="B树"><a href="#B树" class="headerlink" title="B树"></a>B树</h4><p>一个m阶的B树具有如下几个特征：B树中所有结点的孩子结点最大值称为B树的阶，通常用m表示。一个结点有k个孩子时，必有k-1个关键字才能将子树中所有关键字划分为k个子集。</p>
-<ol>
-<li>根结点至少有两个子女。</li>
-<li>每个中间节点都包含k-1个元素和k个孩子，其中 ceil（m/2） ≤ k ≤ m</li>
-<li>每一个叶子节点都包含k-1个元素，其中 ceil（m/2） ≤ k ≤ m</li>
-<li>所有的叶子结点都位于同一层。</li>
-<li>每个节点中的元素从小到大排列，节点当中k-1个元素正好是k个孩子包含的元素的值域划分</li>
-<li>每个结点的结构为：（n，A0，K1，A1，K2，A2，…  ，Kn，An）。其中，Ki(1≤i≤n)为关键字，且Ki&lt;Ki+1(1≤i≤n-1)。<br>Ai(0≤i≤n)为指向子树根结点的指针。且Ai所指子树所有结点中的关键字均小于Ki+1。<br>n为结点中关键字的个数，满足ceil(m/2)-1≤n≤m-1。</li>
-</ol>
-<p><strong>查询</strong></p>
-<p><img src="/2021/04/22/数据结构-Tree小结/tree2.png" alt="avatar"></p>
-<p>以上图为例：若查询的数值为５： </p>
-<p>第一次磁盘IO：在内存中定位（与17、35比较），比17小，左子树；<br>第二次磁盘IO：在内存中定位（与８、12比较），比８小，左子树；<br>第三次磁盘IO：在内存中定位（与3、5比较），找到5，终止。 </p>
-<p>整个过程中，我们可以看出：比较的次数并不比二叉查找树少，尤其适当某一节点中的数据很多时，但是磁盘IO的次数却是大大减少。比较是在内存中进行的，相比于磁盘IO的速度，比较的耗时几乎可以忽略。所以当树的高度足够低的话，就可以极大的提高效率。相比之下，节点中的元素多点也没关系，仅仅是多了几次内存交互而已，只要不超过磁盘页的大小即可。</p>
-<p><strong>插入</strong></p>
-<p>对高度为ｋ的m阶B树，新结点一般是插在叶子层。通过检索可以确定关键码应插入的结点位置。然后分两种情况讨论： </p>
-<ol>
-<li>若该结点中关键码个数小于m-1，则直接插入即可。 </li>
-<li>若该结点中关键码个数等于m-1，则将引起结点的分裂。以中间关键码为界将结点一分为二，产生一个新结点，并把中间关键码插入到父结点(ｋ-1层)中 </li>
-</ol>
-<p>重复上述工作，最坏情况一直分裂到根结点，建立一个新的根结点，整个B树增加一层。</p>
-<h4 id="B-树"><a href="#B-树" class="headerlink" title="B+树"></a>B+树</h4><p>B+树是对B树的一种变形，与B树的差异在于：</p>
-<p>一个m阶的B+树具有如下几个特征：</p>
-<ol>
-<li>有k个子树的中间节点包含有k个元素（B树中是k-1个元素），每个元素不保存数据，只用来索引，所有数据都保存在叶子节点。</li>
-<li>所有的叶子结点中包含了全部元素的信息，及指向含这些元素记录的指针，且叶子结点本身依关键字的大小自小而大顺序链接。</li>
-<li>所有的中间节点元素都同时存在于子节点，在子节点元素中是最大（或最小）元素。</li>
-</ol>
-<p><img src="/2021/04/22/数据结构-Tree小结/tree3.png" alt="avatar"></p>
-<p><strong>插入</strong></p>
-<p>B+树的插入与B树的插入过程类似。不同的是B+树在叶结点上进行，如果叶结点中的关键码个数超过m，就必须分裂成关键码数目大致相同的两个结点，并保证上层结点中有这两个结点的最大关键码。</p>
-<p><strong>删除</strong></p>
-<p>B+树中的关键码在叶结点层删除后，其在上层的复本可以保留，作为一个”分解关键码”存在，如果因为删除而造成结点中关键码数小于ceil(m/2)，其处理过程与B-树的处理一样。在此，我就不多做介绍了。</p>
-<p>B+树相比B树的优势： </p>
-<ol>
-<li>单一节点存储更多的元素，使得查询的IO次数更少； </li>
-<li>所有查询都要查找到叶子节点，查询性能稳定； </li>
-<li>所有叶子节点形成有序链表，便于范围查询。</li>
-</ol>
-<h4 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h4><ol>
-<li><a href="https://www.cnblogs.com/lliuye/p/9118591.html" target="_blank" rel="noopener">https://www.cnblogs.com/lliuye/p/9118591.html</a></li>
-<li><a href="https://blog.csdn.net/qq_34364995/article/details/80787193" target="_blank" rel="noopener">https://blog.csdn.net/qq_34364995/article/details/80787193</a></li>
-<li><a href="https://www.jb51.net/article/166572.htm" target="_blank" rel="noopener">https://www.jb51.net/article/166572.htm</a></li>
-<li><a href="https://blog.csdn.net/rosefun96/article/details/108686365?utm_medium=distribute.pc_relevant.none-task-blog-baidujs_title-0&amp;spm=1001.2101.3001.4242" target="_blank" rel="noopener">https://blog.csdn.net/rosefun96/article/details/108686365?utm_medium=distribute.pc_relevant.none-task-blog-baidujs_title-0&amp;spm=1001.2101.3001.4242</a></li>
-<li><a href="https://blog.csdn.net/dongcai1905/article/details/101890478" target="_blank" rel="noopener">https://blog.csdn.net/dongcai1905/article/details/101890478</a></li>
-<li><a href="https://blog.csdn.net/u010853261/article/details/78217823" target="_blank" rel="noopener">https://blog.csdn.net/u010853261/article/details/78217823</a></li>
-<li><a href="https://blog.csdn.net/liangjiubujiu/article/details/84023736" target="_blank" rel="noopener">https://blog.csdn.net/liangjiubujiu/article/details/84023736</a></li>
-</ol>
-]]></content>
-      <tags>
-        <tag>数据结构</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>持续交付总结二</title>
     <url>/2019/10/05/%E6%8C%81%E7%BB%AD%E4%BA%A4%E4%BB%98%E6%80%BB%E7%BB%93%E4%BA%8C/</url>
     <content><![CDATA[<h5 id="环境管理"><a href="#环境管理" class="headerlink" title="环境管理"></a>环境管理</h5><ol>
@@ -3879,6 +3827,106 @@
 ]]></content>
       <tags>
         <tag>持续交付</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>数据结构-Tree小结</title>
+    <url>/2021/04/22/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-Tree%E5%B0%8F%E7%BB%93/</url>
+    <content><![CDATA[<h4 id="树的基本操作"><a href="#树的基本操作" class="headerlink" title="树的基本操作"></a>树的基本操作</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class TreeNode(object):</span><br><span class="line">    def __init__(self, value):</span><br><span class="line">        self.value = value</span><br><span class="line">        self.left = None</span><br><span class="line">        self.right = None</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">class OperationTree(object):</span><br><span class="line"></span><br><span class="line">    def query(self, root, data):</span><br><span class="line">        if root is None:</span><br><span class="line">            return None</span><br><span class="line">        if root.value == data:</span><br><span class="line">            return root</span><br><span class="line">        elif root.left:</span><br><span class="line">            return self.query(root.left, data)</span><br><span class="line">        elif root.right:</span><br><span class="line">            return self.query(root.right, data)</span><br><span class="line"></span><br><span class="line">    def pre_order(self, root):</span><br><span class="line">        if root is None:</span><br><span class="line">            return None</span><br><span class="line">        print(root.value, end=&quot; &quot;)</span><br><span class="line">        self.pre_order(root.left)</span><br><span class="line">        self.pre_order(root.right)</span><br><span class="line"></span><br><span class="line">    def in_order(self, root):</span><br><span class="line">        if root is None:</span><br><span class="line">            return None</span><br><span class="line">        self.in_order(root.left)</span><br><span class="line">        print(root.value, end=&quot; &quot;)</span><br><span class="line">        self.in_order(root.right)</span><br><span class="line"></span><br><span class="line">    def back_order(self, root):</span><br><span class="line">        if root is None:</span><br><span class="line">            return None</span><br><span class="line">        self.back_order(root.left)</span><br><span class="line">        self.back_order(root.right)</span><br><span class="line">        print(root.value, end=&quot; &quot;)</span><br></pre></td></tr></table></figure>
+<h4 id="二叉查找树-BST"><a href="#二叉查找树-BST" class="headerlink" title="二叉查找树(BST)"></a>二叉查找树(BST)</h4><p>二叉查找树，Binary Search Tree，或者称为二叉搜索树。</p>
+<p><strong>性质：</strong></p>
+<ul>
+<li>若任意节点的左子树不空，则左子树上所有节点的值均小于它的根节点的值；</li>
+<li>若任意节点的右子树不空，则右子树上所有节点的值均大于或等于它的根节点的值；</li>
+<li>任意节点的左、右子树也分别为二叉查找树；</li>
+</ul>
+<p>二叉查找树相比于其他数据结构的优势在于查找、插入的时间复杂度较低。为 O(logn)</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class TreeNode(object):</span><br><span class="line"></span><br><span class="line">    def __init__(self, value):</span><br><span class="line">        self.value = value</span><br><span class="line">        self.left = None</span><br><span class="line">        self.right = None</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">class BinarySearchTree(object):</span><br><span class="line"></span><br><span class="line">    def __init__(self, root):</span><br><span class="line">        self.root = root</span><br><span class="line"></span><br><span class="line">    def depth(self, root):</span><br><span class="line">        if root is None:</span><br><span class="line">            return None</span><br><span class="line">        else:</span><br><span class="line">            return 1 + max(self.depth(root.left), self.depth(root.right))</span><br><span class="line"></span><br><span class="line">    def insert(self, root, value):</span><br><span class="line"></span><br><span class="line">        if root is None:</span><br><span class="line">            root = TreeNode(value)</span><br><span class="line">        elif root.value &gt; value:</span><br><span class="line">            root.left = self.insert(root.left, value)</span><br><span class="line">        elif root.value &lt; value:</span><br><span class="line">            root.right = self.insert(root.right, value)</span><br><span class="line">        return root</span><br><span class="line"></span><br><span class="line">    def search1(self, root, value):</span><br><span class="line">        if root is None:</span><br><span class="line">            return None</span><br><span class="line">        if root.value == value:</span><br><span class="line">            return root</span><br><span class="line">        elif root.value &lt; value:</span><br><span class="line">            return self.search1(root.right, value)</span><br><span class="line">        elif root.value &gt; value:</span><br><span class="line">            return self.search1(root.left, value)</span><br><span class="line"></span><br><span class="line">    def search2(self, root, value):</span><br><span class="line">        while root is not None and root.value != value:</span><br><span class="line">            if root.value &gt; value:</span><br><span class="line">                root = root.left</span><br><span class="line">            elif root.value &lt; value:</span><br><span class="line">                root = root.right</span><br><span class="line">        return root</span><br><span class="line"></span><br><span class="line">    def max_value1(self, root):</span><br><span class="line">        if root is None:</span><br><span class="line">            return None</span><br><span class="line"></span><br><span class="line">        if root.right is None:</span><br><span class="line">            return root.value</span><br><span class="line">        else:</span><br><span class="line">            return self.max_value1(root.right)</span><br><span class="line"></span><br><span class="line">    def max_value2(self, root):</span><br><span class="line">        if root is None:</span><br><span class="line">            return None</span><br><span class="line"></span><br><span class="line">        while root.right is not None:</span><br><span class="line">            root = root.right</span><br><span class="line">        return root.value</span><br><span class="line"></span><br><span class="line">    def min_value1(self, root):</span><br><span class="line">        if root is None:</span><br><span class="line">            return None</span><br><span class="line"></span><br><span class="line">        if root.left is None:</span><br><span class="line">            return root.value</span><br><span class="line">        else:</span><br><span class="line">            return self.min_value1(root.left)</span><br><span class="line"></span><br><span class="line">    def min_value2(self, root):</span><br><span class="line">        if root is None:</span><br><span class="line">            return None</span><br><span class="line"></span><br><span class="line">        while root.left is not None:</span><br><span class="line">            root = root.left</span><br><span class="line">        return root.value</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">if __name__ == &apos;__main__&apos;:</span><br><span class="line">    a = TreeNode(15)</span><br><span class="line">    b = TreeNode(6)</span><br><span class="line">    c = TreeNode(18)</span><br><span class="line">    d = TreeNode(4)</span><br><span class="line">    e = TreeNode(8)</span><br><span class="line">    f = TreeNode(17)</span><br><span class="line">    g = TreeNode(20)</span><br><span class="line">    h = TreeNode(13)</span><br><span class="line">    i = TreeNode(9)</span><br><span class="line">    a.left = b</span><br><span class="line">    a.right = c</span><br><span class="line">    b.left = d</span><br><span class="line">    b.right = e</span><br><span class="line">    c.left = f</span><br><span class="line">    c.right = g</span><br><span class="line">    e.right = h</span><br><span class="line">    h.left = i</span><br><span class="line">    bst = BinarySearchTree(a)</span><br><span class="line">    print(bst.search1(a, 13).value)</span><br><span class="line">    print(bst.search2(a, 13))</span><br><span class="line">    print(bst.insert(a, 23))</span><br><span class="line">    print(bst.max_value1(a))</span><br><span class="line">    print(bst.max_value2(a))</span><br><span class="line">    print(bst.min_value1(a))</span><br><span class="line">    print(bst.min_value2(a))</span><br></pre></td></tr></table></figure>
+<h4 id="平衡二叉树-AVL-：旋转耗时"><a href="#平衡二叉树-AVL-：旋转耗时" class="headerlink" title="平衡二叉树(AVL)：旋转耗时"></a>平衡二叉树(AVL)：旋转耗时</h4><p>在AVL树中任何节点的两个子树的高度最大差别为1，所以它也被称为高度平衡树。增加和删除可能需要通过一次或多次树旋转来重新平衡这个树。</p>
+<p>AVL树本质上还是一棵二叉搜索树，它的特点是：</p>
+<ol>
+<li>本身首先是一棵二叉搜索树。</li>
+<li>带有平衡条件：每个结点的左右子树的高度之差的绝对值（平衡因子）最多为1。</li>
+</ol>
+<p>也就是说，AVL树，本质上是带了平衡功能的二叉查找树（二叉排序树，二叉搜索树）。</p>
+<p><strong>旋转</strong></p>
+<ul>
+<li>单向右旋平衡处理LL：由于在<em>a的左子树根结点的左子树上插入结点，</em>a的平衡因子由1增至2，致使以*a为根的子树失去平衡，则需进行一次右旋转操作；</li>
+<li>单向左旋平衡处理RR：由于在<em>a的右子树根结点的右子树上插入结点，</em>a的平衡因子由-1变为-2，致使以*a为根的子树失去平衡，则需进行一次左旋转操作；</li>
+<li>双向旋转（先左后右）平衡处理LR：由于在<em>a的左子树根结点的右子树上插入结点，</em>a的平衡因子由1增至2，致使以*a为根的子树失去平衡，则需进行两次旋转（先左旋后右旋）操作。</li>
+<li>双向旋转（先右后左）平衡处理RL：由于在<em>a的右子树根结点的左子树上插入结点，</em>a的平衡因子由-1变为-2，致使以*a为根的子树失去平衡，则需进行两次旋转（先右旋后左旋）操作。</li>
+</ul>
+<p><img src="/2021/04/22/数据结构-Tree小结/tree1.png" alt="avatar"></p>
+<p>查找、插入和删除在平均和最坏情况下的时间复杂度都是O ( log ⁡ n ) {\displaystyle O(\log {n})}O(logn).</p>
+<p>由于旋转的耗时，AVL树在删除数据时效率很低；在删除操作较多时，维护平衡所需的代价可能高于其带来的好处，因此AVL实际使用并不广泛。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class TreeNode(object):</span><br><span class="line"></span><br><span class="line">    def __init__(self, value):</span><br><span class="line">        self.value = value</span><br><span class="line">        self.left = None</span><br><span class="line">        self.right = None</span><br><span class="line">        self.height = 1</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">class AVLTree(object):</span><br><span class="line"></span><br><span class="line">    def get_height(self, root):</span><br><span class="line">        if root is None:</span><br><span class="line">            return 0</span><br><span class="line"></span><br><span class="line">        return root.height</span><br><span class="line"></span><br><span class="line">    def get_balance(self, root):</span><br><span class="line"></span><br><span class="line">        if root is None:</span><br><span class="line">            return 0</span><br><span class="line"></span><br><span class="line">        return self.get_height(root.left) - self.get_height(root.right)</span><br><span class="line"></span><br><span class="line">    def right_rotate(self, root):</span><br><span class="line"></span><br><span class="line">        new_root = root.left</span><br><span class="line">        new_right = new_root.right</span><br><span class="line"></span><br><span class="line">        new_root.right = root</span><br><span class="line">        root.left = new_right</span><br><span class="line"></span><br><span class="line">        root.height = 1 + max(self.get_height(root.left), self.get_height(root.right))</span><br><span class="line">        new_root.height = 1 + max(self.get_height(root.left), self.get_height(root.right))</span><br><span class="line"></span><br><span class="line">        return new_root</span><br><span class="line"></span><br><span class="line">    def left_rotate(self, root):</span><br><span class="line"></span><br><span class="line">        new_root = root.right</span><br><span class="line">        new_left = new_root.left</span><br><span class="line"></span><br><span class="line">        new_root.left = root</span><br><span class="line">        root.right = new_left</span><br><span class="line"></span><br><span class="line">        root.height = 1 + max(self.get_height(root.left), self.get_height(root.right))</span><br><span class="line">        new_root.height = 1 + max(self.get_height(root.left), self.get_height(root.right))</span><br><span class="line"></span><br><span class="line">        return new_root</span><br><span class="line"></span><br><span class="line">    def insert(self, root, value):</span><br><span class="line"></span><br><span class="line">        if root is None:</span><br><span class="line">            root = TreeNode(value)</span><br><span class="line"></span><br><span class="line">        if root.value &lt; value:</span><br><span class="line">            root.right = self.insert(root.right, value)</span><br><span class="line">        elif root.value &gt; value:</span><br><span class="line">            root.left = self.insert(root.left, value)</span><br><span class="line"></span><br><span class="line">        root.height = 1 + max(self.get_height(root.left), self.get_height(root.right))</span><br><span class="line"></span><br><span class="line">        balance = self.get_balance(root)</span><br><span class="line"></span><br><span class="line">        if balance &gt; 1 and value &lt; root.left.value:</span><br><span class="line">            return self.right_rotate(root)</span><br><span class="line"></span><br><span class="line">        if balance &lt; -1 and value &gt; root.right.value:</span><br><span class="line">            return self.left_rotate(root)</span><br><span class="line"></span><br><span class="line">        if balance &gt; 1 and value &gt; root.left.value:</span><br><span class="line">            root.left = self.left_rotate(root.left)</span><br><span class="line">            return self.right_rotate(root)</span><br><span class="line"></span><br><span class="line">        if balance &lt; -1 and value &lt; root.right.value:</span><br><span class="line">            root.right = self.right_rotate(root.right)</span><br><span class="line">            return self.left_rotate(root)</span><br></pre></td></tr></table></figure>
+<h4 id="2-3-4树"><a href="#2-3-4树" class="headerlink" title="2-3-4树"></a>2-3-4树</h4><p>2-3-4树是一种阶为4的B树。它是一种自平衡的数据结构，可以保证在O(lgn)的时间内完成查找、插入和删除操作。它主要满足以下性质：</p>
+<p>（1）每个节点每个节点有1、2或3个key，分别称为2（孩子）节点，3（孩子）节点，4（孩子）节点。</p>
+<p>（2）所有叶子节点到根节点的长度一致（也就是说叶子节点都在同一层）。</p>
+<p>（3）每个节点的key从左到右保持了从小到大的顺序，两个key之间的子树中所有的</p>
+<p>key一定大于它的父节点的左key，小于父节点的右key。   </p>
+<h4 id="红黑树：树太高"><a href="#红黑树：树太高" class="headerlink" title="红黑树：树太高"></a>红黑树：树太高</h4><p>2-3-4树和红黑树是完全等价的，由于绝大多数编程语言直接实现2-3-4树会非常繁琐，所以一般是通过实现红黑树来实现替代2-3-4树，而红黑树本也同样保证在O(lgn)的时间内完成查找、插入和删除操作。</p>
+<p>红黑树是每个节点都带有颜色属性的平衡二叉查找树 ，颜色为红色或黑色。除了二叉查找树一般要求以外，对于任何有效的红黑树我们增加了如下的额外要求:</p>
+<ul>
+<li>节点是要么红色或要么是黑色。</li>
+<li>根一定是黑色节点。</li>
+<li>每个叶子结点都带有两个空的黑色结点（称之为NIL节点，它又被称为黑哨兵）。</li>
+<li>每个红色节点的两个子节点都是黑色（或者说从每个叶子到根的所有路径上不能有两个连续的红色节点）。</li>
+<li>从任一节点到它所能到达得叶子节点的所有简单路径都包含相同数目的黑色节点。</li>
+</ul>
+<p>这些性质保证了根节点到任意叶子节点的路径长度，最多相差一半（因为路径上的黑色节点相等，差别只是不能相邻的红色节点个数），所以红黑树是一个基本平衡的二叉搜索树，它没有AVL树那么绝对平衡，但是同样的关键字组成的红黑树相比AVL旋转操作要少，而且删除操作也比AVL树效率更高，实际应用效果也比AVL树更出众。当然红黑树的具体实现也复杂的多。</p>
+<p><img src="/2021/04/22/数据结构-Tree小结/red_tree.png" alt="avatar"></p>
+<h4 id="B树"><a href="#B树" class="headerlink" title="B树"></a>B树</h4><p>一个m阶的B树具有如下几个特征：B树中所有结点的孩子结点最大值称为B树的阶，通常用m表示。一个结点有k个孩子时，必有k-1个关键字才能将子树中所有关键字划分为k个子集。</p>
+<ol>
+<li>根结点至少有两个子女。</li>
+<li>每个中间节点都包含k-1个元素和k个孩子，其中 ceil（m/2） ≤ k ≤ m</li>
+<li>每一个叶子节点都包含k-1个元素，其中 ceil（m/2） ≤ k ≤ m</li>
+<li>所有的叶子结点都位于同一层。</li>
+<li>每个节点中的元素从小到大排列，节点当中k-1个元素正好是k个孩子包含的元素的值域划分</li>
+<li>每个结点的结构为：（n，A0，K1，A1，K2，A2，…  ，Kn，An）。其中，Ki(1≤i≤n)为关键字，且Ki&lt;Ki+1(1≤i≤n-1)。<br>Ai(0≤i≤n)为指向子树根结点的指针。且Ai所指子树所有结点中的关键字均小于Ki+1。<br>n为结点中关键字的个数，满足ceil(m/2)-1≤n≤m-1。</li>
+</ol>
+<p><strong>查询</strong></p>
+<p><img src="/2021/04/22/数据结构-Tree小结/tree2.png" alt="avatar"></p>
+<p>以上图为例：若查询的数值为５： </p>
+<p>第一次磁盘IO：在内存中定位（与17、35比较），比17小，左子树；<br>第二次磁盘IO：在内存中定位（与８、12比较），比８小，左子树；<br>第三次磁盘IO：在内存中定位（与3、5比较），找到5，终止。 </p>
+<p>整个过程中，我们可以看出：比较的次数并不比二叉查找树少，尤其适当某一节点中的数据很多时，但是磁盘IO的次数却是大大减少。比较是在内存中进行的，相比于磁盘IO的速度，比较的耗时几乎可以忽略。所以当树的高度足够低的话，就可以极大的提高效率。相比之下，节点中的元素多点也没关系，仅仅是多了几次内存交互而已，只要不超过磁盘页的大小即可。</p>
+<p><strong>插入</strong></p>
+<p>对高度为ｋ的m阶B树，新结点一般是插在叶子层。通过检索可以确定关键码应插入的结点位置。然后分两种情况讨论： </p>
+<ol>
+<li>若该结点中关键码个数小于m-1，则直接插入即可。 </li>
+<li>若该结点中关键码个数等于m-1，则将引起结点的分裂。以中间关键码为界将结点一分为二，产生一个新结点，并把中间关键码插入到父结点(ｋ-1层)中 </li>
+</ol>
+<p>重复上述工作，最坏情况一直分裂到根结点，建立一个新的根结点，整个B树增加一层。</p>
+<h4 id="B-树"><a href="#B-树" class="headerlink" title="B+树"></a>B+树</h4><p>B+树是对B树的一种变形，与B树的差异在于：</p>
+<p>一个m阶的B+树具有如下几个特征：</p>
+<ol>
+<li>有k个子树的中间节点包含有k个元素（B树中是k-1个元素），每个元素不保存数据，只用来索引，所有数据都保存在叶子节点。</li>
+<li>所有的叶子结点中包含了全部元素的信息，及指向含这些元素记录的指针，且叶子结点本身依关键字的大小自小而大顺序链接。</li>
+<li>所有的中间节点元素都同时存在于子节点，在子节点元素中是最大（或最小）元素。</li>
+</ol>
+<p><img src="/2021/04/22/数据结构-Tree小结/tree3.png" alt="avatar"></p>
+<p><strong>插入</strong></p>
+<p>B+树的插入与B树的插入过程类似。不同的是B+树在叶结点上进行，如果叶结点中的关键码个数超过m，就必须分裂成关键码数目大致相同的两个结点，并保证上层结点中有这两个结点的最大关键码。</p>
+<p><strong>删除</strong></p>
+<p>B+树中的关键码在叶结点层删除后，其在上层的复本可以保留，作为一个”分解关键码”存在，如果因为删除而造成结点中关键码数小于ceil(m/2)，其处理过程与B-树的处理一样。在此，我就不多做介绍了。</p>
+<p>B+树相比B树的优势： </p>
+<ol>
+<li>单一节点存储更多的元素，使得查询的IO次数更少； </li>
+<li>所有查询都要查找到叶子节点，查询性能稳定； </li>
+<li>所有叶子节点形成有序链表，便于范围查询。</li>
+</ol>
+<h4 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h4><ol>
+<li><a href="https://www.cnblogs.com/lliuye/p/9118591.html" target="_blank" rel="noopener">https://www.cnblogs.com/lliuye/p/9118591.html</a></li>
+<li><a href="https://blog.csdn.net/qq_34364995/article/details/80787193" target="_blank" rel="noopener">https://blog.csdn.net/qq_34364995/article/details/80787193</a></li>
+<li><a href="https://www.jb51.net/article/166572.htm" target="_blank" rel="noopener">https://www.jb51.net/article/166572.htm</a></li>
+<li><a href="https://blog.csdn.net/rosefun96/article/details/108686365?utm_medium=distribute.pc_relevant.none-task-blog-baidujs_title-0&amp;spm=1001.2101.3001.4242" target="_blank" rel="noopener">https://blog.csdn.net/rosefun96/article/details/108686365?utm_medium=distribute.pc_relevant.none-task-blog-baidujs_title-0&amp;spm=1001.2101.3001.4242</a></li>
+<li><a href="https://blog.csdn.net/dongcai1905/article/details/101890478" target="_blank" rel="noopener">https://blog.csdn.net/dongcai1905/article/details/101890478</a></li>
+<li><a href="https://blog.csdn.net/u010853261/article/details/78217823" target="_blank" rel="noopener">https://blog.csdn.net/u010853261/article/details/78217823</a></li>
+<li><a href="https://blog.csdn.net/liangjiubujiu/article/details/84023736" target="_blank" rel="noopener">https://blog.csdn.net/liangjiubujiu/article/details/84023736</a></li>
+</ol>
+]]></content>
+      <tags>
+        <tag>数据结构</tag>
       </tags>
   </entry>
   <entry>
