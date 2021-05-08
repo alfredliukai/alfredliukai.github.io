@@ -1,6 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>@ConstructorProperties的作用</title>
+    <url>/2020/05/05/ConstructorProperties%E7%9A%84%E4%BD%9C%E7%94%A8/</url>
+    <content><![CDATA[<h3 id="实例展示"><a href="#实例展示" class="headerlink" title="实例展示"></a>实例展示</h3><p>spring中@ConstructorProperties的作用,以具体实例来解释：<br>下面是写的HelloService和NewHello的Bean<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class HelloService &#123;</span><br><span class="line">    public String sayHello()&#123;</span><br><span class="line">        return &quot;hello&quot;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">import java.beans.ConstructorProperties;</span><br><span class="line"></span><br><span class="line">public class NewHello &#123;</span><br><span class="line"></span><br><span class="line">    private HelloService service;</span><br><span class="line"></span><br><span class="line">    private String hello;</span><br><span class="line"></span><br><span class="line">    //@ConstructorProperties(&#123;&quot;service&quot;,&quot;hello&quot;&#125;)</span><br><span class="line">    public NewHello(HelloService service, String hello) &#123;</span><br><span class="line">        this.service = service;</span><br><span class="line">        this.hello = hello;</span><br><span class="line">    &#125;</span><br><span class="line">    public void sayNewHello()&#123;</span><br><span class="line">        System.out.println(&quot;new hello&quot;);</span><br><span class="line">        System.out.println(service.sayHello());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>对应的xml文件中的配置为：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;bean id=&quot;helloService&quot; class=&quot;com.lyk.service.HelloService&quot;/&gt;</span><br><span class="line"></span><br><span class="line"> &lt;bean id=&quot;newHello&quot; class=&quot;com.lyk.service.NewHello&quot;&gt;</span><br><span class="line">    &lt;constructor-arg name=&quot;hello&quot; value=&quot;hello&quot;/&gt;</span><br><span class="line">    &lt;constructor-arg name=&quot;service&quot; ref=&quot;helloService&quot;/&gt;</span><br><span class="line"> &lt;/bean&gt;</span><br></pre></td></tr></table></figure></p>
+<p>使用@ConstructorProperties注解时，可以通过制定变量名来改变xml文件中constructor-arg的 name名字，比如<br>@ConstructorProperties({“service1”,”hello1”})，在xml文件中要对应的配置为<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;bean id=&quot;newHello&quot; class=&quot;com.lyk.service.NewHello&quot;&gt;</span><br><span class="line">    &lt;constructor-arg name=&quot;hello1&quot; value=&quot;hello&quot;/&gt;</span><br><span class="line">    &lt;constructor-arg name=&quot;service1&quot; ref=&quot;helloService&quot;/&gt;</span><br><span class="line">&lt;/bean&gt;</span><br></pre></td></tr></table></figure></p>
+<h3 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h3><ol>
+<li><a href="https://blog.csdn.net/wslyk606/article/details/78861999" target="_blank" rel="noopener">https://blog.csdn.net/wslyk606/article/details/78861999</a></li>
+</ol>
+]]></content>
+      <tags>
+        <tag>spring</tag>
+        <tag>java</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>BloomFilter小结</title>
     <url>/2021/04/15/BloomFilter%E5%B0%8F%E7%BB%93/</url>
     <content><![CDATA[<h3 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h3><p>布隆过滤器（Bloom Filter）是由布隆（Burton Howard Bloom）在1970年提出的。它实际上是由一个很长的二进制向量（位向量）和一系列随机映射函数组成，布隆过滤器可以用于检索一个元素是否在一个集合中。它的优点是空间效率和查询时间都远远超过一般的算法，缺点是有一定的误识别率（假正例False positives，即Bloom Filter报告某一元素存在于某集合中，但是实际上该元素并不在集合中）和删除困难，但是没有识别错误的情形（即假反例False negatives，如果某个元素确实没有在该集合中，那么Bloom Filter 是不会报告该元素存在于集合中的，所以不会漏报）。因此，Bloom Filter不适合那些“零错误”的应用场合。而在能容忍低错误率的应用场合下，Bloom Filter通过极少的错误换取了存储空间的极大节省。</p>
@@ -44,21 +59,6 @@
 ]]></content>
       <tags>
         <tag>数据结构</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>@ConstructorProperties的作用</title>
-    <url>/2020/05/05/ConstructorProperties%E7%9A%84%E4%BD%9C%E7%94%A8/</url>
-    <content><![CDATA[<h3 id="实例展示"><a href="#实例展示" class="headerlink" title="实例展示"></a>实例展示</h3><p>spring中@ConstructorProperties的作用,以具体实例来解释：<br>下面是写的HelloService和NewHello的Bean<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class HelloService &#123;</span><br><span class="line">    public String sayHello()&#123;</span><br><span class="line">        return &quot;hello&quot;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">import java.beans.ConstructorProperties;</span><br><span class="line"></span><br><span class="line">public class NewHello &#123;</span><br><span class="line"></span><br><span class="line">    private HelloService service;</span><br><span class="line"></span><br><span class="line">    private String hello;</span><br><span class="line"></span><br><span class="line">    //@ConstructorProperties(&#123;&quot;service&quot;,&quot;hello&quot;&#125;)</span><br><span class="line">    public NewHello(HelloService service, String hello) &#123;</span><br><span class="line">        this.service = service;</span><br><span class="line">        this.hello = hello;</span><br><span class="line">    &#125;</span><br><span class="line">    public void sayNewHello()&#123;</span><br><span class="line">        System.out.println(&quot;new hello&quot;);</span><br><span class="line">        System.out.println(service.sayHello());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>对应的xml文件中的配置为：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;bean id=&quot;helloService&quot; class=&quot;com.lyk.service.HelloService&quot;/&gt;</span><br><span class="line"></span><br><span class="line"> &lt;bean id=&quot;newHello&quot; class=&quot;com.lyk.service.NewHello&quot;&gt;</span><br><span class="line">    &lt;constructor-arg name=&quot;hello&quot; value=&quot;hello&quot;/&gt;</span><br><span class="line">    &lt;constructor-arg name=&quot;service&quot; ref=&quot;helloService&quot;/&gt;</span><br><span class="line"> &lt;/bean&gt;</span><br></pre></td></tr></table></figure></p>
-<p>使用@ConstructorProperties注解时，可以通过制定变量名来改变xml文件中constructor-arg的 name名字，比如<br>@ConstructorProperties({“service1”,”hello1”})，在xml文件中要对应的配置为<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;bean id=&quot;newHello&quot; class=&quot;com.lyk.service.NewHello&quot;&gt;</span><br><span class="line">    &lt;constructor-arg name=&quot;hello1&quot; value=&quot;hello&quot;/&gt;</span><br><span class="line">    &lt;constructor-arg name=&quot;service1&quot; ref=&quot;helloService&quot;/&gt;</span><br><span class="line">&lt;/bean&gt;</span><br></pre></td></tr></table></figure></p>
-<h3 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h3><ol>
-<li><a href="https://blog.csdn.net/wslyk606/article/details/78861999" target="_blank" rel="noopener">https://blog.csdn.net/wslyk606/article/details/78861999</a></li>
-</ol>
-]]></content>
-      <tags>
-        <tag>spring</tag>
-        <tag>java</tag>
       </tags>
   </entry>
   <entry>
@@ -1799,6 +1799,14 @@
       </tags>
   </entry>
   <entry>
+    <title>python格式化字符串f-string小结</title>
+    <url>/2021/05/07/python%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%AD%97%E7%AC%A6%E4%B8%B2f-string%E5%B0%8F%E7%BB%93/</url>
+    <content><![CDATA[]]></content>
+      <tags>
+        <tag>python</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>python闭包和装饰器小结</title>
     <url>/2021/04/21/python%E9%97%AD%E5%8C%85%E5%92%8C%E8%A3%85%E9%A5%B0%E5%99%A8%E5%B0%8F%E7%BB%93/</url>
     <content><![CDATA[<h4 id="什么是装饰器"><a href="#什么是装饰器" class="headerlink" title="什么是装饰器"></a>什么是装饰器</h4><p>装饰器（Decorator）相对简单，咱们先介绍它：“装饰器的功能是将被装饰的函数当作参数传递给与装饰器对应的函数（名称相同的函数），并返回包装后的被装饰的函数”，听起来有点绕，没关系，直接看示意图,其中 a 为与装饰器 @a 对应的函数， b 为装饰器修饰的函数，装饰器@a的作用是：</p>
@@ -2191,19 +2199,6 @@
 ]]></content>
   </entry>
   <entry>
-    <title>浅拷贝与深拷贝以及引用</title>
-    <url>/2020/08/03/%E6%B5%85%E6%8B%B7%E8%B4%9D%E4%B8%8E%E6%B7%B1%E6%8B%B7%E8%B4%9D%E4%BB%A5%E5%8F%8A%E5%BC%95%E7%94%A8/</url>
-    <content><![CDATA[<h2 id="Python-变量存储情况"><a href="#Python-变量存储情况" class="headerlink" title="Python 变量存储情况"></a>Python 变量存储情况</h2><p>在高级语言中，变量是对内存及其地址的抽象。对于python 而言，python 的一切变量都是对象，变量的存储，采用了引用语义的方式，存储的只是一个变量的值所在的内存地址，而不是指这个变量的本身:</p>
-<p>引用语义：在 python 中，变量保存的是对象(值)的引用，我们称为 引用语义。采用这种方式，变量所需的存储空间大小一致，因为变量只是保存了一个引用。也被称为对象语义和指针语义。</p>
-<p>值语义：有些语言采用的不是这种方式，它们把变量的值直接保存在变量的存储区里，这种方式被我们称为值语义，例如 C 语言，采用这种存储方式，每一个变量在内存中所占的空间就要根据变量实际的大小而定，无法固定下来。</p>
-<p>值语义和引用语义的区别：</p>
-<p>值语义： 死的、 傻的、 简单的、 具体的、 可复制的<br>引用语义： 活的、 聪明的、 复杂的、 抽象的、 不可复制的</p>
-]]></content>
-      <tags>
-        <tag>python</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>浅析GIT分支模型</title>
     <url>/2020/07/08/%E6%B5%85%E6%9E%90GIT%E5%88%86%E6%94%AF%E6%A8%A1%E5%9E%8B/</url>
     <content><![CDATA[<p>前几天在大神的wiki里看到了这么一篇文章（<a href="https://nvie.com/posts/a-successful-git-branching-model/），抱着学习的态度想对原文进行翻译下，不当之处请大家多多指教。图1是给出的git分支模型，在原文中作者没有讨论任何项目的细节信息，仅仅讨论关于分支策略和release版本管理。" target="_blank" rel="noopener">https://nvie.com/posts/a-successful-git-branching-model/），抱着学习的态度想对原文进行翻译下，不当之处请大家多多指教。图1是给出的git分支模型，在原文中作者没有讨论任何项目的细节信息，仅仅讨论关于分支策略和release版本管理。</a><br><img src="/2020/07/08/浅析GIT分支模型/git1.png" alt="avatar"></p>
@@ -2220,6 +2215,19 @@
 ]]></content>
       <tags>
         <tag>git</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>浅拷贝与深拷贝以及引用</title>
+    <url>/2020/08/03/%E6%B5%85%E6%8B%B7%E8%B4%9D%E4%B8%8E%E6%B7%B1%E6%8B%B7%E8%B4%9D%E4%BB%A5%E5%8F%8A%E5%BC%95%E7%94%A8/</url>
+    <content><![CDATA[<h2 id="Python-变量存储情况"><a href="#Python-变量存储情况" class="headerlink" title="Python 变量存储情况"></a>Python 变量存储情况</h2><p>在高级语言中，变量是对内存及其地址的抽象。对于python 而言，python 的一切变量都是对象，变量的存储，采用了引用语义的方式，存储的只是一个变量的值所在的内存地址，而不是指这个变量的本身:</p>
+<p>引用语义：在 python 中，变量保存的是对象(值)的引用，我们称为 引用语义。采用这种方式，变量所需的存储空间大小一致，因为变量只是保存了一个引用。也被称为对象语义和指针语义。</p>
+<p>值语义：有些语言采用的不是这种方式，它们把变量的值直接保存在变量的存储区里，这种方式被我们称为值语义，例如 C 语言，采用这种存储方式，每一个变量在内存中所占的空间就要根据变量实际的大小而定，无法固定下来。</p>
+<p>值语义和引用语义的区别：</p>
+<p>值语义： 死的、 傻的、 简单的、 具体的、 可复制的<br>引用语义： 活的、 聪明的、 复杂的、 抽象的、 不可复制的</p>
+]]></content>
+      <tags>
+        <tag>python</tag>
       </tags>
   </entry>
   <entry>
@@ -2260,20 +2268,6 @@
       </tags>
   </entry>
   <entry>
-    <title>网络模型总结</title>
-    <url>/2019/09/17/%E7%BD%91%E7%BB%9C%E6%A8%A1%E5%9E%8B%E6%80%BB%E7%BB%93/</url>
-    <content><![CDATA[<p>常用的五种网络IO模型是阻塞I/O，非阻塞I/O，I/O复用，事件(信号)驱动I/O，异步I/O。<br>为什么要发起系统调用？因为进程想要获取磁盘中的数据，而能和硬件打交道的只能是内核，进程通知内核说我要磁盘中的数据，此过程就是系统调用。<br>一次I/O的完成的步骤：当进程发起系统调用时，这个系统调用就进入内核模式，然后开始I/O操作。I/O操作分为两个步骤；<br>1、磁盘把数据装载到内核的内存空间，<br>2、内核的内存空间的数据copy到用户的内存空间中(此过程是I/O发生的地方)<br>以下是进程获取数据的详细图解过程；<br><img src="/2019/09/17/网络模型总结/net1.png" alt="avatar"><br>整个过程：此进程需要对磁盘中的数据进行操作，则会向内核发起一个系统调用，然后此进程，将会被切换出去，此进程会被挂起或者进入睡眠状态，也叫不可中断的睡眠，因为数据还没有得到，只有等到系统调用的结果完成后，则进程会被唤醒，继续接下来的操作，从系统调用的开始到系统调用结束经过的步骤：<br>①进程向内核发起一个系统调用，<br>②内核接收到系统调用，知道是对文件的请求，于是告诉磁盘，把文件读取出来<br>③磁盘接收到来着内核的命令后，把文件载入到内核的内存空间里面<br>④内核的内存空间接收到数据之后，把数据copy到用户进程的内存空间(此过程是I/O发生的地方)<br>⑤进程内存空间得到数据后，给内核发送通知<br>⑥内核把接收到的通知回复给进程，此过程为唤醒进程，然后进程得到数据，进行下一步操作<br>I/O发生的地方才会出现阻塞或非阻塞<br>阻塞：进程发起I/O调用，进程又不得不等待I/O的完成，此时CPU把进程切换出去，进程处于睡眠状态则此过程为阻塞I/O<br>阻塞I/O系统怎么通知进程？I/O完成，系统直接通知进程，则进程被唤醒</p>
-<h4 id="阻塞IO（blocking-I-O）"><a href="#阻塞IO（blocking-I-O）" class="headerlink" title="阻塞IO（blocking I/O）"></a>阻塞IO（blocking I/O）</h4><p>在内核将数据准备好之前，系统调用会一直等待所有的套接字，默认的是阻塞方式。<br><img src="/2019/09/17/网络模型总结/net2.png" alt="avatar"></p>
-<h4 id="非阻塞IO（noblocking-I-O）"><a href="#非阻塞IO（noblocking-I-O）" class="headerlink" title="非阻塞IO（noblocking I/O）"></a>非阻塞IO（noblocking I/O）</h4><p>每次客户询问内核是否有数据准备好，即文件描述符缓冲区是否就绪。当有数据报准备好时，就进行拷贝数据报的操作。当没有数据报准备好时，也不阻塞程序，内核直接返回未准备就绪的信号，等待用户程序的下一个轮寻。但是，轮寻对于CPU来说是较大的浪费，一般只有在特定的场景下才使用。<br><img src="/2019/09/17/网络模型总结/net3.png" alt="avatar"></p>
-<h4 id="IO多路复用"><a href="#IO多路复用" class="headerlink" title="IO多路复用"></a>IO多路复用</h4><p>IO多路转接是多了一个select函数，select函数有一个参数是文件描述符集合，对这些文件描述符进行循环监听，当某个文件描述符就绪时，就对这个文件描述符进行处理。<br><img src="/2019/09/17/网络模型总结/net4.png" alt="avatar"></p>
-<h4 id="异步IO（asynchronous-I-O）"><a href="#异步IO（asynchronous-I-O）" class="headerlink" title="异步IO（asynchronous I/O）"></a>异步IO（asynchronous I/O）</h4><p>当应用程序调用aio_read时，内核一方面去取数据报内容返回，另一方面将程序控制权还给应用进程，应用进程继续处理其他事情，是一种非阻塞的状态。<br>当内核中有数据报就绪时，由内核将数据报拷贝到应用程序中，返回aio_read中定义好的函数处理程序。<br><img src="/2019/09/17/网络模型总结/net5.png" alt="avatar"></p>
-<h4 id="阻塞、非阻塞，同步、异步"><a href="#阻塞、非阻塞，同步、异步" class="headerlink" title="阻塞、非阻塞，同步、异步"></a>阻塞、非阻塞，同步、异步</h4><p>关于同步和异步<br>同步和异步其实指的是，请求发起方对消息结果的获取是主动发起的，还是等被动通知的。如果是请求方主动发起的，一直在等待应答结果（同步阻塞），或者可以先去处理其他的事情，但要不断轮询查看发起的请求是否有应答结果（同步非阻塞 ）因为不管如何都要发起方主动获取消息结果，所以形式上还是同步操作。如果是由服务方通知的，也就是请求方发出请求后，要么在一直等待通知（异步阻塞），要么就先去干自己的事了（异步非阻塞），当事情处理完成之后，服务方会主动通知请求方，它的请求已经完成，这就是异步。异步通知的方式一般是通过状态改变，消息通知，或者回调函数来完成，大多数时候采用的都是回调函数。<br>关于阻塞和非阻塞<br>阻塞和非阻塞在计算机的世界里面，通常指的是针对IO的操作，如网络IO和磁盘IO等。那么什么是阻塞和非阻塞呢？简单的说就是我们调用了一个函数之后，在等待这个函数返回结果之前，当前的线程是处于挂起状态，还是运行状态，如果是挂起状态，就意味着当前线程什么都不能干，就等着获取结果，这就叫同步阻塞，如果仍然是运行状态，就意味当前线程是可以的继续处理其他任务，但要时不时的去看下是否有结果了，这就是同步非阻塞。</p>
-]]></content>
-      <tags>
-        <tag>网络模型</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>高并发、高性能、高可用相关概念</title>
     <url>/2021/03/30/%E9%AB%98%E5%B9%B6%E5%8F%91%E3%80%81%E9%AB%98%E6%80%A7%E8%83%BD%E3%80%81%E9%AB%98%E5%8F%AF%E7%94%A8%E7%9B%B8%E5%85%B3%E6%A6%82%E5%BF%B5/</url>
     <content><![CDATA[<h3 id="高并发"><a href="#高并发" class="headerlink" title="高并发"></a>高并发</h3><p>通常是指，通过设计保证系统能够同时并行处理很多请求。 高并发相关常用的一些指标有响应时间（Response Time），吞吐量（Throughput），每秒查询率QPS（Query Per Second），并发用户数等。</p>
@@ -2311,6 +2305,20 @@
 </ol>
 <h3 id="高可用"><a href="#高可用" class="headerlink" title="高可用"></a>高可用</h3><p>高可用性（High Availability）通常来描述一个系统经过专门的设计，从而减少停工时间，而保持其服务的高度可用性(一直都能用)。</p>
 ]]></content>
+  </entry>
+  <entry>
+    <title>网络模型总结</title>
+    <url>/2019/09/17/%E7%BD%91%E7%BB%9C%E6%A8%A1%E5%9E%8B%E6%80%BB%E7%BB%93/</url>
+    <content><![CDATA[<p>常用的五种网络IO模型是阻塞I/O，非阻塞I/O，I/O复用，事件(信号)驱动I/O，异步I/O。<br>为什么要发起系统调用？因为进程想要获取磁盘中的数据，而能和硬件打交道的只能是内核，进程通知内核说我要磁盘中的数据，此过程就是系统调用。<br>一次I/O的完成的步骤：当进程发起系统调用时，这个系统调用就进入内核模式，然后开始I/O操作。I/O操作分为两个步骤；<br>1、磁盘把数据装载到内核的内存空间，<br>2、内核的内存空间的数据copy到用户的内存空间中(此过程是I/O发生的地方)<br>以下是进程获取数据的详细图解过程；<br><img src="/2019/09/17/网络模型总结/net1.png" alt="avatar"><br>整个过程：此进程需要对磁盘中的数据进行操作，则会向内核发起一个系统调用，然后此进程，将会被切换出去，此进程会被挂起或者进入睡眠状态，也叫不可中断的睡眠，因为数据还没有得到，只有等到系统调用的结果完成后，则进程会被唤醒，继续接下来的操作，从系统调用的开始到系统调用结束经过的步骤：<br>①进程向内核发起一个系统调用，<br>②内核接收到系统调用，知道是对文件的请求，于是告诉磁盘，把文件读取出来<br>③磁盘接收到来着内核的命令后，把文件载入到内核的内存空间里面<br>④内核的内存空间接收到数据之后，把数据copy到用户进程的内存空间(此过程是I/O发生的地方)<br>⑤进程内存空间得到数据后，给内核发送通知<br>⑥内核把接收到的通知回复给进程，此过程为唤醒进程，然后进程得到数据，进行下一步操作<br>I/O发生的地方才会出现阻塞或非阻塞<br>阻塞：进程发起I/O调用，进程又不得不等待I/O的完成，此时CPU把进程切换出去，进程处于睡眠状态则此过程为阻塞I/O<br>阻塞I/O系统怎么通知进程？I/O完成，系统直接通知进程，则进程被唤醒</p>
+<h4 id="阻塞IO（blocking-I-O）"><a href="#阻塞IO（blocking-I-O）" class="headerlink" title="阻塞IO（blocking I/O）"></a>阻塞IO（blocking I/O）</h4><p>在内核将数据准备好之前，系统调用会一直等待所有的套接字，默认的是阻塞方式。<br><img src="/2019/09/17/网络模型总结/net2.png" alt="avatar"></p>
+<h4 id="非阻塞IO（noblocking-I-O）"><a href="#非阻塞IO（noblocking-I-O）" class="headerlink" title="非阻塞IO（noblocking I/O）"></a>非阻塞IO（noblocking I/O）</h4><p>每次客户询问内核是否有数据准备好，即文件描述符缓冲区是否就绪。当有数据报准备好时，就进行拷贝数据报的操作。当没有数据报准备好时，也不阻塞程序，内核直接返回未准备就绪的信号，等待用户程序的下一个轮寻。但是，轮寻对于CPU来说是较大的浪费，一般只有在特定的场景下才使用。<br><img src="/2019/09/17/网络模型总结/net3.png" alt="avatar"></p>
+<h4 id="IO多路复用"><a href="#IO多路复用" class="headerlink" title="IO多路复用"></a>IO多路复用</h4><p>IO多路转接是多了一个select函数，select函数有一个参数是文件描述符集合，对这些文件描述符进行循环监听，当某个文件描述符就绪时，就对这个文件描述符进行处理。<br><img src="/2019/09/17/网络模型总结/net4.png" alt="avatar"></p>
+<h4 id="异步IO（asynchronous-I-O）"><a href="#异步IO（asynchronous-I-O）" class="headerlink" title="异步IO（asynchronous I/O）"></a>异步IO（asynchronous I/O）</h4><p>当应用程序调用aio_read时，内核一方面去取数据报内容返回，另一方面将程序控制权还给应用进程，应用进程继续处理其他事情，是一种非阻塞的状态。<br>当内核中有数据报就绪时，由内核将数据报拷贝到应用程序中，返回aio_read中定义好的函数处理程序。<br><img src="/2019/09/17/网络模型总结/net5.png" alt="avatar"></p>
+<h4 id="阻塞、非阻塞，同步、异步"><a href="#阻塞、非阻塞，同步、异步" class="headerlink" title="阻塞、非阻塞，同步、异步"></a>阻塞、非阻塞，同步、异步</h4><p>关于同步和异步<br>同步和异步其实指的是，请求发起方对消息结果的获取是主动发起的，还是等被动通知的。如果是请求方主动发起的，一直在等待应答结果（同步阻塞），或者可以先去处理其他的事情，但要不断轮询查看发起的请求是否有应答结果（同步非阻塞 ）因为不管如何都要发起方主动获取消息结果，所以形式上还是同步操作。如果是由服务方通知的，也就是请求方发出请求后，要么在一直等待通知（异步阻塞），要么就先去干自己的事了（异步非阻塞），当事情处理完成之后，服务方会主动通知请求方，它的请求已经完成，这就是异步。异步通知的方式一般是通过状态改变，消息通知，或者回调函数来完成，大多数时候采用的都是回调函数。<br>关于阻塞和非阻塞<br>阻塞和非阻塞在计算机的世界里面，通常指的是针对IO的操作，如网络IO和磁盘IO等。那么什么是阻塞和非阻塞呢？简单的说就是我们调用了一个函数之后，在等待这个函数返回结果之前，当前的线程是处于挂起状态，还是运行状态，如果是挂起状态，就意味着当前线程什么都不能干，就等着获取结果，这就叫同步阻塞，如果仍然是运行状态，就意味当前线程是可以的继续处理其他任务，但要时不时的去看下是否有结果了，这就是同步非阻塞。</p>
+]]></content>
+      <tags>
+        <tag>网络模型</tag>
+      </tags>
   </entry>
   <entry>
     <title>HashTree小结</title>
@@ -2779,6 +2787,91 @@
       <tags>
         <tag>jmeter</tag>
         <tag>性能测试</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>linux文件系统小结</title>
+    <url>/2021/05/08/linux%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E5%B0%8F%E7%BB%93/</url>
+    <content><![CDATA[<h3 id="文件系统"><a href="#文件系统" class="headerlink" title="文件系统"></a>文件系统</h3><h4 id="Linux"><a href="#Linux" class="headerlink" title="Linux"></a>Linux</h4><p>Linux：存在几十个文件系统类型：ext2，ext3，ext4，xfs，brtfs，zfs（man 5 fs可以取得全部文件系统的介绍）</p>
+<p>不同文件系统采用不同的方法来管理磁盘空间，各有优劣；文件系统是具体到分区的，所以格式化针对的是分区，分区格式化是指采用指定的文件系统类型对分区空间进行登记、索引并建立相应的管理表格的过程。</p>
+<ul>
+<li>ext2具有极快的速度和极小的CPU占用率，可用于硬盘和移动存储设备</li>
+<li>ext3增加日志功能，可回溯追踪</li>
+<li>ext4日志式文件系统，支持1EB（1024*1024TB），最大单文件16TB，支持连续写入可减少文件碎片。rhel6默认文件系统</li>
+<li>xfs可以管理500T的硬盘。rhel7默认文件系统</li>
+<li>brtfs文件系统针对固态盘做优化，</li>
+</ul>
+<p>注：EXT（Extended file system）是延伸文件系统、扩展文件系统，ext1于1992年4月发表，是为linux核心所做的第一个文件系统。<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">格式化命令：mkfs -t &lt;文件系统类型&gt; &lt;分区设备文件名&gt;</span><br><span class="line"></span><br><span class="line">　　　　　　mkfs.xfs /dev/sdb1</span><br></pre></td></tr></table></figure></p>
+<h4 id="windows"><a href="#windows" class="headerlink" title="windows"></a>windows</h4><ul>
+<li>FAT16：MS—DOS和win95采用的磁盘分区格式，采用16位的文件分配表，只支持2GB的磁盘分区，最大单文件2GB，且磁盘利用率低</li>
+<li>FAT32：（即Vfat）采用32位的文件分配表，支持最大分区128GB，最大文件4GB</li>
+<li>NTFS：支持最大分区2TB，最大文件2TB，安全性和稳定性非常好，不易出现文件碎片。</li>
+</ul>
+<h4 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h4><ul>
+<li>RAMFS：内存文件系统</li>
+<li>ISO 9660：光盘</li>
+<li>NFS：网络文件系统</li>
+<li>SMBAFS/CIFS：支持Samba协议的网络文件系统</li>
+<li>Linux swap：交换分区，用以提供虚拟内存。</li>
+</ul>
+<h3 id="磁盘分区基本概念"><a href="#磁盘分区基本概念" class="headerlink" title="磁盘分区基本概念"></a>磁盘分区基本概念</h3><p>硬盘分区的划分标准：</p>
+<p>硬盘分区由主分区、扩展分区和逻辑分区组成</p>
+<p>在一块硬盘上，如果是MBR分区方式，那么它的主分区最多只能有4个，或者3个主分区和1个扩展分区；在扩展分区上我们可以创建多个逻辑分区</p>
+<p>分区编号：主分区1-4 ，逻辑分区5.。。。。。</p>
+<p>LINUX规定：逻辑分区必须建立在扩展分区之上，而不是建立在主分区上</p>
+<p>分区作用：</p>
+<p>主分区：主要是用来启动操作系统的，它主要放的是操作系统的启动或引导程序，/boot分区最好放在主分区上<br>扩展分区不能使用的，它只是做为逻辑分区的容器存在的；我们真正存放数据的是主分区和逻辑分区，大量数据都放在逻辑分区中<br>如果你用的是GPT的分区方式，那么它没有限制主分区个数<br>注意：从MBR转到GPT分区或者说从GPT转到MBR会导致数据全部丢失<br>因此我们在对硬盘分区时最好划分主分区连续，比如说：主分区一、主分区二、扩展分区。</p>
+<h3 id="分区命令parted的用法"><a href="#分区命令parted的用法" class="headerlink" title="分区命令parted的用法"></a>分区命令parted的用法</h3><p><strong>parted的适用场景</strong></p>
+<p>创建操作大于2T的分区<br>一般情况下，我们都是选择使用fdisk工具来进行分区，但是目前在实际生产环境中使用的磁盘空间越来越大，呈TiB级别增长；而常用的fdisk这个工具对分区是有大小限制的，它只能划分小于2T的磁盘，所以在划大于2T磁盘分区的时候fdisk就无法满足要求了；这个时候有2个方法，其一是通过卷管理来实现，其二就是通过parted工具来实现对GPT磁盘进行分区操作；这里我们采用parted的方法来实现管理。</p>
+<p><strong>parted的2种使用方式</strong></p>
+<p>交互式</p>
+<p>手动按序交互式的创建；</p>
+<p>非交互式</p>
+<p>可将命令行写在脚本中，运行脚本实现一键创建；适用于远程批量管理多台主机的场景。</p>
+<p>两种方式比较</p>
+<p>两种方法的使用和原理其实是一样的；要想实现非交互式创建，无非是在每一个具体的交互式命令前加上parted DEVICES_NAME即可。</p>
+<p><strong>交互式方式实现分区步骤</strong></p>
+<ol>
+<li>选择操作磁盘</li>
+</ol>
+<p>parted命令后跟上欲操作磁盘的名字即可选择此设备进行操作。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[root@kvm ~]# parted /dev/sdb</span><br><span class="line">GNU Parted 3.1</span><br><span class="line">Using /dev/sdb</span><br><span class="line">Welcome to GNU Parted! Type &apos;help&apos; to view a list of commands.</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>新建磁盘标签类型为GPT</li>
+</ol>
+<p>因为parted命令只能针对gpt格式的磁盘进行操作，所以这里必须将新建的磁盘标签格式设为gpt。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">(parted) mklabel gpt</span><br></pre></td></tr></table></figure>
+<ol start="3">
+<li>分区</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mkpart PART-TYPE [FS-TYPE] START END</span><br><span class="line"></span><br><span class="line">PART-TYPE(分区类型)</span><br><span class="line"></span><br><span class="line">primary :主分区</span><br><span class="line">logical :逻辑分区</span><br><span class="line">extended :扩展分区</span><br><span class="line"></span><br><span class="line">FS-TYPE(文件系统类型)</span><br><span class="line">ext4、ext3、ext2、xfs</span><br><span class="line"></span><br><span class="line">START： 设定磁盘分区起始点；可以为0，numberMiB/GiB/TiB；</span><br><span class="line"></span><br><span class="line">0：设定当前分区的起始点为磁盘的第一个扇区；</span><br><span class="line">1G：设定当前分区的起始点为磁盘的1G处开始；</span><br><span class="line"></span><br><span class="line">END：设定磁盘分区结束点；</span><br><span class="line"></span><br><span class="line">-1：设定当前分区的结束点为磁盘的最后一个扇区；</span><br><span class="line">10G：设定当前分区的结束点为磁盘的10G处；</span><br></pre></td></tr></table></figure>
+<p><strong>将/dev/sdb整个空间分给同一个分区</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">(parted) mkpart primary 0 -1                                              </span><br><span class="line">Warning: The resulting partition is not properly aligned for best performance.</span><br><span class="line">Ignore/Cancel? I</span><br><span class="line">(parted) p                                                                </span><br><span class="line">Model: AVAGO AVAGO (scsi)</span><br><span class="line">Disk /dev/sdb: 18.0TB</span><br><span class="line">Sector size (logical/physical): 512B/4096B</span><br><span class="line">Partition Table: gpt</span><br><span class="line">Disk Flags: </span><br><span class="line"></span><br><span class="line">Number  Start   End     Size    File system  Name     Flags</span><br><span class="line"> 1      17.4kB  18.0TB  18.0TB               primary</span><br><span class="line">(parted) q                                                                </span><br><span class="line">Information: You may need to update /etc/fstab.</span><br></pre></td></tr></table></figure>
+<p><strong>格式化分区</strong></p>
+<p>因为整个/dev/sdb只分了一个区，则这个分区名默认会分配为/dev/sdb1；使用mkfs命令将/dev/sdb1分区格式化为ext4。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[root@kvm ~]# mkfs -t ext4 /dev/sdb1                 </span><br><span class="line">mke2fs 1.42.9 (28-Dec-2013)</span><br><span class="line">/dev/sdb1 alignment is offset by 244736 bytes.</span><br><span class="line">This may result in very poor performance, (re)-partitioning suggested.</span><br><span class="line">Filesystem label=</span><br><span class="line">OS type: Linux</span><br><span class="line">Block size=4096 (log=2)</span><br><span class="line">Fragment size=4096 (log=2)</span><br><span class="line">Stride=64 blocks, Stripe width=64 blocks</span><br><span class="line">274659328 inodes, 4394530311 blocks</span><br><span class="line">219726515 blocks (5.00%) reserved for the super user</span><br><span class="line">First data block=0</span><br><span class="line">134111 block groups</span><br><span class="line">32768 blocks per group, 32768 fragments per group</span><br><span class="line">2048 inodes per group</span><br><span class="line">Superblock backups stored on blocks: </span><br><span class="line">        32768, 98304, 163840, 229376, 294912, 819200, 884736, 1605632, 2654208, </span><br><span class="line">        4096000, 7962624, 11239424, 20480000, 23887872, 71663616, 78675968, </span><br><span class="line">        102400000, 214990848, 512000000, 550731776, 644972544, 1934917632, </span><br><span class="line">        2560000000, 3855122432</span><br><span class="line"></span><br><span class="line">Allocating group tables: done</span><br><span class="line">Writing inode tables: done</span><br><span class="line">Creating journal (32768 blocks): done</span><br><span class="line">Writing superblocks and filesystem accounting information: done</span><br></pre></td></tr></table></figure>
+<p><strong>设定分区label(非必要)</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[root@kvm ~]# e2label /dev/sdb1 /gfsdata01</span><br></pre></td></tr></table></figure>
+<p><strong>创建挂载目录</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[root@kvm ~]# mkdir /gfsdata01</span><br></pre></td></tr></table></figure>
+<p><strong>临时挂载分区</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[root@kvm ~]# mount /dev/sdb1 /gfsdata01</span><br><span class="line">[root@kvm ~]# df -h</span><br><span class="line">Filesystem                   Size  Used Avail Use% Mounted on</span><br><span class="line">/dev/mapper/root_vg-lv_root   89G  2.6G   82G   4% /</span><br><span class="line">devtmpfs                     126G     0  126G   0% /dev</span><br><span class="line">tmpfs                        126G     0  126G   0% /dev/shm</span><br><span class="line">tmpfs                        126G  2.0M  126G   1% /run</span><br><span class="line">tmpfs                        126G     0  126G   0% /sys/fs/cgroup</span><br><span class="line">/dev/sda1                    976M  216M  694M  24% /boot</span><br><span class="line">/dev/sda7                     99G   61M   94G   1% /home</span><br><span class="line">/dev/sda8                     62G   53M   59G   1% /tmp</span><br><span class="line">/dev/sda6                     99G   61M   94G   1% /app</span><br><span class="line">tmpfs                         26G     0   26G   0% /run/user/1014</span><br><span class="line">tmpfs                         26G     0   26G   0% /run/user/0</span><br><span class="line">/dev/sdb1                     17T   20K   16T   1% /gfsdata01</span><br></pre></td></tr></table></figure>
+<p><strong>开机自动挂载(永久挂载)</strong></p>
+<p>即修改/etc/fstab文件。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">echo &apos;/dev/sdb1 /gfsdata01    ext4    defaults    0 0&apos; &gt;&gt;/etc/fstab</span><br></pre></td></tr></table></figure>
+<p><strong>非交互式方式实现脚本</strong></p>
+<p>适用于需要在多台主机上进行同样的分区操作，可以通过ansible工具调用脚本实现批量分区配置挂载等操作。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[root@kvm ~]# cat ./auto_partition.sh </span><br><span class="line">#!/bin/bash</span><br><span class="line"># 新建/dev/sdb的磁盘标签类型为GPT</span><br><span class="line">parted /dev/sdb mklabel gpt </span><br><span class="line"># 将/dev/sdb整个空间分给同一个分区</span><br><span class="line">parted /dev/sdb mkpart primary 0 100%</span><br><span class="line"># 忽略警告</span><br><span class="line">ignore</span><br><span class="line"># 格式化分区</span><br><span class="line">mkfs -t ext4 /dev/sdb1</span><br><span class="line"># 设定分区label(非必要)</span><br><span class="line">e2label /dev/sdb1 /gfsdata01</span><br><span class="line"># 创建挂载目录</span><br><span class="line">mkdir /gfsdata01</span><br><span class="line"># 临时挂载</span><br><span class="line">mount /dev/sdb1 /gfsdata01</span><br><span class="line"># 开机自动挂载(永久挂载)</span><br><span class="line">echo &apos;/dev/sdb1 /gfsdata01       ext4    defaults        0 0&apos;&gt;&gt;/etc/fstab</span><br><span class="line">[root@kvm ~]#</span><br></pre></td></tr></table></figure>
+<p><strong>删除分区(rm子命令)</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">(parted) p                                                                </span><br><span class="line">Model: AVAGO AVAGO (scsi)</span><br><span class="line">Disk /dev/sdb: 18.0TB</span><br><span class="line">Sector size (logical/physical): 512B/4096B</span><br><span class="line">Partition Table: gpt</span><br><span class="line">Disk Flags: </span><br><span class="line"></span><br><span class="line">Number  Start   End     Size    File system  Name     Flags</span><br><span class="line"> 1      17.4kB  4096GB  4096GB               primary</span><br><span class="line"></span><br><span class="line">(parted) rm 1                                                             </span><br><span class="line">(parted) p                                                                </span><br><span class="line">Model: AVAGO AVAGO (scsi)</span><br><span class="line">Disk /dev/sdb: 18.0TB</span><br><span class="line">Sector size (logical/physical): 512B/4096B</span><br><span class="line">Partition Table: gpt</span><br><span class="line">Disk Flags: </span><br><span class="line"></span><br><span class="line">Number  Start  End  Size  File system  Name  Flags</span><br><span class="line"></span><br><span class="line">(parted)</span><br></pre></td></tr></table></figure>
+<h4 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h4><ol>
+<li><a href="https://www.cnblogs.com/daduryi/p/6619028.html" target="_blank" rel="noopener">https://www.cnblogs.com/daduryi/p/6619028.html</a></li>
+<li><a href="https://www.cnblogs.com/wholj/p/10924129.html" target="_blank" rel="noopener">https://www.cnblogs.com/wholj/p/10924129.html</a></li>
+<li><a href="https://www.cnblogs.com/f-ck-need-u/p/7048971.html" target="_blank" rel="noopener">https://www.cnblogs.com/f-ck-need-u/p/7048971.html</a></li>
+</ol>
+]]></content>
+      <tags>
+        <tag>linux</tag>
       </tags>
   </entry>
   <entry>
@@ -3584,6 +3677,7 @@
 <blockquote>
 <p>当选项均为x时，即表示正常无误，可以不进行操作，其自动进入下一步安装过程，直至安装成功，然后自动重启，显示登录界面。</p>
 </blockquote>
+<h4 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h4><p><a href="https://www.cnblogs.com/fantasyxo/p/14434035.html" target="_blank" rel="noopener">https://www.cnblogs.com/fantasyxo/p/14434035.html</a></p>
 ]]></content>
       <tags>
         <tag>linux</tag>
