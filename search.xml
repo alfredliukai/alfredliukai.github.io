@@ -1348,26 +1348,6 @@
       </tags>
   </entry>
   <entry>
-    <title>python中的itertools模块</title>
-    <url>/2021/02/03/python%E4%B8%AD%E7%9A%84itertools%E6%A8%A1%E5%9D%97/</url>
-    <content><![CDATA[<p>itertools标准化了一个快速、高效利用内存的核心工具集，这些工具本身或组合都很有用。它们一起形成了“迭代器代数”，这使得在纯Python中有可能创建简洁又高效的专用工具。</p>
-<h3 id="“无限”迭代器"><a href="#“无限”迭代器" class="headerlink" title="“无限”迭代器"></a>“无限”迭代器</h3><p>count()会创建一个无限的迭代器，所以上述代码会打印出自然数序列，根本停不下来，只能按Ctrl+C退出<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt; import itertools</span><br><span class="line">&gt;&gt;&gt; natuals = itertools.count(1)</span><br><span class="line">&gt;&gt;&gt; for n in natuals:</span><br><span class="line">...     print(n)</span><br></pre></td></tr></table></figure></p>
-<p>cycle()会把传入的一个序列无限重复下去<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt; import itertools</span><br><span class="line">&gt;&gt;&gt; cs = itertools.cycle(&apos;ABC&apos;) # 注意字符串也是序列的一种</span><br><span class="line">&gt;&gt;&gt; for c in cs:</span><br><span class="line">...     print(c)</span><br></pre></td></tr></table></figure></p>
-<p>repeat()负责把一个元素无限重复下去，不过如果提供第二个参数就可以限定重复次数：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt; ns = itertools.repeat(&apos;A&apos;, 3)</span><br><span class="line">&gt;&gt;&gt; for n in ns:</span><br><span class="line">...     print(n)</span><br><span class="line">...</span><br></pre></td></tr></table></figure></p>
-<h3 id="根据最短输入序列长度停止的迭代器"><a href="#根据最短输入序列长度停止的迭代器" class="headerlink" title="根据最短输入序列长度停止的迭代器"></a>根据最短输入序列长度停止的迭代器</h3><p>accumulate()创建一个迭代器，返回累积汇总值或其他双目运算函数的累积结果值<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt; ns = itertools.accumulate((1,2,3,4))</span><br><span class="line">&gt;&gt;&gt; for n in ns:</span><br><span class="line">...     print(n)</span><br><span class="line">...</span><br><span class="line">1</span><br><span class="line">3</span><br><span class="line">6</span><br><span class="line">10</span><br></pre></td></tr></table></figure></p>
-<p>chain()可以把一组迭代对象串联起来，形成一个更大的迭代器<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt; for c in itertools.chain(&apos;ABC&apos;, &apos;XYZ&apos;):</span><br><span class="line">...     print(c)</span><br><span class="line"># 迭代效果：&apos;A&apos; &apos;B&apos; &apos;C&apos; &apos;X&apos; &apos;Y&apos; &apos;Z&apos;</span><br></pre></td></tr></table></figure></p>
-<p>groupby()把迭代器中相邻的重复元素挑出来放在一起：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt; for key, group in itertools.groupby(&apos;AAABBBCCAAA&apos;):</span><br><span class="line">...     print(key, list(group))</span><br><span class="line">...</span><br><span class="line">A [&apos;A&apos;, &apos;A&apos;, &apos;A&apos;]</span><br><span class="line">B [&apos;B&apos;, &apos;B&apos;, &apos;B&apos;]</span><br><span class="line">C [&apos;C&apos;, &apos;C&apos;]</span><br><span class="line">A [&apos;A&apos;, &apos;A&apos;, &apos;A&apos;]</span><br></pre></td></tr></table></figure></p>
-<p>chain.from_iterable 构建类似 chain() 迭代器的另一个选择。<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt; abc=itertools.chain.from_iterable([&quot;abc&quot;,&quot;cde&quot;])</span><br><span class="line">&gt;&gt;&gt; for a in abc:</span><br><span class="line">...     print(a)</span><br><span class="line">...</span><br><span class="line">a</span><br><span class="line">b</span><br><span class="line">c</span><br><span class="line">c</span><br><span class="line">d</span><br><span class="line">e</span><br></pre></td></tr></table></figure></p>
-<h3 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h3><ol>
-<li><a href="https://docs.python.org/zh-cn/3/library/itertools.html#itertools.chain.from_iterable" target="_blank" rel="noopener">https://docs.python.org/zh-cn/3/library/itertools.html#itertools.chain.from_iterable</a></li>
-<li><a href="https://www.liaoxuefeng.com/wiki/1016959663602400/1017783145987360" target="_blank" rel="noopener">https://www.liaoxuefeng.com/wiki/1016959663602400/1017783145987360</a></li>
-</ol>
-]]></content>
-      <tags>
-        <tag>python</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>python中正则表达式</title>
     <url>/2021/03/25/python%E4%B8%AD%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F/</url>
     <content><![CDATA[<h3 id="re模块"><a href="#re模块" class="headerlink" title="re模块"></a>re模块</h3><p><strong>re模块的使用过程</strong></p>
@@ -1395,6 +1375,26 @@
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt; s=&quot;This is a number 234-235-22-423&quot;</span><br><span class="line">&gt;&gt;&gt; r=re.match(&quot;.+(\d+-\d+-\d+-\d+)&quot;,s)</span><br><span class="line">&gt;&gt;&gt; r.group(1)</span><br><span class="line">&apos;4-235-22-423&apos;</span><br><span class="line">&gt;&gt;&gt; r=re.match(&quot;.+?(\d+-\d+-\d+-\d+)&quot;,s)</span><br><span class="line">&gt;&gt;&gt; r.group(1)</span><br><span class="line">&apos;234-235-22-423&apos;</span><br><span class="line">&gt;&gt;&gt;</span><br></pre></td></tr></table></figure>
 <p>正则表达式模式中使用到通配字，那它在从左到右的顺序求值时，会尽量“抓取”满足匹配最长字符串，在我们上面的例子里面，“.+”会从字符串的启始处抓取满足模式的最长字符，其中包括我们想得到的第一个整型字段的中的大部分，“\d+”只需一位字符就可以匹配，所以它匹配了数字“4”，而“.+”则匹配了从字符串起始到这个第一位数字4之前的所有字符。</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt; re.match(r&quot;aa(\d+)&quot;,&quot;aa2343ddd&quot;).group(1)</span><br><span class="line">&apos;2343&apos;</span><br><span class="line">&gt;&gt;&gt; re.match(r&quot;aa(\d+?)&quot;,&quot;aa2343ddd&quot;).group(1)</span><br><span class="line">&apos;2&apos;</span><br><span class="line">&gt;&gt;&gt; re.match(r&quot;aa(\d+)ddd&quot;,&quot;aa2343ddd&quot;).group(1) </span><br><span class="line">&apos;2343&apos;</span><br><span class="line">&gt;&gt;&gt; re.match(r&quot;aa(\d+?)ddd&quot;,&quot;aa2343ddd&quot;).group(1)</span><br><span class="line">&apos;2343&apos;</span><br><span class="line">&gt;&gt;&gt;</span><br></pre></td></tr></table></figure>]]></content>
+      <tags>
+        <tag>python</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>python中的itertools模块</title>
+    <url>/2021/02/03/python%E4%B8%AD%E7%9A%84itertools%E6%A8%A1%E5%9D%97/</url>
+    <content><![CDATA[<p>itertools标准化了一个快速、高效利用内存的核心工具集，这些工具本身或组合都很有用。它们一起形成了“迭代器代数”，这使得在纯Python中有可能创建简洁又高效的专用工具。</p>
+<h3 id="“无限”迭代器"><a href="#“无限”迭代器" class="headerlink" title="“无限”迭代器"></a>“无限”迭代器</h3><p>count()会创建一个无限的迭代器，所以上述代码会打印出自然数序列，根本停不下来，只能按Ctrl+C退出<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt; import itertools</span><br><span class="line">&gt;&gt;&gt; natuals = itertools.count(1)</span><br><span class="line">&gt;&gt;&gt; for n in natuals:</span><br><span class="line">...     print(n)</span><br></pre></td></tr></table></figure></p>
+<p>cycle()会把传入的一个序列无限重复下去<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt; import itertools</span><br><span class="line">&gt;&gt;&gt; cs = itertools.cycle(&apos;ABC&apos;) # 注意字符串也是序列的一种</span><br><span class="line">&gt;&gt;&gt; for c in cs:</span><br><span class="line">...     print(c)</span><br></pre></td></tr></table></figure></p>
+<p>repeat()负责把一个元素无限重复下去，不过如果提供第二个参数就可以限定重复次数：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt; ns = itertools.repeat(&apos;A&apos;, 3)</span><br><span class="line">&gt;&gt;&gt; for n in ns:</span><br><span class="line">...     print(n)</span><br><span class="line">...</span><br></pre></td></tr></table></figure></p>
+<h3 id="根据最短输入序列长度停止的迭代器"><a href="#根据最短输入序列长度停止的迭代器" class="headerlink" title="根据最短输入序列长度停止的迭代器"></a>根据最短输入序列长度停止的迭代器</h3><p>accumulate()创建一个迭代器，返回累积汇总值或其他双目运算函数的累积结果值<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt; ns = itertools.accumulate((1,2,3,4))</span><br><span class="line">&gt;&gt;&gt; for n in ns:</span><br><span class="line">...     print(n)</span><br><span class="line">...</span><br><span class="line">1</span><br><span class="line">3</span><br><span class="line">6</span><br><span class="line">10</span><br></pre></td></tr></table></figure></p>
+<p>chain()可以把一组迭代对象串联起来，形成一个更大的迭代器<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt; for c in itertools.chain(&apos;ABC&apos;, &apos;XYZ&apos;):</span><br><span class="line">...     print(c)</span><br><span class="line"># 迭代效果：&apos;A&apos; &apos;B&apos; &apos;C&apos; &apos;X&apos; &apos;Y&apos; &apos;Z&apos;</span><br></pre></td></tr></table></figure></p>
+<p>groupby()把迭代器中相邻的重复元素挑出来放在一起：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt; for key, group in itertools.groupby(&apos;AAABBBCCAAA&apos;):</span><br><span class="line">...     print(key, list(group))</span><br><span class="line">...</span><br><span class="line">A [&apos;A&apos;, &apos;A&apos;, &apos;A&apos;]</span><br><span class="line">B [&apos;B&apos;, &apos;B&apos;, &apos;B&apos;]</span><br><span class="line">C [&apos;C&apos;, &apos;C&apos;]</span><br><span class="line">A [&apos;A&apos;, &apos;A&apos;, &apos;A&apos;]</span><br></pre></td></tr></table></figure></p>
+<p>chain.from_iterable 构建类似 chain() 迭代器的另一个选择。<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt; abc=itertools.chain.from_iterable([&quot;abc&quot;,&quot;cde&quot;])</span><br><span class="line">&gt;&gt;&gt; for a in abc:</span><br><span class="line">...     print(a)</span><br><span class="line">...</span><br><span class="line">a</span><br><span class="line">b</span><br><span class="line">c</span><br><span class="line">c</span><br><span class="line">d</span><br><span class="line">e</span><br></pre></td></tr></table></figure></p>
+<h3 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h3><ol>
+<li><a href="https://docs.python.org/zh-cn/3/library/itertools.html#itertools.chain.from_iterable" target="_blank" rel="noopener">https://docs.python.org/zh-cn/3/library/itertools.html#itertools.chain.from_iterable</a></li>
+<li><a href="https://www.liaoxuefeng.com/wiki/1016959663602400/1017783145987360" target="_blank" rel="noopener">https://www.liaoxuefeng.com/wiki/1016959663602400/1017783145987360</a></li>
+</ol>
+]]></content>
       <tags>
         <tag>python</tag>
       </tags>
@@ -1657,7 +1657,22 @@
 <h4 id="互斥锁"><a href="#互斥锁" class="headerlink" title="互斥锁"></a>互斥锁</h4><p><strong>当多个线程几乎同时修改某一个共享数据的时候，需要进行同步控制</strong></p>
 <p>线程同步能够保证多个线程安全访问竞争资源，最简单的同步机制是引入互斥锁。</p>
 <p>互斥锁为资源引入一个状态：锁定/非锁定。</p>
-<p>某个线程要更改共享数据时，先将其锁定，此时资源的状态为“锁定”，其他线程不能更改；直到该线程释放资源，将资源的状态变成“非锁定”，其他的线程才能再次锁定该资源。互斥锁保证了每次只有一个线程进行写入操作，从而保证了多线程情况下数据的正确性。</p>
+<p>某个线程要更改共享数据时，先将其锁定，此时资源的状态为“锁定”，其他线程不能更改；直到该线程释放资源，将资源的状态变成“非锁定”，其他的线程才能再次锁定该资源。互斥锁保证了每次只有一个线程进行写入操作，从而保证了多线程情况下数据的正确性。<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#创建锁</span><br><span class="line">mutex = threading.Lock()</span><br><span class="line">#锁定</span><br><span class="line">mutex.acquire([blocking])</span><br><span class="line">#释放</span><br><span class="line">mutex.release()</span><br></pre></td></tr></table></figure></p>
+<p>其中，锁定方法acquire可以有一个blocking参数。</p>
+<ul>
+<li>如果设定blocking为True，则当前线程会堵塞，直到获取到这个锁为止（如果没有指定，那么默认为True）</li>
+<li>如果设定blocking为False，则当前线程不会堵塞</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">import threading</span><br><span class="line">import time</span><br><span class="line"></span><br><span class="line">num = 0</span><br><span class="line"></span><br><span class="line">lock = threading.Lock()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">class MyThread(threading.Thread):</span><br><span class="line">    def run(self):</span><br><span class="line">        global num</span><br><span class="line">        mutex_flag = lock.acquire(True)  # True表示堵塞</span><br><span class="line">        print(&apos;---线程(%s)的锁状态为%d---&apos; % (self.name, mutex_flag))</span><br><span class="line">        if mutex_flag:</span><br><span class="line">            num = num + 1</span><br><span class="line">            time.sleep(0.5)  # 用来模拟适当的数据处理</span><br><span class="line">            print(self.name + &apos; set num to &apos; + str(num))</span><br><span class="line">            lock.release()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def test():</span><br><span class="line">    for i in range(5):</span><br><span class="line">        t = MyThread()</span><br><span class="line">        t.start()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">if __name__ == &apos;__main__&apos;:</span><br><span class="line">    test()</span><br></pre></td></tr></table></figure>
+<p><strong>上锁解锁过程</strong></p>
+<p>当一个线程调用锁的acquire()方法获得锁时，锁就进入“locked”状态。</p>
+<p>每次只有一个线程可以获得锁。如果此时另一个线程试图获得这个锁，该线程就会变为“blocked”状态，称为“阻塞”，直到拥有锁的线程调用锁的release()方法释放锁之后，锁进入“unlocked”状态。</p>
+<p>线程调度程序从处于同步阻塞状态的线程中选择一个来获得锁，并使得该线程进入运行（running）状态。</p>
+<p><strong>优势和劣势对比</strong></p>
+<p>锁的好处：</p>
+<p>确保了某段关键代码只能由一个线程从头到尾完整地执行</p>
+<p>锁的坏处：</p>
+<p>阻止了多线程并发执行，包含锁的某段代码实际上只能以单线程模式执行，效率就大大地下降了<br>由于可以存在多个锁，不同的线程持有不同的锁，并试图获取对方持有的锁时，可能会造成死锁</p>
 ]]></content>
       <tags>
         <tag>python</tag>
@@ -2268,6 +2283,20 @@
       </tags>
   </entry>
   <entry>
+    <title>网络模型总结</title>
+    <url>/2019/09/17/%E7%BD%91%E7%BB%9C%E6%A8%A1%E5%9E%8B%E6%80%BB%E7%BB%93/</url>
+    <content><![CDATA[<p>常用的五种网络IO模型是阻塞I/O，非阻塞I/O，I/O复用，事件(信号)驱动I/O，异步I/O。<br>为什么要发起系统调用？因为进程想要获取磁盘中的数据，而能和硬件打交道的只能是内核，进程通知内核说我要磁盘中的数据，此过程就是系统调用。<br>一次I/O的完成的步骤：当进程发起系统调用时，这个系统调用就进入内核模式，然后开始I/O操作。I/O操作分为两个步骤；<br>1、磁盘把数据装载到内核的内存空间，<br>2、内核的内存空间的数据copy到用户的内存空间中(此过程是I/O发生的地方)<br>以下是进程获取数据的详细图解过程；<br><img src="/2019/09/17/网络模型总结/net1.png" alt="avatar"><br>整个过程：此进程需要对磁盘中的数据进行操作，则会向内核发起一个系统调用，然后此进程，将会被切换出去，此进程会被挂起或者进入睡眠状态，也叫不可中断的睡眠，因为数据还没有得到，只有等到系统调用的结果完成后，则进程会被唤醒，继续接下来的操作，从系统调用的开始到系统调用结束经过的步骤：<br>①进程向内核发起一个系统调用，<br>②内核接收到系统调用，知道是对文件的请求，于是告诉磁盘，把文件读取出来<br>③磁盘接收到来着内核的命令后，把文件载入到内核的内存空间里面<br>④内核的内存空间接收到数据之后，把数据copy到用户进程的内存空间(此过程是I/O发生的地方)<br>⑤进程内存空间得到数据后，给内核发送通知<br>⑥内核把接收到的通知回复给进程，此过程为唤醒进程，然后进程得到数据，进行下一步操作<br>I/O发生的地方才会出现阻塞或非阻塞<br>阻塞：进程发起I/O调用，进程又不得不等待I/O的完成，此时CPU把进程切换出去，进程处于睡眠状态则此过程为阻塞I/O<br>阻塞I/O系统怎么通知进程？I/O完成，系统直接通知进程，则进程被唤醒</p>
+<h4 id="阻塞IO（blocking-I-O）"><a href="#阻塞IO（blocking-I-O）" class="headerlink" title="阻塞IO（blocking I/O）"></a>阻塞IO（blocking I/O）</h4><p>在内核将数据准备好之前，系统调用会一直等待所有的套接字，默认的是阻塞方式。<br><img src="/2019/09/17/网络模型总结/net2.png" alt="avatar"></p>
+<h4 id="非阻塞IO（noblocking-I-O）"><a href="#非阻塞IO（noblocking-I-O）" class="headerlink" title="非阻塞IO（noblocking I/O）"></a>非阻塞IO（noblocking I/O）</h4><p>每次客户询问内核是否有数据准备好，即文件描述符缓冲区是否就绪。当有数据报准备好时，就进行拷贝数据报的操作。当没有数据报准备好时，也不阻塞程序，内核直接返回未准备就绪的信号，等待用户程序的下一个轮寻。但是，轮寻对于CPU来说是较大的浪费，一般只有在特定的场景下才使用。<br><img src="/2019/09/17/网络模型总结/net3.png" alt="avatar"></p>
+<h4 id="IO多路复用"><a href="#IO多路复用" class="headerlink" title="IO多路复用"></a>IO多路复用</h4><p>IO多路转接是多了一个select函数，select函数有一个参数是文件描述符集合，对这些文件描述符进行循环监听，当某个文件描述符就绪时，就对这个文件描述符进行处理。<br><img src="/2019/09/17/网络模型总结/net4.png" alt="avatar"></p>
+<h4 id="异步IO（asynchronous-I-O）"><a href="#异步IO（asynchronous-I-O）" class="headerlink" title="异步IO（asynchronous I/O）"></a>异步IO（asynchronous I/O）</h4><p>当应用程序调用aio_read时，内核一方面去取数据报内容返回，另一方面将程序控制权还给应用进程，应用进程继续处理其他事情，是一种非阻塞的状态。<br>当内核中有数据报就绪时，由内核将数据报拷贝到应用程序中，返回aio_read中定义好的函数处理程序。<br><img src="/2019/09/17/网络模型总结/net5.png" alt="avatar"></p>
+<h4 id="阻塞、非阻塞，同步、异步"><a href="#阻塞、非阻塞，同步、异步" class="headerlink" title="阻塞、非阻塞，同步、异步"></a>阻塞、非阻塞，同步、异步</h4><p>关于同步和异步<br>同步和异步其实指的是，请求发起方对消息结果的获取是主动发起的，还是等被动通知的。如果是请求方主动发起的，一直在等待应答结果（同步阻塞），或者可以先去处理其他的事情，但要不断轮询查看发起的请求是否有应答结果（同步非阻塞 ）因为不管如何都要发起方主动获取消息结果，所以形式上还是同步操作。如果是由服务方通知的，也就是请求方发出请求后，要么在一直等待通知（异步阻塞），要么就先去干自己的事了（异步非阻塞），当事情处理完成之后，服务方会主动通知请求方，它的请求已经完成，这就是异步。异步通知的方式一般是通过状态改变，消息通知，或者回调函数来完成，大多数时候采用的都是回调函数。<br>关于阻塞和非阻塞<br>阻塞和非阻塞在计算机的世界里面，通常指的是针对IO的操作，如网络IO和磁盘IO等。那么什么是阻塞和非阻塞呢？简单的说就是我们调用了一个函数之后，在等待这个函数返回结果之前，当前的线程是处于挂起状态，还是运行状态，如果是挂起状态，就意味着当前线程什么都不能干，就等着获取结果，这就叫同步阻塞，如果仍然是运行状态，就意味当前线程是可以的继续处理其他任务，但要时不时的去看下是否有结果了，这就是同步非阻塞。</p>
+]]></content>
+      <tags>
+        <tag>网络模型</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>高并发、高性能、高可用相关概念</title>
     <url>/2021/03/30/%E9%AB%98%E5%B9%B6%E5%8F%91%E3%80%81%E9%AB%98%E6%80%A7%E8%83%BD%E3%80%81%E9%AB%98%E5%8F%AF%E7%94%A8%E7%9B%B8%E5%85%B3%E6%A6%82%E5%BF%B5/</url>
     <content><![CDATA[<h3 id="高并发"><a href="#高并发" class="headerlink" title="高并发"></a>高并发</h3><p>通常是指，通过设计保证系统能够同时并行处理很多请求。 高并发相关常用的一些指标有响应时间（Response Time），吞吐量（Throughput），每秒查询率QPS（Query Per Second），并发用户数等。</p>
@@ -2305,20 +2334,6 @@
 </ol>
 <h3 id="高可用"><a href="#高可用" class="headerlink" title="高可用"></a>高可用</h3><p>高可用性（High Availability）通常来描述一个系统经过专门的设计，从而减少停工时间，而保持其服务的高度可用性(一直都能用)。</p>
 ]]></content>
-  </entry>
-  <entry>
-    <title>网络模型总结</title>
-    <url>/2019/09/17/%E7%BD%91%E7%BB%9C%E6%A8%A1%E5%9E%8B%E6%80%BB%E7%BB%93/</url>
-    <content><![CDATA[<p>常用的五种网络IO模型是阻塞I/O，非阻塞I/O，I/O复用，事件(信号)驱动I/O，异步I/O。<br>为什么要发起系统调用？因为进程想要获取磁盘中的数据，而能和硬件打交道的只能是内核，进程通知内核说我要磁盘中的数据，此过程就是系统调用。<br>一次I/O的完成的步骤：当进程发起系统调用时，这个系统调用就进入内核模式，然后开始I/O操作。I/O操作分为两个步骤；<br>1、磁盘把数据装载到内核的内存空间，<br>2、内核的内存空间的数据copy到用户的内存空间中(此过程是I/O发生的地方)<br>以下是进程获取数据的详细图解过程；<br><img src="/2019/09/17/网络模型总结/net1.png" alt="avatar"><br>整个过程：此进程需要对磁盘中的数据进行操作，则会向内核发起一个系统调用，然后此进程，将会被切换出去，此进程会被挂起或者进入睡眠状态，也叫不可中断的睡眠，因为数据还没有得到，只有等到系统调用的结果完成后，则进程会被唤醒，继续接下来的操作，从系统调用的开始到系统调用结束经过的步骤：<br>①进程向内核发起一个系统调用，<br>②内核接收到系统调用，知道是对文件的请求，于是告诉磁盘，把文件读取出来<br>③磁盘接收到来着内核的命令后，把文件载入到内核的内存空间里面<br>④内核的内存空间接收到数据之后，把数据copy到用户进程的内存空间(此过程是I/O发生的地方)<br>⑤进程内存空间得到数据后，给内核发送通知<br>⑥内核把接收到的通知回复给进程，此过程为唤醒进程，然后进程得到数据，进行下一步操作<br>I/O发生的地方才会出现阻塞或非阻塞<br>阻塞：进程发起I/O调用，进程又不得不等待I/O的完成，此时CPU把进程切换出去，进程处于睡眠状态则此过程为阻塞I/O<br>阻塞I/O系统怎么通知进程？I/O完成，系统直接通知进程，则进程被唤醒</p>
-<h4 id="阻塞IO（blocking-I-O）"><a href="#阻塞IO（blocking-I-O）" class="headerlink" title="阻塞IO（blocking I/O）"></a>阻塞IO（blocking I/O）</h4><p>在内核将数据准备好之前，系统调用会一直等待所有的套接字，默认的是阻塞方式。<br><img src="/2019/09/17/网络模型总结/net2.png" alt="avatar"></p>
-<h4 id="非阻塞IO（noblocking-I-O）"><a href="#非阻塞IO（noblocking-I-O）" class="headerlink" title="非阻塞IO（noblocking I/O）"></a>非阻塞IO（noblocking I/O）</h4><p>每次客户询问内核是否有数据准备好，即文件描述符缓冲区是否就绪。当有数据报准备好时，就进行拷贝数据报的操作。当没有数据报准备好时，也不阻塞程序，内核直接返回未准备就绪的信号，等待用户程序的下一个轮寻。但是，轮寻对于CPU来说是较大的浪费，一般只有在特定的场景下才使用。<br><img src="/2019/09/17/网络模型总结/net3.png" alt="avatar"></p>
-<h4 id="IO多路复用"><a href="#IO多路复用" class="headerlink" title="IO多路复用"></a>IO多路复用</h4><p>IO多路转接是多了一个select函数，select函数有一个参数是文件描述符集合，对这些文件描述符进行循环监听，当某个文件描述符就绪时，就对这个文件描述符进行处理。<br><img src="/2019/09/17/网络模型总结/net4.png" alt="avatar"></p>
-<h4 id="异步IO（asynchronous-I-O）"><a href="#异步IO（asynchronous-I-O）" class="headerlink" title="异步IO（asynchronous I/O）"></a>异步IO（asynchronous I/O）</h4><p>当应用程序调用aio_read时，内核一方面去取数据报内容返回，另一方面将程序控制权还给应用进程，应用进程继续处理其他事情，是一种非阻塞的状态。<br>当内核中有数据报就绪时，由内核将数据报拷贝到应用程序中，返回aio_read中定义好的函数处理程序。<br><img src="/2019/09/17/网络模型总结/net5.png" alt="avatar"></p>
-<h4 id="阻塞、非阻塞，同步、异步"><a href="#阻塞、非阻塞，同步、异步" class="headerlink" title="阻塞、非阻塞，同步、异步"></a>阻塞、非阻塞，同步、异步</h4><p>关于同步和异步<br>同步和异步其实指的是，请求发起方对消息结果的获取是主动发起的，还是等被动通知的。如果是请求方主动发起的，一直在等待应答结果（同步阻塞），或者可以先去处理其他的事情，但要不断轮询查看发起的请求是否有应答结果（同步非阻塞 ）因为不管如何都要发起方主动获取消息结果，所以形式上还是同步操作。如果是由服务方通知的，也就是请求方发出请求后，要么在一直等待通知（异步阻塞），要么就先去干自己的事了（异步非阻塞），当事情处理完成之后，服务方会主动通知请求方，它的请求已经完成，这就是异步。异步通知的方式一般是通过状态改变，消息通知，或者回调函数来完成，大多数时候采用的都是回调函数。<br>关于阻塞和非阻塞<br>阻塞和非阻塞在计算机的世界里面，通常指的是针对IO的操作，如网络IO和磁盘IO等。那么什么是阻塞和非阻塞呢？简单的说就是我们调用了一个函数之后，在等待这个函数返回结果之前，当前的线程是处于挂起状态，还是运行状态，如果是挂起状态，就意味着当前线程什么都不能干，就等着获取结果，这就叫同步阻塞，如果仍然是运行状态，就意味当前线程是可以的继续处理其他任务，但要时不时的去看下是否有结果了，这就是同步非阻塞。</p>
-]]></content>
-      <tags>
-        <tag>网络模型</tag>
-      </tags>
   </entry>
   <entry>
     <title>HashTree小结</title>
@@ -4566,7 +4581,6 @@
 <li><a href="https://www.cnblogs.com/f-ck-need-u/p/7048971.html" target="_blank" rel="noopener">https://www.cnblogs.com/f-ck-need-u/p/7048971.html</a></li>
 <li><a href="https://blog.csdn.net/s361260777/article/details/82631170" target="_blank" rel="noopener">https://blog.csdn.net/s361260777/article/details/82631170</a></li>
 <li><a href="https://www.cnblogs.com/f-ck-need-u/p/7049233.html" target="_blank" rel="noopener">https://www.cnblogs.com/f-ck-need-u/p/7049233.html</a></li>
-<li><a href="https://www.cnblogs.com/wholj/p/10961705.html" target="_blank" rel="noopener">https://www.cnblogs.com/wholj/p/10961705.html</a></li>
 </ol>
 ]]></content>
       <tags>

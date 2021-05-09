@@ -88,7 +88,7 @@
 <meta property="og:description" content="单线程12345678def say_hello(name):    print(&amp;quot;hello world! %d&amp;quot; % name)    time.sleep(3)if __name__ == &amp;apos;__main__&amp;apos;:    for i in range(5):        say_hello(i) 多线程1234567891011121314151617">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://alfredliukai.github.io/2021/05/05/python中的线程小结/thread.png">
-<meta property="og:updated_time" content="2021-05-06T14:07:34.000Z">
+<meta property="og:updated_time" content="2021-05-09T15:29:24.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="python中的线程小结">
 <meta name="twitter:description" content="单线程12345678def say_hello(name):    print(&amp;quot;hello world! %d&amp;quot; % name)    time.sleep(3)if __name__ == &amp;apos;__main__&amp;apos;:    for i in range(5):        say_hello(i) 多线程1234567891011121314151617">
@@ -388,7 +388,22 @@
 <h4 id="互斥锁"><a href="#互斥锁" class="headerlink" title="互斥锁"></a>互斥锁</h4><p><strong>当多个线程几乎同时修改某一个共享数据的时候，需要进行同步控制</strong></p>
 <p>线程同步能够保证多个线程安全访问竞争资源，最简单的同步机制是引入互斥锁。</p>
 <p>互斥锁为资源引入一个状态：锁定/非锁定。</p>
-<p>某个线程要更改共享数据时，先将其锁定，此时资源的状态为“锁定”，其他线程不能更改；直到该线程释放资源，将资源的状态变成“非锁定”，其他的线程才能再次锁定该资源。互斥锁保证了每次只有一个线程进行写入操作，从而保证了多线程情况下数据的正确性。</p>
+<p>某个线程要更改共享数据时，先将其锁定，此时资源的状态为“锁定”，其他线程不能更改；直到该线程释放资源，将资源的状态变成“非锁定”，其他的线程才能再次锁定该资源。互斥锁保证了每次只有一个线程进行写入操作，从而保证了多线程情况下数据的正确性。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">#创建锁</span><br><span class="line">mutex = threading.Lock()</span><br><span class="line">#锁定</span><br><span class="line">mutex.acquire([blocking])</span><br><span class="line">#释放</span><br><span class="line">mutex.release()</span><br></pre></td></tr></table></figure></p>
+<p>其中，锁定方法acquire可以有一个blocking参数。</p>
+<ul>
+<li>如果设定blocking为True，则当前线程会堵塞，直到获取到这个锁为止（如果没有指定，那么默认为True）</li>
+<li>如果设定blocking为False，则当前线程不会堵塞</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">import threading</span><br><span class="line">import time</span><br><span class="line"></span><br><span class="line">num = 0</span><br><span class="line"></span><br><span class="line">lock = threading.Lock()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">class MyThread(threading.Thread):</span><br><span class="line">    def run(self):</span><br><span class="line">        global num</span><br><span class="line">        mutex_flag = lock.acquire(True)  # True表示堵塞</span><br><span class="line">        print(&apos;---线程(%s)的锁状态为%d---&apos; % (self.name, mutex_flag))</span><br><span class="line">        if mutex_flag:</span><br><span class="line">            num = num + 1</span><br><span class="line">            time.sleep(0.5)  # 用来模拟适当的数据处理</span><br><span class="line">            print(self.name + &apos; set num to &apos; + str(num))</span><br><span class="line">            lock.release()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def test():</span><br><span class="line">    for i in range(5):</span><br><span class="line">        t = MyThread()</span><br><span class="line">        t.start()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">if __name__ == &apos;__main__&apos;:</span><br><span class="line">    test()</span><br></pre></td></tr></table></figure>
+<p><strong>上锁解锁过程</strong></p>
+<p>当一个线程调用锁的acquire()方法获得锁时，锁就进入“locked”状态。</p>
+<p>每次只有一个线程可以获得锁。如果此时另一个线程试图获得这个锁，该线程就会变为“blocked”状态，称为“阻塞”，直到拥有锁的线程调用锁的release()方法释放锁之后，锁进入“unlocked”状态。</p>
+<p>线程调度程序从处于同步阻塞状态的线程中选择一个来获得锁，并使得该线程进入运行（running）状态。</p>
+<p><strong>优势和劣势对比</strong></p>
+<p>锁的好处：</p>
+<p>确保了某段关键代码只能由一个线程从头到尾完整地执行</p>
+<p>锁的坏处：</p>
+<p>阻止了多线程并发执行，包含锁的某段代码实际上只能以单线程模式执行，效率就大大地下降了<br>由于可以存在多个锁，不同的线程持有不同的锁，并试图获取对方持有的锁时，可能会造成死锁</p>
 
       
     </div>
