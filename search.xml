@@ -1347,6 +1347,26 @@
       </tags>
   </entry>
   <entry>
+    <title>python中的itertools模块</title>
+    <url>/2021/02/03/python%E4%B8%AD%E7%9A%84itertools%E6%A8%A1%E5%9D%97/</url>
+    <content><![CDATA[<p>itertools标准化了一个快速、高效利用内存的核心工具集，这些工具本身或组合都很有用。它们一起形成了“迭代器代数”，这使得在纯Python中有可能创建简洁又高效的专用工具。</p>
+<h3 id="“无限”迭代器"><a href="#“无限”迭代器" class="headerlink" title="“无限”迭代器"></a>“无限”迭代器</h3><p>count()会创建一个无限的迭代器，所以上述代码会打印出自然数序列，根本停不下来，只能按Ctrl+C退出<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt; import itertools</span><br><span class="line">&gt;&gt;&gt; natuals = itertools.count(1)</span><br><span class="line">&gt;&gt;&gt; for n in natuals:</span><br><span class="line">...     print(n)</span><br></pre></td></tr></table></figure></p>
+<p>cycle()会把传入的一个序列无限重复下去<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt; import itertools</span><br><span class="line">&gt;&gt;&gt; cs = itertools.cycle(&apos;ABC&apos;) # 注意字符串也是序列的一种</span><br><span class="line">&gt;&gt;&gt; for c in cs:</span><br><span class="line">...     print(c)</span><br></pre></td></tr></table></figure></p>
+<p>repeat()负责把一个元素无限重复下去，不过如果提供第二个参数就可以限定重复次数：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt; ns = itertools.repeat(&apos;A&apos;, 3)</span><br><span class="line">&gt;&gt;&gt; for n in ns:</span><br><span class="line">...     print(n)</span><br><span class="line">...</span><br></pre></td></tr></table></figure></p>
+<h3 id="根据最短输入序列长度停止的迭代器"><a href="#根据最短输入序列长度停止的迭代器" class="headerlink" title="根据最短输入序列长度停止的迭代器"></a>根据最短输入序列长度停止的迭代器</h3><p>accumulate()创建一个迭代器，返回累积汇总值或其他双目运算函数的累积结果值<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt; ns = itertools.accumulate((1,2,3,4))</span><br><span class="line">&gt;&gt;&gt; for n in ns:</span><br><span class="line">...     print(n)</span><br><span class="line">...</span><br><span class="line">1</span><br><span class="line">3</span><br><span class="line">6</span><br><span class="line">10</span><br></pre></td></tr></table></figure></p>
+<p>chain()可以把一组迭代对象串联起来，形成一个更大的迭代器<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt; for c in itertools.chain(&apos;ABC&apos;, &apos;XYZ&apos;):</span><br><span class="line">...     print(c)</span><br><span class="line"># 迭代效果：&apos;A&apos; &apos;B&apos; &apos;C&apos; &apos;X&apos; &apos;Y&apos; &apos;Z&apos;</span><br></pre></td></tr></table></figure></p>
+<p>groupby()把迭代器中相邻的重复元素挑出来放在一起：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt; for key, group in itertools.groupby(&apos;AAABBBCCAAA&apos;):</span><br><span class="line">...     print(key, list(group))</span><br><span class="line">...</span><br><span class="line">A [&apos;A&apos;, &apos;A&apos;, &apos;A&apos;]</span><br><span class="line">B [&apos;B&apos;, &apos;B&apos;, &apos;B&apos;]</span><br><span class="line">C [&apos;C&apos;, &apos;C&apos;]</span><br><span class="line">A [&apos;A&apos;, &apos;A&apos;, &apos;A&apos;]</span><br></pre></td></tr></table></figure></p>
+<p>chain.from_iterable 构建类似 chain() 迭代器的另一个选择。<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt; abc=itertools.chain.from_iterable([&quot;abc&quot;,&quot;cde&quot;])</span><br><span class="line">&gt;&gt;&gt; for a in abc:</span><br><span class="line">...     print(a)</span><br><span class="line">...</span><br><span class="line">a</span><br><span class="line">b</span><br><span class="line">c</span><br><span class="line">c</span><br><span class="line">d</span><br><span class="line">e</span><br></pre></td></tr></table></figure></p>
+<h3 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h3><ol>
+<li><a href="https://docs.python.org/zh-cn/3/library/itertools.html#itertools.chain.from_iterable" target="_blank" rel="noopener">https://docs.python.org/zh-cn/3/library/itertools.html#itertools.chain.from_iterable</a></li>
+<li><a href="https://www.liaoxuefeng.com/wiki/1016959663602400/1017783145987360" target="_blank" rel="noopener">https://www.liaoxuefeng.com/wiki/1016959663602400/1017783145987360</a></li>
+</ol>
+]]></content>
+      <tags>
+        <tag>python</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>python中正则表达式</title>
     <url>/2021/03/25/python%E4%B8%AD%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F/</url>
     <content><![CDATA[<h3 id="re模块"><a href="#re模块" class="headerlink" title="re模块"></a>re模块</h3><p><strong>re模块的使用过程</strong></p>
@@ -1374,26 +1394,6 @@
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt; s=&quot;This is a number 234-235-22-423&quot;</span><br><span class="line">&gt;&gt;&gt; r=re.match(&quot;.+(\d+-\d+-\d+-\d+)&quot;,s)</span><br><span class="line">&gt;&gt;&gt; r.group(1)</span><br><span class="line">&apos;4-235-22-423&apos;</span><br><span class="line">&gt;&gt;&gt; r=re.match(&quot;.+?(\d+-\d+-\d+-\d+)&quot;,s)</span><br><span class="line">&gt;&gt;&gt; r.group(1)</span><br><span class="line">&apos;234-235-22-423&apos;</span><br><span class="line">&gt;&gt;&gt;</span><br></pre></td></tr></table></figure>
 <p>正则表达式模式中使用到通配字，那它在从左到右的顺序求值时，会尽量“抓取”满足匹配最长字符串，在我们上面的例子里面，“.+”会从字符串的启始处抓取满足模式的最长字符，其中包括我们想得到的第一个整型字段的中的大部分，“\d+”只需一位字符就可以匹配，所以它匹配了数字“4”，而“.+”则匹配了从字符串起始到这个第一位数字4之前的所有字符。</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt; re.match(r&quot;aa(\d+)&quot;,&quot;aa2343ddd&quot;).group(1)</span><br><span class="line">&apos;2343&apos;</span><br><span class="line">&gt;&gt;&gt; re.match(r&quot;aa(\d+?)&quot;,&quot;aa2343ddd&quot;).group(1)</span><br><span class="line">&apos;2&apos;</span><br><span class="line">&gt;&gt;&gt; re.match(r&quot;aa(\d+)ddd&quot;,&quot;aa2343ddd&quot;).group(1) </span><br><span class="line">&apos;2343&apos;</span><br><span class="line">&gt;&gt;&gt; re.match(r&quot;aa(\d+?)ddd&quot;,&quot;aa2343ddd&quot;).group(1)</span><br><span class="line">&apos;2343&apos;</span><br><span class="line">&gt;&gt;&gt;</span><br></pre></td></tr></table></figure>]]></content>
-      <tags>
-        <tag>python</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>python中的itertools模块</title>
-    <url>/2021/02/03/python%E4%B8%AD%E7%9A%84itertools%E6%A8%A1%E5%9D%97/</url>
-    <content><![CDATA[<p>itertools标准化了一个快速、高效利用内存的核心工具集，这些工具本身或组合都很有用。它们一起形成了“迭代器代数”，这使得在纯Python中有可能创建简洁又高效的专用工具。</p>
-<h3 id="“无限”迭代器"><a href="#“无限”迭代器" class="headerlink" title="“无限”迭代器"></a>“无限”迭代器</h3><p>count()会创建一个无限的迭代器，所以上述代码会打印出自然数序列，根本停不下来，只能按Ctrl+C退出<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt; import itertools</span><br><span class="line">&gt;&gt;&gt; natuals = itertools.count(1)</span><br><span class="line">&gt;&gt;&gt; for n in natuals:</span><br><span class="line">...     print(n)</span><br></pre></td></tr></table></figure></p>
-<p>cycle()会把传入的一个序列无限重复下去<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt; import itertools</span><br><span class="line">&gt;&gt;&gt; cs = itertools.cycle(&apos;ABC&apos;) # 注意字符串也是序列的一种</span><br><span class="line">&gt;&gt;&gt; for c in cs:</span><br><span class="line">...     print(c)</span><br></pre></td></tr></table></figure></p>
-<p>repeat()负责把一个元素无限重复下去，不过如果提供第二个参数就可以限定重复次数：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt; ns = itertools.repeat(&apos;A&apos;, 3)</span><br><span class="line">&gt;&gt;&gt; for n in ns:</span><br><span class="line">...     print(n)</span><br><span class="line">...</span><br></pre></td></tr></table></figure></p>
-<h3 id="根据最短输入序列长度停止的迭代器"><a href="#根据最短输入序列长度停止的迭代器" class="headerlink" title="根据最短输入序列长度停止的迭代器"></a>根据最短输入序列长度停止的迭代器</h3><p>accumulate()创建一个迭代器，返回累积汇总值或其他双目运算函数的累积结果值<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt; ns = itertools.accumulate((1,2,3,4))</span><br><span class="line">&gt;&gt;&gt; for n in ns:</span><br><span class="line">...     print(n)</span><br><span class="line">...</span><br><span class="line">1</span><br><span class="line">3</span><br><span class="line">6</span><br><span class="line">10</span><br></pre></td></tr></table></figure></p>
-<p>chain()可以把一组迭代对象串联起来，形成一个更大的迭代器<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt; for c in itertools.chain(&apos;ABC&apos;, &apos;XYZ&apos;):</span><br><span class="line">...     print(c)</span><br><span class="line"># 迭代效果：&apos;A&apos; &apos;B&apos; &apos;C&apos; &apos;X&apos; &apos;Y&apos; &apos;Z&apos;</span><br></pre></td></tr></table></figure></p>
-<p>groupby()把迭代器中相邻的重复元素挑出来放在一起：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt; for key, group in itertools.groupby(&apos;AAABBBCCAAA&apos;):</span><br><span class="line">...     print(key, list(group))</span><br><span class="line">...</span><br><span class="line">A [&apos;A&apos;, &apos;A&apos;, &apos;A&apos;]</span><br><span class="line">B [&apos;B&apos;, &apos;B&apos;, &apos;B&apos;]</span><br><span class="line">C [&apos;C&apos;, &apos;C&apos;]</span><br><span class="line">A [&apos;A&apos;, &apos;A&apos;, &apos;A&apos;]</span><br></pre></td></tr></table></figure></p>
-<p>chain.from_iterable 构建类似 chain() 迭代器的另一个选择。<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt; abc=itertools.chain.from_iterable([&quot;abc&quot;,&quot;cde&quot;])</span><br><span class="line">&gt;&gt;&gt; for a in abc:</span><br><span class="line">...     print(a)</span><br><span class="line">...</span><br><span class="line">a</span><br><span class="line">b</span><br><span class="line">c</span><br><span class="line">c</span><br><span class="line">d</span><br><span class="line">e</span><br></pre></td></tr></table></figure></p>
-<h3 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h3><ol>
-<li><a href="https://docs.python.org/zh-cn/3/library/itertools.html#itertools.chain.from_iterable" target="_blank" rel="noopener">https://docs.python.org/zh-cn/3/library/itertools.html#itertools.chain.from_iterable</a></li>
-<li><a href="https://www.liaoxuefeng.com/wiki/1016959663602400/1017783145987360" target="_blank" rel="noopener">https://www.liaoxuefeng.com/wiki/1016959663602400/1017783145987360</a></li>
-</ol>
-]]></content>
       <tags>
         <tag>python</tag>
       </tags>
@@ -4013,7 +4013,7 @@
 <h4 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h4><p><a href="https://blog.csdn.net/qq_35495763/article/details/80764914" target="_blank" rel="noopener">https://blog.csdn.net/qq_35495763/article/details/80764914</a></p>
 ]]></content>
       <tags>
-        <tag>UML</tag>
+        <tag>设计模式</tag>
       </tags>
   </entry>
   <entry>
