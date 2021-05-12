@@ -74,7 +74,7 @@
 <p><strong>NS记录</strong><br>   1、NS记录是域名DNS服务器里面的一种记录类型，可以针对每个域名或子域名来设定他的NS记录，当设定后，相当于把他的解析权交给了对应的DNS。<br>   2、NS记录的用途：CDN或负载均衡时使用。</p>
 ]]></content>
       <tags>
-        <tag>DNS</tag>
+        <tag>网络协议</tag>
       </tags>
   </entry>
   <entry>
@@ -354,7 +354,7 @@
 </ol>
 ]]></content>
       <tags>
-        <tag>tcp/ip</tag>
+        <tag>网络协议</tag>
       </tags>
   </entry>
   <entry>
@@ -2003,8 +2003,7 @@
       <tags>
         <tag>java</tag>
         <tag>python</tag>
-        <tag>堆排序</tag>
-        <tag>排序算法</tag>
+        <tag>算法</tag>
       </tags>
   </entry>
   <entry>
