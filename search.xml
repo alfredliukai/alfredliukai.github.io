@@ -1,37 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>@ConstructorProperties的作用</title>
-    <url>/2020/05/05/ConstructorProperties%E7%9A%84%E4%BD%9C%E7%94%A8/</url>
-    <content><![CDATA[<h3 id="实例展示"><a href="#实例展示" class="headerlink" title="实例展示"></a>实例展示</h3><p>spring中@ConstructorProperties的作用,以具体实例来解释：<br>下面是写的HelloService和NewHello的Bean<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class HelloService &#123;</span><br><span class="line">    public String sayHello()&#123;</span><br><span class="line">        return &quot;hello&quot;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">import java.beans.ConstructorProperties;</span><br><span class="line"></span><br><span class="line">public class NewHello &#123;</span><br><span class="line"></span><br><span class="line">    private HelloService service;</span><br><span class="line"></span><br><span class="line">    private String hello;</span><br><span class="line"></span><br><span class="line">    //@ConstructorProperties(&#123;&quot;service&quot;,&quot;hello&quot;&#125;)</span><br><span class="line">    public NewHello(HelloService service, String hello) &#123;</span><br><span class="line">        this.service = service;</span><br><span class="line">        this.hello = hello;</span><br><span class="line">    &#125;</span><br><span class="line">    public void sayNewHello()&#123;</span><br><span class="line">        System.out.println(&quot;new hello&quot;);</span><br><span class="line">        System.out.println(service.sayHello());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>对应的xml文件中的配置为：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;bean id=&quot;helloService&quot; class=&quot;com.lyk.service.HelloService&quot;/&gt;</span><br><span class="line"></span><br><span class="line"> &lt;bean id=&quot;newHello&quot; class=&quot;com.lyk.service.NewHello&quot;&gt;</span><br><span class="line">    &lt;constructor-arg name=&quot;hello&quot; value=&quot;hello&quot;/&gt;</span><br><span class="line">    &lt;constructor-arg name=&quot;service&quot; ref=&quot;helloService&quot;/&gt;</span><br><span class="line"> &lt;/bean&gt;</span><br></pre></td></tr></table></figure></p>
-<p>使用@ConstructorProperties注解时，可以通过制定变量名来改变xml文件中constructor-arg的 name名字，比如<br>@ConstructorProperties({“service1”,”hello1”})，在xml文件中要对应的配置为<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;bean id=&quot;newHello&quot; class=&quot;com.lyk.service.NewHello&quot;&gt;</span><br><span class="line">    &lt;constructor-arg name=&quot;hello1&quot; value=&quot;hello&quot;/&gt;</span><br><span class="line">    &lt;constructor-arg name=&quot;service1&quot; ref=&quot;helloService&quot;/&gt;</span><br><span class="line">&lt;/bean&gt;</span><br></pre></td></tr></table></figure></p>
-<h3 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h3><ol>
-<li><a href="https://blog.csdn.net/wslyk606/article/details/78861999" target="_blank" rel="noopener">https://blog.csdn.net/wslyk606/article/details/78861999</a></li>
-</ol>
-]]></content>
-      <tags>
-        <tag>spring</tag>
-        <tag>java</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>DNS与NS、NS记录</title>
-    <url>/2021/04/01/DNS%E4%B8%8ENS%E3%80%81NS%E8%AE%B0%E5%BD%95/</url>
-    <content><![CDATA[<p>DNS：人们习惯记忆域名，但机器间互相只认IP地址，域名与IP地址之间是一一对应的，它们之间的转换工作称为域名解析，域名解析需要由专门的域名解析服务器来完成，整个过程是自动进行的。 当你的网站制作完成后上传到你的虚拟主机时，你可以直接在浏览器中输入IP地址浏览你的网站，也可以输入域名查询你的网站，虽然得出的内容是一样的但是调用的过程不一样，输入IP地址是直接从主机上调用内容，输入域名是通过域名解析服务器指向对应的主机的IP地址，再从主机调用网站的内容。</p>
-<p>资源记录是用于答复DNS客户端请求的DNS数据库记录，每一个DNS服务器包含了它所管理的DNS命名空间的所有资源记录。资源记录包含和特定主机有关的信息，如IP地址、提供服务的类型等等。常见的资源记录类型有：SOA（起始授权结构）、A（主机）、NS（名称服务器）、CNAME（别名）和MX（邮件交换器）。</p>
-<p>A记录是名称解析的重要记录，它用于将特定的主机名映射到对应主机的IP地址上。你可以在DNS服务器中手动创建或通过DNS客户端动态更新来创建。</p>
-<p>NS记录此记录指定负责此DNS区域的权威名称服务器。</p>
-<p>A记录和NS记录的区别是，A记录直接给出目的IP，NS记录将DNS解析任务交给特定的服务器，NS记录中记录的IP即为该特定服务器的IP地址。</p>
-<p><strong>Name Server的作用：</strong></p>
-<p>   比如说一个网通ADSL接入的用户想访问<a href="http://www.263.sh.cn，实际上首先是用户先把这个请求反馈给本地电脑所使用的DNS，本地电脑的DNS会先查询在自己的Cache里面是否有www.263.sh.cn的A记录值，如果有，直接反馈给本地电脑，由本地电脑直接连接www.263.sh.cn对应的主机来获取对应的数据；如果Cache里面没有www.263.sh.cn的A记录值，则按照规则企业邮箱一样，网通的DNS会连接.根服务器，在根服务器上面查询.net的根服务器，再连接.net的根服务器来查询263.net的Name" target="_blank" rel="noopener">http://www.263.sh.cn，实际上首先是用户先把这个请求反馈给本地电脑所使用的DNS，本地电脑的DNS会先查询在自己的Cache里面是否有www.263.sh.cn的A记录值，如果有，直接反馈给本地电脑，由本地电脑直接连接www.263.sh.cn对应的主机来获取对应的数据；如果Cache里面没有www.263.sh.cn的A记录值，则按照规则企业邮箱一样，网通的DNS会连接.根服务器，在根服务器上面查询.net的根服务器，再连接.net的根服务器来查询263.net的Name</a> server，最终由用户所使用的DNS和263.net的Name server连接，来获取<a href="http://www.263.sh.cn的A记录值。（注：Cache是一块缓存区域，Cache里面域名记录值的保留时间是由域名本身记录值设定的生存周期来决定的，超过生存周期后，域名的记录值会自动从ISP" target="_blank" rel="noopener">www.263.sh.cn的A记录值。（注：Cache是一块缓存区域，Cache里面域名记录值的保留时间是由域名本身记录值设定的生存周期来决定的，超过生存周期后，域名的记录值会自动从ISP</a> DNS的Cache里面清除，如果有用户再访问该记录，需要按上述过程重新获取记录值）。</p>
-<p><strong>NS记录</strong><br>   1、NS记录是域名DNS服务器里面的一种记录类型，可以针对每个域名或子域名来设定他的NS记录，当设定后，相当于把他的解析权交给了对应的DNS。<br>   2、NS记录的用途：CDN或负载均衡时使用。</p>
-]]></content>
-      <tags>
-        <tag>网络协议</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>BloomFilter小结</title>
     <url>/2021/04/15/BloomFilter%E5%B0%8F%E7%BB%93/</url>
     <content><![CDATA[<h3 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h3><p>布隆过滤器（Bloom Filter）是由布隆（Burton Howard Bloom）在1970年提出的。它实际上是由一个很长的二进制向量（位向量）和一系列随机映射函数组成，布隆过滤器可以用于检索一个元素是否在一个集合中。它的优点是空间效率和查询时间都远远超过一般的算法，缺点是有一定的误识别率（假正例False positives，即Bloom Filter报告某一元素存在于某集合中，但是实际上该元素并不在集合中）和删除困难，但是没有识别错误的情形（即假反例False negatives，如果某个元素确实没有在该集合中，那么Bloom Filter 是不会报告该元素存在于集合中的，所以不会漏报）。因此，Bloom Filter不适合那些“零错误”的应用场合。而在能容忍低错误率的应用场合下，Bloom Filter通过极少的错误换取了存储空间的极大节省。</p>
@@ -75,6 +44,37 @@
 ]]></content>
       <tags>
         <tag>数据结构</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>@ConstructorProperties的作用</title>
+    <url>/2020/05/05/ConstructorProperties%E7%9A%84%E4%BD%9C%E7%94%A8/</url>
+    <content><![CDATA[<h3 id="实例展示"><a href="#实例展示" class="headerlink" title="实例展示"></a>实例展示</h3><p>spring中@ConstructorProperties的作用,以具体实例来解释：<br>下面是写的HelloService和NewHello的Bean<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class HelloService &#123;</span><br><span class="line">    public String sayHello()&#123;</span><br><span class="line">        return &quot;hello&quot;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">import java.beans.ConstructorProperties;</span><br><span class="line"></span><br><span class="line">public class NewHello &#123;</span><br><span class="line"></span><br><span class="line">    private HelloService service;</span><br><span class="line"></span><br><span class="line">    private String hello;</span><br><span class="line"></span><br><span class="line">    //@ConstructorProperties(&#123;&quot;service&quot;,&quot;hello&quot;&#125;)</span><br><span class="line">    public NewHello(HelloService service, String hello) &#123;</span><br><span class="line">        this.service = service;</span><br><span class="line">        this.hello = hello;</span><br><span class="line">    &#125;</span><br><span class="line">    public void sayNewHello()&#123;</span><br><span class="line">        System.out.println(&quot;new hello&quot;);</span><br><span class="line">        System.out.println(service.sayHello());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>对应的xml文件中的配置为：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;bean id=&quot;helloService&quot; class=&quot;com.lyk.service.HelloService&quot;/&gt;</span><br><span class="line"></span><br><span class="line"> &lt;bean id=&quot;newHello&quot; class=&quot;com.lyk.service.NewHello&quot;&gt;</span><br><span class="line">    &lt;constructor-arg name=&quot;hello&quot; value=&quot;hello&quot;/&gt;</span><br><span class="line">    &lt;constructor-arg name=&quot;service&quot; ref=&quot;helloService&quot;/&gt;</span><br><span class="line"> &lt;/bean&gt;</span><br></pre></td></tr></table></figure></p>
+<p>使用@ConstructorProperties注解时，可以通过制定变量名来改变xml文件中constructor-arg的 name名字，比如<br>@ConstructorProperties({“service1”,”hello1”})，在xml文件中要对应的配置为<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;bean id=&quot;newHello&quot; class=&quot;com.lyk.service.NewHello&quot;&gt;</span><br><span class="line">    &lt;constructor-arg name=&quot;hello1&quot; value=&quot;hello&quot;/&gt;</span><br><span class="line">    &lt;constructor-arg name=&quot;service1&quot; ref=&quot;helloService&quot;/&gt;</span><br><span class="line">&lt;/bean&gt;</span><br></pre></td></tr></table></figure></p>
+<h3 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h3><ol>
+<li><a href="https://blog.csdn.net/wslyk606/article/details/78861999" target="_blank" rel="noopener">https://blog.csdn.net/wslyk606/article/details/78861999</a></li>
+</ol>
+]]></content>
+      <tags>
+        <tag>spring</tag>
+        <tag>java</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>DNS与NS、NS记录</title>
+    <url>/2021/04/01/DNS%E4%B8%8ENS%E3%80%81NS%E8%AE%B0%E5%BD%95/</url>
+    <content><![CDATA[<p>DNS：人们习惯记忆域名，但机器间互相只认IP地址，域名与IP地址之间是一一对应的，它们之间的转换工作称为域名解析，域名解析需要由专门的域名解析服务器来完成，整个过程是自动进行的。 当你的网站制作完成后上传到你的虚拟主机时，你可以直接在浏览器中输入IP地址浏览你的网站，也可以输入域名查询你的网站，虽然得出的内容是一样的但是调用的过程不一样，输入IP地址是直接从主机上调用内容，输入域名是通过域名解析服务器指向对应的主机的IP地址，再从主机调用网站的内容。</p>
+<p>资源记录是用于答复DNS客户端请求的DNS数据库记录，每一个DNS服务器包含了它所管理的DNS命名空间的所有资源记录。资源记录包含和特定主机有关的信息，如IP地址、提供服务的类型等等。常见的资源记录类型有：SOA（起始授权结构）、A（主机）、NS（名称服务器）、CNAME（别名）和MX（邮件交换器）。</p>
+<p>A记录是名称解析的重要记录，它用于将特定的主机名映射到对应主机的IP地址上。你可以在DNS服务器中手动创建或通过DNS客户端动态更新来创建。</p>
+<p>NS记录此记录指定负责此DNS区域的权威名称服务器。</p>
+<p>A记录和NS记录的区别是，A记录直接给出目的IP，NS记录将DNS解析任务交给特定的服务器，NS记录中记录的IP即为该特定服务器的IP地址。</p>
+<p><strong>Name Server的作用：</strong></p>
+<p>   比如说一个网通ADSL接入的用户想访问<a href="http://www.263.sh.cn，实际上首先是用户先把这个请求反馈给本地电脑所使用的DNS，本地电脑的DNS会先查询在自己的Cache里面是否有www.263.sh.cn的A记录值，如果有，直接反馈给本地电脑，由本地电脑直接连接www.263.sh.cn对应的主机来获取对应的数据；如果Cache里面没有www.263.sh.cn的A记录值，则按照规则企业邮箱一样，网通的DNS会连接.根服务器，在根服务器上面查询.net的根服务器，再连接.net的根服务器来查询263.net的Name" target="_blank" rel="noopener">http://www.263.sh.cn，实际上首先是用户先把这个请求反馈给本地电脑所使用的DNS，本地电脑的DNS会先查询在自己的Cache里面是否有www.263.sh.cn的A记录值，如果有，直接反馈给本地电脑，由本地电脑直接连接www.263.sh.cn对应的主机来获取对应的数据；如果Cache里面没有www.263.sh.cn的A记录值，则按照规则企业邮箱一样，网通的DNS会连接.根服务器，在根服务器上面查询.net的根服务器，再连接.net的根服务器来查询263.net的Name</a> server，最终由用户所使用的DNS和263.net的Name server连接，来获取<a href="http://www.263.sh.cn的A记录值。（注：Cache是一块缓存区域，Cache里面域名记录值的保留时间是由域名本身记录值设定的生存周期来决定的，超过生存周期后，域名的记录值会自动从ISP" target="_blank" rel="noopener">www.263.sh.cn的A记录值。（注：Cache是一块缓存区域，Cache里面域名记录值的保留时间是由域名本身记录值设定的生存周期来决定的，超过生存周期后，域名的记录值会自动从ISP</a> DNS的Cache里面清除，如果有用户再访问该记录，需要按上述过程重新获取记录值）。</p>
+<p><strong>NS记录</strong><br>   1、NS记录是域名DNS服务器里面的一种记录类型，可以针对每个域名或子域名来设定他的NS记录，当设定后，相当于把他的解析权交给了对应的DNS。<br>   2、NS记录的用途：CDN或负载均衡时使用。</p>
+]]></content>
+      <tags>
+        <tag>网络协议</tag>
       </tags>
   </entry>
   <entry>
@@ -708,26 +708,6 @@
       </tags>
   </entry>
   <entry>
-    <title>goland在mac下的交叉编译</title>
-    <url>/2021/03/23/goland%E5%9C%A8mac%E4%B8%8B%E7%9A%84%E4%BA%A4%E5%8F%89%E7%BC%96%E8%AF%91/</url>
-    <content><![CDATA[<h3 id="Golang在-Mac、Linux、Windows-下交叉编译"><a href="#Golang在-Mac、Linux、Windows-下交叉编译" class="headerlink" title="Golang在 Mac、Linux、Windows 下交叉编译"></a>Golang在 Mac、Linux、Windows 下交叉编译</h3><p><strong>Windows 下编译 Linux 64位系统的可执行程序</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">SET CGO_ENABLED=0</span><br><span class="line">SET GOOS=linux</span><br><span class="line">SET GOARCH=amd64</span><br><span class="line">go build main.go</span><br></pre></td></tr></table></figure>
-<p><strong>Windows 下编译 macOS 64位系统的可执行程序</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">SET CGO_ENABLED=0</span><br><span class="line">SET GOOS=darwin</span><br><span class="line">SET GOARCH=amd64</span><br><span class="line">go build main.go</span><br></pre></td></tr></table></figure>
-<p><strong>macOS下编译Linux 64位系统的可执行程序</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build main.go</span><br></pre></td></tr></table></figure>
-<p><strong>macOS下编译Windows 64位系统的可执行程序</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build main.go</span><br></pre></td></tr></table></figure>
-<p><strong>Linux下编译Windows 64位系统的可执行程序</strong><br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build main.go</span><br></pre></td></tr></table></figure></p>
-<p><strong>Linux下编译macOS 64位系统的可执行程序</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build main.go</span><br></pre></td></tr></table></figure>
-<p>GOOS： 目标平台的操作系统（darwin、freebsd、linux、windows）<br>GOARCH： 目标平台的体系架构（386、amd64、arm）<br>CGO： 交叉编译不支持 CGO 所以要禁用它</p>
-]]></content>
-      <tags>
-        <tag>golang</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>git常见场景操作</title>
     <url>/2020/07/10/git%E5%B8%B8%E8%A7%81%E5%9C%BA%E6%99%AF%E6%93%8D%E4%BD%9C/</url>
     <content><![CDATA[<h2 id="1-远程分支"><a href="#1-远程分支" class="headerlink" title="1.远程分支"></a>1.远程分支</h2><p>可以通过 git ls-remote <remote> 来显式地获得远程引用的完整列表， 或者通过 git remote show <remote> 获得远程分支的更多信息。 然而，一个更常见的做法是利用远程跟踪分支。</remote></remote></p>
@@ -753,6 +733,26 @@
 <h2 id="3-强制禁止命令"><a href="#3-强制禁止命令" class="headerlink" title="3. 强制禁止命令"></a>3. 强制禁止命令</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">1. 禁止向集成分支</span><br><span class="line">git push -f</span><br><span class="line"></span><br><span class="line">2. 禁止向集成分支执行变更历史的操作</span><br></pre></td></tr></table></figure>]]></content>
       <tags>
         <tag>git</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>goland在mac下的交叉编译</title>
+    <url>/2021/03/23/goland%E5%9C%A8mac%E4%B8%8B%E7%9A%84%E4%BA%A4%E5%8F%89%E7%BC%96%E8%AF%91/</url>
+    <content><![CDATA[<h3 id="Golang在-Mac、Linux、Windows-下交叉编译"><a href="#Golang在-Mac、Linux、Windows-下交叉编译" class="headerlink" title="Golang在 Mac、Linux、Windows 下交叉编译"></a>Golang在 Mac、Linux、Windows 下交叉编译</h3><p><strong>Windows 下编译 Linux 64位系统的可执行程序</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">SET CGO_ENABLED=0</span><br><span class="line">SET GOOS=linux</span><br><span class="line">SET GOARCH=amd64</span><br><span class="line">go build main.go</span><br></pre></td></tr></table></figure>
+<p><strong>Windows 下编译 macOS 64位系统的可执行程序</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">SET CGO_ENABLED=0</span><br><span class="line">SET GOOS=darwin</span><br><span class="line">SET GOARCH=amd64</span><br><span class="line">go build main.go</span><br></pre></td></tr></table></figure>
+<p><strong>macOS下编译Linux 64位系统的可执行程序</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build main.go</span><br></pre></td></tr></table></figure>
+<p><strong>macOS下编译Windows 64位系统的可执行程序</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build main.go</span><br></pre></td></tr></table></figure>
+<p><strong>Linux下编译Windows 64位系统的可执行程序</strong><br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build main.go</span><br></pre></td></tr></table></figure></p>
+<p><strong>Linux下编译macOS 64位系统的可执行程序</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build main.go</span><br></pre></td></tr></table></figure>
+<p>GOOS： 目标平台的操作系统（darwin、freebsd、linux、windows）<br>GOARCH： 目标平台的体系架构（386、amd64、arm）<br>CGO： 交叉编译不支持 CGO 所以要禁用它</p>
+]]></content>
+      <tags>
+        <tag>golang</tag>
       </tags>
   </entry>
   <entry>
@@ -1152,6 +1152,27 @@
       </tags>
   </entry>
   <entry>
+    <title>python3中re模块</title>
+    <url>/2020/08/26/python3%E4%B8%ADre%E6%A8%A1%E5%9D%97/</url>
+    <content><![CDATA[<p><strong>常用的正则表达式符号</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">1  &apos;.&apos;      # 默认匹配换行符(\n)之外的任意一个字符；flags=re.DOTALL(将换行符也匹配出来)</span><br><span class="line">2  &apos;^&apos;      # 匹配字符串开头；flags=re.MULTILINE(如果开头为换行符或者其他特殊，可以从换行符后面开始匹配)</span><br><span class="line">3  &apos;$&apos;      #匹配字符串结尾；flags=re.MULTILINE(如果字符串有换行符的话换行符前的字符也可以在行尾匹配)</span><br><span class="line">4  &apos;*&apos;      #匹配*号前面的字符0次或者多次[0, +oo]</span><br><span class="line">5  &apos;+&apos;      #匹配前一个字符1次或者多次[1, +oo]</span><br><span class="line">6  &apos;?&apos;      #匹配前一个字符1次或者0次</span><br><span class="line">7  &apos;&#123;m&#125;&apos;    #匹配前一个字符m次</span><br><span class="line">8  &apos;&#123;n, m&#125;&apos; #匹配前一个字符n到m次</span><br><span class="line">9  &apos;|&apos;      #匹配|左边或者|右边的字符</span><br><span class="line">10 &apos;(...)&apos;  #匹配括号中的任意正则表达式</span><br></pre></td></tr></table></figure>
+<p><strong>包含’\’的正则表达式特殊序列</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">\d  #匹配任何十进制数：它相当于类[0-9]</span><br><span class="line">\D  #匹配任何非数字字符：它相当于[^0-9]</span><br><span class="line">\s  #匹配任何空白字符：它相当于类[ \t\n\r\f\v]</span><br><span class="line">\S  #匹配任何非空白字符：它相当于类[^ \t\n\r\f\v]</span><br><span class="line">\w  #匹配任何字母数字字符：它相当于类[a-zA-Z0-9]</span><br><span class="line">\W  #匹配任何非数字字母字符：它相当于[^a-zA-Z0-9]</span><br><span class="line">\b  #匹配一个单词边界，也就是指单词和空格间的位置</span><br></pre></td></tr></table></figure>
+<p><strong>常用的语法</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">import re #放在文件头以下省略</span><br><span class="line">re.findall     #把所有匹配的字符以元素的形式放入列表，返回一个列表                      </span><br><span class="line">    print(re.findall(&apos;^a&apos;, &apos;\nabc&apos;))    #[]</span><br><span class="line">    print(re.findall(&apos;^a&apos;, &apos;\nabc&apos;, flags=re.MULTILINE))   #[&apos;a&apos;]</span><br><span class="line">    print(re.findall(&apos;.&apos;, &apos;\nabc&apos;))    #[&apos;a&apos;, &apos;b&apos;, &apos;c&apos;]</span><br><span class="line">    print(re.findall(&apos;.&apos;, &apos;\nabc&apos;, flags=re.DOTALL))   #[&apos;\n&apos;, &apos;a&apos;, &apos;b&apos;, &apos;c&apos;]</span><br><span class="line"></span><br><span class="line">re.search      #查找字符串中于正则表达式匹配的第一个位置，返回相应的MatchObject实例,后缀 .group() 方法可以取得相应的str型值                           </span><br><span class="line">    print(re.search(&apos;a&apos;, &apos;\nabdgc ddaad&apos;))  #&lt;re.Match object; span=(1, 2), match=&apos;a&apos;&gt;</span><br><span class="line">    print(re.search(&apos;a&apos;, &apos;\nabdgc ddaad&apos;).group())  #a   #直接以字符出返回</span><br><span class="line"></span><br><span class="line">re.sub         #将匹配到的字符替换</span><br><span class="line">    print(re.sub(&apos;正则表达式&apos;, &apos;用来替代的字符串&apos;, &apos;字符串&apos;))  #返回替换后的字符串                          </span><br><span class="line">    print(re.sub(&apos;.&apos;, &apos;a&apos;, &apos;\nabdgc ddaad&apos;))  #aaaaaaaaaaa</span><br><span class="line"></span><br><span class="line">re.split       #将匹配到的字符当做列表分隔符，将分隔开的元素放在列表中返回                                   </span><br><span class="line">    print(re.split(&apos;abc&apos;, &apos;sldkleabcdklsabcd&apos;))  #[&apos;sldkle&apos;, &apos;dkls&apos;, &apos;d&apos;]</span><br><span class="line"></span><br><span class="line">re.match       #只在字符串开头位置开始匹配，返回MatchObject实例,使用.group()获取值                                 </span><br><span class="line">    print(re.match(&apos;abc&apos;, &apos;sldkleabcdklsabcd&apos;))  #None  #匹配不到返回None</span><br><span class="line">    print(re.match(&apos;abc&apos;, &apos;abcabcsldkledklsabcd&apos;))  #&lt;re.Match object; span=(0, 3), match=&apos;abc&apos;&gt;</span><br><span class="line">    print(re.match(&apos;abc&apos;, &apos;abcabcsldkledklsabcd&apos;).group())  #abc</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>#*,+,?都是贪婪匹配，也就是尽可能的匹配 后面加？使其变成惰性匹配</p>
+</blockquote>
+<p><strong>转义字符反斜杠</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#   \   :反斜杠后边跟元字符去除特殊功能</span><br><span class="line">#        反斜杠后面跟普通字符实现特殊功能（某些普通字符d、w、等）</span><br><span class="line">#        在编程中想要匹配字符串中的&apos;\&apos;需要四个反斜杠&apos;\\\\&apos;因为编程语言将四个反斜杠变为两个，而正则表达式使用两个反斜杠来匹配这一个反斜杠</span><br><span class="line">import re                              </span><br><span class="line">print(re.findall(&apos;\\\\&apos;, &apos;sdas\dadas&apos;))  #[&apos;\\&apos;] #这里输出编程语言两个反斜杠相当于字符串中一个斜杠</span><br><span class="line">上面等价于</span><br><span class="line">print(re.findall(r&apos;\\&apos;, &apos;sdas\dadas&apos;))  #[&apos;\\&apos;]  #原生字符串</span><br></pre></td></tr></table></figure>
+<p><strong>参考文献</strong></p>
+<p><a href="https://www.jianshu.com/p/d2a03a5945ea" target="_blank" rel="noopener">https://www.jianshu.com/p/d2a03a5945ea</a></p>
+]]></content>
+      <tags>
+        <tag>python</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>python3中的deque</title>
     <url>/2020/08/24/python3%E4%B8%AD%E7%9A%84deque/</url>
     <content><![CDATA[<h2 id="基本用法"><a href="#基本用法" class="headerlink" title="基本用法"></a>基本用法</h2><p><strong>创建双向队列</strong></p>
@@ -1188,27 +1209,6 @@
 <p><strong>rotate（把右边元素放到左边）</strong></p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">import collections</span><br><span class="line">d = collections.deque()</span><br><span class="line">d.extend([&apos;a&apos;,&apos;b&apos;,&apos;c&apos;,&apos;d&apos;,&apos;e&apos;])</span><br><span class="line">d.rotate(2)   #指定次数，默认1次</span><br><span class="line">print(d)</span><br><span class="line"></span><br><span class="line">#输出：deque([&apos;d&apos;, &apos;e&apos;, &apos;a&apos;, &apos;b&apos;, &apos;c&apos;])</span><br></pre></td></tr></table></figure>
 <h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><p><a href="https://www.cnblogs.com/saolv/p/9839711.html" target="_blank" rel="noopener">https://www.cnblogs.com/saolv/p/9839711.html</a></p>
-]]></content>
-      <tags>
-        <tag>python</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>python3中re模块</title>
-    <url>/2020/08/26/python3%E4%B8%ADre%E6%A8%A1%E5%9D%97/</url>
-    <content><![CDATA[<p><strong>常用的正则表达式符号</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">1  &apos;.&apos;      # 默认匹配换行符(\n)之外的任意一个字符；flags=re.DOTALL(将换行符也匹配出来)</span><br><span class="line">2  &apos;^&apos;      # 匹配字符串开头；flags=re.MULTILINE(如果开头为换行符或者其他特殊，可以从换行符后面开始匹配)</span><br><span class="line">3  &apos;$&apos;      #匹配字符串结尾；flags=re.MULTILINE(如果字符串有换行符的话换行符前的字符也可以在行尾匹配)</span><br><span class="line">4  &apos;*&apos;      #匹配*号前面的字符0次或者多次[0, +oo]</span><br><span class="line">5  &apos;+&apos;      #匹配前一个字符1次或者多次[1, +oo]</span><br><span class="line">6  &apos;?&apos;      #匹配前一个字符1次或者0次</span><br><span class="line">7  &apos;&#123;m&#125;&apos;    #匹配前一个字符m次</span><br><span class="line">8  &apos;&#123;n, m&#125;&apos; #匹配前一个字符n到m次</span><br><span class="line">9  &apos;|&apos;      #匹配|左边或者|右边的字符</span><br><span class="line">10 &apos;(...)&apos;  #匹配括号中的任意正则表达式</span><br></pre></td></tr></table></figure>
-<p><strong>包含’\’的正则表达式特殊序列</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">\d  #匹配任何十进制数：它相当于类[0-9]</span><br><span class="line">\D  #匹配任何非数字字符：它相当于[^0-9]</span><br><span class="line">\s  #匹配任何空白字符：它相当于类[ \t\n\r\f\v]</span><br><span class="line">\S  #匹配任何非空白字符：它相当于类[^ \t\n\r\f\v]</span><br><span class="line">\w  #匹配任何字母数字字符：它相当于类[a-zA-Z0-9]</span><br><span class="line">\W  #匹配任何非数字字母字符：它相当于[^a-zA-Z0-9]</span><br><span class="line">\b  #匹配一个单词边界，也就是指单词和空格间的位置</span><br></pre></td></tr></table></figure>
-<p><strong>常用的语法</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">import re #放在文件头以下省略</span><br><span class="line">re.findall     #把所有匹配的字符以元素的形式放入列表，返回一个列表                      </span><br><span class="line">    print(re.findall(&apos;^a&apos;, &apos;\nabc&apos;))    #[]</span><br><span class="line">    print(re.findall(&apos;^a&apos;, &apos;\nabc&apos;, flags=re.MULTILINE))   #[&apos;a&apos;]</span><br><span class="line">    print(re.findall(&apos;.&apos;, &apos;\nabc&apos;))    #[&apos;a&apos;, &apos;b&apos;, &apos;c&apos;]</span><br><span class="line">    print(re.findall(&apos;.&apos;, &apos;\nabc&apos;, flags=re.DOTALL))   #[&apos;\n&apos;, &apos;a&apos;, &apos;b&apos;, &apos;c&apos;]</span><br><span class="line"></span><br><span class="line">re.search      #查找字符串中于正则表达式匹配的第一个位置，返回相应的MatchObject实例,后缀 .group() 方法可以取得相应的str型值                           </span><br><span class="line">    print(re.search(&apos;a&apos;, &apos;\nabdgc ddaad&apos;))  #&lt;re.Match object; span=(1, 2), match=&apos;a&apos;&gt;</span><br><span class="line">    print(re.search(&apos;a&apos;, &apos;\nabdgc ddaad&apos;).group())  #a   #直接以字符出返回</span><br><span class="line"></span><br><span class="line">re.sub         #将匹配到的字符替换</span><br><span class="line">    print(re.sub(&apos;正则表达式&apos;, &apos;用来替代的字符串&apos;, &apos;字符串&apos;))  #返回替换后的字符串                          </span><br><span class="line">    print(re.sub(&apos;.&apos;, &apos;a&apos;, &apos;\nabdgc ddaad&apos;))  #aaaaaaaaaaa</span><br><span class="line"></span><br><span class="line">re.split       #将匹配到的字符当做列表分隔符，将分隔开的元素放在列表中返回                                   </span><br><span class="line">    print(re.split(&apos;abc&apos;, &apos;sldkleabcdklsabcd&apos;))  #[&apos;sldkle&apos;, &apos;dkls&apos;, &apos;d&apos;]</span><br><span class="line"></span><br><span class="line">re.match       #只在字符串开头位置开始匹配，返回MatchObject实例,使用.group()获取值                                 </span><br><span class="line">    print(re.match(&apos;abc&apos;, &apos;sldkleabcdklsabcd&apos;))  #None  #匹配不到返回None</span><br><span class="line">    print(re.match(&apos;abc&apos;, &apos;abcabcsldkledklsabcd&apos;))  #&lt;re.Match object; span=(0, 3), match=&apos;abc&apos;&gt;</span><br><span class="line">    print(re.match(&apos;abc&apos;, &apos;abcabcsldkledklsabcd&apos;).group())  #abc</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>#*,+,?都是贪婪匹配，也就是尽可能的匹配 后面加？使其变成惰性匹配</p>
-</blockquote>
-<p><strong>转义字符反斜杠</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#   \   :反斜杠后边跟元字符去除特殊功能</span><br><span class="line">#        反斜杠后面跟普通字符实现特殊功能（某些普通字符d、w、等）</span><br><span class="line">#        在编程中想要匹配字符串中的&apos;\&apos;需要四个反斜杠&apos;\\\\&apos;因为编程语言将四个反斜杠变为两个，而正则表达式使用两个反斜杠来匹配这一个反斜杠</span><br><span class="line">import re                              </span><br><span class="line">print(re.findall(&apos;\\\\&apos;, &apos;sdas\dadas&apos;))  #[&apos;\\&apos;] #这里输出编程语言两个反斜杠相当于字符串中一个斜杠</span><br><span class="line">上面等价于</span><br><span class="line">print(re.findall(r&apos;\\&apos;, &apos;sdas\dadas&apos;))  #[&apos;\\&apos;]  #原生字符串</span><br></pre></td></tr></table></figure>
-<p><strong>参考文献</strong></p>
-<p><a href="https://www.jianshu.com/p/d2a03a5945ea" target="_blank" rel="noopener">https://www.jianshu.com/p/d2a03a5945ea</a></p>
 ]]></content>
       <tags>
         <tag>python</tag>
@@ -3505,8 +3505,7 @@
   <entry>
     <title>分布式理论简介</title>
     <url>/2019/09/12/%E5%88%86%E5%B8%83%E5%BC%8F%E7%90%86%E8%AE%BA%E7%AE%80%E4%BB%8B/</url>
-    <content><![CDATA[<p>【转载】<a href="https://www.cnblogs.com/szlbm/p/5588543.html" target="_blank" rel="noopener">https://www.cnblogs.com/szlbm/p/5588543.html</a></p>
-<h4 id="问题的解读"><a href="#问题的解读" class="headerlink" title="问题的解读"></a>问题的解读</h4><p>对于上面三个例子，相信大家一定看出来了，我们的终端用户在使用不同的计算机产品时对于数据一致性的需求是不一样的：<br>1、有些系统，既要快速地响应用户，同时还要保证系统的数据对于任意客户端都是真实可靠的，就像火车站售票系统<br>2、有些系统，需要为用户保证绝对可靠的数据安全，虽然在数据一致性上存在延时，但最终务必保证严格的一致性，就像银行的转账系统<br>3、有些系统，虽然向用户展示了一些可以说是”错误”的数据，但是在整个系统使用过程中，一定会在某一个流程上对系统数据进行准确无误的检查，从而避免用户发生不必要的损失，就像网购系统</p>
+    <content><![CDATA[<h4 id="问题的解读"><a href="#问题的解读" class="headerlink" title="问题的解读"></a>问题的解读</h4><p>对于上面三个例子，相信大家一定看出来了，我们的终端用户在使用不同的计算机产品时对于数据一致性的需求是不一样的：<br>1、有些系统，既要快速地响应用户，同时还要保证系统的数据对于任意客户端都是真实可靠的，就像火车站售票系统<br>2、有些系统，需要为用户保证绝对可靠的数据安全，虽然在数据一致性上存在延时，但最终务必保证严格的一致性，就像银行的转账系统<br>3、有些系统，虽然向用户展示了一些可以说是”错误”的数据，但是在整个系统使用过程中，一定会在某一个流程上对系统数据进行准确无误的检查，从而避免用户发生不必要的损失，就像网购系统</p>
 <h4 id="分布一致性的提出"><a href="#分布一致性的提出" class="headerlink" title="分布一致性的提出"></a>分布一致性的提出</h4><p>在分布式系统中要解决的一个重要问题就是数据的复制。在我们的日常开发经验中，相信很多开发人员都遇 到过这样的问题：假设客户端C1将系统中的一个值K由V1更新为V2， 但客户端C2无法立即读取到K的最新值，需要在一段时间之后才能读取到。这很正常，因为数据库复制之间存在延时。<br>分布式系统对于数据的复制需求一般都来自于以下两个原因：<br>1、为了增加系统的可用性，以防止单点故障引起的系统不可用<br>2、提高系统的整体性能，通过负载均衡技术，能够让分布在不同地方的数据副本都能够为用户提供服务<br>数据复制在可用性和性能方面给分布式系统带来的巨大好处是不言而喻的，然而数据复制所带来的一致性挑战，也是每一个系统研发人员不得不面对的。<br>所谓分布一致性问题，是指在分布式环境中引入数据复制机制之后，不同数据节点之间 可能出现的，并无法依靠计算机应用程序自身解决的数据不一致的情况。简单讲，数据一 致性就是指在对一个副本数据进行更新的时候，必须确保也能够更新其他的副本，否则不同副本之间的数据将不一致。<br>那么如何解决这个问题？一种思路是”既然是由于延时动作引起的问题，那我可以将写入的动作阻塞，直到数据复制完成后，才完成写入动作”。没错，这似乎能解决问题， 而且 有一些系统的架构也确实直接使用了这个思路。但这个思路在解决一致性问题的同时，又带来了新的问题：写入的性能。如果你的应 用场景有非常多的写请求，那么使用这个思 路之后，后续的写请求都将会阻塞在前一个请求的写操作上，导致系统整体性能急剧下降。<br>总得来说，我们无法找到一种能够满足分布式系统所有系统属性的分布式一致性解决方案。因此，如何既保证数据的一致性，同时又不影响系统运行的性能，是每一个分布式系统都需要重点考虑和权衡的。于是，一致性级别由此诞生：<br>1、强一致性<br>这种一致性级别是最符合用户直觉的，它要求系统写入什么，读出来的也会是什么，用户体验好，但实现起来往往对系统的性能影响大<br>2、弱一致性<br>这种一致性级别约束了系统在写入成功后，不承诺立即可以读到写入的值，也不久承诺多久之后数据能够达到一致，但会尽可能地保证到某个时间级别（比如秒级别）后，数据能够达到一致状态<br>3、最终一致性<br>最终一致性是弱一致性的一个特例，系统会保证在一定时间内，能够达到一个数据一致的状态。这里之所以将最终一致性单独提出来，是因为它是弱一致性中非常推崇的一种一致性模型，也是业界在大型分布式系统的数据一致性上比较推崇的模型</p>
 <h4 id="分布式环境的各种问题"><a href="#分布式环境的各种问题" class="headerlink" title="分布式环境的各种问题"></a>分布式环境的各种问题</h4><p>分布式系统体系结构从其出现之初就伴随着诸多的难题和挑战：<br>1、通信异常<br>从集中式向分布式演变的过程中，必然引入网络因素，由于网络本身的不可靠性，因此也引入了额外的问题。分布式系统需要在各个节点之间进行网络通信，因此每次网络通信 都会伴随着网络不可用的风险，网络光纤、路由器或是DNS等硬件设备或 是系统不可用都会导致最终分布式系统无法顺利完成一次网络通信。另外，即使分布式系统各个节点之 间的网络通信能够正常进行，其延时也会大于单机操作。通常我们认为现代计算机体系结构中，单机内存访问的延时在纳秒数量级（通常是10ns），而正常的一次网络通信的延迟在0.1~1ms左右（相当于内存访问延 时的105倍），如此巨大的延时差别，也会影响到消息的收发过程，因此消息丢失和消息延迟变得非常普遍<br>2、网络分区<br>当网络由于发生异常情况，导致分布式系统中部分节点之间的网络延时不断增大，最终导致组成分布式系统的所有节点中，只有部分节点之间能够正常通信，而另一些节点则不能—-我们将这个现象称为网络分区。当网络分区出现时，分布式系统会出现局部小集群，在极端情况下，这些局部小集群会独立完成原本需要整个分布式系统才能完成的功能，包括对数据的事物处理，这就对分布式一致性提出了非常大的挑战<br>3、三态<br>上面两点，我们已经了解到在分布式环境下，网络可能会出现各式各样的问题，因此分布式系统的每一次请求与响应，存在特有的三态概念，即成功、失败、超时。在传统的单机系统中 ，应用程序在调用一个函数之后，能够得到一个非常明确的响应：成功或失败。而在分布式系统中，由于网络是不可靠的，虽然在绝大部分情况下，网络通信 也能够接受到成功或失败的响应，当时当网络出现异常的情况下，就可能会出现超时现象，通常有以下两种情况：<br>（1）由于网络原因，该请求并没有被成功地发送到接收方，而是在发送过程中就发生了消息丢失现象<br>（2）该请求成功地被接收方接收后，进行了处理，但是在将响应反馈给发送方的过程中，发生了消息丢失现象<br>当出现这样的超时现象时，网络通信的发起方是无法确定当前请求是否被成功处理的<br>4、节点故障<br>节点故障则是分布式环境下另一个比较常见的问题，指的是组成分布式系统的服务器节点出现的宕机或”僵死”现象，通常根据经验来说，每个节点都有可能出现故障，并且每天都在发生</p>
 <h4 id="分布式事务"><a href="#分布式事务" class="headerlink" title="分布式事务"></a>分布式事务</h4><p>随着分布式计算的发展，事物在分布式计算领域也得到了广泛的应用。在单机数据库中，我们很容易能够实现一套满足ACID特性的事物处理系统，但在分布式数据库中，数据分散在各台不同的机器上，如何对这些数据进行分布式的事物处理具有非常大的挑战。<br>分布式事务是指事务的参与者、支持事务的服务器、资源服务器以及事务管理器分别位于分布式系统的不同节点上，通常一个分布式事务中会涉及对多个数据源或业务系统的操作。<br>可以设想一个最典型的分布式事务场景：一个跨银行的转账操作涉及调用两个异地的银行服务，其中一个是本地银行提供的取款服务， 另一个则是目标银行提供的存款服 务，这两个服务本身是无状态并且相互独立的，共同构成了一个完整的分布式事务。如果从本地银行取款成功，但是因为某种原因存款服务失败了，那么就必须回滚到取款之前的状态，否则用户可能会发现自己的钱不翼而飞了。<br>从这个例子可以看到，一个分布式事务可以看做是多个分布式的操作序列组成的，例如 上面例子的取款服务和存款服务， 通常可以把这一系列分布式的操作序列 称为子事务。 因此，分布式事务也可以被定义为一种嵌套型的事物，同时也就具有了 ACID事物特性。 但由于在分布式事务中，各个子事物的执行是分布式的 ，因此要实现一种能够保证ACID特性的分布式事物处理系统就显得格外复杂。</p>
@@ -3535,10 +3534,10 @@
 </table>
 <p>需要明确的一点是，对于一个分布式系统而言，分区容错性是一个最基本的要求。因为既然是一个分布式系统，那么分布式系统中的组件必然需要被部署到不同的节点，否则也就无所谓分布式系统了，因此必然出现子网络。而对于分布式系统而言，网络问题又是一个必定会出现的异常情况，因此分区容错性也就成为了一个分布式系统必然需要面对和解决的问题。因此系统架构师往往需要把精力花在如何根据业务 特点在C（一致性）和A（可用性）之间寻求平衡。</p>
 <h4 id="BASE理论"><a href="#BASE理论" class="headerlink" title="BASE理论"></a>BASE理论</h4><p>BASE是Basically Available（基本可用）、Soft state（软状态）和Eventually consistent（最终一致性）三个短语的缩写。 BASE理论是对CAP中一致性和 可用性权衡的结果，其来源于对大规模互联网系统分布式实践的总结， 是基于CAP定理逐步演化而来的。BASE理论的核心思想是：即使无法做到强一致性，但每个应用都可以根据自身业务特点，采用适当的方式来使系统达到最终一致性。接下来看一下BASE中的三要素：<br>1、基本可用<br>基本可用是指分布式系统在出现不可预知故障的时候，允许损失部分可用性—-注意，这绝不等价于系统不可用。比如：<br>（1）响应时间上的损失。正常情况下，一个在线搜索引擎需要在0.5秒之内返回给用户相应的查询结果，但由于出现故障，查询结果的响应时间增加了1~2秒<br>（2）系统功能上的损失：正常情况下，在一个电子商务网站上进行购物的时候，消费者几乎能够顺利完成每一笔订单，但是在一些节日大促购物高峰的时候，由于消费者的购物行为激增，为了保护购物系统的稳定性，部分消费者可能会被引导到一个降级页面<br>2、软状态<br>软状态指允许系统中的数据存在中间状态，并认为该中间状态的存在不会影响系统的整体可用性，即允许系统在不同节点的数据副本之间进行数据同步的过程存在延时<br>3、最终一致性<br>最终一致性强调的是所有的数据副本，在经过一段时间的同步之后，最终都能够达到一个一致的状态。因此，最终一致性的本质是需要系统保证最终数据能够达到一致，而不需要实时保证系统数据的强一致性。<br>总的来说，BASE理论面向的是大型高可用可扩展的分布式系统，和传统的事物ACID特性是相反的，它完全不同于ACID的强一致性模型，而是通过牺牲强一致性来获得可用性，并允许数据在一段时间内是不一致的，但最终达到一致状态。但同时，在实际的分布式场景中，不同业务单元和组件对数据一致性的要求是不同的，因此在具体的分布式系统架构设计过程中，ACID特性和BASE理论往往又会结合在一起。</p>
+<h4 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h4><p><a href="https://www.cnblogs.com/szlbm/p/5588543.html" target="_blank" rel="noopener">https://www.cnblogs.com/szlbm/p/5588543.html</a></p>
 ]]></content>
       <tags>
-        <tag>分布式理论</tag>
-        <tag>CAP</tag>
+        <tag>分布式</tag>
       </tags>
   </entry>
   <entry>
