@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="java,">
+  <meta name="keywords" content="Hexo, NexT">
 
 
 
@@ -79,20 +79,14 @@
 
 
 
-<meta name="description" content="简单回顾门面模式slf4j是门面模式的典型应用，因此在讲slf4j前，我们先简单回顾一下门面模式， 门面模式，其核心为外部与一个子系统的通信必须通过一个统一的外观对象进行，使得子系统更易于使用。用一张图来表示门面模式的结构为： 门面模式的核心为Facade即门面对象，门面对象核心为几个点：  知道所有子角色的功能和责任 将客户端发来的请求委派到子系统中，没有实际业务逻辑 不参与子系统内业务逻辑的实">
-<meta name="keywords" content="java">
-<meta property="og:type" content="article">
-<meta property="og:title" content="java日志体系二(slf4j作用及其实现原理)">
-<meta property="og:url" content="https://alfredliukai.github.io/2020/04/26/java日志体系二/index.html">
+<meta name="keywords" content="java,go,程序猿,数据库，测试，测试开发，架构">
+<meta property="og:type" content="website">
+<meta property="og:title" content="昨非的个人网站">
+<meta property="og:url" content="https://alfredliukai.github.io/tags/java/page/2/index.html">
 <meta property="og:site_name" content="昨非的个人网站">
-<meta property="og:description" content="简单回顾门面模式slf4j是门面模式的典型应用，因此在讲slf4j前，我们先简单回顾一下门面模式， 门面模式，其核心为外部与一个子系统的通信必须通过一个统一的外观对象进行，使得子系统更易于使用。用一张图来表示门面模式的结构为： 门面模式的核心为Facade即门面对象，门面对象核心为几个点：  知道所有子角色的功能和责任 将客户端发来的请求委派到子系统中，没有实际业务逻辑 不参与子系统内业务逻辑的实">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://alfredliukai.github.io/2020/04/26/java日志体系二/facade.png">
-<meta property="og:updated_time" content="2020-04-26T06:53:58.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="java日志体系二(slf4j作用及其实现原理)">
-<meta name="twitter:description" content="简单回顾门面模式slf4j是门面模式的典型应用，因此在讲slf4j前，我们先简单回顾一下门面模式， 门面模式，其核心为外部与一个子系统的通信必须通过一个统一的外观对象进行，使得子系统更易于使用。用一张图来表示门面模式的结构为： 门面模式的核心为Facade即门面对象，门面对象核心为几个点：  知道所有子角色的功能和责任 将客户端发来的请求委派到子系统中，没有实际业务逻辑 不参与子系统内业务逻辑的实">
-<meta name="twitter:image" content="https://alfredliukai.github.io/2020/04/26/java日志体系二/facade.png">
+<meta name="twitter:title" content="昨非的个人网站">
 
 
 
@@ -122,13 +116,13 @@
 
 
 
-  <link rel="canonical" href="https://alfredliukai.github.io/2020/04/26/java日志体系二/">
+  <link rel="canonical" href="https://alfredliukai.github.io/tags/java/page/2/">
 
 
 
 
 
-  <title>java日志体系二(slf4j作用及其实现原理) | 昨非的个人网站</title>
+  <title>Tag: java | 昨非的个人网站</title>
   
 
 
@@ -147,7 +141,7 @@
     
   
 
-  <div class="container sidebar-position-left page-post-detail">
+  <div class="container sidebar-position-left ">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -273,176 +267,56 @@
           <div id="content" class="content">
             
 
-  <div id="posts" class="posts-expand">
-    
+  
+  
+  
+  <div class="post-block tag">
 
-  
+    <div id="posts" class="posts-collapse">
+      <div class="collection-title">
+        <h1>java<small>Tag</small>
+        </h1>
+      </div>
 
-  
-  
-  
+      
+        
 
   <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://alfredliukai.github.io/2020/04/26/java日志体系二/">
+    <header class="post-header">
 
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="昨非">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="昨非的个人网站">
-    </span>
-
-    
-      <header class="post-header">
-
+      <h2 class="post-title">
         
-        
-          <h1 class="post-title" itemprop="name headline">java日志体系二(slf4j作用及其实现原理)</h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
+            <a class="post-title-link" href="/2019/09/14/S3总结/" itemprop="url">
               
-                <span class="post-meta-item-text">Posted on</span>
+                <span itemprop="name">S3总结</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-04-26T14:30:41+08:00">
-                2020-04-26
-              </time>
-            
+            </a>
+        
+      </h2>
 
-            
+      <div class="post-meta">
+        <time class="post-time" itemprop="dateCreated" datetime="2019-09-14T15:06:45+08:00" content="2019-09-14">
+          09-14
+        </time>
+      </div>
 
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        <h4 id="简单回顾门面模式"><a href="#简单回顾门面模式" class="headerlink" title="简单回顾门面模式"></a>简单回顾门面模式</h4><p>slf4j是门面模式的典型应用，因此在讲slf4j前，我们先简单回顾一下门面模式，</p>
-<p>门面模式，其核心为外部与一个子系统的通信必须通过一个统一的外观对象进行，使得子系统更易于使用。用一张图来表示门面模式的结构为：<br><img src="/2020/04/26/java日志体系二/facade.png" alt="avatar"></p>
-<p>门面模式的核心为Facade即门面对象，门面对象核心为几个点：</p>
-<ul>
-<li>知道所有子角色的功能和责任</li>
-<li>将客户端发来的请求委派到子系统中，没有实际业务逻辑</li>
-<li>不参与子系统内业务逻辑的实现</li>
-</ul>
-<p>大致上来看，对门面模式的回顾到这里就可以了，开始接下来对SLF4J的学习。</p>
-<h4 id="我们为什么要使用slf4j"><a href="#我们为什么要使用slf4j" class="headerlink" title="我们为什么要使用slf4j"></a>我们为什么要使用slf4j</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">我们自己的系统中使用了logback这个日志系统</span><br><span class="line">我们的系统使用了A.jar，A.jar中使用的日志系统为log4j</span><br><span class="line">我们的系统又使用了B.jar，B.jar中使用的日志系统为slf4j-simple</span><br><span class="line"></span><br><span class="line">这样，我们的系统就不得不同时支持并维护logback、log4j、slf4j-simple三种日志框架，非常不便。</span><br></pre></td></tr></table></figure>
-<p>解决这个问题的方式就是引入一个适配层，由适配层决定使用哪一种日志系统，而调用端只需要做的事情就是打印日志而不需要关心如何打印日志，slf4j或者commons-logging就是这种适配层，slf4j是本文研究的对象。</p>
-<p>从上面的描述，我们必须清楚地知道一点：slf4j只是一个日志标准，并不是日志系统的具体实现。理解这句话非常重要，slf4j只做两件事情：</p>
-<ul>
-<li>提供日志接口</li>
-<li>提供获取具体日志对象的方法</li>
-</ul>
-<p>slf4j-simple、logback都是slf4j的具体实现，log4j并不直接实现slf4j，但是有专门的一层桥接slf4j-log4j12来实现slf4j。</p>
-<p>为了更理解slf4j，我们先看例子，再读源码，相信读者朋友会对slf4j有更深刻的认识。</p>
-<h4 id="slf4j应用举例"><a href="#slf4j应用举例" class="headerlink" title="slf4j应用举例"></a>slf4j应用举例</h4><p>上面讲了，slf4j的直接/间接实现有slf4j-simple、logback、slf4j-log4j12，我们先定义一个pom.xml，引入相关jar包：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line">&lt;project xmlns=&quot;http://maven.apache.org/POM/4.0.0&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span><br><span class="line">         xsi:schemaLocation=&quot;http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd&quot;&gt;</span><br><span class="line">    &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;</span><br><span class="line"></span><br><span class="line">    &lt;groupId&gt;com.wukong.learn&lt;/groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;paopaozhu&lt;/artifactId&gt;</span><br><span class="line">    &lt;version&gt;0.0.1&lt;/version&gt;</span><br><span class="line">    &lt;packaging&gt;jar&lt;/packaging&gt;</span><br><span class="line"></span><br><span class="line">    &lt;name&gt;paopaozhu&lt;/name&gt;</span><br><span class="line">    &lt;url&gt;http://maven.apache.org&lt;/url&gt;</span><br><span class="line"></span><br><span class="line">    &lt;properties&gt;</span><br><span class="line">        &lt;project.build.sourceEncoding&gt;UTF-8&lt;/project.build.sourceEncoding&gt;</span><br><span class="line">    &lt;/properties&gt;</span><br><span class="line"></span><br><span class="line">    &lt;dependencies&gt;</span><br><span class="line">        &lt;dependency&gt;</span><br><span class="line">            &lt;groupId&gt;junit&lt;/groupId&gt;</span><br><span class="line">            &lt;artifactId&gt;junit&lt;/artifactId&gt;</span><br><span class="line">            &lt;version&gt;4.11&lt;/version&gt;</span><br><span class="line">            &lt;scope&gt;test&lt;/scope&gt;</span><br><span class="line">        &lt;/dependency&gt;</span><br><span class="line">        &lt;dependency&gt;</span><br><span class="line">            &lt;groupId&gt;org.slf4j&lt;/groupId&gt;</span><br><span class="line">            &lt;artifactId&gt;slf4j-api&lt;/artifactId&gt;</span><br><span class="line">            &lt;version&gt;1.7.25&lt;/version&gt;</span><br><span class="line">        &lt;/dependency&gt;</span><br><span class="line">        &lt;dependency&gt;</span><br><span class="line">            &lt;groupId&gt;ch.qos.logback&lt;/groupId&gt;</span><br><span class="line">            &lt;artifactId&gt;logback-classic&lt;/artifactId&gt;</span><br><span class="line">            &lt;version&gt;1.2.3&lt;/version&gt;</span><br><span class="line">        &lt;/dependency&gt;</span><br><span class="line">        &lt;dependency&gt;</span><br><span class="line">            &lt;groupId&gt;org.slf4j&lt;/groupId&gt;</span><br><span class="line">            &lt;artifactId&gt;slf4j-simple&lt;/artifactId&gt;</span><br><span class="line">            &lt;version&gt;1.7.25&lt;/version&gt;</span><br><span class="line">        &lt;/dependency&gt;</span><br><span class="line">        &lt;dependency&gt;</span><br><span class="line">            &lt;groupId&gt;log4j&lt;/groupId&gt;</span><br><span class="line">            &lt;artifactId&gt;log4j&lt;/artifactId&gt;</span><br><span class="line">            &lt;version&gt;1.2.17&lt;/version&gt;</span><br><span class="line">        &lt;/dependency&gt;</span><br><span class="line">        &lt;dependency&gt;</span><br><span class="line">            &lt;groupId&gt;org.slf4j&lt;/groupId&gt;</span><br><span class="line">            &lt;artifactId&gt;slf4j-log4j12&lt;/artifactId&gt;</span><br><span class="line">            &lt;version&gt;1.7.21&lt;/version&gt;</span><br><span class="line">        &lt;/dependency&gt;</span><br><span class="line">    &lt;/dependencies&gt;</span><br><span class="line">&lt;/project&gt;</span><br></pre></td></tr></table></figure></p>
-<p>写一段简单的Java代码：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">@Test</span><br><span class="line">  @Test</span><br><span class="line">   public void testSlf4j() &#123;</span><br><span class="line"></span><br><span class="line">       Logger logger = LoggerFactory.getLogger(Object.class);</span><br><span class="line">       logger.info(&quot;123&quot;);</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure></p>
-<p>看到没有任何日志的输出，这验证了我们的观点：slf4j不提供日志的具体实现，只有slf4j是无法打印日志的。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">objc[17409]: Class JavaLaunchHelper is implemented in both /Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdk/Contents/Home/bin/java (0x1043044c0) and /Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdk/Contents/Home/jre/lib/libinstrument.dylib (0x1053d64e0). One of the two will be used. Which one is undefined.</span><br><span class="line">Connected to the target VM, address: &apos;127.0.0.1:51663&apos;, transport: &apos;socket&apos;</span><br><span class="line">SLF4J: Failed to load class &quot;org.slf4j.impl.StaticLoggerBinder&quot;.</span><br><span class="line">SLF4J: Defaulting to no-operation (NOP) logger implementation</span><br><span class="line">SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.</span><br><span class="line">Disconnected from the target VM, address: &apos;127.0.0.1:51663&apos;, transport: &apos;socket&apos;</span><br></pre></td></tr></table></figure></p>
-<p>接着打开logback-classic的注释，运行Test方法，我们看一下控制台的输出为：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">objc[17360]: Class JavaLaunchHelper is implemented in both /Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdk/Contents/Home/bin/java (0x108f494c0) and /Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdk/Contents/Home/jre/lib/libinstrument.dylib (0x10a01b4e0). One of the two will be used. Which one is undefined.</span><br><span class="line">Connected to the target VM, address: &apos;127.0.0.1:51630&apos;, transport: &apos;socket&apos;</span><br><span class="line">14:51:51.477 [main] INFO java.lang.Object - 123</span><br><span class="line">Disconnected from the target VM, address: &apos;127.0.0.1:51630&apos;, transport: &apos;socket&apos;</span><br></pre></td></tr></table></figure></p>
-<p>看到我们只要引入了一个slf4j的具体实现类，即可使用该日志框架输出日志。</p>
-<p>最后做一个测验，我们把所有日志打开，引入logback-classic、slf4j-simple、log4j，运行Test方法，控制台输出为：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">objc[17324]: Class JavaLaunchHelper is implemented in both /Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdk/Contents/Home/bin/java (0x104b2e4c0) and /Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdk/Contents/Home/jre/lib/libinstrument.dylib (0x10640b4e0). One of the two will be used. Which one is undefined.</span><br><span class="line">Connected to the target VM, address: &apos;127.0.0.1:51595&apos;, transport: &apos;socket&apos;</span><br><span class="line">SLF4J: Class path contains multiple SLF4J bindings.</span><br><span class="line">SLF4J: Found binding in [jar:file:/Users/zyy/.m2/repository/ch/qos/logback/logback-classic/1.2.3/logback-classic-1.2.3.jar!/org/slf4j/impl/StaticLoggerBinder.class]</span><br><span class="line">SLF4J: Found binding in [jar:file:/Users/zyy/.m2/repository/org/slf4j/slf4j-simple/1.7.25/slf4j-simple-1.7.25.jar!/org/slf4j/impl/StaticLoggerBinder.class]</span><br><span class="line">SLF4J: Found binding in [jar:file:/Users/zyy/.m2/repository/org/slf4j/slf4j-log4j12/1.7.21/slf4j-log4j12-1.7.21.jar!/org/slf4j/impl/StaticLoggerBinder.class]</span><br><span class="line">SLF4J: See http://www.slf4j.org/codes.html#multiple_bindings for an explanation.</span><br><span class="line">SLF4J: Actual binding is of type [ch.qos.logback.classic.util.ContextSelectorStaticBinder]</span><br><span class="line">14:48:05.808 [main] INFO java.lang.Object - 123</span><br><span class="line">Disconnected from the target VM, address: &apos;127.0.0.1:51595&apos;, transport: &apos;socket&apos;</span><br></pre></td></tr></table></figure></p>
-<p>和上面的差别是，可以输出日志，但是会输出一些告警日志，提示我们同时引入了多个slf4j的实现，然后选择其中的一个作为我们使用的日志系统。</p>
-<p>从例子我们可以得出一个重要的结论，即slf4j的作用：只要所有代码都使用门面对象slf4j，我们就不需要关心其具体实现，最终所有地方使用一种具体实现即可，更换、维护都非常方便。</p>
-
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-        <div class="post-tags">
-          
-            <a href="/tags/java/" rel="tag"># java</a>
-          
-        </div>
-      
-
-      
-      
-      
-
-      
-        <div class="post-nav">
-          <div class="post-nav-next post-nav-item">
-            
-              <a href="/2020/04/25/java日志体系/" rel="next" title="java日志体系">
-                <i class="fa fa-chevron-left"></i> java日志体系
-              </a>
-            
-          </div>
-
-          <span class="post-nav-divider"></span>
-
-          <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2020/05/04/Jackson使用总结/" rel="prev" title="Jackson使用总结">
-                Jackson使用总结 <i class="fa fa-chevron-right"></i>
-              </a>
-            
-          </div>
-        </div>
-      
-
-      
-      
-    </footer>
-  </div>
-  
-  
-  
+    </header>
   </article>
 
 
-
-    <div class="post-spread">
       
     </div>
+
   </div>
+  
+  
+  
+
+  
+  <nav class="pagination">
+    <a class="extend prev" rel="prev" href="/tags/java/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/tags/java/">1</a><span class="page-number current">2</span>
+  </nav>
+
 
 
           </div>
@@ -450,10 +324,6 @@
 
 
           
-
-  
-
-
 
         </div>
         
@@ -474,17 +344,8 @@
       
 
       
-        <ul class="sidebar-nav motion-element">
-          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
-            Table of Contents
-          </li>
-          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
-            Overview
-          </li>
-        </ul>
-      
 
-      <section class="site-overview-wrap sidebar-panel">
+      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -544,22 +405,6 @@
         </div>
       </section>
 
-      
-      <!--noindex-->
-        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
-          <div class="post-toc">
-
-            
-              
-            
-
-            
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#简单回顾门面模式"><span class="nav-number">1.</span> <span class="nav-text">简单回顾门面模式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#我们为什么要使用slf4j"><span class="nav-number">2.</span> <span class="nav-text">我们为什么要使用slf4j</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#slf4j应用举例"><span class="nav-number">3.</span> <span class="nav-text">slf4j应用举例</span></a></li></ol></div>
-            
-
-          </div>
-        </section>
-      <!--/noindex-->
       
 
       
@@ -693,10 +538,6 @@
   
 
   
-  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
-<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
-
-
 
   
 
