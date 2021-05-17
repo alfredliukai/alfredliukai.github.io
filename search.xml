@@ -526,25 +526,6 @@
       </tags>
   </entry>
   <entry>
-    <title>git clean的方法小结</title>
-    <url>/2020/09/16/git-clean%E7%9A%84%E6%96%B9%E6%B3%95%E5%B0%8F%E7%BB%93/</url>
-    <content><![CDATA[<h2 id="git-clean"><a href="#git-clean" class="headerlink" title="git clean"></a>git clean</h2><p>想批量删除branch中新加的文件(untracked files)，，git reset –hard不行～</p>
-<p>首先确认要删除的文件<br>git clean -fd -n</p>
-<p>如果以上命令给出的文件列表是你想删除的， 那么接下来执行</p>
-<p>git clean -f -d或者git clean -fd就可以了。</p>
-<p>其中-f表示文件 -d表示目录, 如果还要删除.gitignore中的文件那么再加上-x (-x对我来说没用）</p>
-<p>如果git submodule中也存在需要删除的文件那么需要再加个-f， 变成git clean -dff</p>
-<p>详见：<a href="http://stackoverflow.com/questions/61212/how-do-i-remove-local-untracked-files-from-my-current-git-branch" target="_blank" rel="noopener">http://stackoverflow.com/questions/61212/how-do-i-remove-local-untracked-files-from-my-current-git-branch</a></p>
-<h2 id="git删除未跟踪文件"><a href="#git删除未跟踪文件" class="headerlink" title="git删除未跟踪文件"></a>git删除未跟踪文件</h2><h3 id="删除-untracked-files"><a href="#删除-untracked-files" class="headerlink" title="删除 untracked files"></a>删除 untracked files</h3><p>git clean -f</p>
-<h3 id="连-untracked-的目录也一起删掉"><a href="#连-untracked-的目录也一起删掉" class="headerlink" title="连 untracked 的目录也一起删掉"></a>连 untracked 的目录也一起删掉</h3><p>git clean -fd</p>
-<h3 id="连-gitignore-的untrack-文件-目录也一起删掉-（慎用，一般这个是用来删掉编译出来的-o之类的文件用的）"><a href="#连-gitignore-的untrack-文件-目录也一起删掉-（慎用，一般这个是用来删掉编译出来的-o之类的文件用的）" class="headerlink" title="连 gitignore 的untrack 文件/目录也一起删掉 （慎用，一般这个是用来删掉编译出来的 .o之类的文件用的）"></a>连 gitignore 的untrack 文件/目录也一起删掉 （慎用，一般这个是用来删掉编译出来的 .o之类的文件用的）</h3><p>git clean -xfd</p>
-<h3 id="在用上述-git-clean-前，墙裂建议加上-n-参数来先看看会删掉哪些文件，防止重要文件被误删"><a href="#在用上述-git-clean-前，墙裂建议加上-n-参数来先看看会删掉哪些文件，防止重要文件被误删" class="headerlink" title="在用上述 git clean 前，墙裂建议加上 -n 参数来先看看会删掉哪些文件，防止重要文件被误删"></a>在用上述 git clean 前，墙裂建议加上 -n 参数来先看看会删掉哪些文件，防止重要文件被误删</h3><p>git clean -nxfd<br>git clean -nf<br>git clean -nfd</p>
-]]></content>
-      <tags>
-        <tag>git</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>es3总结</title>
     <url>/2020/03/29/es%E6%80%BB%E7%BB%933/</url>
     <content><![CDATA[<h4 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h4><ol>
@@ -602,6 +583,25 @@
 ]]></content>
       <tags>
         <tag>Elasticsearch</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>git clean的方法小结</title>
+    <url>/2020/09/16/git-clean%E7%9A%84%E6%96%B9%E6%B3%95%E5%B0%8F%E7%BB%93/</url>
+    <content><![CDATA[<h2 id="git-clean"><a href="#git-clean" class="headerlink" title="git clean"></a>git clean</h2><p>想批量删除branch中新加的文件(untracked files)，，git reset –hard不行～</p>
+<p>首先确认要删除的文件<br>git clean -fd -n</p>
+<p>如果以上命令给出的文件列表是你想删除的， 那么接下来执行</p>
+<p>git clean -f -d或者git clean -fd就可以了。</p>
+<p>其中-f表示文件 -d表示目录, 如果还要删除.gitignore中的文件那么再加上-x (-x对我来说没用）</p>
+<p>如果git submodule中也存在需要删除的文件那么需要再加个-f， 变成git clean -dff</p>
+<p>详见：<a href="http://stackoverflow.com/questions/61212/how-do-i-remove-local-untracked-files-from-my-current-git-branch" target="_blank" rel="noopener">http://stackoverflow.com/questions/61212/how-do-i-remove-local-untracked-files-from-my-current-git-branch</a></p>
+<h2 id="git删除未跟踪文件"><a href="#git删除未跟踪文件" class="headerlink" title="git删除未跟踪文件"></a>git删除未跟踪文件</h2><h3 id="删除-untracked-files"><a href="#删除-untracked-files" class="headerlink" title="删除 untracked files"></a>删除 untracked files</h3><p>git clean -f</p>
+<h3 id="连-untracked-的目录也一起删掉"><a href="#连-untracked-的目录也一起删掉" class="headerlink" title="连 untracked 的目录也一起删掉"></a>连 untracked 的目录也一起删掉</h3><p>git clean -fd</p>
+<h3 id="连-gitignore-的untrack-文件-目录也一起删掉-（慎用，一般这个是用来删掉编译出来的-o之类的文件用的）"><a href="#连-gitignore-的untrack-文件-目录也一起删掉-（慎用，一般这个是用来删掉编译出来的-o之类的文件用的）" class="headerlink" title="连 gitignore 的untrack 文件/目录也一起删掉 （慎用，一般这个是用来删掉编译出来的 .o之类的文件用的）"></a>连 gitignore 的untrack 文件/目录也一起删掉 （慎用，一般这个是用来删掉编译出来的 .o之类的文件用的）</h3><p>git clean -xfd</p>
+<h3 id="在用上述-git-clean-前，墙裂建议加上-n-参数来先看看会删掉哪些文件，防止重要文件被误删"><a href="#在用上述-git-clean-前，墙裂建议加上-n-参数来先看看会删掉哪些文件，防止重要文件被误删" class="headerlink" title="在用上述 git clean 前，墙裂建议加上 -n 参数来先看看会删掉哪些文件，防止重要文件被误删"></a>在用上述 git clean 前，墙裂建议加上 -n 参数来先看看会删掉哪些文件，防止重要文件被误删</h3><p>git clean -nxfd<br>git clean -nf<br>git clean -nfd</p>
+]]></content>
+      <tags>
+        <tag>git</tag>
       </tags>
   </entry>
   <entry>
@@ -1135,6 +1135,23 @@
       </tags>
   </entry>
   <entry>
+    <title>pycharm操作flask的坑</title>
+    <url>/2021/03/27/pycharm%E6%93%8D%E4%BD%9Cflask%E7%9A%84%E5%9D%91/</url>
+    <content><![CDATA[<h3 id="标题pycharm操作Flask的app-run-的坑"><a href="#标题pycharm操作Flask的app-run-的坑" class="headerlink" title="标题pycharm操作Flask的app.run()的坑"></a>标题pycharm操作Flask的app.run()的坑</h3><p>我们如果自定义配置了app.run()中debug、host、port直接点击pycharm的运行flask，默认是不会起任何作用的。</p>
+<p><img src="/2021/03/27/pycharm操作flask的坑/pycharm1.png" alt="avatar"></p>
+<p>解决办法是有两种：<br><strong>1.直接在pycharm的终端中运行，修改的配置则生效。</strong>但每次需要手动输入命令。</p>
+<p><img src="/2021/03/27/pycharm操作flask的坑/pycharm2.png" alt="avatar"></p>
+<p>2.修改pycharm中flask的配置，然后点击pycharm运行就可以了。<br>首先找到配置</p>
+<p><img src="/2021/03/27/pycharm操作flask的坑/pycharm3.png" alt="avatar"></p>
+<h3 id="pycharm-中-python3-的环境编码是-ASCII-转化为utf-8"><a href="#pycharm-中-python3-的环境编码是-ASCII-转化为utf-8" class="headerlink" title="pycharm 中 python3 的环境编码是 ASCII 转化为utf-8"></a>pycharm 中 python3 的环境编码是 ASCII 转化为utf-8</h3><p>Click will abort further execution because Python 3 was configured to use ASCII as encoding for the environment<br>If you are trying to execute tests case you must set the following environment variables each time:</p>
+<p>export LC_ALL=en_US.utf-8<br>export LANG=en_US.utf-8<br>Doing this each time will resolve the error.<br>It may also be possible to set this in your IDE if you are using one. For example see the following setting in PyCharm 2016.</p>
+<p><img src="/2021/03/27/pycharm操作flask的坑/pycharm4.png" alt="avatar"></p>
+]]></content>
+      <tags>
+        <tag>python</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>python3中re模块</title>
     <url>/2020/08/26/python3%E4%B8%ADre%E6%A8%A1%E5%9D%97/</url>
     <content><![CDATA[<p><strong>常用的正则表达式符号</strong></p>
@@ -1150,23 +1167,6 @@
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#   \   :反斜杠后边跟元字符去除特殊功能</span><br><span class="line">#        反斜杠后面跟普通字符实现特殊功能（某些普通字符d、w、等）</span><br><span class="line">#        在编程中想要匹配字符串中的&apos;\&apos;需要四个反斜杠&apos;\\\\&apos;因为编程语言将四个反斜杠变为两个，而正则表达式使用两个反斜杠来匹配这一个反斜杠</span><br><span class="line">import re                              </span><br><span class="line">print(re.findall(&apos;\\\\&apos;, &apos;sdas\dadas&apos;))  #[&apos;\\&apos;] #这里输出编程语言两个反斜杠相当于字符串中一个斜杠</span><br><span class="line">上面等价于</span><br><span class="line">print(re.findall(r&apos;\\&apos;, &apos;sdas\dadas&apos;))  #[&apos;\\&apos;]  #原生字符串</span><br></pre></td></tr></table></figure>
 <p><strong>参考文献</strong></p>
 <p><a href="https://www.jianshu.com/p/d2a03a5945ea" target="_blank" rel="noopener">https://www.jianshu.com/p/d2a03a5945ea</a></p>
-]]></content>
-      <tags>
-        <tag>python</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>pycharm操作flask的坑</title>
-    <url>/2021/03/27/pycharm%E6%93%8D%E4%BD%9Cflask%E7%9A%84%E5%9D%91/</url>
-    <content><![CDATA[<h3 id="标题pycharm操作Flask的app-run-的坑"><a href="#标题pycharm操作Flask的app-run-的坑" class="headerlink" title="标题pycharm操作Flask的app.run()的坑"></a>标题pycharm操作Flask的app.run()的坑</h3><p>我们如果自定义配置了app.run()中debug、host、port直接点击pycharm的运行flask，默认是不会起任何作用的。</p>
-<p><img src="/2021/03/27/pycharm操作flask的坑/pycharm1.png" alt="avatar"></p>
-<p>解决办法是有两种：<br><strong>1.直接在pycharm的终端中运行，修改的配置则生效。</strong>但每次需要手动输入命令。</p>
-<p><img src="/2021/03/27/pycharm操作flask的坑/pycharm2.png" alt="avatar"></p>
-<p>2.修改pycharm中flask的配置，然后点击pycharm运行就可以了。<br>首先找到配置</p>
-<p><img src="/2021/03/27/pycharm操作flask的坑/pycharm3.png" alt="avatar"></p>
-<h3 id="pycharm-中-python3-的环境编码是-ASCII-转化为utf-8"><a href="#pycharm-中-python3-的环境编码是-ASCII-转化为utf-8" class="headerlink" title="pycharm 中 python3 的环境编码是 ASCII 转化为utf-8"></a>pycharm 中 python3 的环境编码是 ASCII 转化为utf-8</h3><p>Click will abort further execution because Python 3 was configured to use ASCII as encoding for the environment<br>If you are trying to execute tests case you must set the following environment variables each time:</p>
-<p>export LC_ALL=en_US.utf-8<br>export LANG=en_US.utf-8<br>Doing this each time will resolve the error.<br>It may also be possible to set this in your IDE if you are using one. For example see the following setting in PyCharm 2016.</p>
-<p><img src="/2021/03/27/pycharm操作flask的坑/pycharm4.png" alt="avatar"></p>
 ]]></content>
       <tags>
         <tag>python</tag>
@@ -1750,21 +1750,6 @@
       </tags>
   </entry>
   <entry>
-    <title>redis实现分布式锁</title>
-    <url>/2019/04/04/redis%E5%AE%9E%E7%8E%B0%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/</url>
-    <content><![CDATA[<p>分布式应用进行逻辑处理时经常会遇到并发问题。<br>比如一个操作要修改用户的状态，修改状态需要先读出用户的状态，在内存里进行修改，改完了再存回去。如果这样的操作同时进行了，就会出现并发问题，因为读取和保存状态这两个操作不是原子的。（Wiki 解释：所谓原子操作是指不会被线程调度机制打断的操作；这种操作一旦开始，就一直运行到结束，中间不会有任何 context switch 线程切换。）<br>分布式锁一般有三种实现方式：1. 数据库乐观锁；2. 基于Redis的分布式锁；3. 基于ZooKeeper的分布式锁。</p>
-<h4 id="安全和可靠性保证"><a href="#安全和可靠性保证" class="headerlink" title="安全和可靠性保证"></a>安全和可靠性保证</h4><h5 id="互斥性"><a href="#互斥性" class="headerlink" title="互斥性"></a>互斥性</h5><p>保证同一时间只有一个客户端可以拿到锁，也就是可以对共享资源进行操作</p>
-<h5 id="安全性"><a href="#安全性" class="headerlink" title="安全性"></a>安全性</h5><p>只有加锁的服务才能有解锁权限，也就是不能让a加的锁，bcd都可以解锁，如果都能解锁那分布式锁就没啥意义了<br>可能出现的情况就是a去查询发现持有锁，就在准备解锁，这时候忽然a持有的锁过期了，然后b去获得锁，因为a锁过期，b拿到锁，这时候a继续执行第二步进行解锁如果不加校验，就将b持有的锁就给删除了</p>
-<h5 id="避免死锁"><a href="#避免死锁" class="headerlink" title="避免死锁"></a>避免死锁</h5><p>出现死锁就会导致后续的任何服务都拿不到锁,不能再对共享资源进行任何操作了</p>
-<h5 id="保证加锁与解锁操作是原子性操作"><a href="#保证加锁与解锁操作是原子性操作" class="headerlink" title="保证加锁与解锁操作是原子性操作"></a>保证加锁与解锁操作是原子性操作</h5><p>这个其实属于是实现分布式锁的问题，假设a用redis实现分布式锁<br>假设加锁操作，操作步骤分为两步：<br>1，设置key set（key，value）2，给key设置过期时间<br>假设现在a刚实现set后，程序崩了就导致了没给key设置过期时间就导致key一直存在就发生了死锁</p>
-<h4 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h4><p>使用redis命令 set key value NX EX max-lock-time 实现加锁<br>使用redis命令 EVAL 实现解锁<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#java代码</span><br><span class="line">public class RedisDistributeLock &#123;</span><br><span class="line"></span><br><span class="line">    private Jedis jedis;</span><br><span class="line"></span><br><span class="line">    private static final String LOCK_SUCCESS = &quot;OK&quot;;</span><br><span class="line"></span><br><span class="line">    private static final Long UNLOCK_SUCCESS = 1L;</span><br><span class="line"></span><br><span class="line">    public Boolean lock(String key,String value,Long timeout)&#123;</span><br><span class="line">        String result = jedis.set(key,value,&quot;NX&quot;,&quot;EX&quot;,timeout);</span><br><span class="line">        if(LOCK_SUCCESS.equals(result))&#123;</span><br><span class="line">            return true;</span><br><span class="line">        &#125;</span><br><span class="line">        return false;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public Boolean unlock(String key,String value)&#123;</span><br><span class="line">        String luaScript = &quot;if redis.call(\&quot;get\&quot;,KEYS[1]) == ARGV[1] then return redis.call(\&quot;del\&quot;,KEYS[1]) else  return 0 end&quot;;</span><br><span class="line">        Object result = jedis.eval(luaScript, Collections.singletonList(key),Collections.singletonList(value));</span><br><span class="line">        if (UNLOCK_SUCCESS == result)&#123;</span><br><span class="line">            return true;</span><br><span class="line">        &#125;</span><br><span class="line">        return false;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public Boolean lockRetry(String key,String value,Long timeout,Integer retryTime,Long sleepTime)&#123;</span><br><span class="line">        Boolean flag = false;</span><br><span class="line"></span><br><span class="line">        try&#123;</span><br><span class="line">            for(int i=0;i&lt;retryTime;i++)&#123;</span><br><span class="line">                flag = lock(key,value,timeout);</span><br><span class="line">                if(flag)&#123;</span><br><span class="line">                    break;</span><br><span class="line">                &#125;</span><br><span class="line">                Thread.sleep(sleepTime);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;catch(Exception e)&#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">        return flag;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>go版本代码<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">package main</span><br><span class="line"></span><br><span class="line">import (</span><br><span class="line">	&quot;github.com/garyburd/redigo/redis&quot;</span><br><span class="line">	&quot;crypto/rand&quot;</span><br><span class="line">	&quot;encoding/base64&quot;</span><br><span class="line">	&quot;errors&quot;</span><br><span class="line">	&quot;time&quot;</span><br><span class="line">	&quot;fmt&quot;</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">type RedisLock struct &#123;</span><br><span class="line">	lockKey string</span><br><span class="line">	value string</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">var Redispool *redis.Pool</span><br><span class="line"></span><br><span class="line">var delScript = redis.NewScript(1, `</span><br><span class="line">if redis.call(&quot;get&quot;, KEYS[1]) == ARGV[1] then</span><br><span class="line">	return redis.call(&quot;del&quot;, KEYS[1])</span><br><span class="line">else</span><br><span class="line">	return 0</span><br><span class="line">end`)</span><br><span class="line"></span><br><span class="line">func init()  &#123;</span><br><span class="line">	Redispool = &amp;redis.Pool&#123;</span><br><span class="line">		MaxIdle:     10,</span><br><span class="line">		IdleTimeout: 300 * time.Second,</span><br><span class="line">		Dial : func() (redis.Conn, error) &#123;</span><br><span class="line">			tcp := fmt.Sprintf(&quot;%s:%s&quot;,&quot;127.0.0.1&quot;,&quot;6379&quot;)</span><br><span class="line">			c,err := redis.Dial(&quot;tcp&quot;,tcp)</span><br><span class="line">			if err != nil&#123;</span><br><span class="line">				return nil,err</span><br><span class="line">			&#125;</span><br><span class="line">			return c,err</span><br><span class="line">		&#125;,</span><br><span class="line">		TestOnBorrow : func(c redis.Conn, t time.Time) error &#123;</span><br><span class="line">			_,err := c.Do(&quot;PING&quot;)</span><br><span class="line">			return  err</span><br><span class="line">		&#125;,</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func(this *RedisLock) Lock(rd *redis.Conn,timeout int)error&#123;</span><br><span class="line">	&#123;</span><br><span class="line">		b := make([]byte,16)</span><br><span class="line">		_,err := rand.Read(b)</span><br><span class="line">		if err !=nil &#123;</span><br><span class="line">			return err</span><br><span class="line">		&#125;</span><br><span class="line">		this.value = base64.StdEncoding.EncodeToString(b)</span><br><span class="line">		lockReply,err := (*rd).Do(&quot;SET&quot;,this.lockKey,this.value,&quot;ex&quot;,timeout,&quot;nx&quot;)</span><br><span class="line">		if err !=nil&#123;</span><br><span class="line">			return errors.New(&quot;redis fail&quot;)</span><br><span class="line">		&#125;</span><br><span class="line">		if lockReply == &quot;OK&quot;&#123;</span><br><span class="line">			return nil</span><br><span class="line">		&#125;else&#123;</span><br><span class="line">			return errors.New(&quot;lock fail&quot;)</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func(this *RedisLock)Unlock(rd *redis.Conn)&#123;</span><br><span class="line">	delScript.Do(*rd,this.lockKey,this.value)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func main()  &#123;</span><br><span class="line">	rd := Redispool.Get()</span><br><span class="line">	defer rd.Close()</span><br><span class="line"></span><br><span class="line">	var channel chan bool</span><br><span class="line"></span><br><span class="line">	go func() &#123;</span><br><span class="line">		lock1 :=RedisLock&#123;&quot;lockKey&quot;,&quot;**1**&quot;&#125;</span><br><span class="line">		err := lock1.Lock(&amp;rd,5)</span><br><span class="line">		time.Sleep(2*time.Second)</span><br><span class="line">		lock2 := RedisLock&#123;&quot;lockKey&quot;,&quot;**2**&quot;&#125;</span><br><span class="line">		err1 := lock2.Lock(&amp;rd,5)</span><br><span class="line">		fmt.Println(err,err1)</span><br><span class="line">		lock1.Unlock(&amp;rd)</span><br><span class="line">		channel &lt;- true</span><br><span class="line">	&#125;()</span><br><span class="line"></span><br><span class="line">	 if &lt;-channel &#123;</span><br><span class="line">	 	fmt.Println(&quot;结束&quot;)</span><br><span class="line">	 &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-]]></content>
-      <tags>
-        <tag>nosql</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>python闭包和装饰器小结</title>
     <url>/2021/04/21/python%E9%97%AD%E5%8C%85%E5%92%8C%E8%A3%85%E9%A5%B0%E5%99%A8%E5%B0%8F%E7%BB%93/</url>
     <content><![CDATA[<h4 id="什么是装饰器"><a href="#什么是装饰器" class="headerlink" title="什么是装饰器"></a>什么是装饰器</h4><p>装饰器（Decorator）相对简单，咱们先介绍它：“装饰器的功能是将被装饰的函数当作参数传递给与装饰器对应的函数（名称相同的函数），并返回包装后的被装饰的函数”，听起来有点绕，没关系，直接看示意图,其中 a 为与装饰器 @a 对应的函数， b 为装饰器修饰的函数，装饰器@a的作用是：</p>
@@ -1816,6 +1801,21 @@
 ]]></content>
       <tags>
         <tag>python</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>redis实现分布式锁</title>
+    <url>/2019/04/04/redis%E5%AE%9E%E7%8E%B0%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/</url>
+    <content><![CDATA[<p>分布式应用进行逻辑处理时经常会遇到并发问题。<br>比如一个操作要修改用户的状态，修改状态需要先读出用户的状态，在内存里进行修改，改完了再存回去。如果这样的操作同时进行了，就会出现并发问题，因为读取和保存状态这两个操作不是原子的。（Wiki 解释：所谓原子操作是指不会被线程调度机制打断的操作；这种操作一旦开始，就一直运行到结束，中间不会有任何 context switch 线程切换。）<br>分布式锁一般有三种实现方式：1. 数据库乐观锁；2. 基于Redis的分布式锁；3. 基于ZooKeeper的分布式锁。</p>
+<h4 id="安全和可靠性保证"><a href="#安全和可靠性保证" class="headerlink" title="安全和可靠性保证"></a>安全和可靠性保证</h4><h5 id="互斥性"><a href="#互斥性" class="headerlink" title="互斥性"></a>互斥性</h5><p>保证同一时间只有一个客户端可以拿到锁，也就是可以对共享资源进行操作</p>
+<h5 id="安全性"><a href="#安全性" class="headerlink" title="安全性"></a>安全性</h5><p>只有加锁的服务才能有解锁权限，也就是不能让a加的锁，bcd都可以解锁，如果都能解锁那分布式锁就没啥意义了<br>可能出现的情况就是a去查询发现持有锁，就在准备解锁，这时候忽然a持有的锁过期了，然后b去获得锁，因为a锁过期，b拿到锁，这时候a继续执行第二步进行解锁如果不加校验，就将b持有的锁就给删除了</p>
+<h5 id="避免死锁"><a href="#避免死锁" class="headerlink" title="避免死锁"></a>避免死锁</h5><p>出现死锁就会导致后续的任何服务都拿不到锁,不能再对共享资源进行任何操作了</p>
+<h5 id="保证加锁与解锁操作是原子性操作"><a href="#保证加锁与解锁操作是原子性操作" class="headerlink" title="保证加锁与解锁操作是原子性操作"></a>保证加锁与解锁操作是原子性操作</h5><p>这个其实属于是实现分布式锁的问题，假设a用redis实现分布式锁<br>假设加锁操作，操作步骤分为两步：<br>1，设置key set（key，value）2，给key设置过期时间<br>假设现在a刚实现set后，程序崩了就导致了没给key设置过期时间就导致key一直存在就发生了死锁</p>
+<h4 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h4><p>使用redis命令 set key value NX EX max-lock-time 实现加锁<br>使用redis命令 EVAL 实现解锁<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#java代码</span><br><span class="line">public class RedisDistributeLock &#123;</span><br><span class="line"></span><br><span class="line">    private Jedis jedis;</span><br><span class="line"></span><br><span class="line">    private static final String LOCK_SUCCESS = &quot;OK&quot;;</span><br><span class="line"></span><br><span class="line">    private static final Long UNLOCK_SUCCESS = 1L;</span><br><span class="line"></span><br><span class="line">    public Boolean lock(String key,String value,Long timeout)&#123;</span><br><span class="line">        String result = jedis.set(key,value,&quot;NX&quot;,&quot;EX&quot;,timeout);</span><br><span class="line">        if(LOCK_SUCCESS.equals(result))&#123;</span><br><span class="line">            return true;</span><br><span class="line">        &#125;</span><br><span class="line">        return false;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public Boolean unlock(String key,String value)&#123;</span><br><span class="line">        String luaScript = &quot;if redis.call(\&quot;get\&quot;,KEYS[1]) == ARGV[1] then return redis.call(\&quot;del\&quot;,KEYS[1]) else  return 0 end&quot;;</span><br><span class="line">        Object result = jedis.eval(luaScript, Collections.singletonList(key),Collections.singletonList(value));</span><br><span class="line">        if (UNLOCK_SUCCESS == result)&#123;</span><br><span class="line">            return true;</span><br><span class="line">        &#125;</span><br><span class="line">        return false;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public Boolean lockRetry(String key,String value,Long timeout,Integer retryTime,Long sleepTime)&#123;</span><br><span class="line">        Boolean flag = false;</span><br><span class="line"></span><br><span class="line">        try&#123;</span><br><span class="line">            for(int i=0;i&lt;retryTime;i++)&#123;</span><br><span class="line">                flag = lock(key,value,timeout);</span><br><span class="line">                if(flag)&#123;</span><br><span class="line">                    break;</span><br><span class="line">                &#125;</span><br><span class="line">                Thread.sleep(sleepTime);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;catch(Exception e)&#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">        return flag;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>go版本代码<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">package main</span><br><span class="line"></span><br><span class="line">import (</span><br><span class="line">	&quot;github.com/garyburd/redigo/redis&quot;</span><br><span class="line">	&quot;crypto/rand&quot;</span><br><span class="line">	&quot;encoding/base64&quot;</span><br><span class="line">	&quot;errors&quot;</span><br><span class="line">	&quot;time&quot;</span><br><span class="line">	&quot;fmt&quot;</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">type RedisLock struct &#123;</span><br><span class="line">	lockKey string</span><br><span class="line">	value string</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">var Redispool *redis.Pool</span><br><span class="line"></span><br><span class="line">var delScript = redis.NewScript(1, `</span><br><span class="line">if redis.call(&quot;get&quot;, KEYS[1]) == ARGV[1] then</span><br><span class="line">	return redis.call(&quot;del&quot;, KEYS[1])</span><br><span class="line">else</span><br><span class="line">	return 0</span><br><span class="line">end`)</span><br><span class="line"></span><br><span class="line">func init()  &#123;</span><br><span class="line">	Redispool = &amp;redis.Pool&#123;</span><br><span class="line">		MaxIdle:     10,</span><br><span class="line">		IdleTimeout: 300 * time.Second,</span><br><span class="line">		Dial : func() (redis.Conn, error) &#123;</span><br><span class="line">			tcp := fmt.Sprintf(&quot;%s:%s&quot;,&quot;127.0.0.1&quot;,&quot;6379&quot;)</span><br><span class="line">			c,err := redis.Dial(&quot;tcp&quot;,tcp)</span><br><span class="line">			if err != nil&#123;</span><br><span class="line">				return nil,err</span><br><span class="line">			&#125;</span><br><span class="line">			return c,err</span><br><span class="line">		&#125;,</span><br><span class="line">		TestOnBorrow : func(c redis.Conn, t time.Time) error &#123;</span><br><span class="line">			_,err := c.Do(&quot;PING&quot;)</span><br><span class="line">			return  err</span><br><span class="line">		&#125;,</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func(this *RedisLock) Lock(rd *redis.Conn,timeout int)error&#123;</span><br><span class="line">	&#123;</span><br><span class="line">		b := make([]byte,16)</span><br><span class="line">		_,err := rand.Read(b)</span><br><span class="line">		if err !=nil &#123;</span><br><span class="line">			return err</span><br><span class="line">		&#125;</span><br><span class="line">		this.value = base64.StdEncoding.EncodeToString(b)</span><br><span class="line">		lockReply,err := (*rd).Do(&quot;SET&quot;,this.lockKey,this.value,&quot;ex&quot;,timeout,&quot;nx&quot;)</span><br><span class="line">		if err !=nil&#123;</span><br><span class="line">			return errors.New(&quot;redis fail&quot;)</span><br><span class="line">		&#125;</span><br><span class="line">		if lockReply == &quot;OK&quot;&#123;</span><br><span class="line">			return nil</span><br><span class="line">		&#125;else&#123;</span><br><span class="line">			return errors.New(&quot;lock fail&quot;)</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func(this *RedisLock)Unlock(rd *redis.Conn)&#123;</span><br><span class="line">	delScript.Do(*rd,this.lockKey,this.value)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func main()  &#123;</span><br><span class="line">	rd := Redispool.Get()</span><br><span class="line">	defer rd.Close()</span><br><span class="line"></span><br><span class="line">	var channel chan bool</span><br><span class="line"></span><br><span class="line">	go func() &#123;</span><br><span class="line">		lock1 :=RedisLock&#123;&quot;lockKey&quot;,&quot;**1**&quot;&#125;</span><br><span class="line">		err := lock1.Lock(&amp;rd,5)</span><br><span class="line">		time.Sleep(2*time.Second)</span><br><span class="line">		lock2 := RedisLock&#123;&quot;lockKey&quot;,&quot;**2**&quot;&#125;</span><br><span class="line">		err1 := lock2.Lock(&amp;rd,5)</span><br><span class="line">		fmt.Println(err,err1)</span><br><span class="line">		lock1.Unlock(&amp;rd)</span><br><span class="line">		channel &lt;- true</span><br><span class="line">	&#125;()</span><br><span class="line"></span><br><span class="line">	 if &lt;-channel &#123;</span><br><span class="line">	 	fmt.Println(&quot;结束&quot;)</span><br><span class="line">	 &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+]]></content>
+      <tags>
+        <tag>nosql</tag>
       </tags>
   </entry>
   <entry>
@@ -3374,7 +3374,7 @@
 </ol>
 ]]></content>
       <tags>
-        <tag>springboot</tag>
+        <tag>spring</tag>
       </tags>
   </entry>
   <entry>
@@ -4225,7 +4225,6 @@
 ]]></content>
       <tags>
         <tag>java</tag>
-        <tag>lombok</tag>
       </tags>
   </entry>
   <entry>
