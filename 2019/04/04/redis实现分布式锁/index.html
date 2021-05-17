@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="redis,">
+  <meta name="keywords" content="nosql,">
 
 
 
@@ -80,14 +80,14 @@
 
 
 <meta name="description" content="分布式应用进行逻辑处理时经常会遇到并发问题。比如一个操作要修改用户的状态，修改状态需要先读出用户的状态，在内存里进行修改，改完了再存回去。如果这样的操作同时进行了，就会出现并发问题，因为读取和保存状态这两个操作不是原子的。（Wiki 解释：所谓原子操作是指不会被线程调度机制打断的操作；这种操作一旦开始，就一直运行到结束，中间不会有任何 context switch 线程切换。）分布式锁一般有三种实">
-<meta name="keywords" content="redis">
+<meta name="keywords" content="nosql">
 <meta property="og:type" content="article">
 <meta property="og:title" content="redis实现分布式锁">
 <meta property="og:url" content="https://alfredliukai.github.io/2019/04/04/redis实现分布式锁/index.html">
 <meta property="og:site_name" content="昨非的个人网站">
 <meta property="og:description" content="分布式应用进行逻辑处理时经常会遇到并发问题。比如一个操作要修改用户的状态，修改状态需要先读出用户的状态，在内存里进行修改，改完了再存回去。如果这样的操作同时进行了，就会出现并发问题，因为读取和保存状态这两个操作不是原子的。（Wiki 解释：所谓原子操作是指不会被线程调度机制打断的操作；这种操作一旦开始，就一直运行到结束，中间不会有任何 context switch 线程切换。）分布式锁一般有三种实">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:updated_time" content="2019-04-14T13:16:26.000Z">
+<meta property="og:updated_time" content="2021-05-17T07:03:46.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="redis实现分布式锁">
 <meta name="twitter:description" content="分布式应用进行逻辑处理时经常会遇到并发问题。比如一个操作要修改用户的状态，修改状态需要先读出用户的状态，在内存里进行修改，改完了再存回去。如果这样的操作同时进行了，就会出现并发问题，因为读取和保存状态这两个操作不是原子的。（Wiki 解释：所谓原子操作是指不会被线程调度机制打断的操作；这种操作一旦开始，就一直运行到结束，中间不会有任何 context switch 线程切换。）分布式锁一般有三种实">
@@ -376,7 +376,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/redis/" rel="tag"># redis</a>
+            <a href="/tags/nosql/" rel="tag"># nosql</a>
           
         </div>
       
@@ -500,7 +500,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">33</span>
+                  <span class="site-state-item-count">30</span>
                   <span class="site-state-item-name">tags</span>
                 </a>
               </div>
