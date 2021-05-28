@@ -940,65 +940,6 @@
       </tags>
   </entry>
   <entry>
-    <title>postgresql中死锁问题排查</title>
-    <url>/2021/04/20/postgresql%E4%B8%AD%E6%AD%BB%E9%94%81%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/</url>
-    <content><![CDATA[<p>最近在做一个业务数据导入导出的功能需求，在导入过程中出现了系统卡死的现象。怀疑为数据库死锁导致，具体排查流程如下。</p>
-<h4 id="排查流程"><a href="#排查流程" class="headerlink" title="排查流程"></a>排查流程</h4><ol>
-<li>查询ACTIVITY的状态等信息</li>
-</ol>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">SELECT T</span><br><span class="line">	.PID,</span><br><span class="line">	T.STATE,</span><br><span class="line">	T.QUERY,</span><br><span class="line">	T.WAIT_EVENT_TYPE,</span><br><span class="line">	T.WAIT_EVENT,</span><br><span class="line">	T.QUERY_START    </span><br><span class="line">FROM</span><br><span class="line">	PG_STAT_ACTIVITY T</span><br><span class="line">WHERE</span><br><span class="line">	T.DATNAME = &apos;数据库用户名&apos;;</span><br></pre></td></tr></table></figure>
-<p><img src="/2021/04/20/postgresql中死锁问题排查/pg1.png" alt="avatar"></p>
-<p>上面查询结果中：pid就是ACTIVITY的唯一标识，state就是活动状态，query就是正在执行的sql语句，query——start就是开始执行的时间。</p>
-<ol start="2">
-<li>查询死锁的ACTIVITY</li>
-</ol>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">SELECT T</span><br><span class="line">	.PID,</span><br><span class="line">	T.STATE,</span><br><span class="line">	T.QUERY,</span><br><span class="line">	T.WAIT_EVENT_TYPE,</span><br><span class="line">	T.WAIT_EVENT,</span><br><span class="line">	T.QUERY_START    </span><br><span class="line">FROM</span><br><span class="line">	PG_STAT_ACTIVITY T </span><br><span class="line">WHERE</span><br><span class="line">	T.DATNAME = &apos;数据库用户名&apos; </span><br><span class="line">	AND T.WAIT_EVENT_TYPE = &apos;Lock&apos;;</span><br></pre></td></tr></table></figure>
-<ol start="3">
-<li>将第二条查询语句的pid字段的数字值记录下来，执行下面的查询语句可以解锁：<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">select PG_CANCEL_BACKEND(&apos;6984&apos;);</span><br></pre></td></tr></table></figure>
-</li>
-</ol>
-<p>上面的查询语句，执行了pg_cancel_backend()函数，该函数是取消后台操作，回滚未提交事物的用途。</p>
-<ol start="4">
-<li><p>解决idle in transaction</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">select pg_terminate_backend (&apos;21967&apos;)</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>小结 </p>
-</li>
-</ol>
-<p>根据以上流程，排查出truncate语句与select语句执行过程中出现了Lock清空。追踪到业务场景中，在执行导入的过程中存在权限校验，校验需要查询当前用户的登录状态。登录过程包含sql如下：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">select id,user_name from user where id=1;</span><br><span class="line"></span><br><span class="line">truncate table user reset identity cascade;</span><br></pre></td></tr></table></figure></p>
-<p>其中select语句的状态一直是“idle in transaction”的状态。</p>
-<p>业务逻辑中存在监控请求，每隔10s请求一次，也存在权限校验的场景：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">select id,user_name from user where id=1;</span><br></pre></td></tr></table></figure></p>
-<p>所以后续的sql也是处于Lock的状态。</p>
-<p>继续排查“idle in transaction”的问题</p>
-<h4 id="PostgreSql中一直有连接长时间处于idle-in-transaction的问题"><a href="#PostgreSql中一直有连接长时间处于idle-in-transaction的问题" class="headerlink" title="PostgreSql中一直有连接长时间处于idle in transaction的问题"></a>PostgreSql中一直有连接长时间处于idle in transaction的问题</h4><p><strong>数据库连接的几种状态</strong></p>
-<p>pg_stat_activity 是一张postgresql的系统视图，它的每一行都表示一个系统进程，显示与当前会话的活动进程的一些信息，比如当前会话的状态和查询等。它的state字段表示当前进程的状态，一共有六种：</p>
-<ul>
-<li>Active(活动): 进程正在执行某个语句</li>
-<li>Idle(空闲): 进程正在等待客户端的指令</li>
-<li>idle in transaction(事务空闲):进程在处理事务的过程中，但当前没有执行任何语句</li>
-<li>idle in transaction (aborted)(事务空闲-退出):除了事务中声明一个错误外，其余情况与idle in transaction相同</li>
-<li>fastpath function call(快速通道函数调用): 后台正在执行某个快速通道函数</li>
-<li>Disabled(禁用): 报告状态被禁用</li>
-</ul>
-<p>Postgresql在9.6版本提供了idle_in_transaction_session_timeout 参数，用于释放一直处于idle in transaction状态下的连接。<br>尝试在postgresql.conf 文件中添加idle_in_transaction_session_timeout参数控制，参数单位为毫秒<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">idle_in_transaction_session_timeout=30000</span><br></pre></td></tr></table></figure></p>
-<h4 id="问题最终解决方案"><a href="#问题最终解决方案" class="headerlink" title="问题最终解决方案"></a>问题最终解决方案</h4><ol>
-<li>导入用户数据功能时，业务加锁处理；</li>
-<li>数据库修改相关配置，添加<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">idle_in_transaction_session_timeout=30000</span><br></pre></td></tr></table></figure>
-</li>
-</ol>
-<h4 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h4><ol>
-<li><a href="https://blog.csdn.net/DB_su/article/details/78204101" target="_blank" rel="noopener">https://blog.csdn.net/DB_su/article/details/78204101</a></li>
-<li><a href="https://blog.csdn.net/qq_25775675/article/details/104360897" target="_blank" rel="noopener">https://blog.csdn.net/qq_25775675/article/details/104360897</a></li>
-<li><a href="https://blog.csdn.net/cutcue/article/details/89351026" target="_blank" rel="noopener">https://blog.csdn.net/cutcue/article/details/89351026</a></li>
-<li><a href="https://copyfuture.com/blogs-details/20200117234850895p89v43xrnosg9bg" target="_blank" rel="noopener">https://copyfuture.com/blogs-details/20200117234850895p89v43xrnosg9bg</a></li>
-<li><a href="https://www.pianshen.com/article/49201804388/" target="_blank" rel="noopener">https://www.pianshen.com/article/49201804388/</a></li>
-</ol>
-]]></content>
-      <tags>
-        <tag>sql</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>pipenv使用</title>
     <url>/2020/08/06/pipenv%E4%BD%BF%E7%94%A8/</url>
     <content><![CDATA[<h2 id="Pipenv"><a href="#Pipenv" class="headerlink" title="Pipenv"></a>Pipenv</h2><p>参考链接：<a href="https://juejin.im/post/6844903812755357703" target="_blank" rel="noopener">https://juejin.im/post/6844903812755357703</a></p>
@@ -1084,6 +1025,65 @@
 ]]></content>
       <tags>
         <tag>python</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>postgresql中死锁问题排查</title>
+    <url>/2021/04/20/postgresql%E4%B8%AD%E6%AD%BB%E9%94%81%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/</url>
+    <content><![CDATA[<p>最近在做一个业务数据导入导出的功能需求，在导入过程中出现了系统卡死的现象。怀疑为数据库死锁导致，具体排查流程如下。</p>
+<h4 id="排查流程"><a href="#排查流程" class="headerlink" title="排查流程"></a>排查流程</h4><ol>
+<li>查询ACTIVITY的状态等信息</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">SELECT T</span><br><span class="line">	.PID,</span><br><span class="line">	T.STATE,</span><br><span class="line">	T.QUERY,</span><br><span class="line">	T.WAIT_EVENT_TYPE,</span><br><span class="line">	T.WAIT_EVENT,</span><br><span class="line">	T.QUERY_START    </span><br><span class="line">FROM</span><br><span class="line">	PG_STAT_ACTIVITY T</span><br><span class="line">WHERE</span><br><span class="line">	T.DATNAME = &apos;数据库用户名&apos;;</span><br></pre></td></tr></table></figure>
+<p><img src="/2021/04/20/postgresql中死锁问题排查/pg1.png" alt="avatar"></p>
+<p>上面查询结果中：pid就是ACTIVITY的唯一标识，state就是活动状态，query就是正在执行的sql语句，query——start就是开始执行的时间。</p>
+<ol start="2">
+<li>查询死锁的ACTIVITY</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">SELECT T</span><br><span class="line">	.PID,</span><br><span class="line">	T.STATE,</span><br><span class="line">	T.QUERY,</span><br><span class="line">	T.WAIT_EVENT_TYPE,</span><br><span class="line">	T.WAIT_EVENT,</span><br><span class="line">	T.QUERY_START    </span><br><span class="line">FROM</span><br><span class="line">	PG_STAT_ACTIVITY T </span><br><span class="line">WHERE</span><br><span class="line">	T.DATNAME = &apos;数据库用户名&apos; </span><br><span class="line">	AND T.WAIT_EVENT_TYPE = &apos;Lock&apos;;</span><br></pre></td></tr></table></figure>
+<ol start="3">
+<li>将第二条查询语句的pid字段的数字值记录下来，执行下面的查询语句可以解锁：<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">select PG_CANCEL_BACKEND(&apos;6984&apos;);</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>上面的查询语句，执行了pg_cancel_backend()函数，该函数是取消后台操作，回滚未提交事物的用途。</p>
+<ol start="4">
+<li><p>解决idle in transaction</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">select pg_terminate_backend (&apos;21967&apos;)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>小结 </p>
+</li>
+</ol>
+<p>根据以上流程，排查出truncate语句与select语句执行过程中出现了Lock清空。追踪到业务场景中，在执行导入的过程中存在权限校验，校验需要查询当前用户的登录状态。登录过程包含sql如下：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">select id,user_name from user where id=1;</span><br><span class="line"></span><br><span class="line">truncate table user reset identity cascade;</span><br></pre></td></tr></table></figure></p>
+<p>其中select语句的状态一直是“idle in transaction”的状态。</p>
+<p>业务逻辑中存在监控请求，每隔10s请求一次，也存在权限校验的场景：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">select id,user_name from user where id=1;</span><br></pre></td></tr></table></figure></p>
+<p>所以后续的sql也是处于Lock的状态。</p>
+<p>继续排查“idle in transaction”的问题</p>
+<h4 id="PostgreSql中一直有连接长时间处于idle-in-transaction的问题"><a href="#PostgreSql中一直有连接长时间处于idle-in-transaction的问题" class="headerlink" title="PostgreSql中一直有连接长时间处于idle in transaction的问题"></a>PostgreSql中一直有连接长时间处于idle in transaction的问题</h4><p><strong>数据库连接的几种状态</strong></p>
+<p>pg_stat_activity 是一张postgresql的系统视图，它的每一行都表示一个系统进程，显示与当前会话的活动进程的一些信息，比如当前会话的状态和查询等。它的state字段表示当前进程的状态，一共有六种：</p>
+<ul>
+<li>Active(活动): 进程正在执行某个语句</li>
+<li>Idle(空闲): 进程正在等待客户端的指令</li>
+<li>idle in transaction(事务空闲):进程在处理事务的过程中，但当前没有执行任何语句</li>
+<li>idle in transaction (aborted)(事务空闲-退出):除了事务中声明一个错误外，其余情况与idle in transaction相同</li>
+<li>fastpath function call(快速通道函数调用): 后台正在执行某个快速通道函数</li>
+<li>Disabled(禁用): 报告状态被禁用</li>
+</ul>
+<p>Postgresql在9.6版本提供了idle_in_transaction_session_timeout 参数，用于释放一直处于idle in transaction状态下的连接。<br>尝试在postgresql.conf 文件中添加idle_in_transaction_session_timeout参数控制，参数单位为毫秒<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">idle_in_transaction_session_timeout=30000</span><br></pre></td></tr></table></figure></p>
+<h4 id="问题最终解决方案"><a href="#问题最终解决方案" class="headerlink" title="问题最终解决方案"></a>问题最终解决方案</h4><ol>
+<li>导入用户数据功能时，业务加锁处理；</li>
+<li>数据库修改相关配置，添加<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">idle_in_transaction_session_timeout=30000</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<h4 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h4><ol>
+<li><a href="https://blog.csdn.net/DB_su/article/details/78204101" target="_blank" rel="noopener">https://blog.csdn.net/DB_su/article/details/78204101</a></li>
+<li><a href="https://blog.csdn.net/qq_25775675/article/details/104360897" target="_blank" rel="noopener">https://blog.csdn.net/qq_25775675/article/details/104360897</a></li>
+<li><a href="https://blog.csdn.net/cutcue/article/details/89351026" target="_blank" rel="noopener">https://blog.csdn.net/cutcue/article/details/89351026</a></li>
+<li><a href="https://copyfuture.com/blogs-details/20200117234850895p89v43xrnosg9bg" target="_blank" rel="noopener">https://copyfuture.com/blogs-details/20200117234850895p89v43xrnosg9bg</a></li>
+<li><a href="https://www.pianshen.com/article/49201804388/" target="_blank" rel="noopener">https://www.pianshen.com/article/49201804388/</a></li>
+</ol>
+]]></content>
+      <tags>
+        <tag>sql</tag>
       </tags>
   </entry>
   <entry>
@@ -1378,6 +1378,26 @@
       </tags>
   </entry>
   <entry>
+    <title>python中的itertools模块</title>
+    <url>/2021/02/03/python%E4%B8%AD%E7%9A%84itertools%E6%A8%A1%E5%9D%97/</url>
+    <content><![CDATA[<p>itertools标准化了一个快速、高效利用内存的核心工具集，这些工具本身或组合都很有用。它们一起形成了“迭代器代数”，这使得在纯Python中有可能创建简洁又高效的专用工具。</p>
+<h3 id="“无限”迭代器"><a href="#“无限”迭代器" class="headerlink" title="“无限”迭代器"></a>“无限”迭代器</h3><p>count()会创建一个无限的迭代器，所以上述代码会打印出自然数序列，根本停不下来，只能按Ctrl+C退出<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt; import itertools</span><br><span class="line">&gt;&gt;&gt; natuals = itertools.count(1)</span><br><span class="line">&gt;&gt;&gt; for n in natuals:</span><br><span class="line">...     print(n)</span><br></pre></td></tr></table></figure></p>
+<p>cycle()会把传入的一个序列无限重复下去<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt; import itertools</span><br><span class="line">&gt;&gt;&gt; cs = itertools.cycle(&apos;ABC&apos;) # 注意字符串也是序列的一种</span><br><span class="line">&gt;&gt;&gt; for c in cs:</span><br><span class="line">...     print(c)</span><br></pre></td></tr></table></figure></p>
+<p>repeat()负责把一个元素无限重复下去，不过如果提供第二个参数就可以限定重复次数：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt; ns = itertools.repeat(&apos;A&apos;, 3)</span><br><span class="line">&gt;&gt;&gt; for n in ns:</span><br><span class="line">...     print(n)</span><br><span class="line">...</span><br></pre></td></tr></table></figure></p>
+<h3 id="根据最短输入序列长度停止的迭代器"><a href="#根据最短输入序列长度停止的迭代器" class="headerlink" title="根据最短输入序列长度停止的迭代器"></a>根据最短输入序列长度停止的迭代器</h3><p>accumulate()创建一个迭代器，返回累积汇总值或其他双目运算函数的累积结果值<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt; ns = itertools.accumulate((1,2,3,4))</span><br><span class="line">&gt;&gt;&gt; for n in ns:</span><br><span class="line">...     print(n)</span><br><span class="line">...</span><br><span class="line">1</span><br><span class="line">3</span><br><span class="line">6</span><br><span class="line">10</span><br></pre></td></tr></table></figure></p>
+<p>chain()可以把一组迭代对象串联起来，形成一个更大的迭代器<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt; for c in itertools.chain(&apos;ABC&apos;, &apos;XYZ&apos;):</span><br><span class="line">...     print(c)</span><br><span class="line"># 迭代效果：&apos;A&apos; &apos;B&apos; &apos;C&apos; &apos;X&apos; &apos;Y&apos; &apos;Z&apos;</span><br></pre></td></tr></table></figure></p>
+<p>groupby()把迭代器中相邻的重复元素挑出来放在一起：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt; for key, group in itertools.groupby(&apos;AAABBBCCAAA&apos;):</span><br><span class="line">...     print(key, list(group))</span><br><span class="line">...</span><br><span class="line">A [&apos;A&apos;, &apos;A&apos;, &apos;A&apos;]</span><br><span class="line">B [&apos;B&apos;, &apos;B&apos;, &apos;B&apos;]</span><br><span class="line">C [&apos;C&apos;, &apos;C&apos;]</span><br><span class="line">A [&apos;A&apos;, &apos;A&apos;, &apos;A&apos;]</span><br></pre></td></tr></table></figure></p>
+<p>chain.from_iterable 构建类似 chain() 迭代器的另一个选择。<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt; abc=itertools.chain.from_iterable([&quot;abc&quot;,&quot;cde&quot;])</span><br><span class="line">&gt;&gt;&gt; for a in abc:</span><br><span class="line">...     print(a)</span><br><span class="line">...</span><br><span class="line">a</span><br><span class="line">b</span><br><span class="line">c</span><br><span class="line">c</span><br><span class="line">d</span><br><span class="line">e</span><br></pre></td></tr></table></figure></p>
+<h3 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h3><ol>
+<li><a href="https://docs.python.org/zh-cn/3/library/itertools.html#itertools.chain.from_iterable" target="_blank" rel="noopener">https://docs.python.org/zh-cn/3/library/itertools.html#itertools.chain.from_iterable</a></li>
+<li><a href="https://www.liaoxuefeng.com/wiki/1016959663602400/1017783145987360" target="_blank" rel="noopener">https://www.liaoxuefeng.com/wiki/1016959663602400/1017783145987360</a></li>
+</ol>
+]]></content>
+      <tags>
+        <tag>python</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>python中的yield关键字</title>
     <url>/2020/08/03/python%E4%B8%AD%E7%9A%84yield%E5%85%B3%E9%94%AE%E5%AD%97/</url>
     <content><![CDATA[<p>Python 是非常灵活的语言，其中 yield 关键字是普遍容易困惑的概念。</p>
@@ -1447,26 +1467,6 @@
 </ul>
 <p>现在假设，我们有一个函数，其产出（返回值）是一个列表。而若我们知道，调用者对该函数的返回值，只有逐个迭代这一种方式。那么，如果函数生产列表中的每一个元素都需要耗费非常多的时间，或者生成所有元素需要等待很长时间，则使用 yield 把函数变成一个生成器函数，每次只产生一个元素，就能节省很多开销了。</p>
 <h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><p>转自：<a href="https://liam.page/2017/06/30/understanding-yield-in-python/" target="_blank" rel="noopener">https://liam.page/2017/06/30/understanding-yield-in-python/</a></p>
-]]></content>
-      <tags>
-        <tag>python</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>python中的itertools模块</title>
-    <url>/2021/02/03/python%E4%B8%AD%E7%9A%84itertools%E6%A8%A1%E5%9D%97/</url>
-    <content><![CDATA[<p>itertools标准化了一个快速、高效利用内存的核心工具集，这些工具本身或组合都很有用。它们一起形成了“迭代器代数”，这使得在纯Python中有可能创建简洁又高效的专用工具。</p>
-<h3 id="“无限”迭代器"><a href="#“无限”迭代器" class="headerlink" title="“无限”迭代器"></a>“无限”迭代器</h3><p>count()会创建一个无限的迭代器，所以上述代码会打印出自然数序列，根本停不下来，只能按Ctrl+C退出<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt; import itertools</span><br><span class="line">&gt;&gt;&gt; natuals = itertools.count(1)</span><br><span class="line">&gt;&gt;&gt; for n in natuals:</span><br><span class="line">...     print(n)</span><br></pre></td></tr></table></figure></p>
-<p>cycle()会把传入的一个序列无限重复下去<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt; import itertools</span><br><span class="line">&gt;&gt;&gt; cs = itertools.cycle(&apos;ABC&apos;) # 注意字符串也是序列的一种</span><br><span class="line">&gt;&gt;&gt; for c in cs:</span><br><span class="line">...     print(c)</span><br></pre></td></tr></table></figure></p>
-<p>repeat()负责把一个元素无限重复下去，不过如果提供第二个参数就可以限定重复次数：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt; ns = itertools.repeat(&apos;A&apos;, 3)</span><br><span class="line">&gt;&gt;&gt; for n in ns:</span><br><span class="line">...     print(n)</span><br><span class="line">...</span><br></pre></td></tr></table></figure></p>
-<h3 id="根据最短输入序列长度停止的迭代器"><a href="#根据最短输入序列长度停止的迭代器" class="headerlink" title="根据最短输入序列长度停止的迭代器"></a>根据最短输入序列长度停止的迭代器</h3><p>accumulate()创建一个迭代器，返回累积汇总值或其他双目运算函数的累积结果值<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt; ns = itertools.accumulate((1,2,3,4))</span><br><span class="line">&gt;&gt;&gt; for n in ns:</span><br><span class="line">...     print(n)</span><br><span class="line">...</span><br><span class="line">1</span><br><span class="line">3</span><br><span class="line">6</span><br><span class="line">10</span><br></pre></td></tr></table></figure></p>
-<p>chain()可以把一组迭代对象串联起来，形成一个更大的迭代器<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt; for c in itertools.chain(&apos;ABC&apos;, &apos;XYZ&apos;):</span><br><span class="line">...     print(c)</span><br><span class="line"># 迭代效果：&apos;A&apos; &apos;B&apos; &apos;C&apos; &apos;X&apos; &apos;Y&apos; &apos;Z&apos;</span><br></pre></td></tr></table></figure></p>
-<p>groupby()把迭代器中相邻的重复元素挑出来放在一起：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt; for key, group in itertools.groupby(&apos;AAABBBCCAAA&apos;):</span><br><span class="line">...     print(key, list(group))</span><br><span class="line">...</span><br><span class="line">A [&apos;A&apos;, &apos;A&apos;, &apos;A&apos;]</span><br><span class="line">B [&apos;B&apos;, &apos;B&apos;, &apos;B&apos;]</span><br><span class="line">C [&apos;C&apos;, &apos;C&apos;]</span><br><span class="line">A [&apos;A&apos;, &apos;A&apos;, &apos;A&apos;]</span><br></pre></td></tr></table></figure></p>
-<p>chain.from_iterable 构建类似 chain() 迭代器的另一个选择。<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt; abc=itertools.chain.from_iterable([&quot;abc&quot;,&quot;cde&quot;])</span><br><span class="line">&gt;&gt;&gt; for a in abc:</span><br><span class="line">...     print(a)</span><br><span class="line">...</span><br><span class="line">a</span><br><span class="line">b</span><br><span class="line">c</span><br><span class="line">c</span><br><span class="line">d</span><br><span class="line">e</span><br></pre></td></tr></table></figure></p>
-<h3 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h3><ol>
-<li><a href="https://docs.python.org/zh-cn/3/library/itertools.html#itertools.chain.from_iterable" target="_blank" rel="noopener">https://docs.python.org/zh-cn/3/library/itertools.html#itertools.chain.from_iterable</a></li>
-<li><a href="https://www.liaoxuefeng.com/wiki/1016959663602400/1017783145987360" target="_blank" rel="noopener">https://www.liaoxuefeng.com/wiki/1016959663602400/1017783145987360</a></li>
-</ol>
 ]]></content>
       <tags>
         <tag>python</tag>
@@ -1855,7 +1855,7 @@
 <h3 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h3><p><a href="https://www.liaoxuefeng.com/wiki/1016959663602400/1017803857459008" target="_blank" rel="noopener">https://www.liaoxuefeng.com/wiki/1016959663602400/1017803857459008</a><br><a href="http://www.pythondoc.com/flask-sqlalchemy/binds.html" target="_blank" rel="noopener">http://www.pythondoc.com/flask-sqlalchemy/binds.html</a><br><a href="https://www.cnblogs.com/sanduzxcvbnm/p/10219087.html" target="_blank" rel="noopener">https://www.cnblogs.com/sanduzxcvbnm/p/10219087.html</a><br><a href="https://www.cnblogs.com/sanduzxcvbnm/p/10219087.html" target="_blank" rel="noopener">https://www.cnblogs.com/sanduzxcvbnm/p/10219087.html</a><br><a href="https://www.osgeo.cn/sqlalchemy/tutorial/orm_data_manipulation.html" target="_blank" rel="noopener">https://www.osgeo.cn/sqlalchemy/tutorial/orm_data_manipulation.html</a></p>
 ]]></content>
       <tags>
-        <tag>flask</tag>
+        <tag>python web</tag>
       </tags>
   </entry>
   <entry>
@@ -1865,7 +1865,7 @@
 <h4 id="Catalina"><a href="#Catalina" class="headerlink" title="Catalina"></a>Catalina</h4><p>Catalina 的主要任务就是创建 Server，它不是直接 new 一个 Server 实例就完事了，而是 需要解析 server.xml，把在 server.xml 里配置的各种组件一一创建出来，接着调用 Server 组件的 init 方法和 start 方法，这样整个 Tomcat 就启动起来了。作为“管理者”， Catalina 还需要处理各种“异常”情况，比如当我们通过“Ctrl + C”关闭 Tomcat 时， Tomcat 将如何优雅的停止并且清理资源呢?因此 Catalina 在 JVM 中注册一个“关闭钩 子”。</p>
 ]]></content>
       <tags>
-        <tag>tomcat</tag>
+        <tag>java web</tag>
       </tags>
   </entry>
   <entry>
@@ -3557,7 +3557,7 @@
 <p>Valve是Tomcat的私有机制，与Tomcat的基础架构/API是紧耦合的。Servlet API是公有的标准，所有的Web容器包括Jetty都支持Filter机制。另一个重要的区别是 Valve 工作在 Web 容器级别，拦截所有应用的请求;而Servlet Filter工作在应用级别，只能拦截某个Web应用的所有请求。如果想做整个Web容器 的拦截器，必须通过 Valve 来实现。</p>
 ]]></content>
       <tags>
-        <tag>tomcat</tag>
+        <tag>java web</tag>
       </tags>
   </entry>
   <entry>
@@ -3635,8 +3635,7 @@
 <p>2.其他参考地址<a href="https://github.com/feifa168/mytomcat" target="_blank" rel="noopener">https://github.com/feifa168/mytomcat</a></p>
 ]]></content>
       <tags>
-        <tag>tomcat</tag>
-        <tag>servlet</tag>
+        <tag>java web</tag>
       </tags>
   </entry>
   <entry>
