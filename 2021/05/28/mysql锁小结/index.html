@@ -1,0 +1,1145 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh_CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="sql,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="锁的类型mysql锁分为共享锁和排他锁，也叫做读锁和写锁。 读锁是共享的，可以通过lock in share mode实现，这时候只能读不能写。 写锁是排他的，它会阻塞其他的写锁和读锁。从颗粒度来区分，可以分为表锁和⾏锁两种。 表锁会锁定整张表并且阻塞其他⽤户对该表的所有读写操作，⽐如alter修改表结构的时候会锁表。 ⾏锁⼜可以分为乐观锁和悲观锁，悲观锁可以通过for update实现，乐观锁则">
+<meta name="keywords" content="sql">
+<meta property="og:type" content="article">
+<meta property="og:title" content="mysql锁小结">
+<meta property="og:url" content="https://alfredliukai.github.io/2021/05/28/mysql锁小结/index.html">
+<meta property="og:site_name" content="昨非的个人网站">
+<meta property="og:description" content="锁的类型mysql锁分为共享锁和排他锁，也叫做读锁和写锁。 读锁是共享的，可以通过lock in share mode实现，这时候只能读不能写。 写锁是排他的，它会阻塞其他的写锁和读锁。从颗粒度来区分，可以分为表锁和⾏锁两种。 表锁会锁定整张表并且阻塞其他⽤户对该表的所有读写操作，⽐如alter修改表结构的时候会锁表。 ⾏锁⼜可以分为乐观锁和悲观锁，悲观锁可以通过for update实现，乐观锁则">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://alfredliukai.github.io/2021/05/28/mysql锁小结/mysql1.png">
+<meta property="og:updated_time" content="2021-05-28T10:30:21.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="mysql锁小结">
+<meta name="twitter:description" content="锁的类型mysql锁分为共享锁和排他锁，也叫做读锁和写锁。 读锁是共享的，可以通过lock in share mode实现，这时候只能读不能写。 写锁是排他的，它会阻塞其他的写锁和读锁。从颗粒度来区分，可以分为表锁和⾏锁两种。 表锁会锁定整张表并且阻塞其他⽤户对该表的所有读写操作，⽐如alter修改表结构的时候会锁表。 ⾏锁⼜可以分为乐观锁和悲观锁，悲观锁可以通过for update实现，乐观锁则">
+<meta name="twitter:image" content="https://alfredliukai.github.io/2021/05/28/mysql锁小结/mysql1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://alfredliukai.github.io/2021/05/28/mysql锁小结/">
+
+
+
+
+
+  <title>mysql锁小结 | 昨非的个人网站</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh_CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">昨非的个人网站</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-首页">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-标签">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-归档">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-关于">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>
+            
+            Search
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="Searching..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://alfredliukai.github.io/2021/05/28/mysql锁小结/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="昨非">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="昨非的个人网站">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">mysql锁小结</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2021-05-28T17:56:34+08:00">
+                2021-05-28
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h4 id="锁的类型"><a href="#锁的类型" class="headerlink" title="锁的类型"></a>锁的类型</h4><p>mysql锁分为共享锁和排他锁，也叫做读锁和写锁。</p>
+<p>读锁是共享的，可以通过lock in share mode实现，这时候只能读不能写。</p>
+<p>写锁是排他的，它会阻塞其他的写锁和读锁。从颗粒度来区分，可以分为表锁和⾏锁两种。</p>
+<p>表锁会锁定整张表并且阻塞其他⽤户对该表的所有读写操作，⽐如alter修改表结构的时候会锁表。</p>
+<p>⾏锁⼜可以分为乐观锁和悲观锁，悲观锁可以通过for update实现，乐观锁则通过版本号实现。</p>
+<h4 id="mysql-排它锁之行锁、间隙锁、后码锁"><a href="#mysql-排它锁之行锁、间隙锁、后码锁" class="headerlink" title="mysql 排它锁之行锁、间隙锁、后码锁"></a>mysql 排它锁之行锁、间隙锁、后码锁</h4><p>MySQL InnoDB支持三种行锁定</p>
+<ol>
+<li>行锁（Record Lock）:锁直接加在索引记录上面，锁住的是key。</li>
+<li>间隙锁（Gap Lock）:锁定索引记录间隙，确保索引记录的间隙不变。间隙锁是针对事务隔离级别为可重复读或以上级别而设计的。</li>
+<li>后码锁（Next-Key Lock）：行锁和间隙锁组合起来就叫Next-Key Lock。</li>
+</ol>
+<p>默认情况下，InnoDB工作在可重复读隔离级别下，并且会以Next-Key Lock的方式对数据行进行加锁，这样可以有效防止幻读的发生。Next-Key Lock是行锁和间隙锁的组合，当InnoDB扫描索引记录的时候，会首先对索引记录加上行锁（Record Lock），再对索引记录两边的间隙加上间隙锁（Gap Lock）。加上间隙锁之后，其他事务就不能在这个间隙修改或者插入记录。</p>
+<h4 id="行锁-Record-Lock"><a href="#行锁-Record-Lock" class="headerlink" title="行锁(Record Lock)"></a>行锁(Record Lock)</h4><ul>
+<li>当需要对表中的某条数据进行写操作（insert、update、delete、select for update）时，需要先获取记录的排他锁（X锁），这个就称为行锁。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">create table x(`id` int, `num` int, index `idx_id` (`id`));</span><br><span class="line">insert into x values(1, 1), (2, 2);</span><br><span class="line"></span><br><span class="line">-- 事务A</span><br><span class="line">START TRANSACTION;</span><br><span class="line">update x set id = 1 where id = 1;</span><br><span class="line"></span><br><span class="line">-- 事务B</span><br><span class="line">-- 如果事务A没有commit，id=1的记录拿不到X锁，将出现等待</span><br><span class="line">START TRANSACTION;</span><br><span class="line">update x set id = 1 where id = 1;</span><br><span class="line"></span><br><span class="line">-- 事务C</span><br><span class="line">-- id=2的记录可以拿到X锁，不会出现等待</span><br><span class="line">START TRANSACTION;</span><br><span class="line">update x set id = 2 where id = 2;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>针对InnoDB RR隔离级别，上述SQL示例展示了行锁的特点：“锁定特定行不允许进行修改”，但行锁是基于表索引的，如果where条件中用的是num字段（非索引列）将产生不一样的现象：</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">-- 事务A</span><br><span class="line">START TRANSACTION;</span><br><span class="line">update x set num = 1 where num = 1;</span><br><span class="line"></span><br><span class="line">-- 事务B</span><br><span class="line">-- 由于事务A中num字段上没有索引将产生表锁，导致整张表的写操作都会出现等待</span><br><span class="line">START TRANSACTION;</span><br><span class="line">update x set num = 1 where num = 1;</span><br><span class="line"></span><br><span class="line">-- 事务C</span><br><span class="line">-- 同理，会出现等待</span><br><span class="line">START TRANSACTION;</span><br><span class="line">update x set num = 2 where num = 2;</span><br><span class="line"></span><br><span class="line">-- 事务D</span><br><span class="line">-- 等待</span><br><span class="line">START TRANSACTION;</span><br><span class="line">insert into x values(3, 3);</span><br></pre></td></tr></table></figure>
+<h4 id="Gap锁-Gap-Lock"><a href="#Gap锁-Gap-Lock" class="headerlink" title="Gap锁(Gap Lock)"></a>Gap锁(Gap Lock)</h4><p>在MySQL中select称为快照读，不需要锁，而insert、update、delete、select for update则称为当前读，需要给数据加锁，幻读中的“读”即是针对当前读。</p>
+<p>RR事务隔离级别允许存在幻读，但InnoDB RR级别却通过Gap锁避免了幻读</p>
+<p>产生间隙锁的条件（RR事务隔离级别下）</p>
+<ul>
+<li>使用普通索引锁定</li>
+<li>使用多列唯一索引</li>
+<li>使用唯一索引锁定多行记录</li>
+</ul>
+<p><strong>唯一索引的间隙锁</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">测试环境</span><br><span class="line"></span><br><span class="line">MySQL，InnoDB，默认的隔离级别（RR）</span><br><span class="line"></span><br><span class="line">数据表</span><br><span class="line"></span><br><span class="line">CREATE TABLE `test` (</span><br><span class="line">  `id` int(1) NOT NULL AUTO_INCREMENT,</span><br><span class="line">  `name` varchar(8) DEFAULT NULL,</span><br><span class="line">  PRIMARY KEY (`id`)</span><br><span class="line">) ENGINE=InnoDB DEFAULT CHARSET=utf8;</span><br><span class="line"></span><br><span class="line">数据</span><br><span class="line"></span><br><span class="line">INSERT INTO `test` VALUES (&apos;1&apos;, &apos;小罗&apos;);</span><br><span class="line">INSERT INTO `test` VALUES (&apos;5&apos;, &apos;小黄&apos;);</span><br><span class="line">INSERT INTO `test` VALUES (&apos;7&apos;, &apos;小明&apos;);</span><br><span class="line">INSERT INTO `test` VALUES (&apos;11&apos;, &apos;小红&apos;);</span><br></pre></td></tr></table></figure>
+<p>以上数据，会生成隐藏间隙</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(-infinity, 1] (1, 5] (5, 7] (7, 11] (11, +infinity]</span><br></pre></td></tr></table></figure>
+<p><strong>只使用记录锁，不会产生间隙锁</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">/* 开启事务1 */</span><br><span class="line">BEGIN;</span><br><span class="line">/* 查询 id = 5 的数据并加记录锁 */</span><br><span class="line">SELECT * FROM `test` WHERE `id` = 5 FOR UPDATE;</span><br><span class="line">/* 延迟30秒执行，防止锁释放 */</span><br><span class="line">SELECT SLEEP(30);</span><br><span class="line"></span><br><span class="line">-- 注意：以下的语句不是放在一个事务中执行，而是分开多次执行，每次事务中只有一条添加语句</span><br><span class="line"></span><br><span class="line">/* 事务2插入一条 name = &apos;小张&apos; 的数据 */</span><br><span class="line">INSERT INTO `test` (`id`, `name`) VALUES (4, &apos;小张&apos;); # 正常执行</span><br><span class="line"></span><br><span class="line">/* 事务3插入一条 name = &apos;小张&apos; 的数据 */</span><br><span class="line">INSERT INTO `test` (`id`, `name`) VALUES (8, &apos;小东&apos;); # 正常执行</span><br><span class="line"></span><br><span class="line">/* 提交事务1，释放事务1的锁 */</span><br><span class="line">COMMIT;</span><br></pre></td></tr></table></figure>
+<p>以上，由于主键是唯一索引，而且是只使用一个索引查询，并且只锁定一条记录，所以，只会对 id = 5 的数据加上记录锁，而不会产生间隙锁。</p>
+<p><strong>产生间隙锁</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">/* 开启事务1 */</span><br><span class="line">BEGIN;</span><br><span class="line">/* 查询 id 在 7 - 11 范围的数据并加记录锁 */</span><br><span class="line">SELECT * FROM `test` WHERE `id` BETWEEN 5 AND 11 FOR UPDATE;</span><br><span class="line">/* 延迟30秒执行，防止锁释放 */</span><br><span class="line">SELECT SLEEP(30);</span><br><span class="line"></span><br><span class="line">-- 注意：以下的语句不是放在一个事务中执行，而是分开多次执行，每次事务中只有一条添加语句</span><br><span class="line"></span><br><span class="line">/* 事务2插入一条 id = 3，name = &apos;小张1&apos; 的数据 */</span><br><span class="line">INSERT INTO `test` (`id`, `name`) VALUES (3, &apos;小张1&apos;); # 正常执行</span><br><span class="line"></span><br><span class="line">/* 事务3插入一条 id = 4，name = &apos;小白&apos; 的数据 */</span><br><span class="line">INSERT INTO `test` (`id`, `name`) VALUES (4, &apos;小白&apos;); # 正常执行</span><br><span class="line"></span><br><span class="line">/* 事务4插入一条 id = 6，name = &apos;小东&apos; 的数据 */</span><br><span class="line">INSERT INTO `test` (`id`, `name`) VALUES (6, &apos;小东&apos;); # 阻塞</span><br><span class="line"></span><br><span class="line">/* 事务5插入一条 id = 8， name = &apos;大罗&apos; 的数据 */</span><br><span class="line">INSERT INTO `test` (`id`, `name`) VALUES (8, &apos;大罗&apos;); # 阻塞</span><br><span class="line"></span><br><span class="line">/* 事务6插入一条 id = 9， name = &apos;大东&apos; 的数据 */</span><br><span class="line">INSERT INTO `test` (`id`, `name`) VALUES (9, &apos;大东&apos;); # 阻塞</span><br><span class="line"></span><br><span class="line">/* 事务7插入一条 id = 11， name = &apos;李西&apos; 的数据 */</span><br><span class="line">INSERT INTO `test` (`id`, `name`) VALUES (11, &apos;李西&apos;); # 阻塞</span><br><span class="line"></span><br><span class="line">/* 事务8插入一条 id = 12， name = &apos;张三&apos; 的数据 */</span><br><span class="line">INSERT INTO `test` (`id`, `name`) VALUES (12, &apos;张三&apos;); # 正常执行</span><br><span class="line"></span><br><span class="line">/* 提交事务1，释放事务1的锁 */</span><br><span class="line">COMMIT;</span><br></pre></td></tr></table></figure>
+<p>从上面我们可以看到，(5, 7]、(7, 11] 这两个区间，都不可插入数据，其它区间，都可以正常插入数据。所以当我们给 (5, 7] 这个区间加锁的时候，会锁住 (5, 7]、(7, 11] 这两个区间。</p>
+<p><strong>锁住不存在的数据</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">/* 开启事务1 */</span><br><span class="line">BEGIN;</span><br><span class="line">/* 查询 id = 3 这一条不存在的数据并加记录锁 */</span><br><span class="line">SELECT * FROM `test` WHERE `id` = 3 FOR UPDATE;</span><br><span class="line">/* 延迟30秒执行，防止锁释放 */</span><br><span class="line">SELECT SLEEP(30);</span><br><span class="line"></span><br><span class="line">-- 注意：以下的语句不是放在一个事务中执行，而是分开多次执行，每次事务中只有一条添加语句</span><br><span class="line"></span><br><span class="line">/* 事务2插入一条 id = 3，name = &apos;小张1&apos; 的数据 */</span><br><span class="line">INSERT INTO `test` (`id`, `name`) VALUES (2, &apos;小张1&apos;); # 阻塞</span><br><span class="line"></span><br><span class="line">/* 事务3插入一条 id = 4，name = &apos;小白&apos; 的数据 */</span><br><span class="line">INSERT INTO `test` (`id`, `name`) VALUES (4, &apos;小白&apos;); # 阻塞</span><br><span class="line"></span><br><span class="line">/* 事务4插入一条 id = 6，name = &apos;小东&apos; 的数据 */</span><br><span class="line">INSERT INTO `test` (`id`, `name`) VALUES (6, &apos;小东&apos;); # 正常执行</span><br><span class="line"></span><br><span class="line">/* 事务5插入一条 id = 8， name = &apos;大罗&apos; 的数据 */</span><br><span class="line">INSERT INTO `test` (`id`, `name`) VALUES (8, &apos;大罗&apos;); # 正常执行</span><br><span class="line"></span><br><span class="line">/* 提交事务1，释放事务1的锁 */</span><br><span class="line">COMMIT;</span><br></pre></td></tr></table></figure>
+<p>我们可以看出，指定查询某一条记录时，如果这条记录不存在，会产生间隙锁</p>
+<p>结论</p>
+<ul>
+<li>对于指定查询某一条记录的加锁语句，如果该记录不存在，会产生记录锁和间隙锁，如果记录存在，则只会产生记录锁，如：WHERE id = 5 FOR UPDATE;</li>
+<li>对于查找某一范围内的查询语句，会产生间隙锁，如：WHERE id BETWEEN 5 AND 7 FOR UPDATE;</li>
+</ul>
+<p><strong>普通索引的间隙锁</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">CREATE TABLE `test1` (</span><br><span class="line">  `id` int(1) NOT NULL AUTO_INCREMENT,</span><br><span class="line">  `number` int(1) NOT NULL COMMENT &apos;数字&apos;,</span><br><span class="line">  PRIMARY KEY (`id`),</span><br><span class="line">  KEY `number` (`number`) USING BTREE</span><br><span class="line">) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;</span><br><span class="line"></span><br><span class="line">id 是主键，number上建立了一个普通索引。先加一些数据：</span><br><span class="line"></span><br><span class="line">INSERT INTO `test1` VALUES (1, 1);</span><br><span class="line">INSERT INTO `test1` VALUES (5, 3);</span><br><span class="line">INSERT INTO `test1` VALUES (7, 8);</span><br><span class="line">INSERT INTO `test1` VALUES (11, 12);</span><br><span class="line"></span><br><span class="line">test1表中 number 索引存在的隐藏间隙：</span><br><span class="line"></span><br><span class="line">(-infinity, 1] (1, 3] (3, 8] (8, 12] (12, +infinity]</span><br></pre></td></tr></table></figure>
+<p><strong>执行以下的事务（事务1最后提交）</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">/* 开启事务1 */</span><br><span class="line">BEGIN;</span><br><span class="line">/* 查询 number = 5 的数据并加记录锁 */</span><br><span class="line">SELECT * FROM `test1` WHERE `number` = 3 FOR UPDATE;</span><br><span class="line">/* 延迟30秒执行，防止锁释放 */</span><br><span class="line">SELECT SLEEP(30);</span><br><span class="line"></span><br><span class="line">-- 注意：以下的语句不是放在一个事务中执行，而是分开多次执行，每次事务中只有一条添加语句</span><br><span class="line"></span><br><span class="line">/* 事务2插入一条 number = 0 的数据 */</span><br><span class="line">INSERT INTO `test1` (`number`) VALUES (0); -- 正常执行</span><br><span class="line"></span><br><span class="line">/* 事务3插入一条 number = 1 的数据 */</span><br><span class="line">INSERT INTO `test1` (`number`) VALUES (1); -- 被阻塞</span><br><span class="line"></span><br><span class="line">/* 事务4插入一条 number = 2 的数据 */</span><br><span class="line">INSERT INTO `test1` (`number`) VALUES (2); -- 被阻塞</span><br><span class="line"></span><br><span class="line">/* 事务5插入一条 number = 4 的数据 */</span><br><span class="line">INSERT INTO `test1` (`number`) VALUES (4); -- 被阻塞</span><br><span class="line"></span><br><span class="line">/* 事务6插入一条 number = 8 的数据 */</span><br><span class="line">INSERT INTO `test1` (`number`) VALUES (8); -- 正常执行</span><br><span class="line"></span><br><span class="line">/* 事务7插入一条 number = 9 的数据 */</span><br><span class="line">INSERT INTO `test1` (`number`) VALUES (9); -- 正常执行</span><br><span class="line"></span><br><span class="line">/* 事务8插入一条 number = 10 的数据 */</span><br><span class="line">INSERT INTO `test1` (`number`) VALUES (10); -- 正常执行</span><br><span class="line"></span><br><span class="line">/* 提交事务1 */</span><br><span class="line">COMMIT;</span><br></pre></td></tr></table></figure>
+<p>这里可以看到，number (1 - 8) 的间隙中，插入语句都被阻塞了，而不在这个范围内的语句，正常执行，这就是因为有间隙锁的原因。</p>
+<p>结论</p>
+<ul>
+<li>在普通索引列上，不管是何种查询，只要加锁，都会产生间隙锁，这跟唯一索引不一样</li>
+<li>在普通索引跟唯一索引中，数据间隙的分析，数据行是优先根据普通索引排序，再根据唯一索引排序</li>
+</ul>
+<h4 id="ACID靠什么保证"><a href="#ACID靠什么保证" class="headerlink" title="ACID靠什么保证"></a>ACID靠什么保证</h4><p>A原⼦性由undo log⽇志保证，它记录了需要回滚的⽇志信息，事务回滚时撤销已经执⾏成功的sql</p>
+<p>C⼀致性⼀般由代码层⾯来保证</p>
+<p>I隔离性由MVCC来保证</p>
+<p>D持久性由内存+redo log来保证，mysql修改数据同时在内存和redo log记录这次操作，事务提交的时候通过redo log刷盘，宕机的时候可以从redo log恢复</p>
+<h4 id="分表后的ID怎么保证唯⼀性"><a href="#分表后的ID怎么保证唯⼀性" class="headerlink" title="分表后的ID怎么保证唯⼀性"></a>分表后的ID怎么保证唯⼀性</h4><p>因为我们主键默认都是⾃增的，那么分表之后的主键在不同表就肯定会有冲突了。有⼏个办法考虑：</p>
+<ol>
+<li>设定步⻓，⽐如1-1024张表我们设定1024的基础步⻓，这样主键落到不同的表就不会冲突了。</li>
+<li>分布式ID，⾃⼰实现⼀套分布式ID⽣成算法或者使⽤开源的⽐如雪花算法这种</li>
+<li>分表后不使⽤主键作为查询依据，⽽是每张表单独新增⼀个字段作为唯⼀主键使⽤，⽐如订单表订单号是唯⼀的，不管最终落在哪张表都基于订单号作为查询依据，更新也⼀样。</li>
+</ol>
+<h4 id="分表后⾮sharding-key的查询"><a href="#分表后⾮sharding-key的查询" class="headerlink" title="分表后⾮sharding_key的查询"></a>分表后⾮sharding_key的查询</h4><ol>
+<li><p>可以做⼀个mapping表，⽐如这时候商家要查询订单列表怎么办呢？不带user_id查询的话你总不能扫全表吧？所以我们可以做⼀个映射关系表，保存商家和⽤户的关系，查询的时候先通过商家查询到⽤户列表，再通过user_id去查询。</p>
+</li>
+<li><p>打宽表，⼀般⽽⾔，商户端对数据实时性要求并不是很⾼，⽐如查询订单列表，可以把订单表同步到离线（实时）数仓，再基于数仓去做成⼀张宽表，再基于其他如es提供查询服务。</p>
+</li>
+<li><p>数据量不是很⼤的话，⽐如后台的⼀些查询之类的，也可以通过多线程扫表，然后再聚合结果的⽅式来做。或者异步的形式也是可以的。</p>
+</li>
+</ol>
+<h4 id="mysql主从同步"><a href="#mysql主从同步" class="headerlink" title="mysql主从同步"></a>mysql主从同步</h4><ol>
+<li>master提交完事务后，写⼊binlog</li>
+<li>slave连接到master，获取binlog</li>
+<li>master创建dump线程，推送binglog到slave</li>
+<li>slave启动⼀个IO线程读取同步过来的master的binlog，记录到relay log中继⽇志中</li>
+<li>slave再开启⼀个sql线程读取relay log事件并在slave执⾏，完成同步</li>
+<li>slave记录⾃⼰的binglog</li>
+</ol>
+<p>由于mysql默认的复制⽅式是异步的，主库把⽇志发送给从库后不关⼼从库是否已经处理，这样会产⽣⼀个问题就是假设主库挂了，从库处理失败了，这时候从库升为主库后，⽇志就丢失了。由此产⽣两个概念。<br><img src="/2021/05/28/mysql锁小结/mysql1.png" alt="avatar"></p>
+<p>全同步复制</p>
+<p>主库写⼊binlog后强制同步⽇志到从库，所有的从库都执⾏完成后才返回给客户端，但是很显然这个⽅式的话性能会受到严重影响。</p>
+<p>半同步复制</p>
+<p>和全同步不同的是，半同步复制的逻辑是这样，从库写⼊⽇志成功后返回ACK确认给主库，主库收到⾄少⼀个从库的确认就认为写操作完成。</p>
+<p>那主从的延迟怎么解决呢？</p>
+<ol>
+<li>针对特定的业务场景，读写请求都强制⾛主库</li>
+<li>读请求⾛从库，如果没有数据，去主库做⼆次查询</li>
+</ol>
+<h4 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h4><ol>
+<li><a href="https://juejin.cn/post/6844903997090824200" target="_blank" rel="noopener">https://juejin.cn/post/6844903997090824200</a></li>
+</ol>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/sql/" rel="tag"># sql</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2021/05/24/linux系统启动小结/" rel="next" title="linux系统启动小结">
+                <i class="fa fa-chevron-left"></i> linux系统启动小结
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">昨非</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">121</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">1</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">22</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#锁的类型"><span class="nav-number">1.</span> <span class="nav-text">锁的类型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#mysql-排它锁之行锁、间隙锁、后码锁"><span class="nav-number">2.</span> <span class="nav-text">mysql 排它锁之行锁、间隙锁、后码锁</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#行锁-Record-Lock"><span class="nav-number">3.</span> <span class="nav-text">行锁(Record Lock)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Gap锁-Gap-Lock"><span class="nav-number">4.</span> <span class="nav-text">Gap锁(Gap Lock)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ACID靠什么保证"><span class="nav-number">5.</span> <span class="nav-text">ACID靠什么保证</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#分表后的ID怎么保证唯⼀性"><span class="nav-number">6.</span> <span class="nav-text">分表后的ID怎么保证唯⼀性</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#分表后⾮sharding-key的查询"><span class="nav-number">7.</span> <span class="nav-text">分表后⾮sharding_key的查询</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#mysql主从同步"><span class="nav-number">8.</span> <span class="nav-text">mysql主从同步</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#参考文章"><span class="nav-number">9.</span> <span class="nav-text">参考文章</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">昨非</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
