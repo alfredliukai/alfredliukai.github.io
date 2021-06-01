@@ -88,7 +88,9 @@
 <meta property="og:description" content="kafka目录在kafka当中， 每一个topic会有一个单独文件夹，这个文件夹存储在 {kafka_home}/config/server.properties中指定的log.dirs路径中。 在topic下会为每一个分区生成一个单独的文件夹，将这二者合并命名topicName-分区号, 例如topic1-0。 在每一个分区下又会有多个segment,，既然已经有多个分区了, 为什么要再进行划分">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://alfredliukai.github.io/2021/06/01/消息队列小结二/mq1.png">
-<meta property="og:updated_time" content="2021-06-01T06:18:40.000Z">
+<meta property="og:image" content="https://alfredliukai.github.io/2021/06/01/消息队列小结二/mq2.png">
+<meta property="og:image" content="https://alfredliukai.github.io/2021/06/01/消息队列小结二/mq3.png">
+<meta property="og:updated_time" content="2021-06-01T09:17:32.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="消息队列小结二">
 <meta name="twitter:description" content="kafka目录在kafka当中， 每一个topic会有一个单独文件夹，这个文件夹存储在 {kafka_home}/config/server.properties中指定的log.dirs路径中。 在topic下会为每一个分区生成一个单独的文件夹，将这二者合并命名topicName-分区号, 例如topic1-0。 在每一个分区下又会有多个segment,，既然已经有多个分区了, 为什么要再进行划分">
@@ -379,6 +381,44 @@
 <p>Batch推送提高效率</p>
 <p>Producer 负责向 Kafka 主题发布（生产）消息，一个 Topic 可以有多个 Producer实例，其相互之间没有协作关系。Producer 的 send() 方法用于发送消息，参数ProducerRecord 封装了消息的内容：Topic、Partition、key、value 等信息。如果发送成功，返回的 RecordMetadata 中记录了消息的偏移量(Offset)，如果发送失败就会重试或者抛出异常。如下图所示。<br><img src="/2021/06/01/消息队列小结二/mq1.png" alt="avatar"><br>Producer 以 Batch 的方式推送数据可以极大的提高处理效率，Kafka Producer 可以将消息在内存中累计到一定数量后作为一个 Batch 发送请求，Batch 的数量大小可以人为进行干预，通过增加 Batch 的大小，可以减少网络请求和磁盘 IO 的次数，当然具体参数设置需要在效率和时效性方面做一个权衡。</p>
 <p><strong>Kafka Consumer</strong></p>
+<ol>
+<li>消费者通过订阅消息并消费消息</li>
+</ol>
+<ul>
+<li>Offset的管理是基于消费组（group.id）的级别</li>
+<li>每个Partition只能由同一消费组内的一个Consumer来消费</li>
+<li>每个Consumer可以消费多个分区</li>
+<li>消费过的数据仍会保留在Kafka中</li>
+<li>消费者不能超过分区数量</li>
+</ul>
+<ol start="2">
+<li>消费模式</li>
+</ol>
+<ul>
+<li>队列：所有消费者在一个消费组内</li>
+<li>发布/订阅：所有消费者被分配到不同的消费组</li>
+</ul>
+<ol start="3">
+<li>提交方式</li>
+</ol>
+<ul>
+<li>自动提交：自动提交的优点是方便，但是可能会重复处理消息。</li>
+<li>手动提交：又分为同步提交commitSync和异步提交commitAsync。</li>
+</ul>
+<p><img src="/2021/06/01/消息队列小结二/mq2.png" alt="avatar"></p>
+<p>Consumer 负责订阅（消费）主题并处理消息。Consumer 负责维护到 Broker 的 TCP 连接以便获取数据，在一个 Partition 中每一个记录的 Offset 是该记录的 唯一标识，即每一个 Offset 唯一标识当前 Partition 中的一条记录，同时 Offset 也可以标识 Consumer 在 Partition 中的位置（Position）。对 Consumer 来讲，这个 位置有两种含义：Current Offset 和 Committed Offset。</p>
+<ol>
+<li>Current Offset保存在 Consumer 客户端中，它表示 Consumer 希望收到的下 一条消息的序号。它仅仅在 poll()方法中使用，例如，Consumer 第一次调用 poll() 方法后收到了 20 条消息（offset:0-19），那么 Current Offset 就被设置为 20。这样 Consumer 下一次调用 poll()方法时，Kafka 就知道应该从序号为 20 的消息开始读 取。这样就能够保证每次 Consumer poll 消息时，都能够收到不重复的消息。</li>
+<li>Committed Offset保存在 Broker 上，它表示 Consumer 已经确认消费过的 消息的序号。主要通过 commitSync 和 commitAsync API 来操作。 例如，如果 Committed Offset 为 0，Consumer 通过 poll()方法收到 20 条消息 后，此时 Current Offset 就是 20，经过一系列的逻辑处理后，并没有调用 consumer.commitAsync()或 consumer.commitSync()来提交 Committed Offset，那么 此时 Committed Offset 依旧是 0，下一次 Consumer 重启后调用 poll()继续从 0 开 始消费。</li>
+</ol>
+<p>又如，如果一个 Consumer 消费了 5 条消息（poll 并且成功 commitSync）之 后宕机了，重新启动之后它仍然能够从第 6 条消息开始消费，因为 Committed Offset 已经被 Kafka 记录为 5。</p>
+<p>可以将多个 Consumer 设置为同一个 Consumer Group，组内的所有 Consumer 协调在一起来消费订阅主题的所有分区。但是每个分区只能由同一个消费组内的 一个 Consumer 来消费。很明显，Consumer Group 的作用是为了实现多个 Consumer 并行消费一个 Topic。</p>
+<p><strong>Kafka Message</strong></p>
+<p><img src="/2021/06/01/消息队列小结二/mq3.png" alt="avatar"></p>
+<ul>
+<li>header：消息头，固定长度<br>  offset：唯一确定每条消息在分区内的位置<br>  CRC32：用crc32校验消息<br>  magic：表示本次发布Kafka服务程序协议版本号<br>  attributes”：表示为独立版本、或标识压缩类型、或编码类型</li>
+<li>body：消息体<br>  key：表示消息键，可选<br>  value bytes payload：表示实际消息数据</li>
+</ul>
 
       
     </div>
