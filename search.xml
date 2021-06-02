@@ -604,43 +604,6 @@
       </tags>
   </entry>
   <entry>
-    <title>git中的对象简介</title>
-    <url>/2020/07/08/git%E4%B8%AD%E7%9A%84%E5%AF%B9%E8%B1%A1%E7%AE%80%E4%BB%8B/</url>
-    <content><![CDATA[<p>为了加深git中底层对象的理解，特意整理如下文章。<br>Git 保存的不是文件的变化或者差异，而是一系列不同时刻的 快照 。</p>
-<p>在进行提交操作时，Git 会保存一个提交对象（commit object）。 知道了 Git 保存数据的方式，我们可以很自然的想到——该提交对象会包含一个指向暂存内容快照的指针。 但不仅仅是这样，该提交对象还包含了作者的姓名和邮箱、提交时输入的信息以及指向它的父对象的指针。 首次提交产生的提交对象没有父对象，普通提交操作产生的提交对象有一个父对象， 而由多个分支合并产生的提交对象有多个父对象，</p>
-<p>为了更加形象地说明，我们假设现在有一个工作目录，里面包含了三个将要被暂存和提交的文件。 暂存操作会为每一个文件计算校验和（使用我们在 起步 中提到的 SHA-1 哈希算法），然后会把当前版本的文件快照保存到 Git 仓库中 （Git 使用 blob 对象来保存它们），最终将校验和加入到暂存区域等待提交：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ git add README test.rb LICENSE</span><br><span class="line">$ git commit -m &apos;The initial commit of my project&apos;</span><br></pre></td></tr></table></figure>
-<p>当使用 git commit 进行提交操作时，Git 会先计算每一个子目录（本例中只有项目根目录）的校验和， 然后在 Git 仓库中这些校验和保存为树对象。随后，Git 便会创建一个提交对象， 它除了包含上面提到的那些信息外，还包含指向这个树对象（项目根目录）的指针。 如此一来，Git 就可以在需要的时候重现此次保存的快照。</p>
-<p>现在，Git 仓库中有五个对象：三个 blob 对象（保存着文件快照）、一个 树 对象 （记录着目录结构和 blob 对象索引）以及一个 提交 对象（包含着指向前述树对象的指针和所有提交信息）。<br><img src="/2020/07/08/git中的对象简介/git1.png" alt="avatar"><br>Figure 9. 首次提交对象及其树结构<br>做些修改后再次提交，那么这次产生的提交对象会包含一个指向上次提交对象（父对象）的指针。<br><img src="/2020/07/08/git中的对象简介/git2.png" alt="avatar"><br>Figure 10. 提交对象及其父对象<br>Git 的分支，其实本质上仅仅是指向提交对象的可变指针。 Git 的默认分支名字是 master。 在多次提交操作之后，你其实已经有一个指向最后那个提交对象的 master 分支。 master 分支会在每次提交时自动向前移动。<br><img src="/2020/07/08/git中的对象简介/git3.png" alt="avatar"><br>Figure 11. 分支及其提交历史</p>
-<h2 id="分支创建"><a href="#分支创建" class="headerlink" title="分支创建"></a>分支创建</h2><p>Git 是怎么创建新分支的呢？ 很简单，它只是为你创建了一个可以移动的新的指针。 比如，创建一个 testing 分支， 你需要使用 git branch 命令：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ git branch testing</span><br></pre></td></tr></table></figure></p>
-<p>这会在当前所在的提交对象上创建一个指针。<br><img src="/2020/07/08/git中的对象简介/git4.png" alt="avatar"></p>
-<p>Figure 12. 两个指向相同提交历史的分支<br>那么，Git 又是怎么知道当前在哪一个分支上呢？ 也很简单，它有一个名为 HEAD 的特殊指针。 请注意它和许多其它版本控制系统（如 Subversion 或 CVS）里的 HEAD 概念完全不同。 在 Git 中，它是一个指针，指向当前所在的本地分支（译注：将 HEAD 想象为当前分支的别名）。 在本例中，你仍然在 master 分支上。 因为 git branch 命令仅仅 创建 一个新分支，并不会自动切换到新分支中去。</p>
-<p><img src="/2020/07/08/git中的对象简介/git5.png" alt="avatar"></p>
-<p>Figure 13. HEAD 指向当前所在的分支<br>你可以简单地使用 git log 命令查看各个分支当前所指的对象。 提供这一功能的参数是 –decorate<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ git log --oneline --decorate</span><br><span class="line">f30ab (HEAD -&gt; master, testing) add feature #32 - ability to add new formats to the central interface</span><br><span class="line">34ac2 Fixed bug #1328 - stack overflow under certain conditions</span><br><span class="line">98ca9 The initial commit of my project</span><br></pre></td></tr></table></figure></p>
-<p>正如你所见，当前 master 和 testing 分支均指向校验和以 f30ab 开头的提交对象。</p>
-<h2 id="分支切换"><a href="#分支切换" class="headerlink" title="分支切换"></a>分支切换</h2><p>要切换到一个已存在的分支，你需要使用 git checkout 命令。 我们现在切换到新创建的 testing 分支去：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ git checkout testing</span><br></pre></td></tr></table></figure>
-<p>这样 HEAD 就指向 testing 分支了。</p>
-<p><img src="/2020/07/08/git中的对象简介/git6.png" alt="avatar"></p>
-<p>Figure 14. HEAD 指向当前所在的分支<br>那么，这样的实现方式会给我们带来什么好处呢？ 现在不妨再提交一次：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ vim test.rb</span><br><span class="line">$ git commit -a -m &apos;made a change&apos;</span><br></pre></td></tr></table></figure>
-<p><img src="/2020/07/08/git中的对象简介/git7.png" alt="avatar"></p>
-<p>Figure 15. HEAD 分支随着提交操作自动向前移动<br>如图所示，你的 testing 分支向前移动了，但是 master 分支却没有，它仍然指向运行 git checkout 时所指的对象。 这就有意思了，现在我们切换回 master 分支看看：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ git checkout master</span><br></pre></td></tr></table></figure>
-<p><img src="/2020/07/08/git中的对象简介/git8.png" alt="avatar"><br>Figure 16. 检出时 HEAD 随之移动<br>这条命令做了两件事。 一是使 HEAD 指回 master 分支，二是将工作目录恢复成 master 分支所指向的快照内容。 也就是说，你现在做修改的话，项目将始于一个较旧的版本。 本质上来讲，这就是忽略 testing 分支所做的修改，以便于向另一个方向进行开发。</p>
-<p>我们不妨再稍微做些修改并提交：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ vim test.rb</span><br><span class="line">$ git commit -a -m &apos;made other changes&apos;</span><br></pre></td></tr></table></figure>
-<p>现在，这个项目的提交历史已经产生了分叉（参见 项目分叉历史）。 因为刚才你创建了一个新分支，并切换过去进行了一些工作，随后又切换回 master 分支进行了另外一些工作。 上述两次改动针对的是不同分支：你可以在不同分支间不断地来回切换和工作，并在时机成熟时将它们合并起来。 而所有这些工作，你需要的命令只有 branch、checkout 和 commit。<br><img src="/2020/07/08/git中的对象简介/git9.png" alt="avatar"><br>Figure 17. 项目分叉历史<br>你可以简单地使用 git log 命令查看分叉历史。 运行 git log –oneline –decorate –graph –all ，它会输出你的提交历史、各个分支的指向以及项目的分支分叉情况。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ git log --oneline --decorate --graph --all</span><br><span class="line">* c2b9e (HEAD, master) made other changes</span><br><span class="line">| * 87ab2 (testing) made a change</span><br><span class="line">|/</span><br><span class="line">* f30ab add feature #32 - ability to add new formats to the</span><br><span class="line">* 34ac2 fixed bug #1328 - stack overflow under certain conditions</span><br><span class="line">* 98ca9 initial commit of my project</span><br></pre></td></tr></table></figure>
-<p>由于 Git 的分支实质上仅是包含所指对象校验和（长度为 40 的 SHA-1 值字符串）的文件，所以它的创建和销毁都异常高效。 创建一个新分支就相当于往一个文件中写入 41 个字节（40 个字符和 1 个换行符），如此的简单能不快吗？</p>
-<p>这与过去大多数版本控制系统形成了鲜明的对比，它们在创建分支时，将所有的项目文件都复制一遍，并保存到一个特定的目录。 完成这样繁琐的过程通常需要好几秒钟，有时甚至需要好几分钟。所需时间的长短，完全取决于项目的规模。 而在 Git 中，任何规模的项目都能在瞬间创建新分支。 同时，由于每次提交都会记录父对象，所以寻找恰当的合并基础（译注：即共同祖先）也是同样的简单和高效。 这些高效的特性使得 Git 鼓励开发人员频繁地创建和使用分支。</p>
-<h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><p><a href="https://git-scm.com/book/zh/v2/Git-%E5%88%86%E6%94%AF-%E5%88%86%E6%94%AF%E7%AE%80%E4%BB%8B" target="_blank" rel="noopener">https://git-scm.com/book/zh/v2/Git-%E5%88%86%E6%94%AF-%E5%88%86%E6%94%AF%E7%AE%80%E4%BB%8B</a></p>
-]]></content>
-      <tags>
-        <tag>git</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>git常用命令</title>
     <url>/2020/04/05/git%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/</url>
     <content><![CDATA[<h4 id="git-branch"><a href="#git-branch" class="headerlink" title="git branch"></a>git branch</h4><ul>
@@ -701,6 +664,43 @@
 <li>git pull –rebase<br>如果远程git服务器仓库分支已经有了更新上，通常git pull时候将会默认执行merge合并提交。相当于执行两个操作<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">git fetch origin</span><br><span class="line">git merge origin/master</span><br><span class="line"></span><br><span class="line">实际上除了合并外还有一种方法，那就是执行rebase来同步变化，它通常更有用，git提交历史也更清晰，</span><br><span class="line">rebase方法需要显性指定--rebase参数：</span><br><span class="line"></span><br><span class="line">git pull --rebase ，他相当执行:</span><br><span class="line">git fetch origin</span><br><span class="line">git rebase origin/master</span><br><span class="line"></span><br><span class="line">合并方法更简单，更容易理解。但是很多时候我们更需要的是rebase，我们也可以通过设置，设置rebase为</span><br><span class="line">pull时候默认执行的动作：git config --global pull.rebase true</span><br></pre></td></tr></table></figure>
 </li>
 </ul>
+]]></content>
+      <tags>
+        <tag>git</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>git中的对象简介</title>
+    <url>/2020/07/08/git%E4%B8%AD%E7%9A%84%E5%AF%B9%E8%B1%A1%E7%AE%80%E4%BB%8B/</url>
+    <content><![CDATA[<p>为了加深git中底层对象的理解，特意整理如下文章。<br>Git 保存的不是文件的变化或者差异，而是一系列不同时刻的 快照 。</p>
+<p>在进行提交操作时，Git 会保存一个提交对象（commit object）。 知道了 Git 保存数据的方式，我们可以很自然的想到——该提交对象会包含一个指向暂存内容快照的指针。 但不仅仅是这样，该提交对象还包含了作者的姓名和邮箱、提交时输入的信息以及指向它的父对象的指针。 首次提交产生的提交对象没有父对象，普通提交操作产生的提交对象有一个父对象， 而由多个分支合并产生的提交对象有多个父对象，</p>
+<p>为了更加形象地说明，我们假设现在有一个工作目录，里面包含了三个将要被暂存和提交的文件。 暂存操作会为每一个文件计算校验和（使用我们在 起步 中提到的 SHA-1 哈希算法），然后会把当前版本的文件快照保存到 Git 仓库中 （Git 使用 blob 对象来保存它们），最终将校验和加入到暂存区域等待提交：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ git add README test.rb LICENSE</span><br><span class="line">$ git commit -m &apos;The initial commit of my project&apos;</span><br></pre></td></tr></table></figure>
+<p>当使用 git commit 进行提交操作时，Git 会先计算每一个子目录（本例中只有项目根目录）的校验和， 然后在 Git 仓库中这些校验和保存为树对象。随后，Git 便会创建一个提交对象， 它除了包含上面提到的那些信息外，还包含指向这个树对象（项目根目录）的指针。 如此一来，Git 就可以在需要的时候重现此次保存的快照。</p>
+<p>现在，Git 仓库中有五个对象：三个 blob 对象（保存着文件快照）、一个 树 对象 （记录着目录结构和 blob 对象索引）以及一个 提交 对象（包含着指向前述树对象的指针和所有提交信息）。<br><img src="/2020/07/08/git中的对象简介/git1.png" alt="avatar"><br>Figure 9. 首次提交对象及其树结构<br>做些修改后再次提交，那么这次产生的提交对象会包含一个指向上次提交对象（父对象）的指针。<br><img src="/2020/07/08/git中的对象简介/git2.png" alt="avatar"><br>Figure 10. 提交对象及其父对象<br>Git 的分支，其实本质上仅仅是指向提交对象的可变指针。 Git 的默认分支名字是 master。 在多次提交操作之后，你其实已经有一个指向最后那个提交对象的 master 分支。 master 分支会在每次提交时自动向前移动。<br><img src="/2020/07/08/git中的对象简介/git3.png" alt="avatar"><br>Figure 11. 分支及其提交历史</p>
+<h2 id="分支创建"><a href="#分支创建" class="headerlink" title="分支创建"></a>分支创建</h2><p>Git 是怎么创建新分支的呢？ 很简单，它只是为你创建了一个可以移动的新的指针。 比如，创建一个 testing 分支， 你需要使用 git branch 命令：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ git branch testing</span><br></pre></td></tr></table></figure></p>
+<p>这会在当前所在的提交对象上创建一个指针。<br><img src="/2020/07/08/git中的对象简介/git4.png" alt="avatar"></p>
+<p>Figure 12. 两个指向相同提交历史的分支<br>那么，Git 又是怎么知道当前在哪一个分支上呢？ 也很简单，它有一个名为 HEAD 的特殊指针。 请注意它和许多其它版本控制系统（如 Subversion 或 CVS）里的 HEAD 概念完全不同。 在 Git 中，它是一个指针，指向当前所在的本地分支（译注：将 HEAD 想象为当前分支的别名）。 在本例中，你仍然在 master 分支上。 因为 git branch 命令仅仅 创建 一个新分支，并不会自动切换到新分支中去。</p>
+<p><img src="/2020/07/08/git中的对象简介/git5.png" alt="avatar"></p>
+<p>Figure 13. HEAD 指向当前所在的分支<br>你可以简单地使用 git log 命令查看各个分支当前所指的对象。 提供这一功能的参数是 –decorate<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ git log --oneline --decorate</span><br><span class="line">f30ab (HEAD -&gt; master, testing) add feature #32 - ability to add new formats to the central interface</span><br><span class="line">34ac2 Fixed bug #1328 - stack overflow under certain conditions</span><br><span class="line">98ca9 The initial commit of my project</span><br></pre></td></tr></table></figure></p>
+<p>正如你所见，当前 master 和 testing 分支均指向校验和以 f30ab 开头的提交对象。</p>
+<h2 id="分支切换"><a href="#分支切换" class="headerlink" title="分支切换"></a>分支切换</h2><p>要切换到一个已存在的分支，你需要使用 git checkout 命令。 我们现在切换到新创建的 testing 分支去：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ git checkout testing</span><br></pre></td></tr></table></figure>
+<p>这样 HEAD 就指向 testing 分支了。</p>
+<p><img src="/2020/07/08/git中的对象简介/git6.png" alt="avatar"></p>
+<p>Figure 14. HEAD 指向当前所在的分支<br>那么，这样的实现方式会给我们带来什么好处呢？ 现在不妨再提交一次：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ vim test.rb</span><br><span class="line">$ git commit -a -m &apos;made a change&apos;</span><br></pre></td></tr></table></figure>
+<p><img src="/2020/07/08/git中的对象简介/git7.png" alt="avatar"></p>
+<p>Figure 15. HEAD 分支随着提交操作自动向前移动<br>如图所示，你的 testing 分支向前移动了，但是 master 分支却没有，它仍然指向运行 git checkout 时所指的对象。 这就有意思了，现在我们切换回 master 分支看看：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ git checkout master</span><br></pre></td></tr></table></figure>
+<p><img src="/2020/07/08/git中的对象简介/git8.png" alt="avatar"><br>Figure 16. 检出时 HEAD 随之移动<br>这条命令做了两件事。 一是使 HEAD 指回 master 分支，二是将工作目录恢复成 master 分支所指向的快照内容。 也就是说，你现在做修改的话，项目将始于一个较旧的版本。 本质上来讲，这就是忽略 testing 分支所做的修改，以便于向另一个方向进行开发。</p>
+<p>我们不妨再稍微做些修改并提交：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ vim test.rb</span><br><span class="line">$ git commit -a -m &apos;made other changes&apos;</span><br></pre></td></tr></table></figure>
+<p>现在，这个项目的提交历史已经产生了分叉（参见 项目分叉历史）。 因为刚才你创建了一个新分支，并切换过去进行了一些工作，随后又切换回 master 分支进行了另外一些工作。 上述两次改动针对的是不同分支：你可以在不同分支间不断地来回切换和工作，并在时机成熟时将它们合并起来。 而所有这些工作，你需要的命令只有 branch、checkout 和 commit。<br><img src="/2020/07/08/git中的对象简介/git9.png" alt="avatar"><br>Figure 17. 项目分叉历史<br>你可以简单地使用 git log 命令查看分叉历史。 运行 git log –oneline –decorate –graph –all ，它会输出你的提交历史、各个分支的指向以及项目的分支分叉情况。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ git log --oneline --decorate --graph --all</span><br><span class="line">* c2b9e (HEAD, master) made other changes</span><br><span class="line">| * 87ab2 (testing) made a change</span><br><span class="line">|/</span><br><span class="line">* f30ab add feature #32 - ability to add new formats to the</span><br><span class="line">* 34ac2 fixed bug #1328 - stack overflow under certain conditions</span><br><span class="line">* 98ca9 initial commit of my project</span><br></pre></td></tr></table></figure>
+<p>由于 Git 的分支实质上仅是包含所指对象校验和（长度为 40 的 SHA-1 值字符串）的文件，所以它的创建和销毁都异常高效。 创建一个新分支就相当于往一个文件中写入 41 个字节（40 个字符和 1 个换行符），如此的简单能不快吗？</p>
+<p>这与过去大多数版本控制系统形成了鲜明的对比，它们在创建分支时，将所有的项目文件都复制一遍，并保存到一个特定的目录。 完成这样繁琐的过程通常需要好几秒钟，有时甚至需要好几分钟。所需时间的长短，完全取决于项目的规模。 而在 Git 中，任何规模的项目都能在瞬间创建新分支。 同时，由于每次提交都会记录父对象，所以寻找恰当的合并基础（译注：即共同祖先）也是同样的简单和高效。 这些高效的特性使得 Git 鼓励开发人员频繁地创建和使用分支。</p>
+<h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><p><a href="https://git-scm.com/book/zh/v2/Git-%E5%88%86%E6%94%AF-%E5%88%86%E6%94%AF%E7%AE%80%E4%BB%8B" target="_blank" rel="noopener">https://git-scm.com/book/zh/v2/Git-%E5%88%86%E6%94%AF-%E5%88%86%E6%94%AF%E7%AE%80%E4%BB%8B</a></p>
 ]]></content>
       <tags>
         <tag>git</tag>
@@ -4400,6 +4400,20 @@
 <p>这样就能增加业务逻辑处理速度，解决消息堆积问题。但是线程池的核心线程数和最大线程数需要合理配置，不然可能会浪费系统资源。</p>
 <p>如果需要保证顺序，可以读取消息之后，将消息按照一定的规则分发到多个队列中，然后在队列中用单线程处理</p>
 <p><img src="/2021/05/29/消息队列小结/mq7.png" alt="avatar"></p>
+<h4 id="半事务消息"><a href="#半事务消息" class="headerlink" title="半事务消息"></a>半事务消息</h4><p>事务消息就是MQ提供的类似XA的分布式事务能⼒，通过事务消息可以达到分布式事务的最终⼀致性。</p>
+<p>半事务消息就是MQ收到了⽣产者的消息，但是没有收到⼆次确认，不能投递的消息。</p>
+<p>实现原理如下：</p>
+<ol>
+<li>⽣产者先发送⼀条半事务消息到MQ</li>
+<li>MQ收到消息后返回ack确认</li>
+<li>⽣产者开始执⾏本地事务</li>
+<li>如果事务执⾏成功发送commit到MQ，失败发送rollback</li>
+<li>如果MQ⻓时间未收到⽣产者的⼆次确认commit或者rollback，MQ对⽣产者发起消息回查</li>
+<li>⽣产者查询事务执⾏最终状态</li>
+<li>根据查询事务状态再次提交⼆次确认</li>
+</ol>
+<p>最终，如果MQ收到⼆次确认commit，就可以把消息投递给消费者，反之如果是rollback，消息会保存下来并且在3天后被删除。</p>
+<p><img src="/2021/05/29/消息队列小结/mq8.png" alt="avatar"></p>
 <h4 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h4><ol>
 <li><a href="https://mp.weixin.qq.com/s/9tUnhdVRHHkpGpYUQdFVuQ" target="_blank" rel="noopener">https://mp.weixin.qq.com/s/9tUnhdVRHHkpGpYUQdFVuQ</a></li>
 </ol>
