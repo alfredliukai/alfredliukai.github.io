@@ -585,6 +585,25 @@
       </tags>
   </entry>
   <entry>
+    <title>git clean的方法小结</title>
+    <url>/2020/09/16/git-clean%E7%9A%84%E6%96%B9%E6%B3%95%E5%B0%8F%E7%BB%93/</url>
+    <content><![CDATA[<h2 id="git-clean"><a href="#git-clean" class="headerlink" title="git clean"></a>git clean</h2><p>想批量删除branch中新加的文件(untracked files)，，git reset –hard不行～</p>
+<p>首先确认要删除的文件<br>git clean -fd -n</p>
+<p>如果以上命令给出的文件列表是你想删除的， 那么接下来执行</p>
+<p>git clean -f -d或者git clean -fd就可以了。</p>
+<p>其中-f表示文件 -d表示目录, 如果还要删除.gitignore中的文件那么再加上-x (-x对我来说没用）</p>
+<p>如果git submodule中也存在需要删除的文件那么需要再加个-f， 变成git clean -dff</p>
+<p>详见：<a href="http://stackoverflow.com/questions/61212/how-do-i-remove-local-untracked-files-from-my-current-git-branch" target="_blank" rel="noopener">http://stackoverflow.com/questions/61212/how-do-i-remove-local-untracked-files-from-my-current-git-branch</a></p>
+<h2 id="git删除未跟踪文件"><a href="#git删除未跟踪文件" class="headerlink" title="git删除未跟踪文件"></a>git删除未跟踪文件</h2><h3 id="删除-untracked-files"><a href="#删除-untracked-files" class="headerlink" title="删除 untracked files"></a>删除 untracked files</h3><p>git clean -f</p>
+<h3 id="连-untracked-的目录也一起删掉"><a href="#连-untracked-的目录也一起删掉" class="headerlink" title="连 untracked 的目录也一起删掉"></a>连 untracked 的目录也一起删掉</h3><p>git clean -fd</p>
+<h3 id="连-gitignore-的untrack-文件-目录也一起删掉-（慎用，一般这个是用来删掉编译出来的-o之类的文件用的）"><a href="#连-gitignore-的untrack-文件-目录也一起删掉-（慎用，一般这个是用来删掉编译出来的-o之类的文件用的）" class="headerlink" title="连 gitignore 的untrack 文件/目录也一起删掉 （慎用，一般这个是用来删掉编译出来的 .o之类的文件用的）"></a>连 gitignore 的untrack 文件/目录也一起删掉 （慎用，一般这个是用来删掉编译出来的 .o之类的文件用的）</h3><p>git clean -xfd</p>
+<h3 id="在用上述-git-clean-前，墙裂建议加上-n-参数来先看看会删掉哪些文件，防止重要文件被误删"><a href="#在用上述-git-clean-前，墙裂建议加上-n-参数来先看看会删掉哪些文件，防止重要文件被误删" class="headerlink" title="在用上述 git clean 前，墙裂建议加上 -n 参数来先看看会删掉哪些文件，防止重要文件被误删"></a>在用上述 git clean 前，墙裂建议加上 -n 参数来先看看会删掉哪些文件，防止重要文件被误删</h3><p>git clean -nxfd<br>git clean -nf<br>git clean -nfd</p>
+]]></content>
+      <tags>
+        <tag>git</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>git中的对象简介</title>
     <url>/2020/07/08/git%E4%B8%AD%E7%9A%84%E5%AF%B9%E8%B1%A1%E7%AE%80%E4%BB%8B/</url>
     <content><![CDATA[<p>为了加深git中底层对象的理解，特意整理如下文章。<br>Git 保存的不是文件的变化或者差异，而是一系列不同时刻的 快照 。</p>
@@ -616,25 +635,6 @@
 <p>由于 Git 的分支实质上仅是包含所指对象校验和（长度为 40 的 SHA-1 值字符串）的文件，所以它的创建和销毁都异常高效。 创建一个新分支就相当于往一个文件中写入 41 个字节（40 个字符和 1 个换行符），如此的简单能不快吗？</p>
 <p>这与过去大多数版本控制系统形成了鲜明的对比，它们在创建分支时，将所有的项目文件都复制一遍，并保存到一个特定的目录。 完成这样繁琐的过程通常需要好几秒钟，有时甚至需要好几分钟。所需时间的长短，完全取决于项目的规模。 而在 Git 中，任何规模的项目都能在瞬间创建新分支。 同时，由于每次提交都会记录父对象，所以寻找恰当的合并基础（译注：即共同祖先）也是同样的简单和高效。 这些高效的特性使得 Git 鼓励开发人员频繁地创建和使用分支。</p>
 <h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><p><a href="https://git-scm.com/book/zh/v2/Git-%E5%88%86%E6%94%AF-%E5%88%86%E6%94%AF%E7%AE%80%E4%BB%8B" target="_blank" rel="noopener">https://git-scm.com/book/zh/v2/Git-%E5%88%86%E6%94%AF-%E5%88%86%E6%94%AF%E7%AE%80%E4%BB%8B</a></p>
-]]></content>
-      <tags>
-        <tag>git</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>git clean的方法小结</title>
-    <url>/2020/09/16/git-clean%E7%9A%84%E6%96%B9%E6%B3%95%E5%B0%8F%E7%BB%93/</url>
-    <content><![CDATA[<h2 id="git-clean"><a href="#git-clean" class="headerlink" title="git clean"></a>git clean</h2><p>想批量删除branch中新加的文件(untracked files)，，git reset –hard不行～</p>
-<p>首先确认要删除的文件<br>git clean -fd -n</p>
-<p>如果以上命令给出的文件列表是你想删除的， 那么接下来执行</p>
-<p>git clean -f -d或者git clean -fd就可以了。</p>
-<p>其中-f表示文件 -d表示目录, 如果还要删除.gitignore中的文件那么再加上-x (-x对我来说没用）</p>
-<p>如果git submodule中也存在需要删除的文件那么需要再加个-f， 变成git clean -dff</p>
-<p>详见：<a href="http://stackoverflow.com/questions/61212/how-do-i-remove-local-untracked-files-from-my-current-git-branch" target="_blank" rel="noopener">http://stackoverflow.com/questions/61212/how-do-i-remove-local-untracked-files-from-my-current-git-branch</a></p>
-<h2 id="git删除未跟踪文件"><a href="#git删除未跟踪文件" class="headerlink" title="git删除未跟踪文件"></a>git删除未跟踪文件</h2><h3 id="删除-untracked-files"><a href="#删除-untracked-files" class="headerlink" title="删除 untracked files"></a>删除 untracked files</h3><p>git clean -f</p>
-<h3 id="连-untracked-的目录也一起删掉"><a href="#连-untracked-的目录也一起删掉" class="headerlink" title="连 untracked 的目录也一起删掉"></a>连 untracked 的目录也一起删掉</h3><p>git clean -fd</p>
-<h3 id="连-gitignore-的untrack-文件-目录也一起删掉-（慎用，一般这个是用来删掉编译出来的-o之类的文件用的）"><a href="#连-gitignore-的untrack-文件-目录也一起删掉-（慎用，一般这个是用来删掉编译出来的-o之类的文件用的）" class="headerlink" title="连 gitignore 的untrack 文件/目录也一起删掉 （慎用，一般这个是用来删掉编译出来的 .o之类的文件用的）"></a>连 gitignore 的untrack 文件/目录也一起删掉 （慎用，一般这个是用来删掉编译出来的 .o之类的文件用的）</h3><p>git clean -xfd</p>
-<h3 id="在用上述-git-clean-前，墙裂建议加上-n-参数来先看看会删掉哪些文件，防止重要文件被误删"><a href="#在用上述-git-clean-前，墙裂建议加上-n-参数来先看看会删掉哪些文件，防止重要文件被误删" class="headerlink" title="在用上述 git clean 前，墙裂建议加上 -n 参数来先看看会删掉哪些文件，防止重要文件被误删"></a>在用上述 git clean 前，墙裂建议加上 -n 参数来先看看会删掉哪些文件，防止重要文件被误删</h3><p>git clean -nxfd<br>git clean -nf<br>git clean -nfd</p>
 ]]></content>
       <tags>
         <tag>git</tag>
@@ -707,6 +707,26 @@
       </tags>
   </entry>
   <entry>
+    <title>goland在mac下的交叉编译</title>
+    <url>/2021/03/23/goland%E5%9C%A8mac%E4%B8%8B%E7%9A%84%E4%BA%A4%E5%8F%89%E7%BC%96%E8%AF%91/</url>
+    <content><![CDATA[<h3 id="Golang在-Mac、Linux、Windows-下交叉编译"><a href="#Golang在-Mac、Linux、Windows-下交叉编译" class="headerlink" title="Golang在 Mac、Linux、Windows 下交叉编译"></a>Golang在 Mac、Linux、Windows 下交叉编译</h3><p><strong>Windows 下编译 Linux 64位系统的可执行程序</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">SET CGO_ENABLED=0</span><br><span class="line">SET GOOS=linux</span><br><span class="line">SET GOARCH=amd64</span><br><span class="line">go build main.go</span><br></pre></td></tr></table></figure>
+<p><strong>Windows 下编译 macOS 64位系统的可执行程序</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">SET CGO_ENABLED=0</span><br><span class="line">SET GOOS=darwin</span><br><span class="line">SET GOARCH=amd64</span><br><span class="line">go build main.go</span><br></pre></td></tr></table></figure>
+<p><strong>macOS下编译Linux 64位系统的可执行程序</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build main.go</span><br></pre></td></tr></table></figure>
+<p><strong>macOS下编译Windows 64位系统的可执行程序</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build main.go</span><br></pre></td></tr></table></figure>
+<p><strong>Linux下编译Windows 64位系统的可执行程序</strong><br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build main.go</span><br></pre></td></tr></table></figure></p>
+<p><strong>Linux下编译macOS 64位系统的可执行程序</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build main.go</span><br></pre></td></tr></table></figure>
+<p>GOOS： 目标平台的操作系统（darwin、freebsd、linux、windows）<br>GOARCH： 目标平台的体系架构（386、amd64、arm）<br>CGO： 交叉编译不支持 CGO 所以要禁用它</p>
+]]></content>
+      <tags>
+        <tag>golang</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>git常见场景操作</title>
     <url>/2020/07/10/git%E5%B8%B8%E8%A7%81%E5%9C%BA%E6%99%AF%E6%93%8D%E4%BD%9C/</url>
     <content><![CDATA[<h2 id="1-远程分支"><a href="#1-远程分支" class="headerlink" title="1.远程分支"></a>1.远程分支</h2><p>可以通过 git ls-remote <remote> 来显式地获得远程引用的完整列表， 或者通过 git remote show <remote> 获得远程分支的更多信息。 然而，一个更常见的做法是利用远程跟踪分支。</remote></remote></p>
@@ -735,20 +755,14 @@
       </tags>
   </entry>
   <entry>
-    <title>goland在mac下的交叉编译</title>
-    <url>/2021/03/23/goland%E5%9C%A8mac%E4%B8%8B%E7%9A%84%E4%BA%A4%E5%8F%89%E7%BC%96%E8%AF%91/</url>
-    <content><![CDATA[<h3 id="Golang在-Mac、Linux、Windows-下交叉编译"><a href="#Golang在-Mac、Linux、Windows-下交叉编译" class="headerlink" title="Golang在 Mac、Linux、Windows 下交叉编译"></a>Golang在 Mac、Linux、Windows 下交叉编译</h3><p><strong>Windows 下编译 Linux 64位系统的可执行程序</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">SET CGO_ENABLED=0</span><br><span class="line">SET GOOS=linux</span><br><span class="line">SET GOARCH=amd64</span><br><span class="line">go build main.go</span><br></pre></td></tr></table></figure>
-<p><strong>Windows 下编译 macOS 64位系统的可执行程序</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">SET CGO_ENABLED=0</span><br><span class="line">SET GOOS=darwin</span><br><span class="line">SET GOARCH=amd64</span><br><span class="line">go build main.go</span><br></pre></td></tr></table></figure>
-<p><strong>macOS下编译Linux 64位系统的可执行程序</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build main.go</span><br></pre></td></tr></table></figure>
-<p><strong>macOS下编译Windows 64位系统的可执行程序</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build main.go</span><br></pre></td></tr></table></figure>
-<p><strong>Linux下编译Windows 64位系统的可执行程序</strong><br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build main.go</span><br></pre></td></tr></table></figure></p>
-<p><strong>Linux下编译macOS 64位系统的可执行程序</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build main.go</span><br></pre></td></tr></table></figure>
-<p>GOOS： 目标平台的操作系统（darwin、freebsd、linux、windows）<br>GOARCH： 目标平台的体系架构（386、amd64、arm）<br>CGO： 交叉编译不支持 CGO 所以要禁用它</p>
+    <title>golang下sync包整理</title>
+    <url>/2019/04/04/golang%E4%B8%8Bsync%E5%8C%85%E6%95%B4%E7%90%86/</url>
+    <content><![CDATA[<h4 id="sync-Mutex"><a href="#sync-Mutex" class="headerlink" title="sync.Mutex"></a>sync.Mutex</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">type Locker interface &#123;</span><br><span class="line">        Lock()</span><br><span class="line">        Unlock()</span><br><span class="line">&#125;</span><br><span class="line">互斥锁 Mutex</span><br><span class="line">func (m *Mutex) Lock()</span><br><span class="line">func (m *Mutex) Unlock()</span><br><span class="line">读写锁 RWMutex</span><br><span class="line">func (rw *RWMutex) Lock()</span><br><span class="line">func (rw *RWMutex) Unlock()</span><br><span class="line">func (rw *RWMutex) RLock()</span><br><span class="line">func (rw *RWMutex) RUnlock()</span><br></pre></td></tr></table></figure>
+<p>同时只能有一个 goroutine 能够获得写锁定。<br>同时可以有任意多个 gorouinte 获得读锁定。<br>同时只能存在写锁定或读锁定（读和写互斥）。<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">func main()&#123;</span><br><span class="line">	var a = 0</span><br><span class="line">	var lock sync.Mutex</span><br><span class="line">	//var rwlock sync.RWMutex</span><br><span class="line">	for i:=0; i&lt;50;i++&#123;</span><br><span class="line">		go func(idx int) &#123;</span><br><span class="line">			lock.Lock()</span><br><span class="line">			defer lock.Unlock()</span><br><span class="line">			a+=1</span><br><span class="line">			fmt.Printf(&quot;goroutine %d, a=%d\n&quot;, idx, a)</span><br><span class="line">		&#125;(i)</span><br><span class="line">	&#125;</span><br><span class="line">	time.Sleep(time.Second)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h4 id="sync-Once"><a href="#sync-Once" class="headerlink" title="sync.Once"></a>sync.Once</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">type Once struct &#123;</span><br><span class="line">        // 非暴露字段</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func (o *Once) Do(f func())</span><br></pre></td></tr></table></figure>
+<p>使用前先定义 Once 类型变量：var once Once<br>使用的时候向 Once 类型变量传入函数：once.Do(func() { init() })<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">import (</span><br><span class="line">	&quot;fmt&quot;</span><br><span class="line">	&quot;sync&quot;</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">func main()&#123;</span><br><span class="line">	testOnce()</span><br><span class="line">&#125;</span><br><span class="line">func testOnce()&#123;</span><br><span class="line">	var once sync.Once</span><br><span class="line">	testOnceFunction := func()&#123;</span><br><span class="line">		fmt.Println(&quot;Only once&quot;)</span><br><span class="line">	&#125;</span><br><span class="line">	done := make(chan bool)</span><br><span class="line">	a:=0</span><br><span class="line">	var lock sync.Mutex</span><br><span class="line">	for i:=0;i&lt;10;i++&#123;</span><br><span class="line">		go func()&#123;</span><br><span class="line">			lock.Lock()</span><br><span class="line">			defer lock.Unlock()</span><br><span class="line">			once.Do(testOnceFunction)</span><br><span class="line">			fmt.Println(&quot;a=&quot;,a)</span><br><span class="line">			a++</span><br><span class="line">			done &lt;-true</span><br><span class="line">		&#125;()</span><br><span class="line">	&#125;</span><br><span class="line">	for j:=0;j&lt;10;j++&#123;</span><br><span class="line">		&lt;-done</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h4 id="sync-Pool"><a href="#sync-Pool" class="headerlink" title="sync.Pool"></a>sync.Pool</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">type Pool</span><br><span class="line">func (p *Pool) Get() interface&#123;&#125;  </span><br><span class="line">func (p *Pool) Put(x interface&#123;&#125;)  </span><br><span class="line">New func() interface&#123;&#125;</span><br></pre></td></tr></table></figure>
+<p>这个类设计的目的是用来保存和复用临时对象，以减少内存分配，降低CG压力。<br>Get返回Pool中的任意一个对象。<br>如果Pool为空，则调用New返回一个新创建的对象。<br>如果没有设置New，则返回nil。<br>还有一个重要的特性是，放进Pool中的对象，会在说不准什么时候被回收掉。<br>所以如果事先Put进去100个对象，下次Get的时候发现Pool是空也是有可能的。<br>不过这个特性的一个好处就在于不用担心Pool会一直增长，因为Go已经帮你在Pool中做了回收机制。<br>这个清理过程是在每次垃圾回收之前做的。垃圾回收是固定两分钟触发一次。<br>而且每次清理会将Pool中的所有对象都清理掉！<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">func main()&#123;</span><br><span class="line">    // 建立对象</span><br><span class="line">    var pipe = &amp;sync.Pool&#123;New:func()interface&#123;&#125;&#123;return &quot;Hello,BeiJing&quot;&#125;&#125;</span><br><span class="line">    // 准备放入的字符串</span><br><span class="line">    val := &quot;Hello,World!&quot;</span><br><span class="line">    // 放入</span><br><span class="line">    pipe.Put(val)</span><br><span class="line">    // 取出</span><br><span class="line">    log.Println(pipe.Get())</span><br><span class="line">    // 再取就没有了,会自动调用NEW</span><br><span class="line">    log.Println(pipe.Get())</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 ]]></content>
       <tags>
         <tag>golang</tag>
@@ -768,20 +782,6 @@
       <categories>
         <category>golang</category>
       </categories>
-      <tags>
-        <tag>golang</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>golang下sync包整理</title>
-    <url>/2019/04/04/golang%E4%B8%8Bsync%E5%8C%85%E6%95%B4%E7%90%86/</url>
-    <content><![CDATA[<h4 id="sync-Mutex"><a href="#sync-Mutex" class="headerlink" title="sync.Mutex"></a>sync.Mutex</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">type Locker interface &#123;</span><br><span class="line">        Lock()</span><br><span class="line">        Unlock()</span><br><span class="line">&#125;</span><br><span class="line">互斥锁 Mutex</span><br><span class="line">func (m *Mutex) Lock()</span><br><span class="line">func (m *Mutex) Unlock()</span><br><span class="line">读写锁 RWMutex</span><br><span class="line">func (rw *RWMutex) Lock()</span><br><span class="line">func (rw *RWMutex) Unlock()</span><br><span class="line">func (rw *RWMutex) RLock()</span><br><span class="line">func (rw *RWMutex) RUnlock()</span><br></pre></td></tr></table></figure>
-<p>同时只能有一个 goroutine 能够获得写锁定。<br>同时可以有任意多个 gorouinte 获得读锁定。<br>同时只能存在写锁定或读锁定（读和写互斥）。<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">func main()&#123;</span><br><span class="line">	var a = 0</span><br><span class="line">	var lock sync.Mutex</span><br><span class="line">	//var rwlock sync.RWMutex</span><br><span class="line">	for i:=0; i&lt;50;i++&#123;</span><br><span class="line">		go func(idx int) &#123;</span><br><span class="line">			lock.Lock()</span><br><span class="line">			defer lock.Unlock()</span><br><span class="line">			a+=1</span><br><span class="line">			fmt.Printf(&quot;goroutine %d, a=%d\n&quot;, idx, a)</span><br><span class="line">		&#125;(i)</span><br><span class="line">	&#125;</span><br><span class="line">	time.Sleep(time.Second)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h4 id="sync-Once"><a href="#sync-Once" class="headerlink" title="sync.Once"></a>sync.Once</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">type Once struct &#123;</span><br><span class="line">        // 非暴露字段</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func (o *Once) Do(f func())</span><br></pre></td></tr></table></figure>
-<p>使用前先定义 Once 类型变量：var once Once<br>使用的时候向 Once 类型变量传入函数：once.Do(func() { init() })<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">import (</span><br><span class="line">	&quot;fmt&quot;</span><br><span class="line">	&quot;sync&quot;</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">func main()&#123;</span><br><span class="line">	testOnce()</span><br><span class="line">&#125;</span><br><span class="line">func testOnce()&#123;</span><br><span class="line">	var once sync.Once</span><br><span class="line">	testOnceFunction := func()&#123;</span><br><span class="line">		fmt.Println(&quot;Only once&quot;)</span><br><span class="line">	&#125;</span><br><span class="line">	done := make(chan bool)</span><br><span class="line">	a:=0</span><br><span class="line">	var lock sync.Mutex</span><br><span class="line">	for i:=0;i&lt;10;i++&#123;</span><br><span class="line">		go func()&#123;</span><br><span class="line">			lock.Lock()</span><br><span class="line">			defer lock.Unlock()</span><br><span class="line">			once.Do(testOnceFunction)</span><br><span class="line">			fmt.Println(&quot;a=&quot;,a)</span><br><span class="line">			a++</span><br><span class="line">			done &lt;-true</span><br><span class="line">		&#125;()</span><br><span class="line">	&#125;</span><br><span class="line">	for j:=0;j&lt;10;j++&#123;</span><br><span class="line">		&lt;-done</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h4 id="sync-Pool"><a href="#sync-Pool" class="headerlink" title="sync.Pool"></a>sync.Pool</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">type Pool</span><br><span class="line">func (p *Pool) Get() interface&#123;&#125;  </span><br><span class="line">func (p *Pool) Put(x interface&#123;&#125;)  </span><br><span class="line">New func() interface&#123;&#125;</span><br></pre></td></tr></table></figure>
-<p>这个类设计的目的是用来保存和复用临时对象，以减少内存分配，降低CG压力。<br>Get返回Pool中的任意一个对象。<br>如果Pool为空，则调用New返回一个新创建的对象。<br>如果没有设置New，则返回nil。<br>还有一个重要的特性是，放进Pool中的对象，会在说不准什么时候被回收掉。<br>所以如果事先Put进去100个对象，下次Get的时候发现Pool是空也是有可能的。<br>不过这个特性的一个好处就在于不用担心Pool会一直增长，因为Go已经帮你在Pool中做了回收机制。<br>这个清理过程是在每次垃圾回收之前做的。垃圾回收是固定两分钟触发一次。<br>而且每次清理会将Pool中的所有对象都清理掉！<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">func main()&#123;</span><br><span class="line">    // 建立对象</span><br><span class="line">    var pipe = &amp;sync.Pool&#123;New:func()interface&#123;&#125;&#123;return &quot;Hello,BeiJing&quot;&#125;&#125;</span><br><span class="line">    // 准备放入的字符串</span><br><span class="line">    val := &quot;Hello,World!&quot;</span><br><span class="line">    // 放入</span><br><span class="line">    pipe.Put(val)</span><br><span class="line">    // 取出</span><br><span class="line">    log.Println(pipe.Get())</span><br><span class="line">    // 再取就没有了,会自动调用NEW</span><br><span class="line">    log.Println(pipe.Get())</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-]]></content>
       <tags>
         <tag>golang</tag>
       </tags>
@@ -2260,6 +2260,40 @@
 <p>接下来说说ZeroMQ，严格来说ZeroMQ并不能称之为一个消息队列，而是一个基于消息队列的多线程网络库，如果你的需求是将消息队列的功能集成到你的系统进程中，可以考虑使用ZeroMQ。</p>
 <p>最后说一下Pulsar，很多人可能都没听说过这个产品，Pulsar是一个新兴的开源消息队列产品，最早是由Yahoo开发，目前处于成长期，流行度和成熟度相对没有那么高。与其他消息队列最大的不同是，Pulsar采用存储和计算分离的设计，它有可能会引领未来消息队列的一个发展方向，建议你持续关注这个项目。</p>
 <p><img src="/2021/05/29/消息队列小结/mq1.png" alt="avatar"></p>
+<h4 id="引入mq会多哪些问题"><a href="#引入mq会多哪些问题" class="headerlink" title="引入mq会多哪些问题"></a>引入mq会多哪些问题</h4><p><strong>重复消息问题</strong></p>
+<p>重复消费问题可以说是mq中普遍存在的问题，不管你用哪种mq都无法避免。有哪些场景会出现重复的消息呢？</p>
+<ul>
+<li>消息生产者产生了重复的消息</li>
+<li>kafka和rocketmq的offset被回调了</li>
+<li>消息消费者确认失败</li>
+<li>消息消费者确认时超时了</li>
+<li>业务系统主动发起重试</li>
+</ul>
+<p><strong>数据一致性问题</strong></p>
+<p>很多时候，如果mq的消费者业务处理异常的话，就会出现数据一致性问题。比如：一个完整的业务流程是，下单成功之后，送100个积分。下单写库了，但是消息消费者在送积分的时候失败了，就会造成数据不一致的情况，即该业务流程的部分数据写库了，另外一部分没有写库。</p>
+<p>如果下单和送积分在同一个事务中，要么同时成功，要么同时失败，是不会出现数据一致性问题的。</p>
+<p>但由于跨系统调用，为了性能考虑，一般不会使用强一致性的方案，而改成达成最终一致性即可。</p>
+<p><strong>消息丢失问题</strong></p>
+<p>同样消息丢失问题，也是mq中普遍存在的问题，不管你用哪种mq都无法避免。有哪些场景会出现消息丢失问题呢？</p>
+<ul>
+<li>消息生产者发生消息时，由于网络原因，发生到mq失败了。</li>
+<li>mq服务器持久化时，磁盘出现异常</li>
+<li>kafka和rocketmq的offset被回调时，略过了很多消息。</li>
+<li>消息消费者刚读取消息，已经ack确认了，但业务还没处理完，服务就被重启了。</li>
+</ul>
+<p>导致消息丢失问题的原因挺多的，生产者、mq服务器、消费者 都有可能产生问题，我在这里就不一一列举了。最终的结果会导致消费者无法正确的处理消息，而导致数据不一致的情况。</p>
+<p><strong>消息顺序问题</strong></p>
+<p>有些业务数据是有状态的，比如订单有：下单、支付、完成、退货等状态，如果订单数据作为消息体，就会涉及顺序问题了。如果消费者收到同一个订单的两条消息，第一条消息的状态是下单，第二条消息的状态是支付，这是没问题的。但如果第一条消息的状态是支付，第二条消息的状态是下单就会有问题了，没有下单就先支付了？</p>
+<p>消息顺序问题是一个非常棘手的问题，比如：</p>
+<ul>
+<li>kafka同一个partition中能保证顺序，但是不同的partition无法保证顺序。</li>
+<li>rabbitmq的同一个queue能够保证顺序，但是如果多个消费者同一个queue也会有顺序问题。</li>
+</ul>
+<p>如果消费者使用多线程消费消息，也无法保证顺序。</p>
+<p>如果消费消息时同一个订单的多条消息中，中间的一条消息出现异常情况，顺序将会被打乱。</p>
+<p>还有如果生产者发送到mq中的路由规则，跟消费者不一样，也无法保证顺序。</p>
+<p><strong>消息堆积</strong></p>
+<p>如果消息消费者读取消息的速度，能够跟上消息生产者的节奏，那么整套mq机制就能发挥最大作用。但是很多时候，由于某些批处理，或者其他原因，导致消息消费的速度小于生产的速度。这样会直接导致消息堆积问题，从而影响业务功能。</p>
 ]]></content>
       <tags>
         <tag>mq</tag>
@@ -2275,7 +2309,7 @@
 <li>如果只存一个文件中, 文件会越来越大；</li>
 <li>Kafka中的数据默认存储7天、每一天都会删除7天前的数据、 如果都存在一个文件当中、会不好删。</li>
 </ul>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">创建topic</span><br><span class="line">bin/kafka-topics.sh --bootstrap-server localhost:9092 --create --topic test2</span><br><span class="line"></span><br><span class="line">生成测试数据</span><br><span class="line">bin/kafka-producer-perf-test.sh --topic test --num-records 100000 --record-size 1000  --producer-props bootstrap.servers=hadoop101:9092 --throughput 1000000000</span><br><span class="line"></span><br><span class="line">查看log文件</span><br><span class="line">~/Downloads/software/kafka_2.12-2.8.0/bin/kafka-run-class.sh kafka.tools.DumpLogSegments --files 00000000000000000000.log --print-data-log</span><br><span class="line"></span><br><span class="line">baseOffset: 0 lastOffset: 0 count: 1 baseSequence: -1 lastSequence: -1 producerId: -1 producerEpoch: -1 partitionLeaderEpoch: 0 isTransactional: false isControl: false position: 0 CreateTime: 1622516506987 size: 84 magic: 2 compresscodec: NONE crc: 2268928679 isvalid: true</span><br><span class="line">| offset: 0 isValid: true crc: null keySize: -1 valueSize: 16 CreateTime: 1622516506987 baseOffset: 0 lastOffset: 0 baseSequence: -1 lastSequence: -1 producerEpoch: -1 partitionLeaderEpoch: 0 batchSize: 84 magic: 2 compressType: NONE position: 0 sequence: -1 headerKeys: [] payload: ajlkdsfajkldfjad</span><br><span class="line">baseOffset: 1 lastOffset: 1 count: 1 baseSequence: -1 lastSequence: -1 producerId: -1 producerEpoch: -1 partitionLeaderEpoch: 0 isTransactional: false isControl: false position: 84 CreateTime: 1622516642240 size: 71 magic: 2 compresscodec: NONE crc: 427485767 isvalid: true</span><br><span class="line">| offset: 1 isValid: true crc: null keySize: -1 valueSize: 3 CreateTime: 1622516642240 baseOffset: 1 lastOffset: 1 baseSequence: -1 lastSequence: -1 producerEpoch: -1 partitionLeaderEpoch: 0 batchSize: 71 magic: 2 compressType: NONE position: 84 sequence: -1 headerKeys: [] payload: 哲</span><br><span class="line"></span><br><span class="line">查看index文件</span><br><span class="line">~/Downloads/software/kafka_2.12-2.8.0/bin/kafka-run-class.sh kafka.tools.DumpLogSegments --files 00000000000000000000.index --print-data-log</span><br><span class="line"></span><br><span class="line">Dumping /tmp/kafka-logs/test2-1/00000000000000000000.index</span><br><span class="line">offset: 0 position: 0</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">创建topic</span><br><span class="line">bin/kafka-topics.sh --bootstrap-server localhost:9092 --create --topic test2</span><br><span class="line"></span><br><span class="line">生成测试数据</span><br><span class="line">bin/kafka-producer-perf-test.sh --topic test --num-records 100000 --record-size 1000  --producer-props bootstrap.servers=hadoop101:9092 --throughput 1000000000</span><br><span class="line"></span><br><span class="line">查看log文件</span><br><span class="line">bin/kafka-run-class.sh kafka.tools.DumpLogSegments --files 00000000000000000000.log --print-data-log</span><br><span class="line"></span><br><span class="line">baseOffset: 0 lastOffset: 0 count: 1 baseSequence: -1 lastSequence: -1 producerId: -1 producerEpoch: -1 partitionLeaderEpoch: 0 isTransactional: false isControl: false position: 0 CreateTime: 1622516506987 size: 84 magic: 2 compresscodec: NONE crc: 2268928679 isvalid: true</span><br><span class="line">| offset: 0 isValid: true crc: null keySize: -1 valueSize: 16 CreateTime: 1622516506987 baseOffset: 0 lastOffset: 0 baseSequence: -1 lastSequence: -1 producerEpoch: -1 partitionLeaderEpoch: 0 batchSize: 84 magic: 2 compressType: NONE position: 0 sequence: -1 headerKeys: [] payload: ajlkdsfajkldfjad</span><br><span class="line">baseOffset: 1 lastOffset: 1 count: 1 baseSequence: -1 lastSequence: -1 producerId: -1 producerEpoch: -1 partitionLeaderEpoch: 0 isTransactional: false isControl: false position: 84 CreateTime: 1622516642240 size: 71 magic: 2 compresscodec: NONE crc: 427485767 isvalid: true</span><br><span class="line">| offset: 1 isValid: true crc: null keySize: -1 valueSize: 3 CreateTime: 1622516642240 baseOffset: 1 lastOffset: 1 baseSequence: -1 lastSequence: -1 producerEpoch: -1 partitionLeaderEpoch: 0 batchSize: 71 magic: 2 compressType: NONE position: 84 sequence: -1 headerKeys: [] payload: 哲</span><br><span class="line"></span><br><span class="line">查看index文件</span><br><span class="line">bin/kafka-run-class.sh kafka.tools.DumpLogSegments --files 00000000000000000000.index --print-data-log</span><br><span class="line"></span><br><span class="line">Dumping /tmp/kafka-logs/test2-1/00000000000000000000.index</span><br><span class="line">offset: 0 position: 0</span><br></pre></td></tr></table></figure>
 <h4 id="kafka架构"><a href="#kafka架构" class="headerlink" title="kafka架构"></a>kafka架构</h4><p><strong>Kafka Topic</strong></p>
 <ul>
 <li>Topic是已发布消息的类别名称</li>

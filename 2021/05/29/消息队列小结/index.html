@@ -88,7 +88,7 @@
 <meta property="og:description" content="消息队列优势劣势消息队列最常被使用的三种场景：异步处理、流量控制和服务解耦。当然，消息队列的适用范围不仅仅局限于这些场景，还有包括：  作为发布/订阅系统实现一个微服务级系统间的观察者模式； 连接流计算任务和数据； 用于将消息广播给大量接收者。  同时我们也要认识到，消息队列也有它自身的一些问题和局限性，包括：  引入消息队列带来的延迟问题； 增加了系统的复杂度； 可能产生数据不一致的问题。  该">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://alfredliukai.github.io/2021/05/29/消息队列小结/mq1.png">
-<meta property="og:updated_time" content="2021-06-01T06:22:44.000Z">
+<meta property="og:updated_time" content="2021-06-02T06:48:43.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="消息队列小结">
 <meta name="twitter:description" content="消息队列优势劣势消息队列最常被使用的三种场景：异步处理、流量控制和服务解耦。当然，消息队列的适用范围不仅仅局限于这些场景，还有包括：  作为发布/订阅系统实现一个微服务级系统间的观察者模式； 连接流计算任务和数据； 用于将消息广播给大量接收者。  同时我们也要认识到，消息队列也有它自身的一些问题和局限性，包括：  引入消息队列带来的延迟问题； 增加了系统的复杂度； 可能产生数据不一致的问题。  该">
@@ -374,6 +374,40 @@
 <p>接下来说说ZeroMQ，严格来说ZeroMQ并不能称之为一个消息队列，而是一个基于消息队列的多线程网络库，如果你的需求是将消息队列的功能集成到你的系统进程中，可以考虑使用ZeroMQ。</p>
 <p>最后说一下Pulsar，很多人可能都没听说过这个产品，Pulsar是一个新兴的开源消息队列产品，最早是由Yahoo开发，目前处于成长期，流行度和成熟度相对没有那么高。与其他消息队列最大的不同是，Pulsar采用存储和计算分离的设计，它有可能会引领未来消息队列的一个发展方向，建议你持续关注这个项目。</p>
 <p><img src="/2021/05/29/消息队列小结/mq1.png" alt="avatar"></p>
+<h4 id="引入mq会多哪些问题"><a href="#引入mq会多哪些问题" class="headerlink" title="引入mq会多哪些问题"></a>引入mq会多哪些问题</h4><p><strong>重复消息问题</strong></p>
+<p>重复消费问题可以说是mq中普遍存在的问题，不管你用哪种mq都无法避免。有哪些场景会出现重复的消息呢？</p>
+<ul>
+<li>消息生产者产生了重复的消息</li>
+<li>kafka和rocketmq的offset被回调了</li>
+<li>消息消费者确认失败</li>
+<li>消息消费者确认时超时了</li>
+<li>业务系统主动发起重试</li>
+</ul>
+<p><strong>数据一致性问题</strong></p>
+<p>很多时候，如果mq的消费者业务处理异常的话，就会出现数据一致性问题。比如：一个完整的业务流程是，下单成功之后，送100个积分。下单写库了，但是消息消费者在送积分的时候失败了，就会造成数据不一致的情况，即该业务流程的部分数据写库了，另外一部分没有写库。</p>
+<p>如果下单和送积分在同一个事务中，要么同时成功，要么同时失败，是不会出现数据一致性问题的。</p>
+<p>但由于跨系统调用，为了性能考虑，一般不会使用强一致性的方案，而改成达成最终一致性即可。</p>
+<p><strong>消息丢失问题</strong></p>
+<p>同样消息丢失问题，也是mq中普遍存在的问题，不管你用哪种mq都无法避免。有哪些场景会出现消息丢失问题呢？</p>
+<ul>
+<li>消息生产者发生消息时，由于网络原因，发生到mq失败了。</li>
+<li>mq服务器持久化时，磁盘出现异常</li>
+<li>kafka和rocketmq的offset被回调时，略过了很多消息。</li>
+<li>消息消费者刚读取消息，已经ack确认了，但业务还没处理完，服务就被重启了。</li>
+</ul>
+<p>导致消息丢失问题的原因挺多的，生产者、mq服务器、消费者 都有可能产生问题，我在这里就不一一列举了。最终的结果会导致消费者无法正确的处理消息，而导致数据不一致的情况。</p>
+<p><strong>消息顺序问题</strong></p>
+<p>有些业务数据是有状态的，比如订单有：下单、支付、完成、退货等状态，如果订单数据作为消息体，就会涉及顺序问题了。如果消费者收到同一个订单的两条消息，第一条消息的状态是下单，第二条消息的状态是支付，这是没问题的。但如果第一条消息的状态是支付，第二条消息的状态是下单就会有问题了，没有下单就先支付了？</p>
+<p>消息顺序问题是一个非常棘手的问题，比如：</p>
+<ul>
+<li>kafka同一个partition中能保证顺序，但是不同的partition无法保证顺序。</li>
+<li>rabbitmq的同一个queue能够保证顺序，但是如果多个消费者同一个queue也会有顺序问题。</li>
+</ul>
+<p>如果消费者使用多线程消费消息，也无法保证顺序。</p>
+<p>如果消费消息时同一个订单的多条消息中，中间的一条消息出现异常情况，顺序将会被打乱。</p>
+<p>还有如果生产者发送到mq中的路由规则，跟消费者不一样，也无法保证顺序。</p>
+<p><strong>消息堆积</strong></p>
+<p>如果消息消费者读取消息的速度，能够跟上消息生产者的节奏，那么整套mq机制就能发挥最大作用。但是很多时候，由于某些批处理，或者其他原因，导致消息消费的速度小于生产的速度。这样会直接导致消息堆积问题，从而影响业务功能。</p>
 
       
     </div>
@@ -548,7 +582,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#消息队列优势劣势"><span class="nav-number">1.</span> <span class="nav-text">消息队列优势劣势</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#该如何选择消息队列？"><span class="nav-number">2.</span> <span class="nav-text">该如何选择消息队列？</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#消息队列优势劣势"><span class="nav-number">1.</span> <span class="nav-text">消息队列优势劣势</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#该如何选择消息队列？"><span class="nav-number">2.</span> <span class="nav-text">该如何选择消息队列？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#引入mq会多哪些问题"><span class="nav-number">3.</span> <span class="nav-text">引入mq会多哪些问题</span></a></li></ol></div>
             
 
           </div>
