@@ -448,18 +448,6 @@
       </tags>
   </entry>
   <entry>
-    <title>df、du、fdisk、lsblk区别</title>
-    <url>/2021/01/26/df%E3%80%81du%E3%80%81fdisk%E3%80%81lsblk%E5%8C%BA%E5%88%AB/</url>
-    <content><![CDATA[<p>df主要是检查文件系统磁盘占用情况，所以这里可以看到文件系统<br><img src="/2021/01/26/df、du、fdisk、lsblk区别/df1.png" alt="avatar"><br>du主要是检查磁盘空间占用情况，统计目录或者文件大小的，和ll功能有相同之处。</p>
-<p>fdisk一般用来磁盘分区，也可以用来查看磁盘分区情况。<br><img src="/2021/01/26/df、du、fdisk、lsblk区别/df2.png" alt="avatar"></p>
-<p>这里可以看到/dev/sdb和/dev/sda两个分区。<br>但是在df命令中看不到/dev/sda，因为/dev/sda上面没有跑文件系统，如果想看所有的磁盘分区需要用这个命令。</p>
-<p>lsblk命令用于列出所有可用块设备的信息，而且还能显示他们之间的依赖关系，这个命令很好用，因为可以让电脑上的磁盘和分区信息很清晰。<br><img src="/2021/01/26/df、du、fdisk、lsblk区别/df3.png" alt="avatar"></p>
-]]></content>
-      <tags>
-        <tag>linux</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>docker环境下使用kafka</title>
     <url>/2021/02/09/docker%E7%8E%AF%E5%A2%83%E4%B8%8B%E4%BD%BF%E7%94%A8kafka/</url>
     <content><![CDATA[<h3 id="下载镜像"><a href="#下载镜像" class="headerlink" title="下载镜像"></a>下载镜像</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Copy//下载zookeeper</span><br><span class="line">docker pull wurstmeister/zookeeper</span><br><span class="line"></span><br><span class="line">//下载kafka</span><br><span class="line">docker pull wurstmeister/kafka:2.11-0.11.0.3</span><br></pre></td></tr></table></figure>
@@ -525,6 +513,41 @@
       </tags>
   </entry>
   <entry>
+    <title>df、du、fdisk、lsblk区别</title>
+    <url>/2021/01/26/df%E3%80%81du%E3%80%81fdisk%E3%80%81lsblk%E5%8C%BA%E5%88%AB/</url>
+    <content><![CDATA[<p>df主要是检查文件系统磁盘占用情况，所以这里可以看到文件系统<br><img src="/2021/01/26/df、du、fdisk、lsblk区别/df1.png" alt="avatar"><br>du主要是检查磁盘空间占用情况，统计目录或者文件大小的，和ll功能有相同之处。</p>
+<p>fdisk一般用来磁盘分区，也可以用来查看磁盘分区情况。<br><img src="/2021/01/26/df、du、fdisk、lsblk区别/df2.png" alt="avatar"></p>
+<p>这里可以看到/dev/sdb和/dev/sda两个分区。<br>但是在df命令中看不到/dev/sda，因为/dev/sda上面没有跑文件系统，如果想看所有的磁盘分区需要用这个命令。</p>
+<p>lsblk命令用于列出所有可用块设备的信息，而且还能显示他们之间的依赖关系，这个命令很好用，因为可以让电脑上的磁盘和分区信息很清晰。<br><img src="/2021/01/26/df、du、fdisk、lsblk区别/df3.png" alt="avatar"></p>
+]]></content>
+      <tags>
+        <tag>linux</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>git clean的方法小结</title>
+    <url>/2020/09/16/git-clean%E7%9A%84%E6%96%B9%E6%B3%95%E5%B0%8F%E7%BB%93/</url>
+    <content><![CDATA[<h2 id="git-clean"><a href="#git-clean" class="headerlink" title="git clean"></a>git clean</h2><p>想批量删除branch中新加的文件(untracked files)，，git reset –hard不行～</p>
+<p>首先确认要删除的文件<br>git clean -fd -n</p>
+<p>如果以上命令给出的文件列表是你想删除的， 那么接下来执行</p>
+<p>git clean -f -d或者git clean -fd就可以了。</p>
+<p>其中-f表示文件 -d表示目录, 如果还要删除.gitignore中的文件那么再加上-x (-x对我来说没用）</p>
+<p>如果git submodule中也存在需要删除的文件那么需要再加个-f， 变成git clean -dff</p>
+<p>详见：<a href="http://stackoverflow.com/questions/61212/how-do-i-remove-local-untracked-files-from-my-current-git-branch" target="_blank" rel="noopener">http://stackoverflow.com/questions/61212/how-do-i-remove-local-untracked-files-from-my-current-git-branch</a></p>
+<p><strong>删除 untracked files</strong></p>
+<p>git clean -f</p>
+<p><strong>连 untracked 的目录也一起删掉</strong></p>
+<p>git clean -fd</p>
+<p><strong>连 gitignore 的untrack 文件/目录也一起删掉 （慎用，一般这个是用来删掉编译出来的 .o之类的文件用的）</strong></p>
+<p>git clean -xfd</p>
+<p><strong>在用上述 git clean 前，墙裂建议加上 -n 参数来先看看会删掉哪些文件，防止重要文件被误删</strong></p>
+<p>git clean -nxfd<br>git clean -nf<br>git clean -nfd</p>
+]]></content>
+      <tags>
+        <tag>git</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>es3总结</title>
     <url>/2020/03/29/es%E6%80%BB%E7%BB%933/</url>
     <content><![CDATA[<h4 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h4><ol>
@@ -585,19 +608,37 @@
       </tags>
   </entry>
   <entry>
-    <title>git clean的方法小结</title>
-    <url>/2020/09/16/git-clean%E7%9A%84%E6%96%B9%E6%B3%95%E5%B0%8F%E7%BB%93/</url>
-    <content><![CDATA[<h2 id="git-clean"><a href="#git-clean" class="headerlink" title="git clean"></a>git clean</h2><p>想批量删除branch中新加的文件(untracked files)，，git reset –hard不行～</p>
-<p>首先确认要删除的文件<br>git clean -fd -n</p>
-<p>如果以上命令给出的文件列表是你想删除的， 那么接下来执行</p>
-<p>git clean -f -d或者git clean -fd就可以了。</p>
-<p>其中-f表示文件 -d表示目录, 如果还要删除.gitignore中的文件那么再加上-x (-x对我来说没用）</p>
-<p>如果git submodule中也存在需要删除的文件那么需要再加个-f， 变成git clean -dff</p>
-<p>详见：<a href="http://stackoverflow.com/questions/61212/how-do-i-remove-local-untracked-files-from-my-current-git-branch" target="_blank" rel="noopener">http://stackoverflow.com/questions/61212/how-do-i-remove-local-untracked-files-from-my-current-git-branch</a></p>
-<h2 id="git删除未跟踪文件"><a href="#git删除未跟踪文件" class="headerlink" title="git删除未跟踪文件"></a>git删除未跟踪文件</h2><h3 id="删除-untracked-files"><a href="#删除-untracked-files" class="headerlink" title="删除 untracked files"></a>删除 untracked files</h3><p>git clean -f</p>
-<h3 id="连-untracked-的目录也一起删掉"><a href="#连-untracked-的目录也一起删掉" class="headerlink" title="连 untracked 的目录也一起删掉"></a>连 untracked 的目录也一起删掉</h3><p>git clean -fd</p>
-<h3 id="连-gitignore-的untrack-文件-目录也一起删掉-（慎用，一般这个是用来删掉编译出来的-o之类的文件用的）"><a href="#连-gitignore-的untrack-文件-目录也一起删掉-（慎用，一般这个是用来删掉编译出来的-o之类的文件用的）" class="headerlink" title="连 gitignore 的untrack 文件/目录也一起删掉 （慎用，一般这个是用来删掉编译出来的 .o之类的文件用的）"></a>连 gitignore 的untrack 文件/目录也一起删掉 （慎用，一般这个是用来删掉编译出来的 .o之类的文件用的）</h3><p>git clean -xfd</p>
-<h3 id="在用上述-git-clean-前，墙裂建议加上-n-参数来先看看会删掉哪些文件，防止重要文件被误删"><a href="#在用上述-git-clean-前，墙裂建议加上-n-参数来先看看会删掉哪些文件，防止重要文件被误删" class="headerlink" title="在用上述 git clean 前，墙裂建议加上 -n 参数来先看看会删掉哪些文件，防止重要文件被误删"></a>在用上述 git clean 前，墙裂建议加上 -n 参数来先看看会删掉哪些文件，防止重要文件被误删</h3><p>git clean -nxfd<br>git clean -nf<br>git clean -nfd</p>
+    <title>git中的对象简介</title>
+    <url>/2020/07/08/git%E4%B8%AD%E7%9A%84%E5%AF%B9%E8%B1%A1%E7%AE%80%E4%BB%8B/</url>
+    <content><![CDATA[<p>为了加深git中底层对象的理解，特意整理如下文章。<br>Git 保存的不是文件的变化或者差异，而是一系列不同时刻的 快照 。</p>
+<p>在进行提交操作时，Git 会保存一个提交对象（commit object）。 知道了 Git 保存数据的方式，我们可以很自然的想到——该提交对象会包含一个指向暂存内容快照的指针。 但不仅仅是这样，该提交对象还包含了作者的姓名和邮箱、提交时输入的信息以及指向它的父对象的指针。 首次提交产生的提交对象没有父对象，普通提交操作产生的提交对象有一个父对象， 而由多个分支合并产生的提交对象有多个父对象，</p>
+<p>为了更加形象地说明，我们假设现在有一个工作目录，里面包含了三个将要被暂存和提交的文件。 暂存操作会为每一个文件计算校验和（使用我们在 起步 中提到的 SHA-1 哈希算法），然后会把当前版本的文件快照保存到 Git 仓库中 （Git 使用 blob 对象来保存它们），最终将校验和加入到暂存区域等待提交：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ git add README test.rb LICENSE</span><br><span class="line">$ git commit -m &apos;The initial commit of my project&apos;</span><br></pre></td></tr></table></figure>
+<p>当使用 git commit 进行提交操作时，Git 会先计算每一个子目录（本例中只有项目根目录）的校验和， 然后在 Git 仓库中这些校验和保存为树对象。随后，Git 便会创建一个提交对象， 它除了包含上面提到的那些信息外，还包含指向这个树对象（项目根目录）的指针。 如此一来，Git 就可以在需要的时候重现此次保存的快照。</p>
+<p>现在，Git 仓库中有五个对象：三个 blob 对象（保存着文件快照）、一个 树 对象 （记录着目录结构和 blob 对象索引）以及一个 提交 对象（包含着指向前述树对象的指针和所有提交信息）。<br><img src="/2020/07/08/git中的对象简介/git1.png" alt="avatar"><br>Figure 9. 首次提交对象及其树结构<br>做些修改后再次提交，那么这次产生的提交对象会包含一个指向上次提交对象（父对象）的指针。<br><img src="/2020/07/08/git中的对象简介/git2.png" alt="avatar"><br>Figure 10. 提交对象及其父对象<br>Git 的分支，其实本质上仅仅是指向提交对象的可变指针。 Git 的默认分支名字是 master。 在多次提交操作之后，你其实已经有一个指向最后那个提交对象的 master 分支。 master 分支会在每次提交时自动向前移动。<br><img src="/2020/07/08/git中的对象简介/git3.png" alt="avatar"><br>Figure 11. 分支及其提交历史</p>
+<h4 id="分支创建"><a href="#分支创建" class="headerlink" title="分支创建"></a>分支创建</h4><p>Git 是怎么创建新分支的呢？ 很简单，它只是为你创建了一个可以移动的新的指针。 比如，创建一个 testing 分支， 你需要使用 git branch 命令：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ git branch testing</span><br></pre></td></tr></table></figure></p>
+<p>这会在当前所在的提交对象上创建一个指针。<br><img src="/2020/07/08/git中的对象简介/git4.png" alt="avatar"></p>
+<p>Figure 12. 两个指向相同提交历史的分支<br>那么，Git 又是怎么知道当前在哪一个分支上呢？ 也很简单，它有一个名为 HEAD 的特殊指针。 请注意它和许多其它版本控制系统（如 Subversion 或 CVS）里的 HEAD 概念完全不同。 在 Git 中，它是一个指针，指向当前所在的本地分支（译注：将 HEAD 想象为当前分支的别名）。 在本例中，你仍然在 master 分支上。 因为 git branch 命令仅仅 创建 一个新分支，并不会自动切换到新分支中去。</p>
+<p><img src="/2020/07/08/git中的对象简介/git5.png" alt="avatar"></p>
+<p>Figure 13. HEAD 指向当前所在的分支<br>你可以简单地使用 git log 命令查看各个分支当前所指的对象。 提供这一功能的参数是 –decorate<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ git log --oneline --decorate</span><br><span class="line">f30ab (HEAD -&gt; master, testing) add feature #32 - ability to add new formats to the central interface</span><br><span class="line">34ac2 Fixed bug #1328 - stack overflow under certain conditions</span><br><span class="line">98ca9 The initial commit of my project</span><br></pre></td></tr></table></figure></p>
+<p>正如你所见，当前 master 和 testing 分支均指向校验和以 f30ab 开头的提交对象。</p>
+<h4 id="分支切换"><a href="#分支切换" class="headerlink" title="分支切换"></a>分支切换</h4><p>要切换到一个已存在的分支，你需要使用 git checkout 命令。 我们现在切换到新创建的 testing 分支去：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ git checkout testing</span><br></pre></td></tr></table></figure>
+<p>这样 HEAD 就指向 testing 分支了。</p>
+<p><img src="/2020/07/08/git中的对象简介/git6.png" alt="avatar"></p>
+<p>Figure 14. HEAD 指向当前所在的分支<br>那么，这样的实现方式会给我们带来什么好处呢？ 现在不妨再提交一次：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ vim test.rb</span><br><span class="line">$ git commit -a -m &apos;made a change&apos;</span><br></pre></td></tr></table></figure>
+<p><img src="/2020/07/08/git中的对象简介/git7.png" alt="avatar"></p>
+<p>Figure 15. HEAD 分支随着提交操作自动向前移动<br>如图所示，你的 testing 分支向前移动了，但是 master 分支却没有，它仍然指向运行 git checkout 时所指的对象。 这就有意思了，现在我们切换回 master 分支看看：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ git checkout master</span><br></pre></td></tr></table></figure>
+<p><img src="/2020/07/08/git中的对象简介/git8.png" alt="avatar"><br>Figure 16. 检出时 HEAD 随之移动<br>这条命令做了两件事。 一是使 HEAD 指回 master 分支，二是将工作目录恢复成 master 分支所指向的快照内容。 也就是说，你现在做修改的话，项目将始于一个较旧的版本。 本质上来讲，这就是忽略 testing 分支所做的修改，以便于向另一个方向进行开发。</p>
+<p>我们不妨再稍微做些修改并提交：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ vim test.rb</span><br><span class="line">$ git commit -a -m &apos;made other changes&apos;</span><br></pre></td></tr></table></figure>
+<p>现在，这个项目的提交历史已经产生了分叉（参见 项目分叉历史）。 因为刚才你创建了一个新分支，并切换过去进行了一些工作，随后又切换回 master 分支进行了另外一些工作。 上述两次改动针对的是不同分支：你可以在不同分支间不断地来回切换和工作，并在时机成熟时将它们合并起来。 而所有这些工作，你需要的命令只有 branch、checkout 和 commit。<br><img src="/2020/07/08/git中的对象简介/git9.png" alt="avatar"><br>Figure 17. 项目分叉历史<br>你可以简单地使用 git log 命令查看分叉历史。 运行 git log –oneline –decorate –graph –all ，它会输出你的提交历史、各个分支的指向以及项目的分支分叉情况。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ git log --oneline --decorate --graph --all</span><br><span class="line">* c2b9e (HEAD, master) made other changes</span><br><span class="line">| * 87ab2 (testing) made a change</span><br><span class="line">|/</span><br><span class="line">* f30ab add feature #32 - ability to add new formats to the</span><br><span class="line">* 34ac2 fixed bug #1328 - stack overflow under certain conditions</span><br><span class="line">* 98ca9 initial commit of my project</span><br></pre></td></tr></table></figure>
+<p>由于 Git 的分支实质上仅是包含所指对象校验和（长度为 40 的 SHA-1 值字符串）的文件，所以它的创建和销毁都异常高效。 创建一个新分支就相当于往一个文件中写入 41 个字节（40 个字符和 1 个换行符），如此的简单能不快吗？</p>
+<p>这与过去大多数版本控制系统形成了鲜明的对比，它们在创建分支时，将所有的项目文件都复制一遍，并保存到一个特定的目录。 完成这样繁琐的过程通常需要好几秒钟，有时甚至需要好几分钟。所需时间的长短，完全取决于项目的规模。 而在 Git 中，任何规模的项目都能在瞬间创建新分支。 同时，由于每次提交都会记录父对象，所以寻找恰当的合并基础（译注：即共同祖先）也是同样的简单和高效。 这些高效的特性使得 Git 鼓励开发人员频繁地创建和使用分支。</p>
+<h4 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h4><p><a href="https://git-scm.com/book/zh/v2/Git-%E5%88%86%E6%94%AF-%E5%88%86%E6%94%AF%E7%AE%80%E4%BB%8B" target="_blank" rel="noopener">https://git-scm.com/book/zh/v2/Git-%E5%88%86%E6%94%AF-%E5%88%86%E6%94%AF%E7%AE%80%E4%BB%8B</a></p>
 ]]></content>
       <tags>
         <tag>git</tag>
@@ -670,46 +711,9 @@
       </tags>
   </entry>
   <entry>
-    <title>git中的对象简介</title>
-    <url>/2020/07/08/git%E4%B8%AD%E7%9A%84%E5%AF%B9%E8%B1%A1%E7%AE%80%E4%BB%8B/</url>
-    <content><![CDATA[<p>为了加深git中底层对象的理解，特意整理如下文章。<br>Git 保存的不是文件的变化或者差异，而是一系列不同时刻的 快照 。</p>
-<p>在进行提交操作时，Git 会保存一个提交对象（commit object）。 知道了 Git 保存数据的方式，我们可以很自然的想到——该提交对象会包含一个指向暂存内容快照的指针。 但不仅仅是这样，该提交对象还包含了作者的姓名和邮箱、提交时输入的信息以及指向它的父对象的指针。 首次提交产生的提交对象没有父对象，普通提交操作产生的提交对象有一个父对象， 而由多个分支合并产生的提交对象有多个父对象，</p>
-<p>为了更加形象地说明，我们假设现在有一个工作目录，里面包含了三个将要被暂存和提交的文件。 暂存操作会为每一个文件计算校验和（使用我们在 起步 中提到的 SHA-1 哈希算法），然后会把当前版本的文件快照保存到 Git 仓库中 （Git 使用 blob 对象来保存它们），最终将校验和加入到暂存区域等待提交：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ git add README test.rb LICENSE</span><br><span class="line">$ git commit -m &apos;The initial commit of my project&apos;</span><br></pre></td></tr></table></figure>
-<p>当使用 git commit 进行提交操作时，Git 会先计算每一个子目录（本例中只有项目根目录）的校验和， 然后在 Git 仓库中这些校验和保存为树对象。随后，Git 便会创建一个提交对象， 它除了包含上面提到的那些信息外，还包含指向这个树对象（项目根目录）的指针。 如此一来，Git 就可以在需要的时候重现此次保存的快照。</p>
-<p>现在，Git 仓库中有五个对象：三个 blob 对象（保存着文件快照）、一个 树 对象 （记录着目录结构和 blob 对象索引）以及一个 提交 对象（包含着指向前述树对象的指针和所有提交信息）。<br><img src="/2020/07/08/git中的对象简介/git1.png" alt="avatar"><br>Figure 9. 首次提交对象及其树结构<br>做些修改后再次提交，那么这次产生的提交对象会包含一个指向上次提交对象（父对象）的指针。<br><img src="/2020/07/08/git中的对象简介/git2.png" alt="avatar"><br>Figure 10. 提交对象及其父对象<br>Git 的分支，其实本质上仅仅是指向提交对象的可变指针。 Git 的默认分支名字是 master。 在多次提交操作之后，你其实已经有一个指向最后那个提交对象的 master 分支。 master 分支会在每次提交时自动向前移动。<br><img src="/2020/07/08/git中的对象简介/git3.png" alt="avatar"><br>Figure 11. 分支及其提交历史</p>
-<h2 id="分支创建"><a href="#分支创建" class="headerlink" title="分支创建"></a>分支创建</h2><p>Git 是怎么创建新分支的呢？ 很简单，它只是为你创建了一个可以移动的新的指针。 比如，创建一个 testing 分支， 你需要使用 git branch 命令：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ git branch testing</span><br></pre></td></tr></table></figure></p>
-<p>这会在当前所在的提交对象上创建一个指针。<br><img src="/2020/07/08/git中的对象简介/git4.png" alt="avatar"></p>
-<p>Figure 12. 两个指向相同提交历史的分支<br>那么，Git 又是怎么知道当前在哪一个分支上呢？ 也很简单，它有一个名为 HEAD 的特殊指针。 请注意它和许多其它版本控制系统（如 Subversion 或 CVS）里的 HEAD 概念完全不同。 在 Git 中，它是一个指针，指向当前所在的本地分支（译注：将 HEAD 想象为当前分支的别名）。 在本例中，你仍然在 master 分支上。 因为 git branch 命令仅仅 创建 一个新分支，并不会自动切换到新分支中去。</p>
-<p><img src="/2020/07/08/git中的对象简介/git5.png" alt="avatar"></p>
-<p>Figure 13. HEAD 指向当前所在的分支<br>你可以简单地使用 git log 命令查看各个分支当前所指的对象。 提供这一功能的参数是 –decorate<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ git log --oneline --decorate</span><br><span class="line">f30ab (HEAD -&gt; master, testing) add feature #32 - ability to add new formats to the central interface</span><br><span class="line">34ac2 Fixed bug #1328 - stack overflow under certain conditions</span><br><span class="line">98ca9 The initial commit of my project</span><br></pre></td></tr></table></figure></p>
-<p>正如你所见，当前 master 和 testing 分支均指向校验和以 f30ab 开头的提交对象。</p>
-<h2 id="分支切换"><a href="#分支切换" class="headerlink" title="分支切换"></a>分支切换</h2><p>要切换到一个已存在的分支，你需要使用 git checkout 命令。 我们现在切换到新创建的 testing 分支去：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ git checkout testing</span><br></pre></td></tr></table></figure>
-<p>这样 HEAD 就指向 testing 分支了。</p>
-<p><img src="/2020/07/08/git中的对象简介/git6.png" alt="avatar"></p>
-<p>Figure 14. HEAD 指向当前所在的分支<br>那么，这样的实现方式会给我们带来什么好处呢？ 现在不妨再提交一次：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ vim test.rb</span><br><span class="line">$ git commit -a -m &apos;made a change&apos;</span><br></pre></td></tr></table></figure>
-<p><img src="/2020/07/08/git中的对象简介/git7.png" alt="avatar"></p>
-<p>Figure 15. HEAD 分支随着提交操作自动向前移动<br>如图所示，你的 testing 分支向前移动了，但是 master 分支却没有，它仍然指向运行 git checkout 时所指的对象。 这就有意思了，现在我们切换回 master 分支看看：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ git checkout master</span><br></pre></td></tr></table></figure>
-<p><img src="/2020/07/08/git中的对象简介/git8.png" alt="avatar"><br>Figure 16. 检出时 HEAD 随之移动<br>这条命令做了两件事。 一是使 HEAD 指回 master 分支，二是将工作目录恢复成 master 分支所指向的快照内容。 也就是说，你现在做修改的话，项目将始于一个较旧的版本。 本质上来讲，这就是忽略 testing 分支所做的修改，以便于向另一个方向进行开发。</p>
-<p>我们不妨再稍微做些修改并提交：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ vim test.rb</span><br><span class="line">$ git commit -a -m &apos;made other changes&apos;</span><br></pre></td></tr></table></figure>
-<p>现在，这个项目的提交历史已经产生了分叉（参见 项目分叉历史）。 因为刚才你创建了一个新分支，并切换过去进行了一些工作，随后又切换回 master 分支进行了另外一些工作。 上述两次改动针对的是不同分支：你可以在不同分支间不断地来回切换和工作，并在时机成熟时将它们合并起来。 而所有这些工作，你需要的命令只有 branch、checkout 和 commit。<br><img src="/2020/07/08/git中的对象简介/git9.png" alt="avatar"><br>Figure 17. 项目分叉历史<br>你可以简单地使用 git log 命令查看分叉历史。 运行 git log –oneline –decorate –graph –all ，它会输出你的提交历史、各个分支的指向以及项目的分支分叉情况。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ git log --oneline --decorate --graph --all</span><br><span class="line">* c2b9e (HEAD, master) made other changes</span><br><span class="line">| * 87ab2 (testing) made a change</span><br><span class="line">|/</span><br><span class="line">* f30ab add feature #32 - ability to add new formats to the</span><br><span class="line">* 34ac2 fixed bug #1328 - stack overflow under certain conditions</span><br><span class="line">* 98ca9 initial commit of my project</span><br></pre></td></tr></table></figure>
-<p>由于 Git 的分支实质上仅是包含所指对象校验和（长度为 40 的 SHA-1 值字符串）的文件，所以它的创建和销毁都异常高效。 创建一个新分支就相当于往一个文件中写入 41 个字节（40 个字符和 1 个换行符），如此的简单能不快吗？</p>
-<p>这与过去大多数版本控制系统形成了鲜明的对比，它们在创建分支时，将所有的项目文件都复制一遍，并保存到一个特定的目录。 完成这样繁琐的过程通常需要好几秒钟，有时甚至需要好几分钟。所需时间的长短，完全取决于项目的规模。 而在 Git 中，任何规模的项目都能在瞬间创建新分支。 同时，由于每次提交都会记录父对象，所以寻找恰当的合并基础（译注：即共同祖先）也是同样的简单和高效。 这些高效的特性使得 Git 鼓励开发人员频繁地创建和使用分支。</p>
-<h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><p><a href="https://git-scm.com/book/zh/v2/Git-%E5%88%86%E6%94%AF-%E5%88%86%E6%94%AF%E7%AE%80%E4%BB%8B" target="_blank" rel="noopener">https://git-scm.com/book/zh/v2/Git-%E5%88%86%E6%94%AF-%E5%88%86%E6%94%AF%E7%AE%80%E4%BB%8B</a></p>
-]]></content>
-      <tags>
-        <tag>git</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>git常见场景操作</title>
     <url>/2020/07/10/git%E5%B8%B8%E8%A7%81%E5%9C%BA%E6%99%AF%E6%93%8D%E4%BD%9C/</url>
-    <content><![CDATA[<h2 id="1-远程分支"><a href="#1-远程分支" class="headerlink" title="1.远程分支"></a>1.远程分支</h2><p>可以通过 git ls-remote <remote> 来显式地获得远程引用的完整列表， 或者通过 git remote show <remote> 获得远程分支的更多信息。 然而，一个更常见的做法是利用远程跟踪分支。</remote></remote></p>
+    <content><![CDATA[<h4 id="1-远程分支"><a href="#1-远程分支" class="headerlink" title="1.远程分支"></a>1.远程分支</h4><p>可以通过 git ls-remote <remote> 来显式地获得远程引用的完整列表， 或者通过 git remote show <remote> 获得远程分支的更多信息。 然而，一个更常见的做法是利用远程跟踪分支。</remote></remote></p>
 <p>git fetch teamone 来抓取远程仓库 teamone 有而本地没有的数据。</p>
 <p><strong>推送</strong><br>如果希望和别人一起在名为 serverfix 的分支上工作，你可以像推送第一个分支那样推送它。 运行 git push <remote> <branch>:<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">git push origin serverfix</span><br><span class="line">Counting objects: 24, done.</span><br><span class="line">Delta compression using up to 8 threads.</span><br><span class="line">Compressing objects: 100% (15/15), done.</span><br><span class="line">Writing objects: 100% (24/24), 1.91 KiB | 0 bytes/s, done.</span><br><span class="line">Total 24 (delta 2), reused 0 (delta 0)</span><br><span class="line">To https://github.com/schacon/simplegit</span><br><span class="line"> * [new branch]      serverfix -&gt; serverfix</span><br></pre></td></tr></table></figure></branch></remote></p>
 <p> 下一次其他协作者从服务器上抓取数据时，他们会在本地生成一个远程分支 origin/serverfix，指向服务器的 serverfix 分支的引用：<br> <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"> $ git fetch origin</span><br><span class="line">remote: Counting objects: 7, done.</span><br><span class="line">remote: Compressing objects: 100% (2/2), done.</span><br><span class="line">remote: Total 3 (delta 0), reused 3 (delta 0)</span><br><span class="line">Unpacking objects: 100% (3/3), done.</span><br><span class="line">From https://github.com/schacon/simplegit</span><br><span class="line"> * [new branch]      serverfix    -&gt; origin/serverfix</span><br></pre></td></tr></table></figure></p>
@@ -723,13 +727,13 @@
 <p><strong>拉取</strong><br>当 git fetch 命令从服务器上抓取本地没有的数据时，它并不会修改工作目录中的内容。 它只会获取数据然后让你自己合并。 然而，有一个命令叫作 git pull 在大多数情况下它的含义是一个 git fetch 紧接着一个 git merge 命令。 如果有一个像之前章节中演示的设置好的跟踪分支，不管它是显式地设置还是通过 clone 或 checkout 命令为你创建的，git pull 都会查找当前分支所跟踪的服务器与分支， 从服务器上抓取数据然后尝试合并入那个远程分支。</p>
 <p>由于 git pull 的魔法经常令人困惑所以通常单独显式地使用 fetch 与 merge 命令会更好一些。</p>
 <p><strong>删除远程分支</strong><br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ git push origin --delete serverfix</span><br><span class="line">To https://github.com/schacon/simplegit</span><br><span class="line"> - [deleted]         serverfix</span><br></pre></td></tr></table></figure></p>
-<h2 id="2-变基"><a href="#2-变基" class="headerlink" title="2. 变基"></a>2. 变基</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">git rebase -i [startpoint] [endpoint]</span><br></pre></td></tr></table></figure>
+<h4 id="2-变基"><a href="#2-变基" class="headerlink" title="2. 变基"></a>2. 变基</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">git rebase -i [startpoint] [endpoint]</span><br></pre></td></tr></table></figure>
 <p>其中-i的意思是–interactive，即弹出交互式的界面让用户编辑完成合并操作，[startpoint] [endpoint]则指定了一个编辑区间，如果不指定[endpoint]，则该区间的终点默认是当前分支HEAD所指向的commit(注：该区间指定的是一个前开后闭的区间)。<br>在查看到了log日志后，我们运行以下命令：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">git rebase -i 0bb85c 582db9</span><br><span class="line">或者</span><br><span class="line">git rebase -i HEAD~3</span><br></pre></td></tr></table></figure></p>
 <p>上面未被注释的部分列出的是我们本次rebase操作包含的所有提交，下面注释部分是git为我们提供的命令说明。每一个commit id 前面的pick表示指令类型，git 为我们提供了以下几个命令:</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">pick：保留该commit（缩写:p）</span><br><span class="line">reword：保留该commit，但我需要修改该commit的注释（缩写:r）</span><br><span class="line">edit：保留该commit, 但我要停下来修改该提交(不仅仅修改注释)（缩写:e）</span><br><span class="line">squash：将该commit和前一个commit合并（缩写:s）</span><br><span class="line">fixup：将该commit和前一个commit合并，但我不要保留该提交的注释信息（缩写:f）</span><br><span class="line">exec：执行shell命令（缩写:x）</span><br><span class="line">drop：我要丢弃该commit（缩写:d）</span><br></pre></td></tr></table></figure>
 <p><img src="/2020/07/10/git常见场景操作/git01.png" alt="avatar"></p>
-<h2 id="2-常见场景"><a href="#2-常见场景" class="headerlink" title="2. 常见场景"></a>2. 常见场景</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">1. 修改最新commit的message</span><br><span class="line">git commit --amend</span><br><span class="line"></span><br><span class="line">2. 怎么修改老旧commit的message</span><br><span class="line">git rebase -i reward</span><br><span class="line"></span><br><span class="line">3. 怎样把连续的多个commit整理成1个</span><br><span class="line"></span><br><span class="line">git rebase -i squash</span><br></pre></td></tr></table></figure>
-<h2 id="3-强制禁止命令"><a href="#3-强制禁止命令" class="headerlink" title="3. 强制禁止命令"></a>3. 强制禁止命令</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">1. 禁止向集成分支</span><br><span class="line">git push -f</span><br><span class="line"></span><br><span class="line">2. 禁止向集成分支执行变更历史的操作</span><br></pre></td></tr></table></figure>]]></content>
+<h4 id="2-常见场景"><a href="#2-常见场景" class="headerlink" title="2. 常见场景"></a>2. 常见场景</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">1. 修改最新commit的message</span><br><span class="line">git commit --amend</span><br><span class="line"></span><br><span class="line">2. 怎么修改老旧commit的message</span><br><span class="line">git rebase -i reward</span><br><span class="line"></span><br><span class="line">3. 怎样把连续的多个commit整理成1个</span><br><span class="line"></span><br><span class="line">git rebase -i squash</span><br></pre></td></tr></table></figure>
+<h4 id="3-强制禁止命令"><a href="#3-强制禁止命令" class="headerlink" title="3. 强制禁止命令"></a>3. 强制禁止命令</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">1. 禁止向集成分支</span><br><span class="line">git push -f</span><br><span class="line"></span><br><span class="line">2. 禁止向集成分支执行变更历史的操作</span><br></pre></td></tr></table></figure>]]></content>
       <tags>
         <tag>git</tag>
       </tags>
@@ -1994,24 +1998,6 @@
       </tags>
   </entry>
   <entry>
-    <title>单例模式的几种实现方式</title>
-    <url>/2020/07/06/%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F%E7%9A%84%E5%87%A0%E7%A7%8D%E5%AE%9E%E7%8E%B0%E6%96%B9%E5%BC%8F/</url>
-    <content><![CDATA[<h2 id="1-饿汉式-线程安全，调用效率高，但是不能延时加载-："><a href="#1-饿汉式-线程安全，调用效率高，但是不能延时加载-：" class="headerlink" title="1. 饿汉式(线程安全，调用效率高，但是不能延时加载)："></a>1. 饿汉式(线程安全，调用效率高，但是不能延时加载)：</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Singleton&#123; </span><br><span class="line">     private static Singleton instance = new Singleton; </span><br><span class="line">     private Singleton()&#123;&#125; </span><br><span class="line">     public static Singleton getInstance()&#123;  </span><br><span class="line">          return instance;  </span><br><span class="line">      &#125; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>一上来就把单例对象创建出来了，要用的时候直接返回即可，这种可以说是单例模式中最简单的一种实现方式。但是问题也比较明显。单例在还没有使用到的时候，初始化就已经完成了。也就是说，如果程序从头到位都没用使用这个单例的话，单例的对象还是会创建。这就造成了不必要的资源浪费。所以不推荐这种实现方式。</p>
-<h2 id="2-懒汉式-线程安全，调用效率不高，但是能延时加载"><a href="#2-懒汉式-线程安全，调用效率不高，但是能延时加载" class="headerlink" title="2. 懒汉式(线程安全，调用效率不高，但是能延时加载)"></a>2. 懒汉式(线程安全，调用效率不高，但是能延时加载)</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Singleton &#123;</span><br><span class="line">     </span><br><span class="line">    //类初始化时，不初始化这个对象(延时加载，真正用的时候再创建)</span><br><span class="line">    private static Singleton instance;</span><br><span class="line">     </span><br><span class="line">    //构造器私有化</span><br><span class="line">    private Singleton()&#123;&#125;</span><br><span class="line">     </span><br><span class="line">    //方法同步，调用效率低</span><br><span class="line">    public static synchronized Singleton getInstance()&#123;</span><br><span class="line">        if(instance==null)&#123;</span><br><span class="line">            instance=new Singleton();</span><br><span class="line">        &#125;</span><br><span class="line">        return instance;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="3-Double-CheckLock实现单例：DCL也就是双重锁判断机制（由于JVM底层模型原因，偶尔会出问题，不建议使用）"><a href="#3-Double-CheckLock实现单例：DCL也就是双重锁判断机制（由于JVM底层模型原因，偶尔会出问题，不建议使用）" class="headerlink" title="3. Double CheckLock实现单例：DCL也就是双重锁判断机制（由于JVM底层模型原因，偶尔会出问题，不建议使用）"></a>3. Double CheckLock实现单例：DCL也就是双重锁判断机制（由于JVM底层模型原因，偶尔会出问题，不建议使用）</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Singleton&#123;</span><br><span class="line">    private static volatile Singleton singleton;</span><br><span class="line"></span><br><span class="line">    private Singleton()&#123;&#125;</span><br><span class="line"></span><br><span class="line">    public static Singleton getInstance()&#123;</span><br><span class="line">        synchronized(Singleton.class)&#123;</span><br><span class="line">            if(singleton == null)&#123;</span><br><span class="line">                synchronized(Singleton.class)&#123;</span><br><span class="line">                    singleton = new Singleton();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return signleton;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="4-静态内部类实现模式（线程安全，调用效率高，可以延时加载）"><a href="#4-静态内部类实现模式（线程安全，调用效率高，可以延时加载）" class="headerlink" title="4. 静态内部类实现模式（线程安全，调用效率高，可以延时加载）"></a>4. 静态内部类实现模式（线程安全，调用效率高，可以延时加载）</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class SingletonDemo3 &#123;</span><br><span class="line">    private static class SingletonClassInstance&#123;</span><br><span class="line">        private static final SingletonDemo3 instance=new SingletonDemo3();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private SingletonDemo3()&#123;&#125;</span><br><span class="line"></span><br><span class="line">    public static SingletonDemo3 getInstance()&#123;</span><br><span class="line">        return SingletonClassInstance.instance;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="5-枚举类（线程安全，调用效率高，不能延时加载，可以天然的防止反射和反序列化调用）"><a href="#5-枚举类（线程安全，调用效率高，不能延时加载，可以天然的防止反射和反序列化调用）" class="headerlink" title="5.枚举类（线程安全，调用效率高，不能延时加载，可以天然的防止反射和反序列化调用）"></a>5.枚举类（线程安全，调用效率高，不能延时加载，可以天然的防止反射和反序列化调用）</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public enum Singleton&#123;</span><br><span class="line">    INSTANCE;</span><br><span class="line">     public void doSomething() &#123;</span><br><span class="line">        System.out.println(&quot;doSomething&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><ol>
-<li><a href="https://www.cnblogs.com/happy4java/p/11206105.html" target="_blank" rel="noopener">https://www.cnblogs.com/happy4java/p/11206105.html</a></li>
-<li><a href="https://www.cnblogs.com/shujiying/p/13127418.html" target="_blank" rel="noopener">https://www.cnblogs.com/shujiying/p/13127418.html</a></li>
-</ol>
-]]></content>
-      <tags>
-        <tag>设计模式</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>堆排序算法</title>
     <url>/2020/08/24/%E5%A0%86%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/</url>
     <content><![CDATA[<p><strong>堆排序</strong></p>
@@ -2057,6 +2043,24 @@
         <tag>java</tag>
         <tag>python</tag>
         <tag>算法</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>单例模式的几种实现方式</title>
+    <url>/2020/07/06/%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F%E7%9A%84%E5%87%A0%E7%A7%8D%E5%AE%9E%E7%8E%B0%E6%96%B9%E5%BC%8F/</url>
+    <content><![CDATA[<h2 id="1-饿汉式-线程安全，调用效率高，但是不能延时加载-："><a href="#1-饿汉式-线程安全，调用效率高，但是不能延时加载-：" class="headerlink" title="1. 饿汉式(线程安全，调用效率高，但是不能延时加载)："></a>1. 饿汉式(线程安全，调用效率高，但是不能延时加载)：</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Singleton&#123; </span><br><span class="line">     private static Singleton instance = new Singleton; </span><br><span class="line">     private Singleton()&#123;&#125; </span><br><span class="line">     public static Singleton getInstance()&#123;  </span><br><span class="line">          return instance;  </span><br><span class="line">      &#125; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>一上来就把单例对象创建出来了，要用的时候直接返回即可，这种可以说是单例模式中最简单的一种实现方式。但是问题也比较明显。单例在还没有使用到的时候，初始化就已经完成了。也就是说，如果程序从头到位都没用使用这个单例的话，单例的对象还是会创建。这就造成了不必要的资源浪费。所以不推荐这种实现方式。</p>
+<h2 id="2-懒汉式-线程安全，调用效率不高，但是能延时加载"><a href="#2-懒汉式-线程安全，调用效率不高，但是能延时加载" class="headerlink" title="2. 懒汉式(线程安全，调用效率不高，但是能延时加载)"></a>2. 懒汉式(线程安全，调用效率不高，但是能延时加载)</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Singleton &#123;</span><br><span class="line">     </span><br><span class="line">    //类初始化时，不初始化这个对象(延时加载，真正用的时候再创建)</span><br><span class="line">    private static Singleton instance;</span><br><span class="line">     </span><br><span class="line">    //构造器私有化</span><br><span class="line">    private Singleton()&#123;&#125;</span><br><span class="line">     </span><br><span class="line">    //方法同步，调用效率低</span><br><span class="line">    public static synchronized Singleton getInstance()&#123;</span><br><span class="line">        if(instance==null)&#123;</span><br><span class="line">            instance=new Singleton();</span><br><span class="line">        &#125;</span><br><span class="line">        return instance;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="3-Double-CheckLock实现单例：DCL也就是双重锁判断机制（由于JVM底层模型原因，偶尔会出问题，不建议使用）"><a href="#3-Double-CheckLock实现单例：DCL也就是双重锁判断机制（由于JVM底层模型原因，偶尔会出问题，不建议使用）" class="headerlink" title="3. Double CheckLock实现单例：DCL也就是双重锁判断机制（由于JVM底层模型原因，偶尔会出问题，不建议使用）"></a>3. Double CheckLock实现单例：DCL也就是双重锁判断机制（由于JVM底层模型原因，偶尔会出问题，不建议使用）</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Singleton&#123;</span><br><span class="line">    private static volatile Singleton singleton;</span><br><span class="line"></span><br><span class="line">    private Singleton()&#123;&#125;</span><br><span class="line"></span><br><span class="line">    public static Singleton getInstance()&#123;</span><br><span class="line">        synchronized(Singleton.class)&#123;</span><br><span class="line">            if(singleton == null)&#123;</span><br><span class="line">                synchronized(Singleton.class)&#123;</span><br><span class="line">                    singleton = new Singleton();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return signleton;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="4-静态内部类实现模式（线程安全，调用效率高，可以延时加载）"><a href="#4-静态内部类实现模式（线程安全，调用效率高，可以延时加载）" class="headerlink" title="4. 静态内部类实现模式（线程安全，调用效率高，可以延时加载）"></a>4. 静态内部类实现模式（线程安全，调用效率高，可以延时加载）</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class SingletonDemo3 &#123;</span><br><span class="line">    private static class SingletonClassInstance&#123;</span><br><span class="line">        private static final SingletonDemo3 instance=new SingletonDemo3();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private SingletonDemo3()&#123;&#125;</span><br><span class="line"></span><br><span class="line">    public static SingletonDemo3 getInstance()&#123;</span><br><span class="line">        return SingletonClassInstance.instance;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="5-枚举类（线程安全，调用效率高，不能延时加载，可以天然的防止反射和反序列化调用）"><a href="#5-枚举类（线程安全，调用效率高，不能延时加载，可以天然的防止反射和反序列化调用）" class="headerlink" title="5.枚举类（线程安全，调用效率高，不能延时加载，可以天然的防止反射和反序列化调用）"></a>5.枚举类（线程安全，调用效率高，不能延时加载，可以天然的防止反射和反序列化调用）</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public enum Singleton&#123;</span><br><span class="line">    INSTANCE;</span><br><span class="line">     public void doSomething() &#123;</span><br><span class="line">        System.out.println(&quot;doSomething&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><ol>
+<li><a href="https://www.cnblogs.com/happy4java/p/11206105.html" target="_blank" rel="noopener">https://www.cnblogs.com/happy4java/p/11206105.html</a></li>
+<li><a href="https://www.cnblogs.com/shujiying/p/13127418.html" target="_blank" rel="noopener">https://www.cnblogs.com/shujiying/p/13127418.html</a></li>
+</ol>
+]]></content>
+      <tags>
+        <tag>设计模式</tag>
       </tags>
   </entry>
   <entry>
@@ -3465,53 +3469,6 @@
       </tags>
   </entry>
   <entry>
-    <title>rpm包制作流程</title>
-    <url>/2020/09/22/rpm%E5%8C%85%E5%88%B6%E4%BD%9C%E6%B5%81%E7%A8%8B/</url>
-    <content><![CDATA[<h4 id="什么是rpm包？"><a href="#什么是rpm包？" class="headerlink" title="什么是rpm包？"></a>什么是rpm包？</h4><p>rpm 相当于windows中的安装文件，它会自动处理软件包之间的依赖关系。</p>
-<p>rpm优点：<br>包管理系统简单，通过几个命令就可以实现包的安装、升级、卸载。<br>安装速度比源码包快的多。<br>缺点：<br>经过编译，不能看到源代码，功能选择不如源码灵活。依赖性强。</p>
-<h4 id="包名称"><a href="#包名称" class="headerlink" title="包名称"></a>包名称</h4><p>一个rpm包的名称分为包全名和包名，包全名如httpd-2.2.15-39.el6.centos.x86_64.rpm，包全名中各部分的意义如下：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">httpd       包名</span><br><span class="line">2.2.15      版本号，版本号格式[ 主版本号.[ 次版本号.[ 修正号 ] ] ]</span><br><span class="line">39          软件发布次数</span><br><span class="line">el6.centos  适合的操作系统平台以及适合的操作系统版本</span><br><span class="line">x86_64      适合的硬件平台，硬件平台根据cpu来决定，有i386、i586、i686、x86_64、noarch或者省略，noarch或省略表示不区分硬件平台</span><br><span class="line">rpm         软件包后缀扩展名</span><br></pre></td></tr></table></figure>
-<p>使用rpm工具管理包时，如果要操作未安装的包，则使用包全名，如安装包，查看未安装包的信息等；如果要操作已安装的rpm包，则只需要给定其包名即可，如查询已装包生成了哪些文件，查看已装包的信息等。</p>
-<p>而对于yum工具来说，只需给定其包名即可，若有需要，再指定版本号，如明确指明要安装1.6.10版本的tree工具，yum install tree-1.6.10。</p>
-<h4 id="rpm管理包"><a href="#rpm管理包" class="headerlink" title="rpm管理包"></a>rpm管理包</h4><p>rpm包被安装后，会在/var/lib/rpm下会建立已装rpm数据库，以后有任何rpm的升级、查询、版本比较等包的操作都是从这个目录下获取信息并完成相应操作的。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">root@xuexi ~]# ls /var/lib/rpm/ </span><br><span class="line">Basenames     __db.003     Group         Packages        Requirename     Triggername</span><br><span class="line">Conflictname  __db.004     Installtid    Providename     Requireversion</span><br><span class="line">__db.001      Dirnames     Name          Provideversion  Sha1header</span><br><span class="line">__db.002      Filedigests  Obsoletename  Pubkeys         Sigmd5</span><br></pre></td></tr></table></figure>
-<p>rpm安装完成后，相关的文件会复制到多个目录下(具体复制的路径是在制作rpm包时指定的)。一般来说，分布形式差不多如下表。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">/etc 放置配置文件的目录</span><br><span class="line">/bin、/sbin、/usr/bin或/usr/sbin 一些可执行文件</span><br><span class="line">/lib、/lib64、/usr/lib(/usr/lib64) 一些库文件</span><br><span class="line">/usr/include  一些头文件</span><br><span class="line">/usr/share/doc 一些基本的软件使用手册与帮助文件</span><br><span class="line">/usr/share/man 一些 man page 档案</span><br></pre></td></tr></table></figure>
-<h4 id="rpm安装、升级、卸载"><a href="#rpm安装、升级、卸载" class="headerlink" title="rpm安装、升级、卸载"></a>rpm安装、升级、卸载</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">rpm -ivhUe --nodeps --test --force --prefix</span><br><span class="line">选项说明：</span><br><span class="line">-i 表示安装，install的意思</span><br><span class="line">-v 显示安装信息，还可以&quot;-vv&quot;、&quot;-vvv&quot;，v提供的越多显示信息越多</span><br><span class="line">-h 显示安装进度，以#显示安装的进度</span><br><span class="line">-U 升级或升级包</span><br><span class="line">-F 只升级已安装的包</span><br><span class="line">-e 卸载包，卸载也有依赖性,&quot;--erase&quot;</span><br><span class="line">--nodeps 忽略依赖性强制安装或卸载(no dependencies)</span><br><span class="line">--test 测试是否能够成功安装指定的rpm包</span><br><span class="line">--prefix 新路径 自行指定安装路径而不是使用默认路径，基本上都不支持该功能，功能极其简单的软件估计才支持重定位安装路径</span><br><span class="line">--force 强制动作</span><br><span class="line">--replacepkgs 替换安装，即重新覆盖安装。</span><br></pre></td></tr></table></figure>
-<h4 id="rpm查询功能"><a href="#rpm查询功能" class="headerlink" title="rpm查询功能"></a>rpm查询功能</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">-q[p] -q查询已安装的包，-qp查询未安装的包。它们都可接下面的参数</span><br><span class="line">    -a 查询所有已安装的包，也可以指定通配符名称进行查询</span><br><span class="line">    -i 查询指定包的信息（版本、开发商、安装时间等）。从这里面可以查看到软件包属于哪个包组。</span><br><span class="line">    -l 查询包的文件列表和目录（包在生产的时候就指定了文件路径，因此可查未装包）</span><br><span class="line">    -R 查询包的依赖性（Required）</span><br><span class="line">    -c 查询安装后包生成的配置文件</span><br><span class="line">    -d 查询安装后包生成的帮助文档</span><br><span class="line">-f 查询系统文件属于哪个已安装的包（接的是文件而不是包）</span><br><span class="line">--scripts 查询包相关的脚本文档。脚本文档分四类：安装前运行、安装后运行、卸载前运行、卸载后运行</span><br><span class="line"></span><br><span class="line">(1).查询文件/etc/yum.conf是通过哪个包安装的。</span><br><span class="line">[root@xuexi cdrom]# rpm -qf /etc/yum.conf</span><br><span class="line">yum-3.2.29-60.el6.centos.noarch</span><br><span class="line"></span><br><span class="line">(2).查询安装httpd时生成了哪些目录和文件，还可以过滤出提供了哪些命令行工具。</span><br><span class="line">rpm -ql httpd</span><br><span class="line">rpm -ql httpd | grep &apos;bin/&apos;</span><br><span class="line"></span><br><span class="line">(3).查询某个未安装包的依赖性如zip-3.0-1.el6.x86_64.rpm的依赖性。</span><br><span class="line">[root@xuexi cdrom]# rpm -qRp zip-3.0-1.el6.x86_64.rpm</span><br><span class="line">libc.so.6()(64bit) </span><br><span class="line">libc.so.6(GLIBC_2.2.5)(64bit) </span><br><span class="line">libc.so.6(GLIBC_2.3)(64bit) </span><br><span class="line">libc.so.6(GLIBC_2.3.4)(64bit) </span><br><span class="line">libc.so.6(GLIBC_2.4)(64bit) </span><br><span class="line">libc.so.6(GLIBC_2.7)(64bit) </span><br><span class="line">rpmlib(CompressedFileNames) &lt;= 3.0.4-1</span><br><span class="line">rpmlib(FileDigests) &lt;= 4.6.0-1</span><br><span class="line">rpmlib(PayloadFilesHavePrefix) &lt;= 4.0-1</span><br><span class="line">rtld(GNU_HASH) </span><br><span class="line">rpmlib(PayloadIsXz) &lt;= 5.2-1</span><br></pre></td></tr></table></figure>
-<h4 id="yum管理包"><a href="#yum管理包" class="headerlink" title="yum管理包"></a>yum管理包</h4><p>/etc/yum.conf是yum的默认文件，里面配置的也是全局默认项。<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[root@server2 ~]# cat /etc/yum.conf</span><br><span class="line"></span><br><span class="line">[main]</span><br><span class="line">cachedir=/var/cache/yum/$basearch/$releasever   # 缓存目录</span><br><span class="line">keepcache=0          # 是否保留缓存，设置为1时，安装包时所下载的包将不会被删除</span><br><span class="line">debuglevel=2         # 调试信息的级别</span><br><span class="line">logfile=/var/log/yum.log   # 日志文件位置</span><br><span class="line">exactarch=1         # 设置为1将只会安装和系统架构完全匹配的包</span><br><span class="line">obsoletes=1         # 是否允许更新旧的包</span><br><span class="line">gpgcheck=1          # 是否要进行gpg check</span><br><span class="line">plugins=1           # 是否允许使用yum插件</span><br><span class="line">installonly_limit=5</span><br><span class="line">bugtracker_url=http://bugs.centos.org/set_project.php?project_id=23&amp;ref=http://bugs.centos.org/bug_report_page.php?category=yum</span><br><span class="line">distroverpkg=centos-release    # 指定基准包，yum会根据这个包判断发行版本</span><br></pre></td></tr></table></figure></p>
-<h4 id="配置yum仓库"><a href="#配置yum仓库" class="headerlink" title="配置yum仓库"></a>配置yum仓库</h4><p>首先配置yum仓库，配置文件为/etc/yum.conf和/etc/yum.repos.d/中的”.repo”文件，其中/etc/yum.conf配置的是仓库的默认项，一般配置yum源都是在/etc/yum.repos.d/*.repo中配置。注意，该目录中任意repo文件都会被读取。</p>
-<p>默认/etc/yum.repos.d/下会有以下几个仓库文件，除了CentOS-Base.repo，其他的都可以删掉，基本没用。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[root@xuexi yum.repos.d]# vim CentOS-Base.repo</span><br><span class="line"></span><br><span class="line">[base]      # 仓库ID，ID必须保证唯一性</span><br><span class="line">name        # 仓库名称，可随意命名</span><br><span class="line">mirrorlist  # 该地址下包含了仓库地址列表，包含一个或多个镜像站点，和baseurl使用一个就可以了</span><br><span class="line">#baseurl    # 仓库地址。网络上的地址则写网络地址，本地地址则写本地地址，格式为“file://”后接路径，如file:///mnt/cdrom</span><br><span class="line">gpgcheck=1  # 指定是否需要签名，1表示需要，0表示不需要</span><br><span class="line">gpgkey=     # 签名文件的路径</span><br><span class="line">enable      # 该仓库是否生效，enable=1表示生效，enable=0表示不生效</span><br><span class="line">cost=       # 开销越高，优先级越低</span><br><span class="line"></span><br><span class="line">【repo配置文件中可用的宏：】</span><br><span class="line">$releasever：程序的版本，对Yum而言指的是redhat-relrase版本。只替换为主版本号，如Redhat6.5 则替换为6</span><br><span class="line">$arch：系统架构</span><br><span class="line">$basharch：系统基本架构，如i686，i586等的基本架构为i386</span><br><span class="line">$YUM0-9：在系统定义的环境变量，可以在yum中使用</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">安装epel-release-noarch.rpm</span><br><span class="line">rpm -ivh epel-release-latest-6.noarch.rpm</span><br><span class="line"></span><br><span class="line">方法二：直接增加epel仓库</span><br><span class="line">在/etc/yum.repos.d/下任意一个repo文件中添加上epel的仓库即可。</span><br><span class="line">[epel]</span><br><span class="line">name=epel</span><br><span class="line">baseurl=http://mirrors.sohu.com/fedora-epel/6Server/$basearch/</span><br><span class="line">enabled=1</span><br><span class="line">gpgcheck=0</span><br><span class="line"></span><br><span class="line">然后清除缓存再建立缓存即可。</span><br><span class="line"></span><br><span class="line">shell&gt; yum clean all ; yum makecache</span><br></pre></td></tr></table></figure>
-<h4 id="yum命令"><a href="#yum命令" class="headerlink" title="yum命令"></a>yum命令</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Usage: yum [options] COMMAND</span><br><span class="line"></span><br><span class="line">List of Commands:</span><br><span class="line">help           命令的帮助信息，用法：yum help command，如yum help install则查看install命令的用法说明</span><br><span class="line">clean          清除缓存数据，如yum clean all</span><br><span class="line">makecache      生成元数据缓存数据，yum makecache</span><br><span class="line">deplist        列出包的依赖关系</span><br><span class="line">erase          卸载包</span><br><span class="line">fs             为当前文件系统创建快照，或者列出或删除当前已有快照。快照是非常有用的，升级或打补丁前拍个快照，就能放心地升级或打补丁了</span><br><span class="line">fssnapshot     同fs一样</span><br><span class="line">groups         操作包组</span><br><span class="line">history        查看yum事务信息，yum是独占模式的进程，所以有时候查看事务信息还是有用的</span><br><span class="line">info           输出包或包组的信息，例如该包是谁制作的，大概是干什么用的，来源于哪个包组等信息</span><br><span class="line">install        包安装命令</span><br><span class="line">list           列出包名，一般会结合grep来搜索包，如yum list all | grep -i zabbix</span><br><span class="line">provides       搜索给定的内容是谁提供的，可用来搜索来源于个包，如CentOS 7上mysql被mariadb替代，搜索Mysql提供者时就能找出包mariadb</span><br><span class="line">reinstall      重新安装包</span><br><span class="line">repolist       列出可用的仓库列表</span><br><span class="line">search         给定字符串搜索相关包，并给出相关包较为详细的信息</span><br><span class="line">update         更新包</span><br><span class="line"> </span><br><span class="line">Options:</span><br><span class="line"></span><br><span class="line">  -R [minutes], --randomwait=[minutes]：最多等待时间</span><br><span class="line">  -q, --quiet           安静模式</span><br><span class="line">  -v, --verbose         详细模式</span><br><span class="line">  -y, --assumeyes       对所有问题回答yes</span><br><span class="line">  --assumeno            对所有问题回答no</span><br><span class="line">  --enablerepo=[repo]   启用一个或多个仓库，可用通配符通配仓库ID</span><br><span class="line">  --disablerepo=[repo]  禁用一个或多个仓库，可用通配符通配仓库ID</span><br><span class="line">  -x [package], --exclude=[package]  通配要排除的包</span><br><span class="line">  --nogpgcheck          禁用gpgcheck</span><br><span class="line">  --color=COLOR         带颜色</span><br><span class="line">  --downloadonly        仅下载包，不安装或升级。默认下载在yum的缓存目录中，默认为/var/cache/yum/$basearch/$releasever</span><br><span class="line">  --downloaddir=DLDIR   指定下载目录</span><br></pre></td></tr></table></figure>
-<h4 id="制作rpm-包"><a href="#制作rpm-包" class="headerlink" title="制作rpm 包"></a>制作rpm 包</h4><p><strong>安装rpmbuild</strong><br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$yum install rpmbuild</span><br><span class="line">$yum install rpmdevtools </span><br><span class="line">$rpmdev-setuptree</span><br><span class="line"></span><br><span class="line">此时rpmbuild已经安装好了，可以查看一下</span><br><span class="line"></span><br><span class="line">rpmbuild --showrc | grep topdir</span><br></pre></td></tr></table></figure></p>
-<p>进入rpmbuild 目录文件夹如下：<br><img src="/2020/09/22/rpm包制作流程/rpm1.png" alt="avatar"></p>
-<p>各个文件夹的用途：<br><img src="/2020/09/22/rpm包制作流程/rpm2.png" alt="avatar"></p>
-<p><strong>整理源码</strong></p>
-<p>rpmbuild安装完成以后我门就需要将我们的源码放到 SOURCE 文件夹下。我门的源码可能是一个tar.gz 的包、也可能是几个文件。</p>
-<p>tar.gz源码包的名字格式应该为 helloword-1.0.0.tar.gz (其实就是名字-版本号.tar.gz)</p>
-<p><strong>编写spec文件</strong></p>
-<p>在SPECS文件夹下新建 xxx.spec 打包脚本，其实也就是把我门的源码编译打包成rpm 的一个过程。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">vi  xxx.spec </span><br><span class="line"></span><br><span class="line">Name:           hellorpm           #名字为源码tar.gz 包的名字 </span><br><span class="line">Version:        1.0.0             #版本号，一定要与tar.gz包的一致哦 </span><br><span class="line">Release:        1%&#123;?dist&#125;         #释出号，也就是第几次制作rpm </span><br><span class="line">Summary:       helloword   #软件包简介，最好不要超过50字符 </span><br><span class="line"></span><br><span class="line">License:        GPL                   #许可，GPL还是BSD等  </span><br><span class="line">URL:            #可以写一个网址 </span><br><span class="line">Packager:       abel </span><br><span class="line">Source0:        %&#123;name&#125;-%&#123;version&#125;.tar.gz   </span><br><span class="line">#定义用到的source，也就是你的源码</span><br><span class="line"></span><br><span class="line">BuildRoot:      %_topdir/BUILDROOT         </span><br><span class="line">#这个是软件make install 的测试安装目录.</span><br><span class="line"></span><br><span class="line">BuildRequires:  gcc,make                           #制作过程中用到的软件包 </span><br><span class="line">Requires:       python-apscheduler &gt;= 2.1.2-1.el7,python-daemon &gt;= 1.6-1.el7  #软件运行依赖的软件包，也可以指定最低版本如 bash &gt;= 1.1.1 </span><br><span class="line">%description                #描述，随便写                 </span><br><span class="line">%prep                          ＃打包开始                    </span><br><span class="line">%setup -q                      #这个作用静默模式解压并cd                               </span><br><span class="line"></span><br><span class="line"></span><br><span class="line">%build              #编译制作阶段，主要目的就是编译，如果不用编译就为空 </span><br><span class="line">./configure \                                     </span><br><span class="line"> %&#123;?_smp_mflags&#125;          #make后面的意思是：如果就多处理器的话make时并行编译 </span><br><span class="line"></span><br><span class="line">%install                        #安装阶段                        </span><br><span class="line">rm -rf %&#123;buildroot&#125;             #先删除原来的安装的，如果你不是第一次安装的话 </span><br><span class="line"> cp -rp %_topdir/BUILD/%&#123;name&#125;-%&#123;version&#125;/*  $RPM_BUILD_ROOT </span><br><span class="line">#将需要需要打包的文件从BUILD 文件夹中拷贝到BUILDROOT文件夹下。</span><br><span class="line"></span><br><span class="line">#下面的几步pre、post、preun、postun 没必要可以不写 </span><br><span class="line">%pre        #rpm安装前制行的脚本 </span><br><span class="line"></span><br><span class="line">%post       #安装后执行的脚本 </span><br><span class="line"></span><br><span class="line">%preun      #卸载前执行的脚本 </span><br><span class="line"></span><br><span class="line">%postun     #卸载后执行的脚本 </span><br><span class="line"></span><br><span class="line">%clean #清理段,删除buildroot </span><br><span class="line">rm -rf %&#123;buildroot&#125; </span><br><span class="line"></span><br><span class="line"></span><br><span class="line">%files  #rpm要包含的文件 </span><br><span class="line">%defattr (-,root,root,-)   #设定默认权限，如果下面没有指定权限，则继承默认 </span><br><span class="line">/etc/hello/word/helloword.c           #将你需要打包的文件或目录写下来</span><br><span class="line"></span><br><span class="line">###  7.chagelog section  改变日志段 </span><br><span class="line">%changelog</span><br></pre></td></tr></table></figure>
-<p>注意：<br>以上阶段如果没有操作的话，为空，但是不能有空行，例如build阶段为空应写为</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">%build              </span><br><span class="line">%install  </span><br><span class="line">xxxxxxxx   </span><br><span class="line"></span><br><span class="line">错误示例：</span><br><span class="line">%build   </span><br><span class="line"></span><br><span class="line">%install  </span><br><span class="line">xxxxxxxx</span><br></pre></td></tr></table></figure>
-<p>rpm包制作阶段<br><img src="/2020/09/22/rpm包制作流程/rpm3.png" alt="avatar"></p>
-<p><strong>打包</strong></p>
-<p>spec 文件编写好以后就可以进行打包了。<br>在SPECS文件夹下执行命令：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">rpmbuild -bb xxx.spec</span><br></pre></td></tr></table></figure>
-<p>如果出错了可以通过 不同的命令来看是在打包的那一步出了问题。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">rpmbuild  </span><br><span class="line">-ba 既生成src.rpm又生成二进制rpm </span><br><span class="line">-bs 只生成src的rpm </span><br><span class="line">-bb 只生二进制的rpm </span><br><span class="line">-bp 执行到pre </span><br><span class="line">-bc 执行到 build段 </span><br><span class="line">-bi 执行install段 </span><br><span class="line">-bl 检测有文件没包含</span><br></pre></td></tr></table></figure>
-<h4 id="参考文件"><a href="#参考文件" class="headerlink" title="参考文件"></a>参考文件</h4><ol>
-<li><a href="https://blog.csdn.net/u012373815/article/details/73257754" target="_blank" rel="noopener">https://blog.csdn.net/u012373815/article/details/73257754</a></li>
-<li><a href="https://www.cnblogs.com/f-ck-need-u/p/7049750.html" target="_blank" rel="noopener">https://www.cnblogs.com/f-ck-need-u/p/7049750.html</a></li>
-</ol>
-]]></content>
-      <tags>
-        <tag>linux</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>springboot参数校验</title>
     <url>/2020/07/31/springboot%E5%8F%82%E6%95%B0%E6%A0%A1%E9%AA%8C/</url>
     <content><![CDATA[<h2 id="1-前言"><a href="#1-前言" class="headerlink" title="1. 前言"></a>1. 前言</h2><p>因为网络传输的不可靠性，以及前端数据控制的可篡改性，后端的参数校验是必须的，应用程序必须通过某种手段来确保输入进来的数据从语义上来讲是正确的。</p>
@@ -3659,6 +3616,53 @@
 ]]></content>
       <tags>
         <tag>spring</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>rpm包制作流程</title>
+    <url>/2020/09/22/rpm%E5%8C%85%E5%88%B6%E4%BD%9C%E6%B5%81%E7%A8%8B/</url>
+    <content><![CDATA[<h4 id="什么是rpm包？"><a href="#什么是rpm包？" class="headerlink" title="什么是rpm包？"></a>什么是rpm包？</h4><p>rpm 相当于windows中的安装文件，它会自动处理软件包之间的依赖关系。</p>
+<p>rpm优点：<br>包管理系统简单，通过几个命令就可以实现包的安装、升级、卸载。<br>安装速度比源码包快的多。<br>缺点：<br>经过编译，不能看到源代码，功能选择不如源码灵活。依赖性强。</p>
+<h4 id="包名称"><a href="#包名称" class="headerlink" title="包名称"></a>包名称</h4><p>一个rpm包的名称分为包全名和包名，包全名如httpd-2.2.15-39.el6.centos.x86_64.rpm，包全名中各部分的意义如下：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">httpd       包名</span><br><span class="line">2.2.15      版本号，版本号格式[ 主版本号.[ 次版本号.[ 修正号 ] ] ]</span><br><span class="line">39          软件发布次数</span><br><span class="line">el6.centos  适合的操作系统平台以及适合的操作系统版本</span><br><span class="line">x86_64      适合的硬件平台，硬件平台根据cpu来决定，有i386、i586、i686、x86_64、noarch或者省略，noarch或省略表示不区分硬件平台</span><br><span class="line">rpm         软件包后缀扩展名</span><br></pre></td></tr></table></figure>
+<p>使用rpm工具管理包时，如果要操作未安装的包，则使用包全名，如安装包，查看未安装包的信息等；如果要操作已安装的rpm包，则只需要给定其包名即可，如查询已装包生成了哪些文件，查看已装包的信息等。</p>
+<p>而对于yum工具来说，只需给定其包名即可，若有需要，再指定版本号，如明确指明要安装1.6.10版本的tree工具，yum install tree-1.6.10。</p>
+<h4 id="rpm管理包"><a href="#rpm管理包" class="headerlink" title="rpm管理包"></a>rpm管理包</h4><p>rpm包被安装后，会在/var/lib/rpm下会建立已装rpm数据库，以后有任何rpm的升级、查询、版本比较等包的操作都是从这个目录下获取信息并完成相应操作的。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">root@xuexi ~]# ls /var/lib/rpm/ </span><br><span class="line">Basenames     __db.003     Group         Packages        Requirename     Triggername</span><br><span class="line">Conflictname  __db.004     Installtid    Providename     Requireversion</span><br><span class="line">__db.001      Dirnames     Name          Provideversion  Sha1header</span><br><span class="line">__db.002      Filedigests  Obsoletename  Pubkeys         Sigmd5</span><br></pre></td></tr></table></figure>
+<p>rpm安装完成后，相关的文件会复制到多个目录下(具体复制的路径是在制作rpm包时指定的)。一般来说，分布形式差不多如下表。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">/etc 放置配置文件的目录</span><br><span class="line">/bin、/sbin、/usr/bin或/usr/sbin 一些可执行文件</span><br><span class="line">/lib、/lib64、/usr/lib(/usr/lib64) 一些库文件</span><br><span class="line">/usr/include  一些头文件</span><br><span class="line">/usr/share/doc 一些基本的软件使用手册与帮助文件</span><br><span class="line">/usr/share/man 一些 man page 档案</span><br></pre></td></tr></table></figure>
+<h4 id="rpm安装、升级、卸载"><a href="#rpm安装、升级、卸载" class="headerlink" title="rpm安装、升级、卸载"></a>rpm安装、升级、卸载</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">rpm -ivhUe --nodeps --test --force --prefix</span><br><span class="line">选项说明：</span><br><span class="line">-i 表示安装，install的意思</span><br><span class="line">-v 显示安装信息，还可以&quot;-vv&quot;、&quot;-vvv&quot;，v提供的越多显示信息越多</span><br><span class="line">-h 显示安装进度，以#显示安装的进度</span><br><span class="line">-U 升级或升级包</span><br><span class="line">-F 只升级已安装的包</span><br><span class="line">-e 卸载包，卸载也有依赖性,&quot;--erase&quot;</span><br><span class="line">--nodeps 忽略依赖性强制安装或卸载(no dependencies)</span><br><span class="line">--test 测试是否能够成功安装指定的rpm包</span><br><span class="line">--prefix 新路径 自行指定安装路径而不是使用默认路径，基本上都不支持该功能，功能极其简单的软件估计才支持重定位安装路径</span><br><span class="line">--force 强制动作</span><br><span class="line">--replacepkgs 替换安装，即重新覆盖安装。</span><br></pre></td></tr></table></figure>
+<h4 id="rpm查询功能"><a href="#rpm查询功能" class="headerlink" title="rpm查询功能"></a>rpm查询功能</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">-q[p] -q查询已安装的包，-qp查询未安装的包。它们都可接下面的参数</span><br><span class="line">    -a 查询所有已安装的包，也可以指定通配符名称进行查询</span><br><span class="line">    -i 查询指定包的信息（版本、开发商、安装时间等）。从这里面可以查看到软件包属于哪个包组。</span><br><span class="line">    -l 查询包的文件列表和目录（包在生产的时候就指定了文件路径，因此可查未装包）</span><br><span class="line">    -R 查询包的依赖性（Required）</span><br><span class="line">    -c 查询安装后包生成的配置文件</span><br><span class="line">    -d 查询安装后包生成的帮助文档</span><br><span class="line">-f 查询系统文件属于哪个已安装的包（接的是文件而不是包）</span><br><span class="line">--scripts 查询包相关的脚本文档。脚本文档分四类：安装前运行、安装后运行、卸载前运行、卸载后运行</span><br><span class="line"></span><br><span class="line">(1).查询文件/etc/yum.conf是通过哪个包安装的。</span><br><span class="line">[root@xuexi cdrom]# rpm -qf /etc/yum.conf</span><br><span class="line">yum-3.2.29-60.el6.centos.noarch</span><br><span class="line"></span><br><span class="line">(2).查询安装httpd时生成了哪些目录和文件，还可以过滤出提供了哪些命令行工具。</span><br><span class="line">rpm -ql httpd</span><br><span class="line">rpm -ql httpd | grep &apos;bin/&apos;</span><br><span class="line"></span><br><span class="line">(3).查询某个未安装包的依赖性如zip-3.0-1.el6.x86_64.rpm的依赖性。</span><br><span class="line">[root@xuexi cdrom]# rpm -qRp zip-3.0-1.el6.x86_64.rpm</span><br><span class="line">libc.so.6()(64bit) </span><br><span class="line">libc.so.6(GLIBC_2.2.5)(64bit) </span><br><span class="line">libc.so.6(GLIBC_2.3)(64bit) </span><br><span class="line">libc.so.6(GLIBC_2.3.4)(64bit) </span><br><span class="line">libc.so.6(GLIBC_2.4)(64bit) </span><br><span class="line">libc.so.6(GLIBC_2.7)(64bit) </span><br><span class="line">rpmlib(CompressedFileNames) &lt;= 3.0.4-1</span><br><span class="line">rpmlib(FileDigests) &lt;= 4.6.0-1</span><br><span class="line">rpmlib(PayloadFilesHavePrefix) &lt;= 4.0-1</span><br><span class="line">rtld(GNU_HASH) </span><br><span class="line">rpmlib(PayloadIsXz) &lt;= 5.2-1</span><br></pre></td></tr></table></figure>
+<h4 id="yum管理包"><a href="#yum管理包" class="headerlink" title="yum管理包"></a>yum管理包</h4><p>/etc/yum.conf是yum的默认文件，里面配置的也是全局默认项。<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[root@server2 ~]# cat /etc/yum.conf</span><br><span class="line"></span><br><span class="line">[main]</span><br><span class="line">cachedir=/var/cache/yum/$basearch/$releasever   # 缓存目录</span><br><span class="line">keepcache=0          # 是否保留缓存，设置为1时，安装包时所下载的包将不会被删除</span><br><span class="line">debuglevel=2         # 调试信息的级别</span><br><span class="line">logfile=/var/log/yum.log   # 日志文件位置</span><br><span class="line">exactarch=1         # 设置为1将只会安装和系统架构完全匹配的包</span><br><span class="line">obsoletes=1         # 是否允许更新旧的包</span><br><span class="line">gpgcheck=1          # 是否要进行gpg check</span><br><span class="line">plugins=1           # 是否允许使用yum插件</span><br><span class="line">installonly_limit=5</span><br><span class="line">bugtracker_url=http://bugs.centos.org/set_project.php?project_id=23&amp;ref=http://bugs.centos.org/bug_report_page.php?category=yum</span><br><span class="line">distroverpkg=centos-release    # 指定基准包，yum会根据这个包判断发行版本</span><br></pre></td></tr></table></figure></p>
+<h4 id="配置yum仓库"><a href="#配置yum仓库" class="headerlink" title="配置yum仓库"></a>配置yum仓库</h4><p>首先配置yum仓库，配置文件为/etc/yum.conf和/etc/yum.repos.d/中的”.repo”文件，其中/etc/yum.conf配置的是仓库的默认项，一般配置yum源都是在/etc/yum.repos.d/*.repo中配置。注意，该目录中任意repo文件都会被读取。</p>
+<p>默认/etc/yum.repos.d/下会有以下几个仓库文件，除了CentOS-Base.repo，其他的都可以删掉，基本没用。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[root@xuexi yum.repos.d]# vim CentOS-Base.repo</span><br><span class="line"></span><br><span class="line">[base]      # 仓库ID，ID必须保证唯一性</span><br><span class="line">name        # 仓库名称，可随意命名</span><br><span class="line">mirrorlist  # 该地址下包含了仓库地址列表，包含一个或多个镜像站点，和baseurl使用一个就可以了</span><br><span class="line">#baseurl    # 仓库地址。网络上的地址则写网络地址，本地地址则写本地地址，格式为“file://”后接路径，如file:///mnt/cdrom</span><br><span class="line">gpgcheck=1  # 指定是否需要签名，1表示需要，0表示不需要</span><br><span class="line">gpgkey=     # 签名文件的路径</span><br><span class="line">enable      # 该仓库是否生效，enable=1表示生效，enable=0表示不生效</span><br><span class="line">cost=       # 开销越高，优先级越低</span><br><span class="line"></span><br><span class="line">【repo配置文件中可用的宏：】</span><br><span class="line">$releasever：程序的版本，对Yum而言指的是redhat-relrase版本。只替换为主版本号，如Redhat6.5 则替换为6</span><br><span class="line">$arch：系统架构</span><br><span class="line">$basharch：系统基本架构，如i686，i586等的基本架构为i386</span><br><span class="line">$YUM0-9：在系统定义的环境变量，可以在yum中使用</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">安装epel-release-noarch.rpm</span><br><span class="line">rpm -ivh epel-release-latest-6.noarch.rpm</span><br><span class="line"></span><br><span class="line">方法二：直接增加epel仓库</span><br><span class="line">在/etc/yum.repos.d/下任意一个repo文件中添加上epel的仓库即可。</span><br><span class="line">[epel]</span><br><span class="line">name=epel</span><br><span class="line">baseurl=http://mirrors.sohu.com/fedora-epel/6Server/$basearch/</span><br><span class="line">enabled=1</span><br><span class="line">gpgcheck=0</span><br><span class="line"></span><br><span class="line">然后清除缓存再建立缓存即可。</span><br><span class="line"></span><br><span class="line">shell&gt; yum clean all ; yum makecache</span><br></pre></td></tr></table></figure>
+<h4 id="yum命令"><a href="#yum命令" class="headerlink" title="yum命令"></a>yum命令</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Usage: yum [options] COMMAND</span><br><span class="line"></span><br><span class="line">List of Commands:</span><br><span class="line">help           命令的帮助信息，用法：yum help command，如yum help install则查看install命令的用法说明</span><br><span class="line">clean          清除缓存数据，如yum clean all</span><br><span class="line">makecache      生成元数据缓存数据，yum makecache</span><br><span class="line">deplist        列出包的依赖关系</span><br><span class="line">erase          卸载包</span><br><span class="line">fs             为当前文件系统创建快照，或者列出或删除当前已有快照。快照是非常有用的，升级或打补丁前拍个快照，就能放心地升级或打补丁了</span><br><span class="line">fssnapshot     同fs一样</span><br><span class="line">groups         操作包组</span><br><span class="line">history        查看yum事务信息，yum是独占模式的进程，所以有时候查看事务信息还是有用的</span><br><span class="line">info           输出包或包组的信息，例如该包是谁制作的，大概是干什么用的，来源于哪个包组等信息</span><br><span class="line">install        包安装命令</span><br><span class="line">list           列出包名，一般会结合grep来搜索包，如yum list all | grep -i zabbix</span><br><span class="line">provides       搜索给定的内容是谁提供的，可用来搜索来源于个包，如CentOS 7上mysql被mariadb替代，搜索Mysql提供者时就能找出包mariadb</span><br><span class="line">reinstall      重新安装包</span><br><span class="line">repolist       列出可用的仓库列表</span><br><span class="line">search         给定字符串搜索相关包，并给出相关包较为详细的信息</span><br><span class="line">update         更新包</span><br><span class="line"> </span><br><span class="line">Options:</span><br><span class="line"></span><br><span class="line">  -R [minutes], --randomwait=[minutes]：最多等待时间</span><br><span class="line">  -q, --quiet           安静模式</span><br><span class="line">  -v, --verbose         详细模式</span><br><span class="line">  -y, --assumeyes       对所有问题回答yes</span><br><span class="line">  --assumeno            对所有问题回答no</span><br><span class="line">  --enablerepo=[repo]   启用一个或多个仓库，可用通配符通配仓库ID</span><br><span class="line">  --disablerepo=[repo]  禁用一个或多个仓库，可用通配符通配仓库ID</span><br><span class="line">  -x [package], --exclude=[package]  通配要排除的包</span><br><span class="line">  --nogpgcheck          禁用gpgcheck</span><br><span class="line">  --color=COLOR         带颜色</span><br><span class="line">  --downloadonly        仅下载包，不安装或升级。默认下载在yum的缓存目录中，默认为/var/cache/yum/$basearch/$releasever</span><br><span class="line">  --downloaddir=DLDIR   指定下载目录</span><br></pre></td></tr></table></figure>
+<h4 id="制作rpm-包"><a href="#制作rpm-包" class="headerlink" title="制作rpm 包"></a>制作rpm 包</h4><p><strong>安装rpmbuild</strong><br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$yum install rpmbuild</span><br><span class="line">$yum install rpmdevtools </span><br><span class="line">$rpmdev-setuptree</span><br><span class="line"></span><br><span class="line">此时rpmbuild已经安装好了，可以查看一下</span><br><span class="line"></span><br><span class="line">rpmbuild --showrc | grep topdir</span><br></pre></td></tr></table></figure></p>
+<p>进入rpmbuild 目录文件夹如下：<br><img src="/2020/09/22/rpm包制作流程/rpm1.png" alt="avatar"></p>
+<p>各个文件夹的用途：<br><img src="/2020/09/22/rpm包制作流程/rpm2.png" alt="avatar"></p>
+<p><strong>整理源码</strong></p>
+<p>rpmbuild安装完成以后我门就需要将我们的源码放到 SOURCE 文件夹下。我门的源码可能是一个tar.gz 的包、也可能是几个文件。</p>
+<p>tar.gz源码包的名字格式应该为 helloword-1.0.0.tar.gz (其实就是名字-版本号.tar.gz)</p>
+<p><strong>编写spec文件</strong></p>
+<p>在SPECS文件夹下新建 xxx.spec 打包脚本，其实也就是把我门的源码编译打包成rpm 的一个过程。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">vi  xxx.spec </span><br><span class="line"></span><br><span class="line">Name:           hellorpm           #名字为源码tar.gz 包的名字 </span><br><span class="line">Version:        1.0.0             #版本号，一定要与tar.gz包的一致哦 </span><br><span class="line">Release:        1%&#123;?dist&#125;         #释出号，也就是第几次制作rpm </span><br><span class="line">Summary:       helloword   #软件包简介，最好不要超过50字符 </span><br><span class="line"></span><br><span class="line">License:        GPL                   #许可，GPL还是BSD等  </span><br><span class="line">URL:            #可以写一个网址 </span><br><span class="line">Packager:       abel </span><br><span class="line">Source0:        %&#123;name&#125;-%&#123;version&#125;.tar.gz   </span><br><span class="line">#定义用到的source，也就是你的源码</span><br><span class="line"></span><br><span class="line">BuildRoot:      %_topdir/BUILDROOT         </span><br><span class="line">#这个是软件make install 的测试安装目录.</span><br><span class="line"></span><br><span class="line">BuildRequires:  gcc,make                           #制作过程中用到的软件包 </span><br><span class="line">Requires:       python-apscheduler &gt;= 2.1.2-1.el7,python-daemon &gt;= 1.6-1.el7  #软件运行依赖的软件包，也可以指定最低版本如 bash &gt;= 1.1.1 </span><br><span class="line">%description                #描述，随便写                 </span><br><span class="line">%prep                          ＃打包开始                    </span><br><span class="line">%setup -q                      #这个作用静默模式解压并cd                               </span><br><span class="line"></span><br><span class="line"></span><br><span class="line">%build              #编译制作阶段，主要目的就是编译，如果不用编译就为空 </span><br><span class="line">./configure \                                     </span><br><span class="line"> %&#123;?_smp_mflags&#125;          #make后面的意思是：如果就多处理器的话make时并行编译 </span><br><span class="line"></span><br><span class="line">%install                        #安装阶段                        </span><br><span class="line">rm -rf %&#123;buildroot&#125;             #先删除原来的安装的，如果你不是第一次安装的话 </span><br><span class="line"> cp -rp %_topdir/BUILD/%&#123;name&#125;-%&#123;version&#125;/*  $RPM_BUILD_ROOT </span><br><span class="line">#将需要需要打包的文件从BUILD 文件夹中拷贝到BUILDROOT文件夹下。</span><br><span class="line"></span><br><span class="line">#下面的几步pre、post、preun、postun 没必要可以不写 </span><br><span class="line">%pre        #rpm安装前制行的脚本 </span><br><span class="line"></span><br><span class="line">%post       #安装后执行的脚本 </span><br><span class="line"></span><br><span class="line">%preun      #卸载前执行的脚本 </span><br><span class="line"></span><br><span class="line">%postun     #卸载后执行的脚本 </span><br><span class="line"></span><br><span class="line">%clean #清理段,删除buildroot </span><br><span class="line">rm -rf %&#123;buildroot&#125; </span><br><span class="line"></span><br><span class="line"></span><br><span class="line">%files  #rpm要包含的文件 </span><br><span class="line">%defattr (-,root,root,-)   #设定默认权限，如果下面没有指定权限，则继承默认 </span><br><span class="line">/etc/hello/word/helloword.c           #将你需要打包的文件或目录写下来</span><br><span class="line"></span><br><span class="line">###  7.chagelog section  改变日志段 </span><br><span class="line">%changelog</span><br></pre></td></tr></table></figure>
+<p>注意：<br>以上阶段如果没有操作的话，为空，但是不能有空行，例如build阶段为空应写为</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">%build              </span><br><span class="line">%install  </span><br><span class="line">xxxxxxxx   </span><br><span class="line"></span><br><span class="line">错误示例：</span><br><span class="line">%build   </span><br><span class="line"></span><br><span class="line">%install  </span><br><span class="line">xxxxxxxx</span><br></pre></td></tr></table></figure>
+<p>rpm包制作阶段<br><img src="/2020/09/22/rpm包制作流程/rpm3.png" alt="avatar"></p>
+<p><strong>打包</strong></p>
+<p>spec 文件编写好以后就可以进行打包了。<br>在SPECS文件夹下执行命令：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">rpmbuild -bb xxx.spec</span><br></pre></td></tr></table></figure>
+<p>如果出错了可以通过 不同的命令来看是在打包的那一步出了问题。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">rpmbuild  </span><br><span class="line">-ba 既生成src.rpm又生成二进制rpm </span><br><span class="line">-bs 只生成src的rpm </span><br><span class="line">-bb 只生二进制的rpm </span><br><span class="line">-bp 执行到pre </span><br><span class="line">-bc 执行到 build段 </span><br><span class="line">-bi 执行install段 </span><br><span class="line">-bl 检测有文件没包含</span><br></pre></td></tr></table></figure>
+<h4 id="参考文件"><a href="#参考文件" class="headerlink" title="参考文件"></a>参考文件</h4><ol>
+<li><a href="https://blog.csdn.net/u012373815/article/details/73257754" target="_blank" rel="noopener">https://blog.csdn.net/u012373815/article/details/73257754</a></li>
+<li><a href="https://www.cnblogs.com/f-ck-need-u/p/7049750.html" target="_blank" rel="noopener">https://www.cnblogs.com/f-ck-need-u/p/7049750.html</a></li>
+</ol>
+]]></content>
+      <tags>
+        <tag>linux</tag>
       </tags>
   </entry>
   <entry>
@@ -4272,49 +4276,6 @@
       </tags>
   </entry>
   <entry>
-    <title>浅谈UML中常用的几种图</title>
-    <url>/2020/02/27/%E6%B5%85%E8%B0%88UML%E4%B8%AD%E5%B8%B8%E7%94%A8%E7%9A%84%E5%87%A0%E7%A7%8D%E5%9B%BE/</url>
-    <content><![CDATA[<h4 id="UML简介"><a href="#UML简介" class="headerlink" title="UML简介"></a>UML简介</h4><p>统一建模语言（Unified Modeling Language，UML）又称标准建模语言，是始于1997年的一个OMG标准，它是一个支持模型化和软件系统开发的图形化语言，为软件开发的所有阶段提供模型化和可视化支持，包括由需求分析到规格，到构造和配置。‘UML感兴趣的可以阅读UML 1规 范，包含了UML 的所有知识内容。</p>
-<h4 id="UML常见图分类"><a href="#UML常见图分类" class="headerlink" title="UML常见图分类"></a>UML常见图分类</h4><p>UML从考虑系统的不同角度出发，定义了用况图、类图、对象图、包图、状态图、活动图、序列图、通信图、构件图、部署图等10种图。<br>分类：<br>面向对象动态建模，用于建立行为的实体间行为交互的四种图：状态图(Stage Diagram)，序列图(Sequence Diagram)，协作图(Communication Diagram)，活动图(Activity Diagram) 。<br>“序列图”与“协作图”表述的是相似的消息，“活动图”是“状态图”的一种。</p>
-<ul>
-<li>静态结构图Static Structure Diagram<br>类图Class Diagram<br>对象图Object Diagram<br>用况图Use Case Diagram</li>
-<li>交互图Interaction Diagram<br>顺序图Sequence Diagram<br>协作图Collaboration Diagram<br>状态图State chart Diagrams<br>活动图Activity Diagrams</li>
-<li>实现图Implementation Diagrams<br>构件图Component Diagram<br>部署图Deployment Diagram</li>
-</ul>
-<h4 id="用框图（用例）"><a href="#用框图（用例）" class="headerlink" title="用框图（用例）"></a>用框图（用例）</h4><p>用例图，展现了一组用例、参与者（actor）以及它们之间的关系。<br>用例图从用户角度描述系统的静态使用情况，用于建立需求模型。(用于需求分析)</p>
-<p>参与者（Actor）<br>　　在系统外部与系统直接交互的人或事物。需要注意以下两点：<br>　　1）参与者是角色而不是具体的人（可以是外部系统），它代表了参与者在与系统打交道的过程中所扮演的角色。所以在系统的实际运作中，一个实际用户可能对应系统的多个参与者。不同的用户也可以只对应于一个参与者，从而代表同一参与者的不同实例。<br>　　2）参与者作为外部用户（而不是内部）与系统发生交互作用，是它的主要特征。<br>在UML中，参与者使用如图所示的一个小人表示：<br>用例（Use Case）用况<br>   系统外部可见的一个系统功能单元。系统的功能由系统单元所提供，并通过一系列系统单元与一个或多个参与者之间交换的消息所表达。用椭圆表示，椭圆中的文字简述系统的功能;<br>关系（Relationship）<br>　　常见关系类型有关联、泛化、包含和扩展。<br>　　以上各关系在uml图中的表示方式，如下表所示：<br><img src="/2020/02/27/浅谈UML中常用的几种图/uml1.png" alt="avatar"></p>
-<ol>
-<li>关联(Association)<br>　 表示参与者与用例之间的通信，任何一方都可发送或接受消息。<br>　【箭头指向】：指向消息接收方<br><img src="/2020/02/27/浅谈UML中常用的几种图/uml2.png" alt="avatar"></li>
-<li>泛化(Inheritance)<br>　　就是通常理解的继承关系，子用例和父用例相似，但表现出更特别的行为；子用例将继承父用例的所有结构、行为和关系。子用例可以使用父用例的一段行为，也可以重载它。父用例通常是抽象的。<br>【箭头指向】：指向父用例<br><img src="/2020/02/27/浅谈UML中常用的几种图/uml3.png" alt="avatar"></li>
-<li>包含(Include)<br> 包含关系用来把一个较复杂用例所表示的功能分解成较小的步骤。<br>　　【箭头指向】：指向分解出来的功能用例<br><img src="/2020/02/27/浅谈UML中常用的几种图/uml4.png" alt="avatar"></li>
-<li>扩展(Extend)<br>　　扩展关系是指用例功能的延伸，相当于为基础用例提供一个附加功能。<br>　　【箭头指向】：指向基础用例<br><img src="/2020/02/27/浅谈UML中常用的几种图/uml5.png" alt="avatar"><br>包含(include)、扩展(extend)、泛化(Inheritance) 的区别：<br>　　条件性：泛化中的子用例和include中的被包含的用例会无条件发生，而extend中的延伸用例的发生是有条件的；<br>　　直接性：泛化中的子用例和extend中的延伸用例为参与者提供直接服务，而include中被包含的用例为参与者提供间接服务。<br>　　对extend（扩展）而言，延伸用例并不包含基础用例的内容，基础用例也不包含延伸用例的内容。<br>　　对Inheritance（泛化）而言，子用例包含基础用例的所有内容及其和其他用例或参与者之间的关系；</li>
-</ol>
-<h4 id="类图"><a href="#类图" class="headerlink" title="类图"></a>类图</h4><p>在UML类图中，常见的有以下几种关系: 泛化（Generalization）, 实现（Realization），关联（Association)，聚合（Aggregation），组合(Composition)，依赖(Dependency)</p>
-<ol>
-<li>泛化（Generalization）<br>【泛化关系】：是一种继承关系，表示一般与特殊的关系，它指定了子类如何特化父类的所有特征和行为。例如：老虎是动物的一种，即有老虎的特性也有动物的共性。<br>【箭头指向】：带三角箭头的实线，箭头指向父类<br><img src="/2020/02/27/浅谈UML中常用的几种图/uml6.png" alt="avatar"></li>
-<li>实现（Realization）<br>【实现关系】：是一种类与接口的关系，表示类是接口所有特征和行为的实现.<br>【箭头指向】：带三角箭头的虚线，箭头指向接口<br><img src="/2020/02/27/浅谈UML中常用的几种图/uml7.png" alt="avatar"></li>
-<li>关联（Association)<br>【关联关系】：是一种拥有的关系，它使一个类知道另一个类的属性和方法；如：老师与学生，丈夫与妻子关联可以是双向的，也可以是单向的。双向的关联可以有两个箭头或者没有箭头，单向的关联有一个箭头。<br>【代码体现】：成员变量<br>【箭头及指向】：带普通箭头的实心线，指向被拥有者<br><img src="/2020/02/27/浅谈UML中常用的几种图/uml8.png" alt="avatar"></li>
-<li>聚合（Aggregation）<br>【聚合关系】：是整体与部分的关系，且部分可以离开整体而单独存在。如车和轮胎是整体和部分的关系，轮胎离开车仍然可以存在。<br>聚合关系是关联关系的一种，是强的关联关系；关联和聚合在语法上无法区分，必须考察具体的逻辑关系。<br>【代码体现】：成员变量<br>【箭头及指向】：带空心菱形的实心线，菱形指向整体<br><img src="/2020/02/27/浅谈UML中常用的几种图/uml9.png" alt="avatar"></li>
-<li>组合(Composition)<br>【组合关系】：是整体与部分的关系，但部分不能离开整体而单独存在。如公司和部门是整体和部分的关系，没有公司就不存在部门。组合关系是关联关系的一种，是比聚合关系还要强的关系，它要求普通的聚合关系中代表整体的对象负责代表部分的对象的生命周期。<br>【代码体现】：成员变量<br>【箭头及指向】：带实心菱形的实线，菱形指向整体</li>
-<li>依赖(Dependency)<br>【依赖关系】：是一种使用的关系，即一个类的实现需要另一个类的协助，所以要尽量不使用双向的互相依赖.<br>【代码表现】：局部变量、方法的参数或者对静态方法的调用<br>【箭头及指向】：带箭头的虚线，指向被使用者<br><img src="/2020/02/27/浅谈UML中常用的几种图/uml10.png" alt="avatar"></li>
-</ol>
-<p>各种关系的强弱顺序：<br>泛化 = 实现 &gt; 组合 &gt; 聚合 &gt; 关联 &gt; 依赖<br>下面这张UML图，比较形象地展示了各种类图关系：<br><img src="/2020/02/27/浅谈UML中常用的几种图/uml11.png" alt="avatar"></p>
-<h4 id="时序图-顺序图"><a href="#时序图-顺序图" class="headerlink" title="时序图(顺序图)"></a>时序图(顺序图)</h4><ol>
-<li><p>时序图是以时间为序的表示方法，主要用来描述对象之间的时间顺序。将交互关系表示为二维图的。纵轴为时间，横轴为在协作中各个独立的对象。对象存在时用一条虚线表示，当对象的过程处于激活状态是，生命线是一个双道线。消息用从一个对象的生命线到另一个对象生命线的箭头表示。箭头以时间顺序在图中从上到下排列。如下图：<br><img src="/2020/02/27/浅谈UML中常用的几种图/uml12.png" alt="avatar"></p>
-</li>
-<li><p>四个元素（对象，生命线，消息，激活）<br>（1）对象<br>对象的概念就不多说了，就是类的实例化，在系统中随便都可以找到一个对象，因为我们使用的是基于OO编程的VB。<br>（2）生命线<br>表示对象的存在存在多久的时间<br>（3）消息<br>对象之间的单路通信，人有人的语言，机器有机器的语言，人和机器都是靠消息传递信息和指令的。<br>消息的类型大致有：同步与异步，返回、阻止和超时。<br>（4）激活<br>表示这个时间，对象实现操作。时序图是将交互关系表示为二维图的。纵轴为时间，横轴为在协作中各个独立的对象。对象存在时用一条虚线表示，当对象的过程处于激活状态，生命线是一个双道线。消息用从一个对象的生命线到另一个对象生命线的箭头表示。箭头以时间顺序在图中从上到下排列。</p>
-</li>
-</ol>
-<h4 id="协作图（Collaboration-Diagram-communication-Diagram）-通信图"><a href="#协作图（Collaboration-Diagram-communication-Diagram）-通信图" class="headerlink" title="协作图（Collaboration Diagram/communication Diagram）/通信图"></a>协作图（Collaboration Diagram/communication Diagram）/通信图</h4><p>协作图(Collaboration Diagram /Communication Diagram，也叫合作图)是一种交互图（interaction diagram），强调的是发送和接收消息的对象之间的组织结构。一个协作图显示了一系列的对象和在这些对象之间的联系以及对象间发送和接收的消息。对象通常是命名或匿名的类的实例，也可以代表其他事物的实例，例如协作、组件和节点。使用协作图来说明系统的动态情况。<br><img src="/2020/02/27/浅谈UML中常用的几种图/uml13.png" alt="avatar"></p>
-<h4 id="状态图"><a href="#状态图" class="headerlink" title="状态图"></a>状态图</h4><p>1.概述：<br>状态图（Statechart Diagram）主要用于描述一个特定的对象的所有可能状态以及由于各种事件的发生而引起的状态之间的转换。<br>2.构成要素：<br>状态图由状态、转移和事件组成。联合使用状态和转移可以更好地建模它们，有时需要包含决策点和同步条来显示更高层次的细节信息。<br>2.1状态（States）：<br>在对象的生命周期中满足某些条件、执行某些活动或等待某些事件的一个条件或状况。所有的对象都有状态，状态是对象执行了一系列活动的结果，当某个事件发生后，对象的状态将发生变化。<br><img src="/2020/02/27/浅谈UML中常用的几种图/uml14.png" alt="avatar"><br>状态图中可以包含0个多个开始状态，也可以包含多个结束状态。模型不必同时具有开始和结束状态，因为模型可以总是运行，从不停止。<br>2.2转移（Transitions）：<br>两个状态之间的一种关系，表示对象将在第一个状态中执行一定的动作并在某个特定事件发生或某个特定条件满足时进入第二个状态。<br><img src="/2020/02/27/浅谈UML中常用的几种图/uml15.png" alt="avatar"><br>2.3事件：<br>使状态发生变化的某时刻发生的动作或活动，用来指示是什么触发了转移从而导致状态发生了改变。事件通常在从一个状态到另一个状态的转移路径上直接指定。<br><img src="/2020/02/27/浅谈UML中常用的几种图/uml16.png" alt="avatar"><br>2.4判断：<br>判断点通过对事件判断分组转移到各自方向，提高了状态图的可视性。<br><img src="/2020/02/27/浅谈UML中常用的几种图/uml17.png" alt="avatar"></p>
-<h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><p><img src="/2020/02/27/浅谈UML中常用的几种图/uml18.png" alt="avatar"></p>
-<h4 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h4><p><a href="https://blog.csdn.net/qq_35495763/article/details/80764914" target="_blank" rel="noopener">https://blog.csdn.net/qq_35495763/article/details/80764914</a></p>
-]]></content>
-      <tags>
-        <tag>设计模式</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>消息队列小结</title>
     <url>/2021/05/29/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E5%B0%8F%E7%BB%93/</url>
     <content><![CDATA[<h4 id="消息队列优势劣势"><a href="#消息队列优势劣势" class="headerlink" title="消息队列优势劣势"></a>消息队列优势劣势</h4><p>消息队列最常被使用的三种场景：异步处理、流量控制和服务解耦。当然，消息队列的适用范围不仅仅局限于这些场景，还有包括：</p>
@@ -4420,6 +4381,49 @@
 ]]></content>
       <tags>
         <tag>mq</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>浅谈UML中常用的几种图</title>
+    <url>/2020/02/27/%E6%B5%85%E8%B0%88UML%E4%B8%AD%E5%B8%B8%E7%94%A8%E7%9A%84%E5%87%A0%E7%A7%8D%E5%9B%BE/</url>
+    <content><![CDATA[<h4 id="UML简介"><a href="#UML简介" class="headerlink" title="UML简介"></a>UML简介</h4><p>统一建模语言（Unified Modeling Language，UML）又称标准建模语言，是始于1997年的一个OMG标准，它是一个支持模型化和软件系统开发的图形化语言，为软件开发的所有阶段提供模型化和可视化支持，包括由需求分析到规格，到构造和配置。‘UML感兴趣的可以阅读UML 1规 范，包含了UML 的所有知识内容。</p>
+<h4 id="UML常见图分类"><a href="#UML常见图分类" class="headerlink" title="UML常见图分类"></a>UML常见图分类</h4><p>UML从考虑系统的不同角度出发，定义了用况图、类图、对象图、包图、状态图、活动图、序列图、通信图、构件图、部署图等10种图。<br>分类：<br>面向对象动态建模，用于建立行为的实体间行为交互的四种图：状态图(Stage Diagram)，序列图(Sequence Diagram)，协作图(Communication Diagram)，活动图(Activity Diagram) 。<br>“序列图”与“协作图”表述的是相似的消息，“活动图”是“状态图”的一种。</p>
+<ul>
+<li>静态结构图Static Structure Diagram<br>类图Class Diagram<br>对象图Object Diagram<br>用况图Use Case Diagram</li>
+<li>交互图Interaction Diagram<br>顺序图Sequence Diagram<br>协作图Collaboration Diagram<br>状态图State chart Diagrams<br>活动图Activity Diagrams</li>
+<li>实现图Implementation Diagrams<br>构件图Component Diagram<br>部署图Deployment Diagram</li>
+</ul>
+<h4 id="用框图（用例）"><a href="#用框图（用例）" class="headerlink" title="用框图（用例）"></a>用框图（用例）</h4><p>用例图，展现了一组用例、参与者（actor）以及它们之间的关系。<br>用例图从用户角度描述系统的静态使用情况，用于建立需求模型。(用于需求分析)</p>
+<p>参与者（Actor）<br>　　在系统外部与系统直接交互的人或事物。需要注意以下两点：<br>　　1）参与者是角色而不是具体的人（可以是外部系统），它代表了参与者在与系统打交道的过程中所扮演的角色。所以在系统的实际运作中，一个实际用户可能对应系统的多个参与者。不同的用户也可以只对应于一个参与者，从而代表同一参与者的不同实例。<br>　　2）参与者作为外部用户（而不是内部）与系统发生交互作用，是它的主要特征。<br>在UML中，参与者使用如图所示的一个小人表示：<br>用例（Use Case）用况<br>   系统外部可见的一个系统功能单元。系统的功能由系统单元所提供，并通过一系列系统单元与一个或多个参与者之间交换的消息所表达。用椭圆表示，椭圆中的文字简述系统的功能;<br>关系（Relationship）<br>　　常见关系类型有关联、泛化、包含和扩展。<br>　　以上各关系在uml图中的表示方式，如下表所示：<br><img src="/2020/02/27/浅谈UML中常用的几种图/uml1.png" alt="avatar"></p>
+<ol>
+<li>关联(Association)<br>　 表示参与者与用例之间的通信，任何一方都可发送或接受消息。<br>　【箭头指向】：指向消息接收方<br><img src="/2020/02/27/浅谈UML中常用的几种图/uml2.png" alt="avatar"></li>
+<li>泛化(Inheritance)<br>　　就是通常理解的继承关系，子用例和父用例相似，但表现出更特别的行为；子用例将继承父用例的所有结构、行为和关系。子用例可以使用父用例的一段行为，也可以重载它。父用例通常是抽象的。<br>【箭头指向】：指向父用例<br><img src="/2020/02/27/浅谈UML中常用的几种图/uml3.png" alt="avatar"></li>
+<li>包含(Include)<br> 包含关系用来把一个较复杂用例所表示的功能分解成较小的步骤。<br>　　【箭头指向】：指向分解出来的功能用例<br><img src="/2020/02/27/浅谈UML中常用的几种图/uml4.png" alt="avatar"></li>
+<li>扩展(Extend)<br>　　扩展关系是指用例功能的延伸，相当于为基础用例提供一个附加功能。<br>　　【箭头指向】：指向基础用例<br><img src="/2020/02/27/浅谈UML中常用的几种图/uml5.png" alt="avatar"><br>包含(include)、扩展(extend)、泛化(Inheritance) 的区别：<br>　　条件性：泛化中的子用例和include中的被包含的用例会无条件发生，而extend中的延伸用例的发生是有条件的；<br>　　直接性：泛化中的子用例和extend中的延伸用例为参与者提供直接服务，而include中被包含的用例为参与者提供间接服务。<br>　　对extend（扩展）而言，延伸用例并不包含基础用例的内容，基础用例也不包含延伸用例的内容。<br>　　对Inheritance（泛化）而言，子用例包含基础用例的所有内容及其和其他用例或参与者之间的关系；</li>
+</ol>
+<h4 id="类图"><a href="#类图" class="headerlink" title="类图"></a>类图</h4><p>在UML类图中，常见的有以下几种关系: 泛化（Generalization）, 实现（Realization），关联（Association)，聚合（Aggregation），组合(Composition)，依赖(Dependency)</p>
+<ol>
+<li>泛化（Generalization）<br>【泛化关系】：是一种继承关系，表示一般与特殊的关系，它指定了子类如何特化父类的所有特征和行为。例如：老虎是动物的一种，即有老虎的特性也有动物的共性。<br>【箭头指向】：带三角箭头的实线，箭头指向父类<br><img src="/2020/02/27/浅谈UML中常用的几种图/uml6.png" alt="avatar"></li>
+<li>实现（Realization）<br>【实现关系】：是一种类与接口的关系，表示类是接口所有特征和行为的实现.<br>【箭头指向】：带三角箭头的虚线，箭头指向接口<br><img src="/2020/02/27/浅谈UML中常用的几种图/uml7.png" alt="avatar"></li>
+<li>关联（Association)<br>【关联关系】：是一种拥有的关系，它使一个类知道另一个类的属性和方法；如：老师与学生，丈夫与妻子关联可以是双向的，也可以是单向的。双向的关联可以有两个箭头或者没有箭头，单向的关联有一个箭头。<br>【代码体现】：成员变量<br>【箭头及指向】：带普通箭头的实心线，指向被拥有者<br><img src="/2020/02/27/浅谈UML中常用的几种图/uml8.png" alt="avatar"></li>
+<li>聚合（Aggregation）<br>【聚合关系】：是整体与部分的关系，且部分可以离开整体而单独存在。如车和轮胎是整体和部分的关系，轮胎离开车仍然可以存在。<br>聚合关系是关联关系的一种，是强的关联关系；关联和聚合在语法上无法区分，必须考察具体的逻辑关系。<br>【代码体现】：成员变量<br>【箭头及指向】：带空心菱形的实心线，菱形指向整体<br><img src="/2020/02/27/浅谈UML中常用的几种图/uml9.png" alt="avatar"></li>
+<li>组合(Composition)<br>【组合关系】：是整体与部分的关系，但部分不能离开整体而单独存在。如公司和部门是整体和部分的关系，没有公司就不存在部门。组合关系是关联关系的一种，是比聚合关系还要强的关系，它要求普通的聚合关系中代表整体的对象负责代表部分的对象的生命周期。<br>【代码体现】：成员变量<br>【箭头及指向】：带实心菱形的实线，菱形指向整体</li>
+<li>依赖(Dependency)<br>【依赖关系】：是一种使用的关系，即一个类的实现需要另一个类的协助，所以要尽量不使用双向的互相依赖.<br>【代码表现】：局部变量、方法的参数或者对静态方法的调用<br>【箭头及指向】：带箭头的虚线，指向被使用者<br><img src="/2020/02/27/浅谈UML中常用的几种图/uml10.png" alt="avatar"></li>
+</ol>
+<p>各种关系的强弱顺序：<br>泛化 = 实现 &gt; 组合 &gt; 聚合 &gt; 关联 &gt; 依赖<br>下面这张UML图，比较形象地展示了各种类图关系：<br><img src="/2020/02/27/浅谈UML中常用的几种图/uml11.png" alt="avatar"></p>
+<h4 id="时序图-顺序图"><a href="#时序图-顺序图" class="headerlink" title="时序图(顺序图)"></a>时序图(顺序图)</h4><ol>
+<li><p>时序图是以时间为序的表示方法，主要用来描述对象之间的时间顺序。将交互关系表示为二维图的。纵轴为时间，横轴为在协作中各个独立的对象。对象存在时用一条虚线表示，当对象的过程处于激活状态是，生命线是一个双道线。消息用从一个对象的生命线到另一个对象生命线的箭头表示。箭头以时间顺序在图中从上到下排列。如下图：<br><img src="/2020/02/27/浅谈UML中常用的几种图/uml12.png" alt="avatar"></p>
+</li>
+<li><p>四个元素（对象，生命线，消息，激活）<br>（1）对象<br>对象的概念就不多说了，就是类的实例化，在系统中随便都可以找到一个对象，因为我们使用的是基于OO编程的VB。<br>（2）生命线<br>表示对象的存在存在多久的时间<br>（3）消息<br>对象之间的单路通信，人有人的语言，机器有机器的语言，人和机器都是靠消息传递信息和指令的。<br>消息的类型大致有：同步与异步，返回、阻止和超时。<br>（4）激活<br>表示这个时间，对象实现操作。时序图是将交互关系表示为二维图的。纵轴为时间，横轴为在协作中各个独立的对象。对象存在时用一条虚线表示，当对象的过程处于激活状态，生命线是一个双道线。消息用从一个对象的生命线到另一个对象生命线的箭头表示。箭头以时间顺序在图中从上到下排列。</p>
+</li>
+</ol>
+<h4 id="协作图（Collaboration-Diagram-communication-Diagram）-通信图"><a href="#协作图（Collaboration-Diagram-communication-Diagram）-通信图" class="headerlink" title="协作图（Collaboration Diagram/communication Diagram）/通信图"></a>协作图（Collaboration Diagram/communication Diagram）/通信图</h4><p>协作图(Collaboration Diagram /Communication Diagram，也叫合作图)是一种交互图（interaction diagram），强调的是发送和接收消息的对象之间的组织结构。一个协作图显示了一系列的对象和在这些对象之间的联系以及对象间发送和接收的消息。对象通常是命名或匿名的类的实例，也可以代表其他事物的实例，例如协作、组件和节点。使用协作图来说明系统的动态情况。<br><img src="/2020/02/27/浅谈UML中常用的几种图/uml13.png" alt="avatar"></p>
+<h4 id="状态图"><a href="#状态图" class="headerlink" title="状态图"></a>状态图</h4><p>1.概述：<br>状态图（Statechart Diagram）主要用于描述一个特定的对象的所有可能状态以及由于各种事件的发生而引起的状态之间的转换。<br>2.构成要素：<br>状态图由状态、转移和事件组成。联合使用状态和转移可以更好地建模它们，有时需要包含决策点和同步条来显示更高层次的细节信息。<br>2.1状态（States）：<br>在对象的生命周期中满足某些条件、执行某些活动或等待某些事件的一个条件或状况。所有的对象都有状态，状态是对象执行了一系列活动的结果，当某个事件发生后，对象的状态将发生变化。<br><img src="/2020/02/27/浅谈UML中常用的几种图/uml14.png" alt="avatar"><br>状态图中可以包含0个多个开始状态，也可以包含多个结束状态。模型不必同时具有开始和结束状态，因为模型可以总是运行，从不停止。<br>2.2转移（Transitions）：<br>两个状态之间的一种关系，表示对象将在第一个状态中执行一定的动作并在某个特定事件发生或某个特定条件满足时进入第二个状态。<br><img src="/2020/02/27/浅谈UML中常用的几种图/uml15.png" alt="avatar"><br>2.3事件：<br>使状态发生变化的某时刻发生的动作或活动，用来指示是什么触发了转移从而导致状态发生了改变。事件通常在从一个状态到另一个状态的转移路径上直接指定。<br><img src="/2020/02/27/浅谈UML中常用的几种图/uml16.png" alt="avatar"><br>2.4判断：<br>判断点通过对事件判断分组转移到各自方向，提高了状态图的可视性。<br><img src="/2020/02/27/浅谈UML中常用的几种图/uml17.png" alt="avatar"></p>
+<h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><p><img src="/2020/02/27/浅谈UML中常用的几种图/uml18.png" alt="avatar"></p>
+<h4 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h4><p><a href="https://blog.csdn.net/qq_35495763/article/details/80764914" target="_blank" rel="noopener">https://blog.csdn.net/qq_35495763/article/details/80764914</a></p>
+]]></content>
+      <tags>
+        <tag>设计模式</tag>
       </tags>
   </entry>
   <entry>
