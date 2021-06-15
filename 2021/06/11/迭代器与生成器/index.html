@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="mq,">
+  <meta name="keywords" content="python,">
 
 
 
@@ -79,18 +79,18 @@
 
 
 
-<meta name="description" content="下载镜像12345Copy//下载zookeeperdocker pull wurstmeister/zookeeper//下载kafkadocker pull wurstmeister/kafka:2.11-0.11.0.3 启动镜像12345Copy//启动zookeeperdocker run -d --name zookeeper -p 2181:2181  wurstmeister/zo">
-<meta name="keywords" content="mq">
+<meta name="description" content="生成器 生成器本质上就是一个函数，它记住了上一次返回时在函数体中的位置。 对生成器函数的第二次（或第n次）调用，跳转到函数上一次挂起的位置。 而且记录了程序执行的上下文。 生成器不仅“记住”了它的数据状态，生成还记住了程序执行的位置。 迭代器 迭代器是一种支持next()操作的对象。它包含了一组元素，当执行next()操作时，返回其中一个元素。 当所有元素都被返回后，再执行next()报异常—St">
+<meta name="keywords" content="python">
 <meta property="og:type" content="article">
-<meta property="og:title" content="docker环境下使用kafka">
-<meta property="og:url" content="https://alfredliukai.github.io/2021/02/09/docker环境下使用kafka/index.html">
+<meta property="og:title" content="迭代器与生成器">
+<meta property="og:url" content="https://alfredliukai.github.io/2021/06/11/迭代器与生成器/index.html">
 <meta property="og:site_name" content="昨非的个人网站">
-<meta property="og:description" content="下载镜像12345Copy//下载zookeeperdocker pull wurstmeister/zookeeper//下载kafkadocker pull wurstmeister/kafka:2.11-0.11.0.3 启动镜像12345Copy//启动zookeeperdocker run -d --name zookeeper -p 2181:2181  wurstmeister/zo">
+<meta property="og:description" content="生成器 生成器本质上就是一个函数，它记住了上一次返回时在函数体中的位置。 对生成器函数的第二次（或第n次）调用，跳转到函数上一次挂起的位置。 而且记录了程序执行的上下文。 生成器不仅“记住”了它的数据状态，生成还记住了程序执行的位置。 迭代器 迭代器是一种支持next()操作的对象。它包含了一组元素，当执行next()操作时，返回其中一个元素。 当所有元素都被返回后，再执行next()报异常—St">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:updated_time" content="2021-05-29T15:36:17.000Z">
+<meta property="og:updated_time" content="2021-06-15T03:10:58.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="docker环境下使用kafka">
-<meta name="twitter:description" content="下载镜像12345Copy//下载zookeeperdocker pull wurstmeister/zookeeper//下载kafkadocker pull wurstmeister/kafka:2.11-0.11.0.3 启动镜像12345Copy//启动zookeeperdocker run -d --name zookeeper -p 2181:2181  wurstmeister/zo">
+<meta name="twitter:title" content="迭代器与生成器">
+<meta name="twitter:description" content="生成器 生成器本质上就是一个函数，它记住了上一次返回时在函数体中的位置。 对生成器函数的第二次（或第n次）调用，跳转到函数上一次挂起的位置。 而且记录了程序执行的上下文。 生成器不仅“记住”了它的数据状态，生成还记住了程序执行的位置。 迭代器 迭代器是一种支持next()操作的对象。它包含了一组元素，当执行next()操作时，返回其中一个元素。 当所有元素都被返回后，再执行next()报异常—St">
 
 
 
@@ -120,13 +120,13 @@
 
 
 
-  <link rel="canonical" href="https://alfredliukai.github.io/2021/02/09/docker环境下使用kafka/">
+  <link rel="canonical" href="https://alfredliukai.github.io/2021/06/11/迭代器与生成器/">
 
 
 
 
 
-  <title>docker环境下使用kafka | 昨非的个人网站</title>
+  <title>迭代器与生成器 | 昨非的个人网站</title>
   
 
 
@@ -285,7 +285,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://alfredliukai.github.io/2021/02/09/docker环境下使用kafka/">
+    <link itemprop="mainEntityOfPage" href="https://alfredliukai.github.io/2021/06/11/迭代器与生成器/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="昨非">
@@ -302,7 +302,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">docker环境下使用kafka</h1>
+          <h1 class="post-title" itemprop="name headline">迭代器与生成器</h1>
         
 
         <div class="post-meta">
@@ -314,8 +314,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2021-02-09T23:35:48+08:00">
-                2021-02-09
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2021-06-11T13:11:36+08:00">
+                2021-06-11
               </time>
             
 
@@ -352,10 +352,23 @@
       
 
       
-        <h3 id="下载镜像"><a href="#下载镜像" class="headerlink" title="下载镜像"></a>下载镜像</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Copy//下载zookeeper</span><br><span class="line">docker pull wurstmeister/zookeeper</span><br><span class="line"></span><br><span class="line">//下载kafka</span><br><span class="line">docker pull wurstmeister/kafka:2.11-0.11.0.3</span><br></pre></td></tr></table></figure>
-<h3 id="启动镜像"><a href="#启动镜像" class="headerlink" title="启动镜像"></a>启动镜像</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Copy//启动zookeeper</span><br><span class="line">docker run -d --name zookeeper -p 2181:2181  wurstmeister/zookeeper</span><br><span class="line"></span><br><span class="line">//启动kafka</span><br><span class="line">docker run  -d --name kafka -p 9092:9092 -e KAFKA_BROKER_ID=0 -e KAFKA_ZOOKEEPER_CONNECT=192.168.1.106:2181 -e KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://192.168.1.106:9092 -e KAFKA_LISTENERS=PLAINTEXT://0.0.0.0:9092 -t wurstmeister/kafka</span><br></pre></td></tr></table></figure>
-<h3 id="测试kafka"><a href="#测试kafka" class="headerlink" title="测试kafka"></a>测试kafka</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">./kafka-console-producer.sh --broker-list localhost:9092 --topic sun</span><br><span class="line">&gt;123</span><br><span class="line">&gt;asdf</span><br><span class="line">&gt;hahh</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">./kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic sun --from-beginning</span><br></pre></td></tr></table></figure>
-<h3 id="创建查看topic"><a href="#创建查看topic" class="headerlink" title="创建查看topic"></a>创建查看topic</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">bin/kafka-topics.sh --zookeeper 192.168.1.106:2181 --create --topic dalianpai --partitions 2 --replication-factor 1</span><br><span class="line"></span><br><span class="line">bin/kafka-topics.sh --zookeeper 192.168.1.106:2181 --list</span><br></pre></td></tr></table></figure>
+        <p><strong>生成器</strong></p>
+<p>生成器本质上就是一个函数，它记住了上一次返回时在函数体中的位置。</p>
+<p>对生成器函数的第二次（或第n次）调用，跳转到函数上一次挂起的位置。</p>
+<p>而且记录了程序执行的上下文。</p>
+<p>生成器不仅“记住”了它的数据状态，生成还记住了程序执行的位置。</p>
+<p><strong>迭代器</strong></p>
+<p>迭代器是一种支持next()操作的对象。它包含了一组元素，当执行next()操作时，返回其中一个元素。</p>
+<p>当所有元素都被返回后，再执行next()报异常—StopIteration</p>
+<p>生成器一定是可迭代的，也一定是迭代器对象</p>
+<p><strong>区别</strong></p>
+<ol>
+<li>生成器是生成元素的，迭代器是访问集合元素的一种方式</li>
+<li>迭代输出生成器的内容</li>
+<li>迭代器是一种支持next()操作的对象</li>
+<li>迭代器（iterator）：其中iterator对象表示的是一个数据流，可以把它看做一个有序序列，但我们不能提前知道序列的长度，只有通过nex()函数实现需要计算的下一个数据。可以看做生成器的一个子集。</li>
+</ol>
+
       
     </div>
     
@@ -372,7 +385,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/mq/" rel="tag"># mq</a>
+            <a href="/tags/python/" rel="tag"># python</a>
           
         </div>
       
@@ -385,8 +398,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2021/02/05/定制化ISO镜像/" rel="next" title="定制化ISO镜像">
-                <i class="fa fa-chevron-left"></i> 定制化ISO镜像
+              <a href="/2021/06/10/CRIT-Supervisor-running-as-root问题排查/" rel="next" title="CRIT Supervisor running as root问题排查">
+                <i class="fa fa-chevron-left"></i> CRIT Supervisor running as root问题排查
               </a>
             
           </div>
@@ -394,10 +407,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2021/02/18/python基础小结/" rel="prev" title="python基础小结">
-                python基础小结 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -449,17 +458,8 @@
       
 
       
-        <ul class="sidebar-nav motion-element">
-          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
-            Table of Contents
-          </li>
-          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
-            Overview
-          </li>
-        </ul>
-      
 
-      <section class="site-overview-wrap sidebar-panel">
+      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -519,22 +519,6 @@
         </div>
       </section>
 
-      
-      <!--noindex-->
-        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
-          <div class="post-toc">
-
-            
-              
-            
-
-            
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#下载镜像"><span class="nav-number">1.</span> <span class="nav-text">下载镜像</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#启动镜像"><span class="nav-number">2.</span> <span class="nav-text">启动镜像</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#测试kafka"><span class="nav-number">3.</span> <span class="nav-text">测试kafka</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#创建查看topic"><span class="nav-number">4.</span> <span class="nav-text">创建查看topic</span></a></li></ol></div>
-            
-
-          </div>
-        </section>
-      <!--/noindex-->
       
 
       
