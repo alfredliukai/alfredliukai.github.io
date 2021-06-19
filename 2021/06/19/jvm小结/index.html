@@ -93,7 +93,8 @@
 <meta property="og:image" content="https://alfredliukai.github.io/2021/06/19/jvm小结/jvm3.png">
 <meta property="og:image" content="https://alfredliukai.github.io/2021/06/19/jvm小结/jvm4.png">
 <meta property="og:image" content="https://alfredliukai.github.io/2021/06/19/jvm小结/jvm5.png">
-<meta property="og:updated_time" content="2021-06-19T15:53:27.000Z">
+<meta property="og:image" content="https://alfredliukai.github.io/2021/06/19/jvm小结/jvm7.png">
+<meta property="og:updated_time" content="2021-06-19T16:21:08.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="jvm小结">
 <meta name="twitter:description" content="jvm整体架构JVM(虚拟机)：指以软件的方式模拟具有完整硬件系统功能、运行在一个完全隔离环境中的完整计算机系统 ，是物理机的软件实现。jvm的整体架构如下 详细的jvm整体架构如下 在一个java进程中可能有很多正在运行的java线程，那么在每一个java线程中都会独立开辟本地方法栈，程序计算器，和Java栈的，而方法区和堆并不是独立开辟的，他们之间是可以共享的。 内存结构每个组成模块的具体概念">
@@ -390,9 +391,26 @@
 <p>JIT：在Java编程语言和环境中，即时编译器（JIT compiler，just-in-time compiler）是一个把Java的字节码（包括需要被解释的指令的程序）转换成可以直接发送给处理器的指令的程序。</p>
 <p><img src="/2021/06/19/jvm小结/jvm5.png" alt="avatar"></p>
 <h4 id="jvm生命周期"><a href="#jvm生命周期" class="headerlink" title="jvm生命周期"></a>jvm生命周期</h4><p>Java虚拟机的生命周期 一个运行中的Java虚拟机有着一个清晰的任务：执行Java程序。程序开始执行时他才运行，程序结束时他就停止。你在同一台机器上运行三个程序，就会有三个运行中的Java虚拟机。 Java虚拟机总是开始于一个main()方法，这个方法必须是公有、返回void、直接受一个字符串数组。在程序执行时，你必须给Java虚拟机指明这个包换main()方法的类名。 Main()方法是程序的起点，他被执行的线程初始化为程序的初始线程。程序中其他的线程都由他来启动。Java中的线程分为两种：守护线程（daemon）和普通线程（non-daemon）。守护线程是Java虚拟机自己使用的线程，比如负责垃圾收集GC的线程就是一个守护线程。当然，你也可 以把自己的程序用setDeamon设置为守护线程。包含Main()方法的初始线程不是守护线程。 只要Java虚拟机中还有普通的线程在执行，Java虚拟机就不会停止。如果有足够的权限，你可以调用exit()方法终止程序。</p>
+<h4 id="类加载器子系统"><a href="#类加载器子系统" class="headerlink" title="类加载器子系统"></a>类加载器子系统</h4><p><strong>类加载子系统的作用</strong></p>
+<ol>
+<li>类加载子系统负责从文件系统或者网络中加载Class文件，class文件在文件开头有特定的文件标识；</li>
+<li>ClassLoader只负责class文件的加载，至于它是否可以运行，则由Execution Engine决定</li>
+<li>加载的类信息存放于一块成为方法区的内存空间。除了类信息之外，方法区还会存放运行时常量池信息，可能还包括字符串字面量和数字常量（这部分常量信息是Class文件中常量池部分的内存映射）</li>
+</ol>
+<p><strong>类加载子系统的概览图</strong></p>
+<p><img src="/2021/06/19/jvm小结/jvm7.png" alt="avatar"></p>
+<p>类加载子系统主要包括三个环节：</p>
+<ul>
+<li>loading</li>
+<li>linking：verify，prepare，resolve</li>
+<li>initialization</li>
+</ul>
+<p>1.Loading（加载）环节</p>
+<p>通过一个类的全限定明获取定义此类的二进制字节流；<br>将这个字节流所代表的的静态存储结构转化为方法区的运行时数据；<br>在内存中生成一个代表这个类的java.lang.Class对象，作为方法区这个类的各种数据的访问入口</p>
 <h4 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h4><ol>
 <li><a href="https://blog.csdn.net/qq_40368860/article/details/84447085" target="_blank" rel="noopener">https://blog.csdn.net/qq_40368860/article/details/84447085</a></li>
-<li></li>
+<li><a href="https://blog.csdn.net/rabbit_in_android/article/details/50382739" target="_blank" rel="noopener">https://blog.csdn.net/rabbit_in_android/article/details/50382739</a></li>
+<li><a href="https://www.cnblogs.com/lwkdbk/p/12707708.html" target="_blank" rel="noopener">https://www.cnblogs.com/lwkdbk/p/12707708.html</a></li>
 </ol>
 
       
@@ -564,7 +582,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#jvm整体架构"><span class="nav-number">1.</span> <span class="nav-text">jvm整体架构</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#jvm生命周期"><span class="nav-number">2.</span> <span class="nav-text">jvm生命周期</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#参考文献"><span class="nav-number">3.</span> <span class="nav-text">参考文献</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#jvm整体架构"><span class="nav-number">1.</span> <span class="nav-text">jvm整体架构</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#jvm生命周期"><span class="nav-number">2.</span> <span class="nav-text">jvm生命周期</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#类加载器子系统"><span class="nav-number">3.</span> <span class="nav-text">类加载器子系统</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#参考文献"><span class="nav-number">4.</span> <span class="nav-text">参考文献</span></a></li></ol></div>
             
 
           </div>
