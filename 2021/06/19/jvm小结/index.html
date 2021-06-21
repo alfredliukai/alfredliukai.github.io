@@ -94,7 +94,10 @@
 <meta property="og:image" content="https://alfredliukai.github.io/2021/06/19/jvm小结/jvm4.png">
 <meta property="og:image" content="https://alfredliukai.github.io/2021/06/19/jvm小结/jvm5.png">
 <meta property="og:image" content="https://alfredliukai.github.io/2021/06/19/jvm小结/jvm7.png">
-<meta property="og:updated_time" content="2021-06-21T04:25:30.000Z">
+<meta property="og:image" content="https://alfredliukai.github.io/2021/06/19/jvm小结/loader1.png">
+<meta property="og:image" content="https://alfredliukai.github.io/2021/06/19/jvm小结/loader2.png">
+<meta property="og:image" content="https://alfredliukai.github.io/2021/06/19/jvm小结/loader3.png">
+<meta property="og:updated_time" content="2021-06-21T15:54:41.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="jvm小结">
 <meta name="twitter:description" content="jvm整体架构JVM(虚拟机)：指以软件的方式模拟具有完整硬件系统功能、运行在一个完全隔离环境中的完整计算机系统 ，是物理机的软件实现。jvm的整体架构如下 详细的jvm整体架构如下 在一个java进程中可能有很多正在运行的java线程，那么在每一个java线程中都会独立开辟本地方法栈，程序计算器，和Java栈的，而方法区和堆并不是独立开辟的，他们之间是可以共享的。 内存结构每个组成模块的具体概念">
@@ -443,6 +446,73 @@
 <li>虚拟机必须保证一个类的clinit（）在多线程下被同步加载。</li>
 </ul>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">## 示例1 </span><br><span class="line">public class ClassInitTest &#123;</span><br><span class="line"></span><br><span class="line">    private static int num1=1;</span><br><span class="line"></span><br><span class="line">    static&#123;</span><br><span class="line">        num1=2;</span><br><span class="line">        num2=20;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private static int num2=10;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        System.out.println(num1);</span><br><span class="line">        System.out.println(num2);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">## 示例2</span><br><span class="line">public class ClassInitTest2 &#123;</span><br><span class="line"></span><br><span class="line">    static class Father &#123;</span><br><span class="line"></span><br><span class="line">        public static int num = 1;</span><br><span class="line"></span><br><span class="line">        static &#123;</span><br><span class="line">            num = 5;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    static class Son extends Father &#123;</span><br><span class="line"></span><br><span class="line">        private static int numSon = num;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        System.out.println(Son.numSon);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">## 示例3</span><br><span class="line">public class ClassTest3 &#123;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line"></span><br><span class="line">        Runnable r = ()-&gt;&#123;</span><br><span class="line">            System.out.println(&quot;开始&quot;);</span><br><span class="line">            ThreadInit threadInit = new ThreadInit();</span><br><span class="line">            System.out.println(&quot;结束&quot;);</span><br><span class="line">        &#125;;</span><br><span class="line"></span><br><span class="line">        Thread t1 = new Thread(r);</span><br><span class="line">        Thread t2 = new Thread(r);</span><br><span class="line"></span><br><span class="line">        t1.start();</span><br><span class="line">        t2.start();</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    static class ThreadInit &#123;</span><br><span class="line"></span><br><span class="line">        static &#123;</span><br><span class="line">            if(true)&#123;</span><br><span class="line">                System.out.println(&quot;加载当前类&quot;+Thread.currentThread().getName());</span><br><span class="line">                while (true)&#123;</span><br><span class="line"></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="类加载器"><a href="#类加载器" class="headerlink" title="类加载器"></a>类加载器</h4><ul>
+<li>VM支持两种类型的加载器，分别为引导类加载器（BootStrap ClassLoader）和自定义类加载器（User-Defined ClassLoader）</li>
+<li>从概念上来讲，自定义类加载器一般指的是程序中由开发人员自定义的一类类加载器，但是java虚拟机规范却没有这么定义，而是将所有派生于抽象类ClassLoader的类加载器都划分为自定义类加载器。</li>
+<li>对于用户自定义类来说：使用系统类加载器AppClassLoader进行加载，java核心类库都是使用引导类加载器BootStrapClassLoader加载的。</li>
+</ul>
+<p><strong>启动类加载器（引导类加载器，BootStrap ClassLoader）</strong></p>
+<ul>
+<li>这个类加载使用C/C++语言实现的，嵌套在JVM内部</li>
+<li>它用来加载java的核心库（JAVA_HOME/jre/lib/rt.jar/resources.jar或sun.boot.class.path路径下的内容），用于提供JVM自身需要的类</li>
+<li>并不继承自java.lang.ClassLoader,没有父加载器</li>
+<li>加载拓展类和应用程序类加载器，并指定为他们的父加载器</li>
+<li><p>处于安全考虑，BootStrap启动类加载器只加载包名为java、javax、sun等开头的类</p>
+<p><strong>拓展类加载器（Extension ClassLoader）</strong></p>
+</li>
+<li><p>java语言编写 ，由sun.misc.Launcher$ExtClassLoader实现。</p>
+</li>
+<li>派生于ClassLoader类</li>
+<li>父类加载器为启动类加载器</li>
+<li>从java.ext.dirs系统属性所指定的目录中加载类库，或从JDK的安装目录的jre/lib/ext子目录（扩展目录）下加载类库。如果用户创建的JAR放在此目录下，也会由拓展类加载器自动加载</li>
+</ul>
+<p><strong>应用程序类加载器（系统类加载器，AppClassLoader）</strong></p>
+<ul>
+<li>java语言编写， 由sun.misc.Launcher$AppClassLoader实现。</li>
+<li>派生于ClassLoader类</li>
+<li>父类加载器为拓展类加载器</li>
+<li>它负责加载环境变量classpath或系统属性 java.class.path指定路径下的类库</li>
+<li>该类加载器是程序中默认的类加载器，一般来说，java应用的类都是由它来完成加载</li>
+<li>通过ClassLoader.getSystemClassLoader()方法可以获取到该类加载器</li>
+</ul>
+<p><strong>用户自定义类加载器</strong></p>
+<ul>
+<li>隔离加载类</li>
+<li>修改类加载的方式</li>
+<li>拓展加载源</li>
+<li>防止源码泄漏</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line">public class CustomLoader extends ClassLoader &#123;</span><br><span class="line"></span><br><span class="line">    private final String path;</span><br><span class="line"></span><br><span class="line">    public CustomLoader(String path) &#123;</span><br><span class="line">        super(null);</span><br><span class="line">        this.path = path;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    protected Class&lt;?&gt; findClass(String name) throws ClassNotFoundException &#123;</span><br><span class="line"></span><br><span class="line">        byte[] data = new byte[0];</span><br><span class="line"></span><br><span class="line">        try &#123;</span><br><span class="line">            data = readBytes(name);</span><br><span class="line">        &#125; catch (IOException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">        return defineClass(name, data, 0, data.length);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private byte[] readBytes(String name) throws IOException &#123;</span><br><span class="line">        name = name.replaceAll(&quot;\\.&quot;, &quot;\\\\&quot;);</span><br><span class="line">        String classFilePath = path + name + &quot;.class&quot;;</span><br><span class="line">        File classFile = new File(classFilePath);</span><br><span class="line">        InputStream fis = null;</span><br><span class="line"></span><br><span class="line">        ByteArrayOutputStream bos = null;</span><br><span class="line">        byte[] bytes = new byte[1024];</span><br><span class="line"></span><br><span class="line">        byte[] readBytes = null;</span><br><span class="line"></span><br><span class="line">        try &#123;</span><br><span class="line">            bos = new ByteArrayOutputStream();</span><br><span class="line">            fis = new FileInputStream(classFile);</span><br><span class="line">            int length;</span><br><span class="line">            while ((length = fis.read(bytes)) != -1) &#123;</span><br><span class="line">                bos.write(bytes, 0, length);</span><br><span class="line">            &#125;</span><br><span class="line">            readBytes = bos.toByteArray();</span><br><span class="line"></span><br><span class="line">        &#125; catch (Exception e) &#123;</span><br><span class="line"></span><br><span class="line">        &#125; finally &#123;</span><br><span class="line">            if (fis != null) &#123;</span><br><span class="line">                fis.close();</span><br><span class="line">            &#125;</span><br><span class="line">            if (bos != null) &#123;</span><br><span class="line">                bos.close();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        return readBytes;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>ClassLoader的常用方法及获取方法</strong></p>
+<p>ClassLoader类，它是一个抽象类，其后所有的类加载器都继承自ClassLoader（不包括启动类加载器）<br><img src="/2021/06/19/jvm小结/loader1.png" alt="avatar"><br>获取ClassLoader的途径:<br><img src="/2021/06/19/jvm小结/loader2.png" alt="avatar"></p>
+<p><strong>双亲委派机制</strong></p>
+<p>ava虚拟机对class文件采用的是按需加载的方式，也就是说当需要使用该类时才会将她的class文件加载到内存生成的class对象。而且加载某个类的class文件时，java虚拟机采用的是双亲微拍模式，即把请求交由父类处理，它是一种任务委派模式</p>
+<p><img src="/2021/06/19/jvm小结/loader3.png" alt="avatar"></p>
+<p>双亲委派机制的优势：</p>
+<ul>
+<li>避免类的重复加载</li>
+<li>保护程序安全，防止核心API被随意篡改</li>
+</ul>
+<p><strong>沙箱安全机制</strong></p>
+<p>自定义String类，但是在加载自定义String类的时候回率先使用引导类加载器加载，而引导类加载器在加载过程中会先加载jdk自带的文件（rt.jar包中的java\lang\String.class）,报错信息说没有main方法就是因为加载的是rt.jar包中的String类。这样可以保证对java核心源代码的保护，这就是沙箱安全机制。</p>
+<p>注意：</p>
+<p>在jvm中表示两个class对象是否为同一个类存在的两个必要条件：</p>
+<ul>
+<li>类的完整类名必须一致，包括包名加载这个类的ClassLoader（指ClassLoader实例对象）必须相同。换句话说，在jvm中，即使这两个类对象（class对象）来源同一个Class文件，被同一个虚拟机所加载，但只要加载它们的ClassLoader实例对象不同，那么这两个类对象也是不相等的.</li>
+<li>JVM必须知道一个类型是有启动类加载器加载的还是由用户类加载器加载的。如果一个类型由用户类加载器加载的，那么jvm会将这个类加载器的一个引用作为类型信息的会议部分保存在方法区中。当解析一个类型到另一个类型的引用的时候，JVM需要保证两个类型的加载器是相同的。</li>
+</ul>
+<p><strong>类的主动使用和被动使用</strong></p>
+<p>主动使用，分为七种情况：</p>
+<ul>
+<li>创建类的实例</li>
+<li>访问某各类或接口的静态变量，或者对静态变量赋值</li>
+<li>调用类的静态方法</li>
+<li>反射 比如Class.forName(com.dsh.jvm.xxx)</li>
+<li>初始化一个类的子类</li>
+<li>java虚拟机启动时被标明为启动类的类</li>
+<li>JDK 7 开始提供的动态语言支持：</li>
+<li>java.lang.invoke.MethodHandle实例的解析结果REF_getStatic、REF_putStatic、REF_invokeStatic句柄对应的类没有初始化，则初始化</li>
+</ul>
 <h4 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h4><ol>
 <li><a href="https://blog.csdn.net/qq_40368860/article/details/84447085" target="_blank" rel="noopener">https://blog.csdn.net/qq_40368860/article/details/84447085</a></li>
 <li><a href="https://blog.csdn.net/rabbit_in_android/article/details/50382739" target="_blank" rel="noopener">https://blog.csdn.net/rabbit_in_android/article/details/50382739</a></li>
@@ -618,7 +688,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#jvm整体架构"><span class="nav-number">1.</span> <span class="nav-text">jvm整体架构</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#jvm生命周期"><span class="nav-number">2.</span> <span class="nav-text">jvm生命周期</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#类加载器子系统"><span class="nav-number">3.</span> <span class="nav-text">类加载器子系统</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#参考文献"><span class="nav-number">4.</span> <span class="nav-text">参考文献</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#jvm整体架构"><span class="nav-number">1.</span> <span class="nav-text">jvm整体架构</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#jvm生命周期"><span class="nav-number">2.</span> <span class="nav-text">jvm生命周期</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#类加载器子系统"><span class="nav-number">3.</span> <span class="nav-text">类加载器子系统</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#类加载器"><span class="nav-number">4.</span> <span class="nav-text">类加载器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#参考文献"><span class="nav-number">5.</span> <span class="nav-text">参考文献</span></a></li></ol></div>
             
 
           </div>

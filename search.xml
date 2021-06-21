@@ -631,43 +631,6 @@
       </tags>
   </entry>
   <entry>
-    <title>git中的对象简介</title>
-    <url>/2020/07/08/git%E4%B8%AD%E7%9A%84%E5%AF%B9%E8%B1%A1%E7%AE%80%E4%BB%8B/</url>
-    <content><![CDATA[<p>为了加深git中底层对象的理解，特意整理如下文章。<br>Git 保存的不是文件的变化或者差异，而是一系列不同时刻的 快照 。</p>
-<p>在进行提交操作时，Git 会保存一个提交对象（commit object）。 知道了 Git 保存数据的方式，我们可以很自然的想到——该提交对象会包含一个指向暂存内容快照的指针。 但不仅仅是这样，该提交对象还包含了作者的姓名和邮箱、提交时输入的信息以及指向它的父对象的指针。 首次提交产生的提交对象没有父对象，普通提交操作产生的提交对象有一个父对象， 而由多个分支合并产生的提交对象有多个父对象，</p>
-<p>为了更加形象地说明，我们假设现在有一个工作目录，里面包含了三个将要被暂存和提交的文件。 暂存操作会为每一个文件计算校验和（使用我们在 起步 中提到的 SHA-1 哈希算法），然后会把当前版本的文件快照保存到 Git 仓库中 （Git 使用 blob 对象来保存它们），最终将校验和加入到暂存区域等待提交：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ git add README test.rb LICENSE</span><br><span class="line">$ git commit -m &apos;The initial commit of my project&apos;</span><br></pre></td></tr></table></figure>
-<p>当使用 git commit 进行提交操作时，Git 会先计算每一个子目录（本例中只有项目根目录）的校验和， 然后在 Git 仓库中这些校验和保存为树对象。随后，Git 便会创建一个提交对象， 它除了包含上面提到的那些信息外，还包含指向这个树对象（项目根目录）的指针。 如此一来，Git 就可以在需要的时候重现此次保存的快照。</p>
-<p>现在，Git 仓库中有五个对象：三个 blob 对象（保存着文件快照）、一个 树 对象 （记录着目录结构和 blob 对象索引）以及一个 提交 对象（包含着指向前述树对象的指针和所有提交信息）。<br><img src="/2020/07/08/git中的对象简介/git1.png" alt="avatar"><br>Figure 9. 首次提交对象及其树结构<br>做些修改后再次提交，那么这次产生的提交对象会包含一个指向上次提交对象（父对象）的指针。<br><img src="/2020/07/08/git中的对象简介/git2.png" alt="avatar"><br>Figure 10. 提交对象及其父对象<br>Git 的分支，其实本质上仅仅是指向提交对象的可变指针。 Git 的默认分支名字是 master。 在多次提交操作之后，你其实已经有一个指向最后那个提交对象的 master 分支。 master 分支会在每次提交时自动向前移动。<br><img src="/2020/07/08/git中的对象简介/git3.png" alt="avatar"><br>Figure 11. 分支及其提交历史</p>
-<h4 id="分支创建"><a href="#分支创建" class="headerlink" title="分支创建"></a>分支创建</h4><p>Git 是怎么创建新分支的呢？ 很简单，它只是为你创建了一个可以移动的新的指针。 比如，创建一个 testing 分支， 你需要使用 git branch 命令：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ git branch testing</span><br></pre></td></tr></table></figure></p>
-<p>这会在当前所在的提交对象上创建一个指针。<br><img src="/2020/07/08/git中的对象简介/git4.png" alt="avatar"></p>
-<p>Figure 12. 两个指向相同提交历史的分支<br>那么，Git 又是怎么知道当前在哪一个分支上呢？ 也很简单，它有一个名为 HEAD 的特殊指针。 请注意它和许多其它版本控制系统（如 Subversion 或 CVS）里的 HEAD 概念完全不同。 在 Git 中，它是一个指针，指向当前所在的本地分支（译注：将 HEAD 想象为当前分支的别名）。 在本例中，你仍然在 master 分支上。 因为 git branch 命令仅仅 创建 一个新分支，并不会自动切换到新分支中去。</p>
-<p><img src="/2020/07/08/git中的对象简介/git5.png" alt="avatar"></p>
-<p>Figure 13. HEAD 指向当前所在的分支<br>你可以简单地使用 git log 命令查看各个分支当前所指的对象。 提供这一功能的参数是 –decorate<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ git log --oneline --decorate</span><br><span class="line">f30ab (HEAD -&gt; master, testing) add feature #32 - ability to add new formats to the central interface</span><br><span class="line">34ac2 Fixed bug #1328 - stack overflow under certain conditions</span><br><span class="line">98ca9 The initial commit of my project</span><br></pre></td></tr></table></figure></p>
-<p>正如你所见，当前 master 和 testing 分支均指向校验和以 f30ab 开头的提交对象。</p>
-<h4 id="分支切换"><a href="#分支切换" class="headerlink" title="分支切换"></a>分支切换</h4><p>要切换到一个已存在的分支，你需要使用 git checkout 命令。 我们现在切换到新创建的 testing 分支去：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ git checkout testing</span><br></pre></td></tr></table></figure>
-<p>这样 HEAD 就指向 testing 分支了。</p>
-<p><img src="/2020/07/08/git中的对象简介/git6.png" alt="avatar"></p>
-<p>Figure 14. HEAD 指向当前所在的分支<br>那么，这样的实现方式会给我们带来什么好处呢？ 现在不妨再提交一次：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ vim test.rb</span><br><span class="line">$ git commit -a -m &apos;made a change&apos;</span><br></pre></td></tr></table></figure>
-<p><img src="/2020/07/08/git中的对象简介/git7.png" alt="avatar"></p>
-<p>Figure 15. HEAD 分支随着提交操作自动向前移动<br>如图所示，你的 testing 分支向前移动了，但是 master 分支却没有，它仍然指向运行 git checkout 时所指的对象。 这就有意思了，现在我们切换回 master 分支看看：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ git checkout master</span><br></pre></td></tr></table></figure>
-<p><img src="/2020/07/08/git中的对象简介/git8.png" alt="avatar"><br>Figure 16. 检出时 HEAD 随之移动<br>这条命令做了两件事。 一是使 HEAD 指回 master 分支，二是将工作目录恢复成 master 分支所指向的快照内容。 也就是说，你现在做修改的话，项目将始于一个较旧的版本。 本质上来讲，这就是忽略 testing 分支所做的修改，以便于向另一个方向进行开发。</p>
-<p>我们不妨再稍微做些修改并提交：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ vim test.rb</span><br><span class="line">$ git commit -a -m &apos;made other changes&apos;</span><br></pre></td></tr></table></figure>
-<p>现在，这个项目的提交历史已经产生了分叉（参见 项目分叉历史）。 因为刚才你创建了一个新分支，并切换过去进行了一些工作，随后又切换回 master 分支进行了另外一些工作。 上述两次改动针对的是不同分支：你可以在不同分支间不断地来回切换和工作，并在时机成熟时将它们合并起来。 而所有这些工作，你需要的命令只有 branch、checkout 和 commit。<br><img src="/2020/07/08/git中的对象简介/git9.png" alt="avatar"><br>Figure 17. 项目分叉历史<br>你可以简单地使用 git log 命令查看分叉历史。 运行 git log –oneline –decorate –graph –all ，它会输出你的提交历史、各个分支的指向以及项目的分支分叉情况。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ git log --oneline --decorate --graph --all</span><br><span class="line">* c2b9e (HEAD, master) made other changes</span><br><span class="line">| * 87ab2 (testing) made a change</span><br><span class="line">|/</span><br><span class="line">* f30ab add feature #32 - ability to add new formats to the</span><br><span class="line">* 34ac2 fixed bug #1328 - stack overflow under certain conditions</span><br><span class="line">* 98ca9 initial commit of my project</span><br></pre></td></tr></table></figure>
-<p>由于 Git 的分支实质上仅是包含所指对象校验和（长度为 40 的 SHA-1 值字符串）的文件，所以它的创建和销毁都异常高效。 创建一个新分支就相当于往一个文件中写入 41 个字节（40 个字符和 1 个换行符），如此的简单能不快吗？</p>
-<p>这与过去大多数版本控制系统形成了鲜明的对比，它们在创建分支时，将所有的项目文件都复制一遍，并保存到一个特定的目录。 完成这样繁琐的过程通常需要好几秒钟，有时甚至需要好几分钟。所需时间的长短，完全取决于项目的规模。 而在 Git 中，任何规模的项目都能在瞬间创建新分支。 同时，由于每次提交都会记录父对象，所以寻找恰当的合并基础（译注：即共同祖先）也是同样的简单和高效。 这些高效的特性使得 Git 鼓励开发人员频繁地创建和使用分支。</p>
-<h4 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h4><p><a href="https://git-scm.com/book/zh/v2/Git-%E5%88%86%E6%94%AF-%E5%88%86%E6%94%AF%E7%AE%80%E4%BB%8B" target="_blank" rel="noopener">https://git-scm.com/book/zh/v2/Git-%E5%88%86%E6%94%AF-%E5%88%86%E6%94%AF%E7%AE%80%E4%BB%8B</a></p>
-]]></content>
-      <tags>
-        <tag>git</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>git常用命令</title>
     <url>/2020/04/05/git%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/</url>
     <content><![CDATA[<h4 id="git-branch"><a href="#git-branch" class="headerlink" title="git branch"></a>git branch</h4><ul>
@@ -782,17 +745,40 @@
       </tags>
   </entry>
   <entry>
-    <title>golang下sync包整理</title>
-    <url>/2019/04/04/golang%E4%B8%8Bsync%E5%8C%85%E6%95%B4%E7%90%86/</url>
-    <content><![CDATA[<h4 id="sync-Mutex"><a href="#sync-Mutex" class="headerlink" title="sync.Mutex"></a>sync.Mutex</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">type Locker interface &#123;</span><br><span class="line">        Lock()</span><br><span class="line">        Unlock()</span><br><span class="line">&#125;</span><br><span class="line">互斥锁 Mutex</span><br><span class="line">func (m *Mutex) Lock()</span><br><span class="line">func (m *Mutex) Unlock()</span><br><span class="line">读写锁 RWMutex</span><br><span class="line">func (rw *RWMutex) Lock()</span><br><span class="line">func (rw *RWMutex) Unlock()</span><br><span class="line">func (rw *RWMutex) RLock()</span><br><span class="line">func (rw *RWMutex) RUnlock()</span><br></pre></td></tr></table></figure>
-<p>同时只能有一个 goroutine 能够获得写锁定。<br>同时可以有任意多个 gorouinte 获得读锁定。<br>同时只能存在写锁定或读锁定（读和写互斥）。<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">func main()&#123;</span><br><span class="line">	var a = 0</span><br><span class="line">	var lock sync.Mutex</span><br><span class="line">	//var rwlock sync.RWMutex</span><br><span class="line">	for i:=0; i&lt;50;i++&#123;</span><br><span class="line">		go func(idx int) &#123;</span><br><span class="line">			lock.Lock()</span><br><span class="line">			defer lock.Unlock()</span><br><span class="line">			a+=1</span><br><span class="line">			fmt.Printf(&quot;goroutine %d, a=%d\n&quot;, idx, a)</span><br><span class="line">		&#125;(i)</span><br><span class="line">	&#125;</span><br><span class="line">	time.Sleep(time.Second)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h4 id="sync-Once"><a href="#sync-Once" class="headerlink" title="sync.Once"></a>sync.Once</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">type Once struct &#123;</span><br><span class="line">        // 非暴露字段</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func (o *Once) Do(f func())</span><br></pre></td></tr></table></figure>
-<p>使用前先定义 Once 类型变量：var once Once<br>使用的时候向 Once 类型变量传入函数：once.Do(func() { init() })<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">import (</span><br><span class="line">	&quot;fmt&quot;</span><br><span class="line">	&quot;sync&quot;</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">func main()&#123;</span><br><span class="line">	testOnce()</span><br><span class="line">&#125;</span><br><span class="line">func testOnce()&#123;</span><br><span class="line">	var once sync.Once</span><br><span class="line">	testOnceFunction := func()&#123;</span><br><span class="line">		fmt.Println(&quot;Only once&quot;)</span><br><span class="line">	&#125;</span><br><span class="line">	done := make(chan bool)</span><br><span class="line">	a:=0</span><br><span class="line">	var lock sync.Mutex</span><br><span class="line">	for i:=0;i&lt;10;i++&#123;</span><br><span class="line">		go func()&#123;</span><br><span class="line">			lock.Lock()</span><br><span class="line">			defer lock.Unlock()</span><br><span class="line">			once.Do(testOnceFunction)</span><br><span class="line">			fmt.Println(&quot;a=&quot;,a)</span><br><span class="line">			a++</span><br><span class="line">			done &lt;-true</span><br><span class="line">		&#125;()</span><br><span class="line">	&#125;</span><br><span class="line">	for j:=0;j&lt;10;j++&#123;</span><br><span class="line">		&lt;-done</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h4 id="sync-Pool"><a href="#sync-Pool" class="headerlink" title="sync.Pool"></a>sync.Pool</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">type Pool</span><br><span class="line">func (p *Pool) Get() interface&#123;&#125;  </span><br><span class="line">func (p *Pool) Put(x interface&#123;&#125;)  </span><br><span class="line">New func() interface&#123;&#125;</span><br></pre></td></tr></table></figure>
-<p>这个类设计的目的是用来保存和复用临时对象，以减少内存分配，降低CG压力。<br>Get返回Pool中的任意一个对象。<br>如果Pool为空，则调用New返回一个新创建的对象。<br>如果没有设置New，则返回nil。<br>还有一个重要的特性是，放进Pool中的对象，会在说不准什么时候被回收掉。<br>所以如果事先Put进去100个对象，下次Get的时候发现Pool是空也是有可能的。<br>不过这个特性的一个好处就在于不用担心Pool会一直增长，因为Go已经帮你在Pool中做了回收机制。<br>这个清理过程是在每次垃圾回收之前做的。垃圾回收是固定两分钟触发一次。<br>而且每次清理会将Pool中的所有对象都清理掉！<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">func main()&#123;</span><br><span class="line">    // 建立对象</span><br><span class="line">    var pipe = &amp;sync.Pool&#123;New:func()interface&#123;&#125;&#123;return &quot;Hello,BeiJing&quot;&#125;&#125;</span><br><span class="line">    // 准备放入的字符串</span><br><span class="line">    val := &quot;Hello,World!&quot;</span><br><span class="line">    // 放入</span><br><span class="line">    pipe.Put(val)</span><br><span class="line">    // 取出</span><br><span class="line">    log.Println(pipe.Get())</span><br><span class="line">    // 再取就没有了,会自动调用NEW</span><br><span class="line">    log.Println(pipe.Get())</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+    <title>git中的对象简介</title>
+    <url>/2020/07/08/git%E4%B8%AD%E7%9A%84%E5%AF%B9%E8%B1%A1%E7%AE%80%E4%BB%8B/</url>
+    <content><![CDATA[<p>为了加深git中底层对象的理解，特意整理如下文章。<br>Git 保存的不是文件的变化或者差异，而是一系列不同时刻的 快照 。</p>
+<p>在进行提交操作时，Git 会保存一个提交对象（commit object）。 知道了 Git 保存数据的方式，我们可以很自然的想到——该提交对象会包含一个指向暂存内容快照的指针。 但不仅仅是这样，该提交对象还包含了作者的姓名和邮箱、提交时输入的信息以及指向它的父对象的指针。 首次提交产生的提交对象没有父对象，普通提交操作产生的提交对象有一个父对象， 而由多个分支合并产生的提交对象有多个父对象，</p>
+<p>为了更加形象地说明，我们假设现在有一个工作目录，里面包含了三个将要被暂存和提交的文件。 暂存操作会为每一个文件计算校验和（使用我们在 起步 中提到的 SHA-1 哈希算法），然后会把当前版本的文件快照保存到 Git 仓库中 （Git 使用 blob 对象来保存它们），最终将校验和加入到暂存区域等待提交：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ git add README test.rb LICENSE</span><br><span class="line">$ git commit -m &apos;The initial commit of my project&apos;</span><br></pre></td></tr></table></figure>
+<p>当使用 git commit 进行提交操作时，Git 会先计算每一个子目录（本例中只有项目根目录）的校验和， 然后在 Git 仓库中这些校验和保存为树对象。随后，Git 便会创建一个提交对象， 它除了包含上面提到的那些信息外，还包含指向这个树对象（项目根目录）的指针。 如此一来，Git 就可以在需要的时候重现此次保存的快照。</p>
+<p>现在，Git 仓库中有五个对象：三个 blob 对象（保存着文件快照）、一个 树 对象 （记录着目录结构和 blob 对象索引）以及一个 提交 对象（包含着指向前述树对象的指针和所有提交信息）。<br><img src="/2020/07/08/git中的对象简介/git1.png" alt="avatar"><br>Figure 9. 首次提交对象及其树结构<br>做些修改后再次提交，那么这次产生的提交对象会包含一个指向上次提交对象（父对象）的指针。<br><img src="/2020/07/08/git中的对象简介/git2.png" alt="avatar"><br>Figure 10. 提交对象及其父对象<br>Git 的分支，其实本质上仅仅是指向提交对象的可变指针。 Git 的默认分支名字是 master。 在多次提交操作之后，你其实已经有一个指向最后那个提交对象的 master 分支。 master 分支会在每次提交时自动向前移动。<br><img src="/2020/07/08/git中的对象简介/git3.png" alt="avatar"><br>Figure 11. 分支及其提交历史</p>
+<h4 id="分支创建"><a href="#分支创建" class="headerlink" title="分支创建"></a>分支创建</h4><p>Git 是怎么创建新分支的呢？ 很简单，它只是为你创建了一个可以移动的新的指针。 比如，创建一个 testing 分支， 你需要使用 git branch 命令：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ git branch testing</span><br></pre></td></tr></table></figure></p>
+<p>这会在当前所在的提交对象上创建一个指针。<br><img src="/2020/07/08/git中的对象简介/git4.png" alt="avatar"></p>
+<p>Figure 12. 两个指向相同提交历史的分支<br>那么，Git 又是怎么知道当前在哪一个分支上呢？ 也很简单，它有一个名为 HEAD 的特殊指针。 请注意它和许多其它版本控制系统（如 Subversion 或 CVS）里的 HEAD 概念完全不同。 在 Git 中，它是一个指针，指向当前所在的本地分支（译注：将 HEAD 想象为当前分支的别名）。 在本例中，你仍然在 master 分支上。 因为 git branch 命令仅仅 创建 一个新分支，并不会自动切换到新分支中去。</p>
+<p><img src="/2020/07/08/git中的对象简介/git5.png" alt="avatar"></p>
+<p>Figure 13. HEAD 指向当前所在的分支<br>你可以简单地使用 git log 命令查看各个分支当前所指的对象。 提供这一功能的参数是 –decorate<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ git log --oneline --decorate</span><br><span class="line">f30ab (HEAD -&gt; master, testing) add feature #32 - ability to add new formats to the central interface</span><br><span class="line">34ac2 Fixed bug #1328 - stack overflow under certain conditions</span><br><span class="line">98ca9 The initial commit of my project</span><br></pre></td></tr></table></figure></p>
+<p>正如你所见，当前 master 和 testing 分支均指向校验和以 f30ab 开头的提交对象。</p>
+<h4 id="分支切换"><a href="#分支切换" class="headerlink" title="分支切换"></a>分支切换</h4><p>要切换到一个已存在的分支，你需要使用 git checkout 命令。 我们现在切换到新创建的 testing 分支去：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ git checkout testing</span><br></pre></td></tr></table></figure>
+<p>这样 HEAD 就指向 testing 分支了。</p>
+<p><img src="/2020/07/08/git中的对象简介/git6.png" alt="avatar"></p>
+<p>Figure 14. HEAD 指向当前所在的分支<br>那么，这样的实现方式会给我们带来什么好处呢？ 现在不妨再提交一次：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ vim test.rb</span><br><span class="line">$ git commit -a -m &apos;made a change&apos;</span><br></pre></td></tr></table></figure>
+<p><img src="/2020/07/08/git中的对象简介/git7.png" alt="avatar"></p>
+<p>Figure 15. HEAD 分支随着提交操作自动向前移动<br>如图所示，你的 testing 分支向前移动了，但是 master 分支却没有，它仍然指向运行 git checkout 时所指的对象。 这就有意思了，现在我们切换回 master 分支看看：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ git checkout master</span><br></pre></td></tr></table></figure>
+<p><img src="/2020/07/08/git中的对象简介/git8.png" alt="avatar"><br>Figure 16. 检出时 HEAD 随之移动<br>这条命令做了两件事。 一是使 HEAD 指回 master 分支，二是将工作目录恢复成 master 分支所指向的快照内容。 也就是说，你现在做修改的话，项目将始于一个较旧的版本。 本质上来讲，这就是忽略 testing 分支所做的修改，以便于向另一个方向进行开发。</p>
+<p>我们不妨再稍微做些修改并提交：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ vim test.rb</span><br><span class="line">$ git commit -a -m &apos;made other changes&apos;</span><br></pre></td></tr></table></figure>
+<p>现在，这个项目的提交历史已经产生了分叉（参见 项目分叉历史）。 因为刚才你创建了一个新分支，并切换过去进行了一些工作，随后又切换回 master 分支进行了另外一些工作。 上述两次改动针对的是不同分支：你可以在不同分支间不断地来回切换和工作，并在时机成熟时将它们合并起来。 而所有这些工作，你需要的命令只有 branch、checkout 和 commit。<br><img src="/2020/07/08/git中的对象简介/git9.png" alt="avatar"><br>Figure 17. 项目分叉历史<br>你可以简单地使用 git log 命令查看分叉历史。 运行 git log –oneline –decorate –graph –all ，它会输出你的提交历史、各个分支的指向以及项目的分支分叉情况。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ git log --oneline --decorate --graph --all</span><br><span class="line">* c2b9e (HEAD, master) made other changes</span><br><span class="line">| * 87ab2 (testing) made a change</span><br><span class="line">|/</span><br><span class="line">* f30ab add feature #32 - ability to add new formats to the</span><br><span class="line">* 34ac2 fixed bug #1328 - stack overflow under certain conditions</span><br><span class="line">* 98ca9 initial commit of my project</span><br></pre></td></tr></table></figure>
+<p>由于 Git 的分支实质上仅是包含所指对象校验和（长度为 40 的 SHA-1 值字符串）的文件，所以它的创建和销毁都异常高效。 创建一个新分支就相当于往一个文件中写入 41 个字节（40 个字符和 1 个换行符），如此的简单能不快吗？</p>
+<p>这与过去大多数版本控制系统形成了鲜明的对比，它们在创建分支时，将所有的项目文件都复制一遍，并保存到一个特定的目录。 完成这样繁琐的过程通常需要好几秒钟，有时甚至需要好几分钟。所需时间的长短，完全取决于项目的规模。 而在 Git 中，任何规模的项目都能在瞬间创建新分支。 同时，由于每次提交都会记录父对象，所以寻找恰当的合并基础（译注：即共同祖先）也是同样的简单和高效。 这些高效的特性使得 Git 鼓励开发人员频繁地创建和使用分支。</p>
+<h4 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h4><p><a href="https://git-scm.com/book/zh/v2/Git-%E5%88%86%E6%94%AF-%E5%88%86%E6%94%AF%E7%AE%80%E4%BB%8B" target="_blank" rel="noopener">https://git-scm.com/book/zh/v2/Git-%E5%88%86%E6%94%AF-%E5%88%86%E6%94%AF%E7%AE%80%E4%BB%8B</a></p>
 ]]></content>
       <tags>
-        <tag>golang</tag>
+        <tag>git</tag>
       </tags>
   </entry>
   <entry>
@@ -809,6 +795,20 @@
       <categories>
         <category>golang</category>
       </categories>
+      <tags>
+        <tag>golang</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>golang下sync包整理</title>
+    <url>/2019/04/04/golang%E4%B8%8Bsync%E5%8C%85%E6%95%B4%E7%90%86/</url>
+    <content><![CDATA[<h4 id="sync-Mutex"><a href="#sync-Mutex" class="headerlink" title="sync.Mutex"></a>sync.Mutex</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">type Locker interface &#123;</span><br><span class="line">        Lock()</span><br><span class="line">        Unlock()</span><br><span class="line">&#125;</span><br><span class="line">互斥锁 Mutex</span><br><span class="line">func (m *Mutex) Lock()</span><br><span class="line">func (m *Mutex) Unlock()</span><br><span class="line">读写锁 RWMutex</span><br><span class="line">func (rw *RWMutex) Lock()</span><br><span class="line">func (rw *RWMutex) Unlock()</span><br><span class="line">func (rw *RWMutex) RLock()</span><br><span class="line">func (rw *RWMutex) RUnlock()</span><br></pre></td></tr></table></figure>
+<p>同时只能有一个 goroutine 能够获得写锁定。<br>同时可以有任意多个 gorouinte 获得读锁定。<br>同时只能存在写锁定或读锁定（读和写互斥）。<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">func main()&#123;</span><br><span class="line">	var a = 0</span><br><span class="line">	var lock sync.Mutex</span><br><span class="line">	//var rwlock sync.RWMutex</span><br><span class="line">	for i:=0; i&lt;50;i++&#123;</span><br><span class="line">		go func(idx int) &#123;</span><br><span class="line">			lock.Lock()</span><br><span class="line">			defer lock.Unlock()</span><br><span class="line">			a+=1</span><br><span class="line">			fmt.Printf(&quot;goroutine %d, a=%d\n&quot;, idx, a)</span><br><span class="line">		&#125;(i)</span><br><span class="line">	&#125;</span><br><span class="line">	time.Sleep(time.Second)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h4 id="sync-Once"><a href="#sync-Once" class="headerlink" title="sync.Once"></a>sync.Once</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">type Once struct &#123;</span><br><span class="line">        // 非暴露字段</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func (o *Once) Do(f func())</span><br></pre></td></tr></table></figure>
+<p>使用前先定义 Once 类型变量：var once Once<br>使用的时候向 Once 类型变量传入函数：once.Do(func() { init() })<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">import (</span><br><span class="line">	&quot;fmt&quot;</span><br><span class="line">	&quot;sync&quot;</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">func main()&#123;</span><br><span class="line">	testOnce()</span><br><span class="line">&#125;</span><br><span class="line">func testOnce()&#123;</span><br><span class="line">	var once sync.Once</span><br><span class="line">	testOnceFunction := func()&#123;</span><br><span class="line">		fmt.Println(&quot;Only once&quot;)</span><br><span class="line">	&#125;</span><br><span class="line">	done := make(chan bool)</span><br><span class="line">	a:=0</span><br><span class="line">	var lock sync.Mutex</span><br><span class="line">	for i:=0;i&lt;10;i++&#123;</span><br><span class="line">		go func()&#123;</span><br><span class="line">			lock.Lock()</span><br><span class="line">			defer lock.Unlock()</span><br><span class="line">			once.Do(testOnceFunction)</span><br><span class="line">			fmt.Println(&quot;a=&quot;,a)</span><br><span class="line">			a++</span><br><span class="line">			done &lt;-true</span><br><span class="line">		&#125;()</span><br><span class="line">	&#125;</span><br><span class="line">	for j:=0;j&lt;10;j++&#123;</span><br><span class="line">		&lt;-done</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h4 id="sync-Pool"><a href="#sync-Pool" class="headerlink" title="sync.Pool"></a>sync.Pool</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">type Pool</span><br><span class="line">func (p *Pool) Get() interface&#123;&#125;  </span><br><span class="line">func (p *Pool) Put(x interface&#123;&#125;)  </span><br><span class="line">New func() interface&#123;&#125;</span><br></pre></td></tr></table></figure>
+<p>这个类设计的目的是用来保存和复用临时对象，以减少内存分配，降低CG压力。<br>Get返回Pool中的任意一个对象。<br>如果Pool为空，则调用New返回一个新创建的对象。<br>如果没有设置New，则返回nil。<br>还有一个重要的特性是，放进Pool中的对象，会在说不准什么时候被回收掉。<br>所以如果事先Put进去100个对象，下次Get的时候发现Pool是空也是有可能的。<br>不过这个特性的一个好处就在于不用担心Pool会一直增长，因为Go已经帮你在Pool中做了回收机制。<br>这个清理过程是在每次垃圾回收之前做的。垃圾回收是固定两分钟触发一次。<br>而且每次清理会将Pool中的所有对象都清理掉！<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">func main()&#123;</span><br><span class="line">    // 建立对象</span><br><span class="line">    var pipe = &amp;sync.Pool&#123;New:func()interface&#123;&#125;&#123;return &quot;Hello,BeiJing&quot;&#125;&#125;</span><br><span class="line">    // 准备放入的字符串</span><br><span class="line">    val := &quot;Hello,World!&quot;</span><br><span class="line">    // 放入</span><br><span class="line">    pipe.Put(val)</span><br><span class="line">    // 取出</span><br><span class="line">    log.Println(pipe.Get())</span><br><span class="line">    // 再取就没有了,会自动调用NEW</span><br><span class="line">    log.Println(pipe.Get())</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+]]></content>
       <tags>
         <tag>golang</tag>
       </tags>
@@ -2234,6 +2234,34 @@
       </tags>
   </entry>
   <entry>
+    <title>服务器网口分类及顺序确认</title>
+    <url>/2021/04/22/%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%BD%91%E5%8F%A3%E5%88%86%E7%B1%BB%E5%8F%8A%E9%A1%BA%E5%BA%8F%E7%A1%AE%E8%AE%A4/</url>
+    <content><![CDATA[<h4 id="服务器网卡光口和电口的区别"><a href="#服务器网卡光口和电口的区别" class="headerlink" title="服务器网卡光口和电口的区别"></a>服务器网卡光口和电口的区别</h4><p>光纤接口简称为光口也可称之为G口 (意思是G光纤口)，是用来连接光纤线缆的物理接口。其原理是利用了光从光密介质进入光疏介质从而发生了全反射。一般是应用于机房、机柜等大型设备的一个光纤带宽接口。</p>
+<p>电口就是普通的双绞线(TwirstPair)接口，传输的是电信号，而电口是相对光口来讲的，是指防火器的物理特性，主要指铜缆，是处理的电信号。目前使用普遍的网络接口有百兆电口和千兆电口、万兆电口等。简单来说，电口就是普通的网线接口，一般速率为10M、100M或者1000M。</p>
+<p>服务器网卡光口和电口网卡的主要区别主要是在于传输距离上，服务器电口网卡的传输距离只能到100米，而服务器光口网卡分为单模和多模，多模一般传输几百米，单模传输可以达到几千米，什么传输速率的，都一样的。</p>
+<p>电口网卡：电口是服务器和网络中对RJ45等各种双绞线接口的统称，其原因是这些端口都使用电作为信息的承载介质，不过有时它也会包含同轴电缆端口。通常电口可能使用百兆以太网、千兆以太网、万兆以太网或其它种类的传输协议。<br><img src="/2021/04/22/服务器网口分类及顺序确认/net1.png" alt="avatar"></p>
+<p>光口网卡：光口是服务器和网络中对各种光纤端口的统称，它是以光作为信息的承载介质。光口可能包含有从ST到SFF(小型化光纤连接器，以 MTRJ和LC为主)的各种光纤接口，因此在布线施工后期配备光纤跳线时，需要核实光口的光纤接口种类，以免在布线配置时假定的光纤跳线种类与实际使用的要求不匹。<br><img src="/2021/04/22/服务器网口分类及顺序确认/net2.png" alt="avatar"></p>
+<h4 id="多网卡Linux服务器如何确定网口位置"><a href="#多网卡Linux服务器如何确定网口位置" class="headerlink" title="多网卡Linux服务器如何确定网口位置"></a>多网卡Linux服务器如何确定网口位置</h4><p>在配置有多个网络接口的设备时我们会犯难，eth0、eth1、……到底是那个接口？</p>
+<p>今天为大家介绍一个小工具，ethtool，他可以帮助你解决这个问题。</p>
+<p>我使用的机器是Fedora Linux 系统，打开终端，输入ethtool –help 显示帮助信息，下面我就简要介绍一下最常用的两个功能。</p>
+<p>功能1</p>
+<p>ethtool DEVNAME   查看相应设备名称对应的设备信息</p>
+<p>使用方法如下：<br>ethtool eth3</p>
+<p>显示了eth3 的接口类型，连接模式，速率等等信息，方便你找到相应的网卡。（如果是网线Supported ports 就是TP，如果是光纤则显示Fiber）</p>
+<p><img src="/2021/04/22/服务器网口分类及顺序确认/net3.png" alt="avatar"></p>
+<p>功能2</p>
+<p>ethtool -p DEVNAME   查看相应设备名称对应的设备位置</p>
+<p>使用方法如下：<br>ethtool -p eth0</p>
+<p>回车后与eth0 相对应的网卡接口旁边的指示灯就会闪烁，这样你就能很快确定eth0 网口的位置啦。（按下Ctrl+C 结束命令，停止闪烁）</p>
+<h4 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h4><ol>
+<li><a href="http://www.grt-china.com/xinwenzixun/518.html" target="_blank" rel="noopener">http://www.grt-china.com/xinwenzixun/518.html</a></li>
+</ol>
+]]></content>
+      <tags>
+        <tag>linux</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>文件锁fcntl</title>
     <url>/2020/08/03/%E6%96%87%E4%BB%B6%E9%94%81fcntl/</url>
     <content><![CDATA[<h2 id="python中的文件锁"><a href="#python中的文件锁" class="headerlink" title="python中的文件锁"></a>python中的文件锁</h2><p>我们在写python应用的时候，当涉及到多个进程向同一个文件write(或者read)的情况，如果几个进程同时都对这个文件进行写操作，那么文件的内容就会变得非常混乱，这个时候文件锁就派上用场了。</p>
@@ -2282,31 +2310,16 @@
       </tags>
   </entry>
   <entry>
-    <title>服务器网口分类及顺序确认</title>
-    <url>/2021/04/22/%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%BD%91%E5%8F%A3%E5%88%86%E7%B1%BB%E5%8F%8A%E9%A1%BA%E5%BA%8F%E7%A1%AE%E8%AE%A4/</url>
-    <content><![CDATA[<h4 id="服务器网卡光口和电口的区别"><a href="#服务器网卡光口和电口的区别" class="headerlink" title="服务器网卡光口和电口的区别"></a>服务器网卡光口和电口的区别</h4><p>光纤接口简称为光口也可称之为G口 (意思是G光纤口)，是用来连接光纤线缆的物理接口。其原理是利用了光从光密介质进入光疏介质从而发生了全反射。一般是应用于机房、机柜等大型设备的一个光纤带宽接口。</p>
-<p>电口就是普通的双绞线(TwirstPair)接口，传输的是电信号，而电口是相对光口来讲的，是指防火器的物理特性，主要指铜缆，是处理的电信号。目前使用普遍的网络接口有百兆电口和千兆电口、万兆电口等。简单来说，电口就是普通的网线接口，一般速率为10M、100M或者1000M。</p>
-<p>服务器网卡光口和电口网卡的主要区别主要是在于传输距离上，服务器电口网卡的传输距离只能到100米，而服务器光口网卡分为单模和多模，多模一般传输几百米，单模传输可以达到几千米，什么传输速率的，都一样的。</p>
-<p>电口网卡：电口是服务器和网络中对RJ45等各种双绞线接口的统称，其原因是这些端口都使用电作为信息的承载介质，不过有时它也会包含同轴电缆端口。通常电口可能使用百兆以太网、千兆以太网、万兆以太网或其它种类的传输协议。<br><img src="/2021/04/22/服务器网口分类及顺序确认/net1.png" alt="avatar"></p>
-<p>光口网卡：光口是服务器和网络中对各种光纤端口的统称，它是以光作为信息的承载介质。光口可能包含有从ST到SFF(小型化光纤连接器，以 MTRJ和LC为主)的各种光纤接口，因此在布线施工后期配备光纤跳线时，需要核实光口的光纤接口种类，以免在布线配置时假定的光纤跳线种类与实际使用的要求不匹。<br><img src="/2021/04/22/服务器网口分类及顺序确认/net2.png" alt="avatar"></p>
-<h4 id="多网卡Linux服务器如何确定网口位置"><a href="#多网卡Linux服务器如何确定网口位置" class="headerlink" title="多网卡Linux服务器如何确定网口位置"></a>多网卡Linux服务器如何确定网口位置</h4><p>在配置有多个网络接口的设备时我们会犯难，eth0、eth1、……到底是那个接口？</p>
-<p>今天为大家介绍一个小工具，ethtool，他可以帮助你解决这个问题。</p>
-<p>我使用的机器是Fedora Linux 系统，打开终端，输入ethtool –help 显示帮助信息，下面我就简要介绍一下最常用的两个功能。</p>
-<p>功能1</p>
-<p>ethtool DEVNAME   查看相应设备名称对应的设备信息</p>
-<p>使用方法如下：<br>ethtool eth3</p>
-<p>显示了eth3 的接口类型，连接模式，速率等等信息，方便你找到相应的网卡。（如果是网线Supported ports 就是TP，如果是光纤则显示Fiber）</p>
-<p><img src="/2021/04/22/服务器网口分类及顺序确认/net3.png" alt="avatar"></p>
-<p>功能2</p>
-<p>ethtool -p DEVNAME   查看相应设备名称对应的设备位置</p>
-<p>使用方法如下：<br>ethtool -p eth0</p>
-<p>回车后与eth0 相对应的网卡接口旁边的指示灯就会闪烁，这样你就能很快确定eth0 网口的位置啦。（按下Ctrl+C 结束命令，停止闪烁）</p>
-<h4 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h4><ol>
-<li><a href="http://www.grt-china.com/xinwenzixun/518.html" target="_blank" rel="noopener">http://www.grt-china.com/xinwenzixun/518.html</a></li>
-</ol>
+    <title>浅拷贝与深拷贝以及引用</title>
+    <url>/2020/08/03/%E6%B5%85%E6%8B%B7%E8%B4%9D%E4%B8%8E%E6%B7%B1%E6%8B%B7%E8%B4%9D%E4%BB%A5%E5%8F%8A%E5%BC%95%E7%94%A8/</url>
+    <content><![CDATA[<h2 id="Python-变量存储情况"><a href="#Python-变量存储情况" class="headerlink" title="Python 变量存储情况"></a>Python 变量存储情况</h2><p>在高级语言中，变量是对内存及其地址的抽象。对于python 而言，python 的一切变量都是对象，变量的存储，采用了引用语义的方式，存储的只是一个变量的值所在的内存地址，而不是指这个变量的本身:</p>
+<p>引用语义：在 python 中，变量保存的是对象(值)的引用，我们称为 引用语义。采用这种方式，变量所需的存储空间大小一致，因为变量只是保存了一个引用。也被称为对象语义和指针语义。</p>
+<p>值语义：有些语言采用的不是这种方式，它们把变量的值直接保存在变量的存储区里，这种方式被我们称为值语义，例如 C 语言，采用这种存储方式，每一个变量在内存中所占的空间就要根据变量实际的大小而定，无法固定下来。</p>
+<p>值语义和引用语义的区别：</p>
+<p>值语义： 死的、 傻的、 简单的、 具体的、 可复制的<br>引用语义： 活的、 聪明的、 复杂的、 抽象的、 不可复制的</p>
 ]]></content>
       <tags>
-        <tag>linux</tag>
+        <tag>python</tag>
       </tags>
   </entry>
   <entry>
@@ -2324,19 +2337,6 @@
 <p>开源协议的选择：</p>
 <p>GPL许可：是 GNU General Public License 的缩写，既GNU通用公共许可协议，是自由软件基金会（GNU）发布的一个软件首选许可，GPL许可一共发布的三个不版本，最新一版是2007年公布的GPLv3，最著名的使用GPL许可的软件就是大Linux。GPL许可的特点就是，使用GPL软件(包括类库)或者源代码（不管多少）的发布的新产品（包括新增源代码和可执行二进制文件）也必须使用GPL协议，也要公开源代码。由于这个许可具有一定的开源强制性，很多大公司对GPL许可的开源软件的选择还是比较谨慎的。GPL 协议有很多变种：比如LGPL, AGPL<br>LGPL : LGPL 是 GNU Lesser General Public License 的缩写 既GNU宽通用公共许可证，相比于GPL，其开源强制性弱一些，对商用软件更加友好，使用该许可的著名软件是Linux下的办公软件 OpenOffice。按照该许可协议的要求，以类库方式引入基于LGPL许可的软件可以不开源其衍生产品的源代码，单对于LGPL许可授权的源代码进行修改或者和修改相关的衍生代码则必须开源且使用LGPL许可进行授权。<br>AGPL：Affero General Public License，简称Affero GPL或AGPL，Affero 是一家公司名称，AGPL最初由该公司撰写，改许可是相当于GPL的增强版本，主要是对通过网络发布服务进行限制。GPL许可本身限制的是软件的“发布”行为，只要是使用了GPL许可的源代码或者二进制文件，必须开源且以同样以GPL许可进行授权，但到了互联网十点，很多互联网公司并不发布软件实体，而是提供“服务”，所以GPL的约束力就明显下降了，AGPL许可的目的就是填补这个所谓的“漏洞”，改许可要求，除了GPL本身的约束以外，所有基于AGPL许可软件提供网络服务，其相关源代码必须开源，所以在AGPL许可下，网络服务也被看做一种分发形式。所以很多互联网公司禁止使用 AGPL 许可的开源软件。<br>BSD许可：BSD（BSD是Berkly Software Distribution的简写）许可最初使用在加州大学伯克利分校发布的 BSD Unix 系统上，随着BSD系统的发展，BSD许可也随之沿用下来。相比于GPL 和 MPL 的严格要求，BSD 许可的的要求就非常宽松，给予使用者非常大的自由度。在该许可下的软件可以自由使用修改，也可以将修改后的代码再次发布，而且可以是按照闭源的私有软件进行发布，只需要在发布的软件和中保留BSD许可协议文件即可，但未经许可不能使用原作者或者机构名义进行宣传和推广。+<br>MPL许可：MPL是 The Mozilla Public License 的做些。是1998年初Netscape的 Mozilla小组为其开源软件项目设计的软件许可证。MPL许可允许经过MPL授权的源代码和其他授权的文件（包括源代码和二进制文件）混合使用，甚至剥和私有软件混合使用，这相当于GPL许可和BSD或类似许可的折中，其既有一定的开源强制性，又保留一定的私有权利。按照该许可要求，使用基于MPL授权源代码的部分，包括对MPL源代码的修改部分，必须保持MPL授权，这一点和GPL协议类似，但新增代码发布的可使用其他方式授权，甚至是私有授权，也可以比闭源的方式。<br>MIT 许可：MIT 许可是来自麻省理工学院（Massachusetts Institute of Technology, MIT），该许可被认为是最自由的开源协议之一，也是应用最为广泛的开源协议(据blackduck——一家对软件源代码进行合规审计的公司，统计，全球有将近1/3的开源软件使用MIT开源协议)，他的协议声明非常简短，他和BSD许可类似，允许自由修改发布基于MIT的代码和软件，只需要你的发行版里包含原始协议文件即可，其他无任何限制，及时使用原始作者的名义进行推广。使用MIT许可的著名软件有ssh 客户端软件jquery,Rails，putty 和 xwindows等。<br>Apache 2.0许可：改协议是由Apache软件基金会发布的许可，最初用在像Apache web Server这样Apache的内部软件中，2004年公布了2.0版本。其限制条件和BSD类似，允许自由修改和使用、发布软件，但要求保留版权，相比于BSD许可，该许可对版权要求的更细，每一个被修改后的原始文件都要著名原始版权声明。使用 Apache 2.0许可 著名的软件有 Android ,Apache web server，swift 等。</p>
 ]]></content>
-  </entry>
-  <entry>
-    <title>浅拷贝与深拷贝以及引用</title>
-    <url>/2020/08/03/%E6%B5%85%E6%8B%B7%E8%B4%9D%E4%B8%8E%E6%B7%B1%E6%8B%B7%E8%B4%9D%E4%BB%A5%E5%8F%8A%E5%BC%95%E7%94%A8/</url>
-    <content><![CDATA[<h2 id="Python-变量存储情况"><a href="#Python-变量存储情况" class="headerlink" title="Python 变量存储情况"></a>Python 变量存储情况</h2><p>在高级语言中，变量是对内存及其地址的抽象。对于python 而言，python 的一切变量都是对象，变量的存储，采用了引用语义的方式，存储的只是一个变量的值所在的内存地址，而不是指这个变量的本身:</p>
-<p>引用语义：在 python 中，变量保存的是对象(值)的引用，我们称为 引用语义。采用这种方式，变量所需的存储空间大小一致，因为变量只是保存了一个引用。也被称为对象语义和指针语义。</p>
-<p>值语义：有些语言采用的不是这种方式，它们把变量的值直接保存在变量的存储区里，这种方式被我们称为值语义，例如 C 语言，采用这种存储方式，每一个变量在内存中所占的空间就要根据变量实际的大小而定，无法固定下来。</p>
-<p>值语义和引用语义的区别：</p>
-<p>值语义： 死的、 傻的、 简单的、 具体的、 可复制的<br>引用语义： 活的、 聪明的、 复杂的、 抽象的、 不可复制的</p>
-]]></content>
-      <tags>
-        <tag>python</tag>
-      </tags>
   </entry>
   <entry>
     <title>浅析GIT分支模型</title>
@@ -2422,6 +2422,44 @@
       </tags>
   </entry>
   <entry>
+    <title>网络模型总结</title>
+    <url>/2019/09/17/%E7%BD%91%E7%BB%9C%E6%A8%A1%E5%9E%8B%E6%80%BB%E7%BB%93/</url>
+    <content><![CDATA[<p>常用的五种网络IO模型是阻塞I/O，非阻塞I/O，I/O复用，事件(信号)驱动I/O，异步I/O。<br>为什么要发起系统调用？因为进程想要获取磁盘中的数据，而能和硬件打交道的只能是内核，进程通知内核说我要磁盘中的数据，此过程就是系统调用。<br>一次I/O的完成的步骤：当进程发起系统调用时，这个系统调用就进入内核模式，然后开始I/O操作。I/O操作分为两个步骤；<br>1、磁盘把数据装载到内核的内存空间，<br>2、内核的内存空间的数据copy到用户的内存空间中(此过程是I/O发生的地方)<br>以下是进程获取数据的详细图解过程；<br><img src="/2019/09/17/网络模型总结/net1.png" alt="avatar"><br>整个过程：此进程需要对磁盘中的数据进行操作，则会向内核发起一个系统调用，然后此进程，将会被切换出去，此进程会被挂起或者进入睡眠状态，也叫不可中断的睡眠，因为数据还没有得到，只有等到系统调用的结果完成后，则进程会被唤醒，继续接下来的操作，从系统调用的开始到系统调用结束经过的步骤：<br>①进程向内核发起一个系统调用，<br>②内核接收到系统调用，知道是对文件的请求，于是告诉磁盘，把文件读取出来<br>③磁盘接收到来着内核的命令后，把文件载入到内核的内存空间里面<br>④内核的内存空间接收到数据之后，把数据copy到用户进程的内存空间(此过程是I/O发生的地方)<br>⑤进程内存空间得到数据后，给内核发送通知<br>⑥内核把接收到的通知回复给进程，此过程为唤醒进程，然后进程得到数据，进行下一步操作<br>I/O发生的地方才会出现阻塞或非阻塞<br>阻塞：进程发起I/O调用，进程又不得不等待I/O的完成，此时CPU把进程切换出去，进程处于睡眠状态则此过程为阻塞I/O<br>阻塞I/O系统怎么通知进程？I/O完成，系统直接通知进程，则进程被唤醒</p>
+<h4 id="阻塞IO（blocking-I-O）"><a href="#阻塞IO（blocking-I-O）" class="headerlink" title="阻塞IO（blocking I/O）"></a>阻塞IO（blocking I/O）</h4><p>在内核将数据准备好之前，系统调用会一直等待所有的套接字，默认的是阻塞方式。<br><img src="/2019/09/17/网络模型总结/net2.png" alt="avatar"></p>
+<h4 id="非阻塞IO（noblocking-I-O）"><a href="#非阻塞IO（noblocking-I-O）" class="headerlink" title="非阻塞IO（noblocking I/O）"></a>非阻塞IO（noblocking I/O）</h4><p>每次客户询问内核是否有数据准备好，即文件描述符缓冲区是否就绪。当有数据报准备好时，就进行拷贝数据报的操作。当没有数据报准备好时，也不阻塞程序，内核直接返回未准备就绪的信号，等待用户程序的下一个轮寻。但是，轮寻对于CPU来说是较大的浪费，一般只有在特定的场景下才使用。<br><img src="/2019/09/17/网络模型总结/net3.png" alt="avatar"></p>
+<h4 id="IO多路复用"><a href="#IO多路复用" class="headerlink" title="IO多路复用"></a>IO多路复用</h4><p>IO多路转接是多了一个select函数，select函数有一个参数是文件描述符集合，对这些文件描述符进行循环监听，当某个文件描述符就绪时，就对这个文件描述符进行处理。<br><img src="/2019/09/17/网络模型总结/net4.png" alt="avatar"></p>
+<h4 id="异步IO（asynchronous-I-O）"><a href="#异步IO（asynchronous-I-O）" class="headerlink" title="异步IO（asynchronous I/O）"></a>异步IO（asynchronous I/O）</h4><p>当应用程序调用aio_read时，内核一方面去取数据报内容返回，另一方面将程序控制权还给应用进程，应用进程继续处理其他事情，是一种非阻塞的状态。<br>当内核中有数据报就绪时，由内核将数据报拷贝到应用程序中，返回aio_read中定义好的函数处理程序。<br><img src="/2019/09/17/网络模型总结/net5.png" alt="avatar"></p>
+<h4 id="阻塞、非阻塞，同步、异步"><a href="#阻塞、非阻塞，同步、异步" class="headerlink" title="阻塞、非阻塞，同步、异步"></a>阻塞、非阻塞，同步、异步</h4><p>关于同步和异步<br>同步和异步其实指的是，请求发起方对消息结果的获取是主动发起的，还是等被动通知的。如果是请求方主动发起的，一直在等待应答结果（同步阻塞），或者可以先去处理其他的事情，但要不断轮询查看发起的请求是否有应答结果（同步非阻塞 ）因为不管如何都要发起方主动获取消息结果，所以形式上还是同步操作。如果是由服务方通知的，也就是请求方发出请求后，要么在一直等待通知（异步阻塞），要么就先去干自己的事了（异步非阻塞），当事情处理完成之后，服务方会主动通知请求方，它的请求已经完成，这就是异步。异步通知的方式一般是通过状态改变，消息通知，或者回调函数来完成，大多数时候采用的都是回调函数。<br>关于阻塞和非阻塞<br>阻塞和非阻塞在计算机的世界里面，通常指的是针对IO的操作，如网络IO和磁盘IO等。那么什么是阻塞和非阻塞呢？简单的说就是我们调用了一个函数之后，在等待这个函数返回结果之前，当前的线程是处于挂起状态，还是运行状态，如果是挂起状态，就意味着当前线程什么都不能干，就等着获取结果，这就叫同步阻塞，如果仍然是运行状态，就意味当前线程是可以的继续处理其他任务，但要时不时的去看下是否有结果了，这就是同步非阻塞。</p>
+]]></content>
+      <tags>
+        <tag>linux</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>迭代器与生成器</title>
+    <url>/2021/06/11/%E8%BF%AD%E4%BB%A3%E5%99%A8%E4%B8%8E%E7%94%9F%E6%88%90%E5%99%A8/</url>
+    <content><![CDATA[<p><strong>生成器</strong></p>
+<p>生成器本质上就是一个函数，它记住了上一次返回时在函数体中的位置。</p>
+<p>对生成器函数的第二次（或第n次）调用，跳转到函数上一次挂起的位置。</p>
+<p>而且记录了程序执行的上下文。</p>
+<p>生成器不仅“记住”了它的数据状态，生成还记住了程序执行的位置。</p>
+<p><strong>迭代器</strong></p>
+<p>迭代器是一种支持next()操作的对象。它包含了一组元素，当执行next()操作时，返回其中一个元素。</p>
+<p>当所有元素都被返回后，再执行next()报异常—StopIteration</p>
+<p>生成器一定是可迭代的，也一定是迭代器对象</p>
+<p><strong>区别</strong></p>
+<ol>
+<li>生成器是生成元素的，迭代器是访问集合元素的一种方式</li>
+<li>迭代输出生成器的内容</li>
+<li>迭代器是一种支持next()操作的对象</li>
+<li>迭代器（iterator）：其中iterator对象表示的是一个数据流，可以把它看做一个有序序列，但我们不能提前知道序列的长度，只有通过nex()函数实现需要计算的下一个数据。可以看做生成器的一个子集。</li>
+</ol>
+]]></content>
+      <tags>
+        <tag>python</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>高并发、高性能、高可用相关概念</title>
     <url>/2021/03/30/%E9%AB%98%E5%B9%B6%E5%8F%91%E3%80%81%E9%AB%98%E6%80%A7%E8%83%BD%E3%80%81%E9%AB%98%E5%8F%AF%E7%94%A8%E7%9B%B8%E5%85%B3%E6%A6%82%E5%BF%B5/</url>
     <content><![CDATA[<h3 id="高并发"><a href="#高并发" class="headerlink" title="高并发"></a>高并发</h3><p>通常是指，通过设计保证系统能够同时并行处理很多请求。 高并发相关常用的一些指标有响应时间（Response Time），吞吐量（Throughput），每秒查询率QPS（Query Per Second），并发用户数等。</p>
@@ -2459,44 +2497,6 @@
 </ol>
 <h3 id="高可用"><a href="#高可用" class="headerlink" title="高可用"></a>高可用</h3><p>高可用性（High Availability）通常来描述一个系统经过专门的设计，从而减少停工时间，而保持其服务的高度可用性(一直都能用)。</p>
 ]]></content>
-  </entry>
-  <entry>
-    <title>网络模型总结</title>
-    <url>/2019/09/17/%E7%BD%91%E7%BB%9C%E6%A8%A1%E5%9E%8B%E6%80%BB%E7%BB%93/</url>
-    <content><![CDATA[<p>常用的五种网络IO模型是阻塞I/O，非阻塞I/O，I/O复用，事件(信号)驱动I/O，异步I/O。<br>为什么要发起系统调用？因为进程想要获取磁盘中的数据，而能和硬件打交道的只能是内核，进程通知内核说我要磁盘中的数据，此过程就是系统调用。<br>一次I/O的完成的步骤：当进程发起系统调用时，这个系统调用就进入内核模式，然后开始I/O操作。I/O操作分为两个步骤；<br>1、磁盘把数据装载到内核的内存空间，<br>2、内核的内存空间的数据copy到用户的内存空间中(此过程是I/O发生的地方)<br>以下是进程获取数据的详细图解过程；<br><img src="/2019/09/17/网络模型总结/net1.png" alt="avatar"><br>整个过程：此进程需要对磁盘中的数据进行操作，则会向内核发起一个系统调用，然后此进程，将会被切换出去，此进程会被挂起或者进入睡眠状态，也叫不可中断的睡眠，因为数据还没有得到，只有等到系统调用的结果完成后，则进程会被唤醒，继续接下来的操作，从系统调用的开始到系统调用结束经过的步骤：<br>①进程向内核发起一个系统调用，<br>②内核接收到系统调用，知道是对文件的请求，于是告诉磁盘，把文件读取出来<br>③磁盘接收到来着内核的命令后，把文件载入到内核的内存空间里面<br>④内核的内存空间接收到数据之后，把数据copy到用户进程的内存空间(此过程是I/O发生的地方)<br>⑤进程内存空间得到数据后，给内核发送通知<br>⑥内核把接收到的通知回复给进程，此过程为唤醒进程，然后进程得到数据，进行下一步操作<br>I/O发生的地方才会出现阻塞或非阻塞<br>阻塞：进程发起I/O调用，进程又不得不等待I/O的完成，此时CPU把进程切换出去，进程处于睡眠状态则此过程为阻塞I/O<br>阻塞I/O系统怎么通知进程？I/O完成，系统直接通知进程，则进程被唤醒</p>
-<h4 id="阻塞IO（blocking-I-O）"><a href="#阻塞IO（blocking-I-O）" class="headerlink" title="阻塞IO（blocking I/O）"></a>阻塞IO（blocking I/O）</h4><p>在内核将数据准备好之前，系统调用会一直等待所有的套接字，默认的是阻塞方式。<br><img src="/2019/09/17/网络模型总结/net2.png" alt="avatar"></p>
-<h4 id="非阻塞IO（noblocking-I-O）"><a href="#非阻塞IO（noblocking-I-O）" class="headerlink" title="非阻塞IO（noblocking I/O）"></a>非阻塞IO（noblocking I/O）</h4><p>每次客户询问内核是否有数据准备好，即文件描述符缓冲区是否就绪。当有数据报准备好时，就进行拷贝数据报的操作。当没有数据报准备好时，也不阻塞程序，内核直接返回未准备就绪的信号，等待用户程序的下一个轮寻。但是，轮寻对于CPU来说是较大的浪费，一般只有在特定的场景下才使用。<br><img src="/2019/09/17/网络模型总结/net3.png" alt="avatar"></p>
-<h4 id="IO多路复用"><a href="#IO多路复用" class="headerlink" title="IO多路复用"></a>IO多路复用</h4><p>IO多路转接是多了一个select函数，select函数有一个参数是文件描述符集合，对这些文件描述符进行循环监听，当某个文件描述符就绪时，就对这个文件描述符进行处理。<br><img src="/2019/09/17/网络模型总结/net4.png" alt="avatar"></p>
-<h4 id="异步IO（asynchronous-I-O）"><a href="#异步IO（asynchronous-I-O）" class="headerlink" title="异步IO（asynchronous I/O）"></a>异步IO（asynchronous I/O）</h4><p>当应用程序调用aio_read时，内核一方面去取数据报内容返回，另一方面将程序控制权还给应用进程，应用进程继续处理其他事情，是一种非阻塞的状态。<br>当内核中有数据报就绪时，由内核将数据报拷贝到应用程序中，返回aio_read中定义好的函数处理程序。<br><img src="/2019/09/17/网络模型总结/net5.png" alt="avatar"></p>
-<h4 id="阻塞、非阻塞，同步、异步"><a href="#阻塞、非阻塞，同步、异步" class="headerlink" title="阻塞、非阻塞，同步、异步"></a>阻塞、非阻塞，同步、异步</h4><p>关于同步和异步<br>同步和异步其实指的是，请求发起方对消息结果的获取是主动发起的，还是等被动通知的。如果是请求方主动发起的，一直在等待应答结果（同步阻塞），或者可以先去处理其他的事情，但要不断轮询查看发起的请求是否有应答结果（同步非阻塞 ）因为不管如何都要发起方主动获取消息结果，所以形式上还是同步操作。如果是由服务方通知的，也就是请求方发出请求后，要么在一直等待通知（异步阻塞），要么就先去干自己的事了（异步非阻塞），当事情处理完成之后，服务方会主动通知请求方，它的请求已经完成，这就是异步。异步通知的方式一般是通过状态改变，消息通知，或者回调函数来完成，大多数时候采用的都是回调函数。<br>关于阻塞和非阻塞<br>阻塞和非阻塞在计算机的世界里面，通常指的是针对IO的操作，如网络IO和磁盘IO等。那么什么是阻塞和非阻塞呢？简单的说就是我们调用了一个函数之后，在等待这个函数返回结果之前，当前的线程是处于挂起状态，还是运行状态，如果是挂起状态，就意味着当前线程什么都不能干，就等着获取结果，这就叫同步阻塞，如果仍然是运行状态，就意味当前线程是可以的继续处理其他任务，但要时不时的去看下是否有结果了，这就是同步非阻塞。</p>
-]]></content>
-      <tags>
-        <tag>linux</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>迭代器与生成器</title>
-    <url>/2021/06/11/%E8%BF%AD%E4%BB%A3%E5%99%A8%E4%B8%8E%E7%94%9F%E6%88%90%E5%99%A8/</url>
-    <content><![CDATA[<p><strong>生成器</strong></p>
-<p>生成器本质上就是一个函数，它记住了上一次返回时在函数体中的位置。</p>
-<p>对生成器函数的第二次（或第n次）调用，跳转到函数上一次挂起的位置。</p>
-<p>而且记录了程序执行的上下文。</p>
-<p>生成器不仅“记住”了它的数据状态，生成还记住了程序执行的位置。</p>
-<p><strong>迭代器</strong></p>
-<p>迭代器是一种支持next()操作的对象。它包含了一组元素，当执行next()操作时，返回其中一个元素。</p>
-<p>当所有元素都被返回后，再执行next()报异常—StopIteration</p>
-<p>生成器一定是可迭代的，也一定是迭代器对象</p>
-<p><strong>区别</strong></p>
-<ol>
-<li>生成器是生成元素的，迭代器是访问集合元素的一种方式</li>
-<li>迭代输出生成器的内容</li>
-<li>迭代器是一种支持next()操作的对象</li>
-<li>迭代器（iterator）：其中iterator对象表示的是一个数据流，可以把它看做一个有序序列，但我们不能提前知道序列的长度，只有通过nex()函数实现需要计算的下一个数据。可以看做生成器的一个子集。</li>
-</ol>
-]]></content>
-      <tags>
-        <tag>python</tag>
-      </tags>
   </entry>
   <entry>
     <title>HashTree小结</title>
@@ -2652,31 +2652,6 @@
       </tags>
   </entry>
   <entry>
-    <title>SkipList总结</title>
-    <url>/2019/08/17/SkipList%E6%80%BB%E7%BB%93/</url>
-    <content><![CDATA[<h4 id="skiplist简介"><a href="#skiplist简介" class="headerlink" title="skiplist简介"></a>skiplist简介</h4><p>skip List是一种随机化的数据结构，基于并联的链表，实现简单，插入、删除、查找的复杂度均为O(logN)（大多数情况下），因为其性能匹敌红黑树且实现较为简单，因此在很多著名项目都用跳表来代替红黑树，例如LevelDB、Redis的底层存储结构就是用的SkipList。<br>目前常用的key-value数据结构有三种：Hash表、红黑树、SkipList，它们各自有着不同的优缺点：<br>Hash表：插入、查找最快，为O(1)；如使用链表实现则可实现无锁；数据有序化需要显式的排序操作。<br>红黑树：插入、查找为O(logn)，但常数项较小；无锁实现的复杂性很高，一般需要加锁；数据天然有序。<br>SkipList：插入、查找为O(logn)，但常数项比红黑树要大；底层结构为链表，可无锁实现；数据天然有序。</p>
-<h4 id="SkipList基本数据结构及其实现"><a href="#SkipList基本数据结构及其实现" class="headerlink" title="SkipList基本数据结构及其实现"></a>SkipList基本数据结构及其实现</h4><p>一个跳表，应该具有以下特征：</p>
-<p>1、一个跳表应该有几个层（level）组成；<br>通常是10-20层，leveldb中默认为12层。</p>
-<p>2、跳表的第0层包含所有的元素；<br>且节点值是有序的。</p>
-<p>3、每一层都是一个有序的链表；<br>层数越高应越稀疏，这样在高层次中能’跳过’许多的不符合条件的数据。</p>
-<p>4、如果元素x出现在第i层，则所有比i小的层都包含x；</p>
-<p>5、每个节点包含key及其对应的value和一个指向该节点第n层的下个节点的指针数组<br>x-&gt;next[level]表示第level层的x的下一个节点</p>
-<p><img src="/2019/08/17/SkipList总结/list1.png" alt="avatar"><br>一个有序的链表，我们选取它的一半的节点用来建索引，这样如果插入一个节点，我们比较的次数就减少了一半。这种做法，虽然增加了50%的空间，但是性能提高了一倍。如上图。既然，我们已经提取了一层节点索引，那么，可以在第一层索引上再提取索引。如下图。</p>
-<p><img src="/2019/08/17/SkipList总结/list2.png" alt="avatar"><br>对于node5来说，它的next：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">node5-&gt;next[2] = tailNode;</span><br><span class="line">node5-&gt;next[1] = node7;</span><br><span class="line">node5-&gt;next[0] = node6;</span><br></pre></td></tr></table></figure></p>
-<p>对于node7来说，它的next：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">node7-&gt;next[1] = node9;</span><br><span class="line">node7-&gt;next[0] = node8;</span><br></pre></td></tr></table></figure></p>
-<p>对于node3来说，它的next：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">node3-&gt;next[0] = node4;</span><br></pre></td></tr></table></figure></p>
-<h4 id="skiplist查找"><a href="#skiplist查找" class="headerlink" title="skiplist查找"></a>skiplist查找</h4><p><img src="/2019/08/17/SkipList总结/list3.png" alt="avatar"><br>综上：<br>当targetNode-&gt;next[i]的值 &lt; 待查找的值时，令targetNode = targetNode-&gt;next[i]，targetNode移到第i级的下一个结点；<br>当targetNode-&gt;next[i]的值 &gt; 待查找的值时，向下降级，i- - ，不改变targetNode；<br>当targetNode-&gt;next[i]的值 = 待查找的值时，向下降级，i- - ，不改变targetNode。<br>最后，再次比较targetNode-&gt;next[0]和theElement，判断是否找到。<br>所以整个运算下来，targetNode是要查找的节点前面那个节点。<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">/* 如果存在 x, 返回 x 所在的节点， </span><br><span class="line"> * 否则返回 x 的后继节点 */  </span><br><span class="line">find(x)   </span><br><span class="line">&#123;  </span><br><span class="line">    p = top;  </span><br><span class="line">    while (1) &#123;  </span><br><span class="line">        while (p-&gt;next-&gt;key &lt; x)  </span><br><span class="line">            p = p-&gt;next;  </span><br><span class="line">        if (p-&gt;down == NULL)   </span><br><span class="line">            return p-&gt;next;  </span><br><span class="line">        p = p-&gt;down;  </span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure></p>
-<h4 id="skiplist插入"><a href="#skiplist插入" class="headerlink" title="skiplist插入"></a>skiplist插入</h4><p>插入的步骤：<br>新节点和各层索引节点逐一比较，确定原链表的插入位置。O（logN）<br>把索引插入到原链表。O（1）<br>利用抛硬币的随机方式，决定新节点是否提升为上一级索引。结果为“正”则提升并继续抛硬币，结果为“负”则停止。O（logN）<br>总体上，跳表插入操作的时间复杂度是O（logN），而这种数据结构所占空间是2N，既空间复杂度是 O（N）。</p>
-<h4 id="skiplist删除"><a href="#skiplist删除" class="headerlink" title="skiplist删除"></a>skiplist删除</h4><p><img src="/2019/08/17/SkipList总结/list4.jpg" alt="avatar"><br>自上而下，查找第一次出现节点的索引，并逐层找到每一层对应的节点。O（logN）<br>删除每一层查找到的节点，如果该层只剩下1个节点，删除整个一层（原链表除外）。O（logN）<br>总体上，跳表删除操作的时间复杂度是O（N）</p>
-<h4 id="skiplist实现"><a href="#skiplist实现" class="headerlink" title="skiplist实现"></a>skiplist实现</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">package com.hqq.list;</span><br><span class="line"></span><br><span class="line">import java.net.CacheRequest;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> * SkipListNode</span><br><span class="line"> * 跳跃表的节点,包括key-value和上下左右4个指针</span><br><span class="line"> * Created by heqianqian on 2017/6/1.</span><br><span class="line"> */</span><br><span class="line">public class SkipListNode&lt;T&gt; &#123;</span><br><span class="line">    private int key;</span><br><span class="line">    private T value;</span><br><span class="line">    public SkipListNode&lt;T&gt; up, down, left, right;</span><br><span class="line"></span><br><span class="line">    public static final int HEAD_KEY = Integer.MIN_VALUE;//负无穷</span><br><span class="line">    public static final int TAIL_KEY = Integer.MAX_VALUE;//正无穷</span><br><span class="line"></span><br><span class="line">    public SkipListNode(int k, T v) &#123;</span><br><span class="line">        this.key = k;</span><br><span class="line">        this.value = v;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public int getKey() &#123;</span><br><span class="line">        return key;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void setKey(int key) &#123;</span><br><span class="line">        this.key = key;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public T getValue() &#123;</span><br><span class="line">        return value;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void setValue(T value) &#123;</span><br><span class="line">        this.value = value;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @SuppressWarnings(&quot;unchecked&quot;)</span><br><span class="line">    public boolean equals(Object o) &#123;</span><br><span class="line">        if (this == o) &#123;</span><br><span class="line">            return true;</span><br><span class="line">        &#125;</span><br><span class="line">        if (o == null) &#123;</span><br><span class="line">            return false;</span><br><span class="line">        &#125;</span><br><span class="line">        if (!(o instanceof SkipListNode&lt;?&gt;)) &#123;</span><br><span class="line">            return false;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        SkipListNode&lt;T&gt; ent;</span><br><span class="line">        try &#123;</span><br><span class="line">            ent = (SkipListNode&lt;T&gt;) o;</span><br><span class="line">        &#125; catch (Exception e) &#123;</span><br><span class="line">            return false;</span><br><span class="line">        &#125;</span><br><span class="line">        return (ent.getKey() == key) &amp;&amp; (ent.getValue() == value);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public String toString() &#123;</span><br><span class="line">        return &quot;key-value:&quot;+key+&quot;-&quot;+value;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">package com.hqq.list;</span><br><span class="line"></span><br><span class="line">import java.util.Comparator;</span><br><span class="line">import java.util.Random;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> * SkipList</span><br><span class="line"> * 不固定层级的跳跃表</span><br><span class="line"> * Created by heqianqian on 2017/6/1.</span><br><span class="line"> */</span><br><span class="line">public class SkipList&lt;T extends Comparable&lt;? super T&gt;&gt; &#123;</span><br><span class="line"></span><br><span class="line">    private SkipListNode&lt;T&gt; head, tail;</span><br><span class="line">    private int nodes;//节点总数</span><br><span class="line">    private int listLevel;//层数</span><br><span class="line">    private Random random;//用于产生随机数</span><br><span class="line">    private static final double PROBABILITY = 0.5;//向上提升一个的概率</span><br><span class="line"></span><br><span class="line">    public SkipList() &#123;</span><br><span class="line">        random = new Random();</span><br><span class="line">        clear();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 清空跳跃表</span><br><span class="line">     */</span><br><span class="line">    public void clear() &#123;</span><br><span class="line">        head = new SkipListNode&lt;T&gt;(SkipListNode.HEAD_KEY, null);</span><br><span class="line">        tail = new SkipListNode&lt;T&gt;(SkipListNode.TAIL_KEY, null);</span><br><span class="line">        horizontalLink(head, tail);</span><br><span class="line">        listLevel = 0;</span><br><span class="line">        nodes = 0;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 水平双向连接</span><br><span class="line">     */</span><br><span class="line">    private void horizontalLink(SkipListNode&lt;T&gt; node1, SkipListNode&lt;T&gt; node2) &#123;</span><br><span class="line">        node1.right = node2;</span><br><span class="line">        node2.left = node1;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 垂直双向连接</span><br><span class="line">     */</span><br><span class="line">    private void vertiacallLink(SkipListNode&lt;T&gt; node1, SkipListNode&lt;T&gt; node2) &#123;</span><br><span class="line">        node1.down = node2;</span><br><span class="line">        node2.up = node1;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 在最下面一层，找到要插入的位置前面的那个key</span><br><span class="line">     */</span><br><span class="line">    private SkipListNode&lt;T&gt; findNode(int key) &#123;</span><br><span class="line">        SkipListNode&lt;T&gt; p = head;</span><br><span class="line">        while (true) &#123;</span><br><span class="line">            while (p.right.getKey() != SkipListNode.TAIL_KEY &amp;&amp; p.right.getKey() &lt;= key) &#123;</span><br><span class="line">                p = p.right;</span><br><span class="line">            &#125;</span><br><span class="line">            if (p.down != null) &#123;</span><br><span class="line">                p = p.down;</span><br><span class="line">            &#125; else &#123;</span><br><span class="line">                break;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return p;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 查找是否存储key，存在则返回该节点，否则返回null</span><br><span class="line">     */</span><br><span class="line">    public SkipListNode&lt;T&gt; search(int key) &#123;</span><br><span class="line">        SkipListNode&lt;T&gt; p = findNode(key);</span><br><span class="line">        return (key == p.getKey()) ? p : null;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 向跳跃表中添加key-value</span><br><span class="line">     */</span><br><span class="line">    public void put(int k, T v) &#123;</span><br><span class="line">        SkipListNode&lt;T&gt; p = findNode(k);</span><br><span class="line">        //如果key值相同，替换原来的vaule即可结束</span><br><span class="line">        if (k == p.getKey()) &#123;</span><br><span class="line">            p.setValue(v);</span><br><span class="line">            return;</span><br><span class="line">        &#125;</span><br><span class="line">        SkipListNode&lt;T&gt; q = new SkipListNode&lt;T&gt;(k, v);</span><br><span class="line">        backLink(p, q);</span><br><span class="line">        int currentLevel = 0;//当前所层次是0</span><br><span class="line">        //产生随机数</span><br><span class="line">        while (random.nextDouble() &lt; PROBABILITY) &#123;</span><br><span class="line">            //新建一个层</span><br><span class="line">            if (currentLevel &gt;= listLevel) &#123;</span><br><span class="line">                listLevel++;</span><br><span class="line">                SkipListNode&lt;T&gt; p1 = new SkipListNode&lt;T&gt;(SkipListNode.HEAD_KEY, null);</span><br><span class="line">                SkipListNode&lt;T&gt; p2 = new SkipListNode&lt;T&gt;(SkipListNode.TAIL_KEY, null);</span><br><span class="line">                horizontalLink(p1, p2);</span><br><span class="line">                vertiacallLink(p1, head);</span><br><span class="line">                vertiacallLink(p2, tail);</span><br><span class="line">                head = p1;</span><br><span class="line">                tail = p2;</span><br><span class="line">            &#125;</span><br><span class="line">            //把p移动到上一层</span><br><span class="line">            while (p.up == null) &#123;</span><br><span class="line">                p = p.left;</span><br><span class="line">            &#125;</span><br><span class="line">            p = p.up;</span><br><span class="line"></span><br><span class="line">            SkipListNode&lt;T&gt; e = new SkipListNode&lt;T&gt;(k, null);</span><br><span class="line">            backLink(p, e);</span><br><span class="line">            vertiacallLink(e, q);</span><br><span class="line">            q = e;</span><br><span class="line">            currentLevel++;</span><br><span class="line">        &#125;</span><br><span class="line">        nodes++;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 在node1后插入node2</span><br><span class="line">     */</span><br><span class="line">    private void backLink(SkipListNode&lt;T&gt; node1, SkipListNode&lt;T&gt; node2) &#123;</span><br><span class="line">        node2.left = node1;</span><br><span class="line">        node2.right = node1.right;</span><br><span class="line">        node1.right.left = node2;</span><br><span class="line">        node1.right = node2;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public boolean isEmpty() &#123;</span><br><span class="line">        return nodes == 0;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public int size() &#123;</span><br><span class="line">        return nodes;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public String toString() &#123;</span><br><span class="line">        if (isEmpty()) &#123;</span><br><span class="line">            return &quot;跳跃表为空&quot;;</span><br><span class="line">        &#125;</span><br><span class="line">        StringBuilder builder = new StringBuilder();</span><br><span class="line">        SkipListNode&lt;T&gt; p = head;</span><br><span class="line">        while (p.down != null) &#123;</span><br><span class="line">            p = p.down;</span><br><span class="line">        &#125;</span><br><span class="line">        while (p.left != null) &#123;</span><br><span class="line">            p = p.left;</span><br><span class="line">        &#125;</span><br><span class="line">        if (p.right != null) &#123;</span><br><span class="line">            p = p.right;</span><br><span class="line">        &#125;</span><br><span class="line">        while (p.right != null) &#123;</span><br><span class="line">            builder.append(p);</span><br><span class="line">            builder.append(&quot;\n&quot;);</span><br><span class="line">            p = p.right;</span><br><span class="line">        &#125;</span><br><span class="line">        return builder.toString();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h4 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h4><ul>
-<li><a href="https://blog.csdn.net/Thousa_Ho/article/details/72830054" target="_blank" rel="noopener">https://blog.csdn.net/Thousa_Ho/article/details/72830054</a></li>
-<li><a href="https://blog.csdn.net/wugemao/article/details/83826211" target="_blank" rel="noopener">https://blog.csdn.net/wugemao/article/details/83826211</a></li>
-</ul>
-]]></content>
-  </entry>
-  <entry>
     <title>Supervisor使用总结</title>
     <url>/2020/08/24/Supervisor%E4%BD%BF%E7%94%A8%E6%80%BB%E7%BB%93/</url>
     <content><![CDATA[<h2 id="一、supervisor简介"><a href="#一、supervisor简介" class="headerlink" title="一、supervisor简介"></a>一、supervisor简介</h2><p>Supervisor是用Python开发的一套通用的进程管理程序，能将一个普通的命令行进程变为后台daemon，并监控进程状态，异常退出时能自动重启。它是通过fork/exec的方式把这些被管理的进程当作supervisor的子进程来启动，这样只要在supervisor的配置文件中，把要管理的进程的可执行文件的路径写进去即可。也实现当子进程挂掉的时候，父进程可以准确获取子进程挂掉的信息的，可以选择是否自己启动和报警。supervisor还提供了一个功能，可以为supervisord或者每个子进程，设置一个非root的user，这个user就可以管理它对应的进程。</p>
@@ -2718,6 +2693,31 @@
       <tags>
         <tag>linux</tag>
       </tags>
+  </entry>
+  <entry>
+    <title>SkipList总结</title>
+    <url>/2019/08/17/SkipList%E6%80%BB%E7%BB%93/</url>
+    <content><![CDATA[<h4 id="skiplist简介"><a href="#skiplist简介" class="headerlink" title="skiplist简介"></a>skiplist简介</h4><p>skip List是一种随机化的数据结构，基于并联的链表，实现简单，插入、删除、查找的复杂度均为O(logN)（大多数情况下），因为其性能匹敌红黑树且实现较为简单，因此在很多著名项目都用跳表来代替红黑树，例如LevelDB、Redis的底层存储结构就是用的SkipList。<br>目前常用的key-value数据结构有三种：Hash表、红黑树、SkipList，它们各自有着不同的优缺点：<br>Hash表：插入、查找最快，为O(1)；如使用链表实现则可实现无锁；数据有序化需要显式的排序操作。<br>红黑树：插入、查找为O(logn)，但常数项较小；无锁实现的复杂性很高，一般需要加锁；数据天然有序。<br>SkipList：插入、查找为O(logn)，但常数项比红黑树要大；底层结构为链表，可无锁实现；数据天然有序。</p>
+<h4 id="SkipList基本数据结构及其实现"><a href="#SkipList基本数据结构及其实现" class="headerlink" title="SkipList基本数据结构及其实现"></a>SkipList基本数据结构及其实现</h4><p>一个跳表，应该具有以下特征：</p>
+<p>1、一个跳表应该有几个层（level）组成；<br>通常是10-20层，leveldb中默认为12层。</p>
+<p>2、跳表的第0层包含所有的元素；<br>且节点值是有序的。</p>
+<p>3、每一层都是一个有序的链表；<br>层数越高应越稀疏，这样在高层次中能’跳过’许多的不符合条件的数据。</p>
+<p>4、如果元素x出现在第i层，则所有比i小的层都包含x；</p>
+<p>5、每个节点包含key及其对应的value和一个指向该节点第n层的下个节点的指针数组<br>x-&gt;next[level]表示第level层的x的下一个节点</p>
+<p><img src="/2019/08/17/SkipList总结/list1.png" alt="avatar"><br>一个有序的链表，我们选取它的一半的节点用来建索引，这样如果插入一个节点，我们比较的次数就减少了一半。这种做法，虽然增加了50%的空间，但是性能提高了一倍。如上图。既然，我们已经提取了一层节点索引，那么，可以在第一层索引上再提取索引。如下图。</p>
+<p><img src="/2019/08/17/SkipList总结/list2.png" alt="avatar"><br>对于node5来说，它的next：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">node5-&gt;next[2] = tailNode;</span><br><span class="line">node5-&gt;next[1] = node7;</span><br><span class="line">node5-&gt;next[0] = node6;</span><br></pre></td></tr></table></figure></p>
+<p>对于node7来说，它的next：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">node7-&gt;next[1] = node9;</span><br><span class="line">node7-&gt;next[0] = node8;</span><br></pre></td></tr></table></figure></p>
+<p>对于node3来说，它的next：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">node3-&gt;next[0] = node4;</span><br></pre></td></tr></table></figure></p>
+<h4 id="skiplist查找"><a href="#skiplist查找" class="headerlink" title="skiplist查找"></a>skiplist查找</h4><p><img src="/2019/08/17/SkipList总结/list3.png" alt="avatar"><br>综上：<br>当targetNode-&gt;next[i]的值 &lt; 待查找的值时，令targetNode = targetNode-&gt;next[i]，targetNode移到第i级的下一个结点；<br>当targetNode-&gt;next[i]的值 &gt; 待查找的值时，向下降级，i- - ，不改变targetNode；<br>当targetNode-&gt;next[i]的值 = 待查找的值时，向下降级，i- - ，不改变targetNode。<br>最后，再次比较targetNode-&gt;next[0]和theElement，判断是否找到。<br>所以整个运算下来，targetNode是要查找的节点前面那个节点。<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">/* 如果存在 x, 返回 x 所在的节点， </span><br><span class="line"> * 否则返回 x 的后继节点 */  </span><br><span class="line">find(x)   </span><br><span class="line">&#123;  </span><br><span class="line">    p = top;  </span><br><span class="line">    while (1) &#123;  </span><br><span class="line">        while (p-&gt;next-&gt;key &lt; x)  </span><br><span class="line">            p = p-&gt;next;  </span><br><span class="line">        if (p-&gt;down == NULL)   </span><br><span class="line">            return p-&gt;next;  </span><br><span class="line">        p = p-&gt;down;  </span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure></p>
+<h4 id="skiplist插入"><a href="#skiplist插入" class="headerlink" title="skiplist插入"></a>skiplist插入</h4><p>插入的步骤：<br>新节点和各层索引节点逐一比较，确定原链表的插入位置。O（logN）<br>把索引插入到原链表。O（1）<br>利用抛硬币的随机方式，决定新节点是否提升为上一级索引。结果为“正”则提升并继续抛硬币，结果为“负”则停止。O（logN）<br>总体上，跳表插入操作的时间复杂度是O（logN），而这种数据结构所占空间是2N，既空间复杂度是 O（N）。</p>
+<h4 id="skiplist删除"><a href="#skiplist删除" class="headerlink" title="skiplist删除"></a>skiplist删除</h4><p><img src="/2019/08/17/SkipList总结/list4.jpg" alt="avatar"><br>自上而下，查找第一次出现节点的索引，并逐层找到每一层对应的节点。O（logN）<br>删除每一层查找到的节点，如果该层只剩下1个节点，删除整个一层（原链表除外）。O（logN）<br>总体上，跳表删除操作的时间复杂度是O（N）</p>
+<h4 id="skiplist实现"><a href="#skiplist实现" class="headerlink" title="skiplist实现"></a>skiplist实现</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">package com.hqq.list;</span><br><span class="line"></span><br><span class="line">import java.net.CacheRequest;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> * SkipListNode</span><br><span class="line"> * 跳跃表的节点,包括key-value和上下左右4个指针</span><br><span class="line"> * Created by heqianqian on 2017/6/1.</span><br><span class="line"> */</span><br><span class="line">public class SkipListNode&lt;T&gt; &#123;</span><br><span class="line">    private int key;</span><br><span class="line">    private T value;</span><br><span class="line">    public SkipListNode&lt;T&gt; up, down, left, right;</span><br><span class="line"></span><br><span class="line">    public static final int HEAD_KEY = Integer.MIN_VALUE;//负无穷</span><br><span class="line">    public static final int TAIL_KEY = Integer.MAX_VALUE;//正无穷</span><br><span class="line"></span><br><span class="line">    public SkipListNode(int k, T v) &#123;</span><br><span class="line">        this.key = k;</span><br><span class="line">        this.value = v;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public int getKey() &#123;</span><br><span class="line">        return key;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void setKey(int key) &#123;</span><br><span class="line">        this.key = key;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public T getValue() &#123;</span><br><span class="line">        return value;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void setValue(T value) &#123;</span><br><span class="line">        this.value = value;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @SuppressWarnings(&quot;unchecked&quot;)</span><br><span class="line">    public boolean equals(Object o) &#123;</span><br><span class="line">        if (this == o) &#123;</span><br><span class="line">            return true;</span><br><span class="line">        &#125;</span><br><span class="line">        if (o == null) &#123;</span><br><span class="line">            return false;</span><br><span class="line">        &#125;</span><br><span class="line">        if (!(o instanceof SkipListNode&lt;?&gt;)) &#123;</span><br><span class="line">            return false;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        SkipListNode&lt;T&gt; ent;</span><br><span class="line">        try &#123;</span><br><span class="line">            ent = (SkipListNode&lt;T&gt;) o;</span><br><span class="line">        &#125; catch (Exception e) &#123;</span><br><span class="line">            return false;</span><br><span class="line">        &#125;</span><br><span class="line">        return (ent.getKey() == key) &amp;&amp; (ent.getValue() == value);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public String toString() &#123;</span><br><span class="line">        return &quot;key-value:&quot;+key+&quot;-&quot;+value;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">package com.hqq.list;</span><br><span class="line"></span><br><span class="line">import java.util.Comparator;</span><br><span class="line">import java.util.Random;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> * SkipList</span><br><span class="line"> * 不固定层级的跳跃表</span><br><span class="line"> * Created by heqianqian on 2017/6/1.</span><br><span class="line"> */</span><br><span class="line">public class SkipList&lt;T extends Comparable&lt;? super T&gt;&gt; &#123;</span><br><span class="line"></span><br><span class="line">    private SkipListNode&lt;T&gt; head, tail;</span><br><span class="line">    private int nodes;//节点总数</span><br><span class="line">    private int listLevel;//层数</span><br><span class="line">    private Random random;//用于产生随机数</span><br><span class="line">    private static final double PROBABILITY = 0.5;//向上提升一个的概率</span><br><span class="line"></span><br><span class="line">    public SkipList() &#123;</span><br><span class="line">        random = new Random();</span><br><span class="line">        clear();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 清空跳跃表</span><br><span class="line">     */</span><br><span class="line">    public void clear() &#123;</span><br><span class="line">        head = new SkipListNode&lt;T&gt;(SkipListNode.HEAD_KEY, null);</span><br><span class="line">        tail = new SkipListNode&lt;T&gt;(SkipListNode.TAIL_KEY, null);</span><br><span class="line">        horizontalLink(head, tail);</span><br><span class="line">        listLevel = 0;</span><br><span class="line">        nodes = 0;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 水平双向连接</span><br><span class="line">     */</span><br><span class="line">    private void horizontalLink(SkipListNode&lt;T&gt; node1, SkipListNode&lt;T&gt; node2) &#123;</span><br><span class="line">        node1.right = node2;</span><br><span class="line">        node2.left = node1;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 垂直双向连接</span><br><span class="line">     */</span><br><span class="line">    private void vertiacallLink(SkipListNode&lt;T&gt; node1, SkipListNode&lt;T&gt; node2) &#123;</span><br><span class="line">        node1.down = node2;</span><br><span class="line">        node2.up = node1;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 在最下面一层，找到要插入的位置前面的那个key</span><br><span class="line">     */</span><br><span class="line">    private SkipListNode&lt;T&gt; findNode(int key) &#123;</span><br><span class="line">        SkipListNode&lt;T&gt; p = head;</span><br><span class="line">        while (true) &#123;</span><br><span class="line">            while (p.right.getKey() != SkipListNode.TAIL_KEY &amp;&amp; p.right.getKey() &lt;= key) &#123;</span><br><span class="line">                p = p.right;</span><br><span class="line">            &#125;</span><br><span class="line">            if (p.down != null) &#123;</span><br><span class="line">                p = p.down;</span><br><span class="line">            &#125; else &#123;</span><br><span class="line">                break;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return p;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 查找是否存储key，存在则返回该节点，否则返回null</span><br><span class="line">     */</span><br><span class="line">    public SkipListNode&lt;T&gt; search(int key) &#123;</span><br><span class="line">        SkipListNode&lt;T&gt; p = findNode(key);</span><br><span class="line">        return (key == p.getKey()) ? p : null;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 向跳跃表中添加key-value</span><br><span class="line">     */</span><br><span class="line">    public void put(int k, T v) &#123;</span><br><span class="line">        SkipListNode&lt;T&gt; p = findNode(k);</span><br><span class="line">        //如果key值相同，替换原来的vaule即可结束</span><br><span class="line">        if (k == p.getKey()) &#123;</span><br><span class="line">            p.setValue(v);</span><br><span class="line">            return;</span><br><span class="line">        &#125;</span><br><span class="line">        SkipListNode&lt;T&gt; q = new SkipListNode&lt;T&gt;(k, v);</span><br><span class="line">        backLink(p, q);</span><br><span class="line">        int currentLevel = 0;//当前所层次是0</span><br><span class="line">        //产生随机数</span><br><span class="line">        while (random.nextDouble() &lt; PROBABILITY) &#123;</span><br><span class="line">            //新建一个层</span><br><span class="line">            if (currentLevel &gt;= listLevel) &#123;</span><br><span class="line">                listLevel++;</span><br><span class="line">                SkipListNode&lt;T&gt; p1 = new SkipListNode&lt;T&gt;(SkipListNode.HEAD_KEY, null);</span><br><span class="line">                SkipListNode&lt;T&gt; p2 = new SkipListNode&lt;T&gt;(SkipListNode.TAIL_KEY, null);</span><br><span class="line">                horizontalLink(p1, p2);</span><br><span class="line">                vertiacallLink(p1, head);</span><br><span class="line">                vertiacallLink(p2, tail);</span><br><span class="line">                head = p1;</span><br><span class="line">                tail = p2;</span><br><span class="line">            &#125;</span><br><span class="line">            //把p移动到上一层</span><br><span class="line">            while (p.up == null) &#123;</span><br><span class="line">                p = p.left;</span><br><span class="line">            &#125;</span><br><span class="line">            p = p.up;</span><br><span class="line"></span><br><span class="line">            SkipListNode&lt;T&gt; e = new SkipListNode&lt;T&gt;(k, null);</span><br><span class="line">            backLink(p, e);</span><br><span class="line">            vertiacallLink(e, q);</span><br><span class="line">            q = e;</span><br><span class="line">            currentLevel++;</span><br><span class="line">        &#125;</span><br><span class="line">        nodes++;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 在node1后插入node2</span><br><span class="line">     */</span><br><span class="line">    private void backLink(SkipListNode&lt;T&gt; node1, SkipListNode&lt;T&gt; node2) &#123;</span><br><span class="line">        node2.left = node1;</span><br><span class="line">        node2.right = node1.right;</span><br><span class="line">        node1.right.left = node2;</span><br><span class="line">        node1.right = node2;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public boolean isEmpty() &#123;</span><br><span class="line">        return nodes == 0;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public int size() &#123;</span><br><span class="line">        return nodes;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public String toString() &#123;</span><br><span class="line">        if (isEmpty()) &#123;</span><br><span class="line">            return &quot;跳跃表为空&quot;;</span><br><span class="line">        &#125;</span><br><span class="line">        StringBuilder builder = new StringBuilder();</span><br><span class="line">        SkipListNode&lt;T&gt; p = head;</span><br><span class="line">        while (p.down != null) &#123;</span><br><span class="line">            p = p.down;</span><br><span class="line">        &#125;</span><br><span class="line">        while (p.left != null) &#123;</span><br><span class="line">            p = p.left;</span><br><span class="line">        &#125;</span><br><span class="line">        if (p.right != null) &#123;</span><br><span class="line">            p = p.right;</span><br><span class="line">        &#125;</span><br><span class="line">        while (p.right != null) &#123;</span><br><span class="line">            builder.append(p);</span><br><span class="line">            builder.append(&quot;\n&quot;);</span><br><span class="line">            p = p.right;</span><br><span class="line">        &#125;</span><br><span class="line">        return builder.toString();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h4><ul>
+<li><a href="https://blog.csdn.net/Thousa_Ho/article/details/72830054" target="_blank" rel="noopener">https://blog.csdn.net/Thousa_Ho/article/details/72830054</a></li>
+<li><a href="https://blog.csdn.net/wugemao/article/details/83826211" target="_blank" rel="noopener">https://blog.csdn.net/wugemao/article/details/83826211</a></li>
+</ul>
+]]></content>
   </entry>
   <entry>
     <title>es总结2</title>
@@ -2985,102 +2985,6 @@
 ]]></content>
       <tags>
         <tag>性能测试</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>jvm小结</title>
-    <url>/2021/06/19/jvm%E5%B0%8F%E7%BB%93/</url>
-    <content><![CDATA[<h4 id="jvm整体架构"><a href="#jvm整体架构" class="headerlink" title="jvm整体架构"></a>jvm整体架构</h4><p>JVM(虚拟机)：指以软件的方式模拟具有完整硬件系统功能、运行在一个完全隔离环境中的完整计算机系统 ，是物理机的软件实现。jvm的整体架构如下<br><img src="/2021/06/19/jvm小结/jvm1.png" alt="avatar"></p>
-<p>详细的jvm整体架构如下<br><img src="/2021/06/19/jvm小结/jvm6.png" alt="avatar"></p>
-<p>在一个java进程中可能有很多正在运行的java线程，那么在每一个java线程中都会独立开辟本地方法栈，程序计算器，和Java栈的，而方法区和堆并不是独立开辟的，他们之间是可以共享的。</p>
-<p><strong>内存结构每个组成模块的具体概念</strong></p>
-<p>本地方法栈(线程私有)：登记native方法，在Execution Engine执行时加载本地方法库</p>
-<p>程序计数器（线程私有）：就是一个指针，指向方法区中的方法字节码（用来存储指向下一条指令的地址,也即将要执行的指令代码），由执行引擎读取下一条指令，是一个非常小的内存空间，几乎可以忽略不记。</p>
-<p>方法区(线程共享)：类的所有字段和方法字节码，以及一些特殊方法如构造函数，接口代码也在此定义。简单说，所有定义的方法的信息都保存在该区域，静态变量+常量+类信息(构造方法/接口定义)+运行时常量池都存在方法区中，虽然Java虚拟机规范把方法区描述为堆的一个逻辑部分，但是它却有一个别名叫做 Non-Heap（非堆），目的应该是与 Java 堆区分开来。</p>
-<p>Java栈（线程私有）： Java线程执行方法的内存模型，一个线程对应一个栈，每个方法在执行的同时都会创建一个栈帧（用于存储局部变量表，操作数栈，动态链接，方法出口等信息）不存在垃圾回收问题，只要线程一结束该栈就释放，生命周期和线程一致</p>
-<p>JVM对该区域规范了两种异常：</p>
-<p>1) 线程请求的栈深度大于虚拟机栈所允许的深度，将抛出StackOverFlowError异常</p>
-<p>2) 若虚拟机栈可动态扩展，当无法申请到足够内存空间时将抛出OutOfMemoryError，通过jvm参数–Xss指定栈空间，空间大小决定函数调用的深度</p>
-<p>堆(线程共享)：虚拟机启动时创建，用于存放对象实例，几乎所有的对象（包含常量池）都在堆上分配内存，当对象无法再该空间申请到内存时将抛出OutOfMemoryError异常。同时也是垃圾收集器管理的主要区域。可通过 -Xmx –Xms 参数来分别指定最大堆和最小堆</p>
-<p><strong>栈+堆+方法区的交互关系</strong></p>
-<p>HotSpot是使用指针的方式来访问对象，Java堆中会存放访问类元数据的地址，reference存储的就直接是对象的地址<br><img src="/2021/06/19/jvm小结/jvm2.png" alt="avatar"></p>
-<p>•堆(线程共享)：虚拟机启动时创建，用于存放对象实例，几乎所有的对象（包含常量池）都在堆上分配内存，当对象无法再该空间申请到内存时将抛出OutOfMemoryError异常。同时也是垃圾收集器管理的主要区域。可通过 -Xmx –Xms 参数来分别指定最大堆和最小堆<br><img src="/2021/06/19/jvm小结/jvm3.png" alt="avatar"></p>
-<p>新生区</p>
-<p>类诞生、成长、消亡的区域，一个类在这里产生，应用，最后被垃圾回收器收集，结束生命。</p>
-<p>新生区分为两部分： 伊甸区（Eden space）和幸存者区（Survivor pace） ，所有的类都是在伊甸区被new出来的。幸存区有两个： 0区（Survivor 0 space）和1区（Survivor 1 space）。当伊甸园的空间用完时，程序又需要创建对象，JVM的垃圾回收器将对伊甸园区进行垃圾回收(Minor GC)，将伊甸园区中的不再被其他对象所引用的对象进行销毁。然后将伊甸园中的剩余对象移动到幸存 0区。若幸存 0区也满了，再对该区进行垃圾回收，然后移动到1区。那如果1区也满了呢？</p>
-<p>老年区</p>
-<p>新生区经过多次GC仍然存活的对象移动到老年区。若老年区也满了，那么这个时候将产生MajorGC（FullGC），进行老年区的内存清理。若老年区执行了Full GC之后发现依然无法进行对象的保存，就会产生OOM异常“OutOfMemoryError”</p>
-<p>元数据区：元数据区取代了永久代(jdk1.8以前)，本质和永久代类似，都是对JVM规范中方法区的实现，区别在于元数据区并不在虚拟机中，而是使用本地物理内存，永久代在虚拟机中，永久代逻辑结构上属于堆，但是物理上不属于堆，堆大小=新生代+老年代。元数据区也有可能发生OutOfMemory异常。</p>
-<p>Jdk1.6及之前： 有永久代, 常量池在方法区</p>
-<p>Jdk1.7：       有永久代，但已经逐步“去永久代”，常量池在堆</p>
-<p>Jdk1.8及之后： 无永久代，常量池在元空间</p>
-<p>元数据区的动态扩展，默认–XX:MetaspaceSize值为21MB的高水位线。一旦触及则Full GC将被触发并卸载没有用的类（类对应的类加载器不再存活），然后高水位线将会重置。新的高水位线的值取决于GC后释放的元空间。如果释放的空间少，这个高水位线则上升。如果释放空间过多，则高水位线下降。</p>
-<p>为什么jdk1.8用元数据区取代了永久代？</p>
-<p>官方解释：移除永久代是为融合HotSpot JVM与 JRockit VM而做出的努力，因为JRockit没有永久代，不需要配置永久代</p>
-<p><strong>执行引擎</strong><br>读取运行时数据区的Java字节码并逐个执行<br><img src="/2021/06/19/jvm小结/jvm4.png" alt="avatar"></p>
-<p>JIT：在Java编程语言和环境中，即时编译器（JIT compiler，just-in-time compiler）是一个把Java的字节码（包括需要被解释的指令的程序）转换成可以直接发送给处理器的指令的程序。</p>
-<p><img src="/2021/06/19/jvm小结/jvm5.png" alt="avatar"></p>
-<h4 id="jvm生命周期"><a href="#jvm生命周期" class="headerlink" title="jvm生命周期"></a>jvm生命周期</h4><p>Java虚拟机的生命周期 一个运行中的Java虚拟机有着一个清晰的任务：执行Java程序。程序开始执行时他才运行，程序结束时他就停止。你在同一台机器上运行三个程序，就会有三个运行中的Java虚拟机。 Java虚拟机总是开始于一个main()方法，这个方法必须是公有、返回void、直接受一个字符串数组。在程序执行时，你必须给Java虚拟机指明这个包换main()方法的类名。 Main()方法是程序的起点，他被执行的线程初始化为程序的初始线程。程序中其他的线程都由他来启动。Java中的线程分为两种：守护线程（daemon）和普通线程（non-daemon）。守护线程是Java虚拟机自己使用的线程，比如负责垃圾收集GC的线程就是一个守护线程。当然，你也可 以把自己的程序用setDeamon设置为守护线程。包含Main()方法的初始线程不是守护线程。 只要Java虚拟机中还有普通的线程在执行，Java虚拟机就不会停止。如果有足够的权限，你可以调用exit()方法终止程序。</p>
-<h4 id="类加载器子系统"><a href="#类加载器子系统" class="headerlink" title="类加载器子系统"></a>类加载器子系统</h4><p><strong>类加载子系统的作用</strong></p>
-<ol>
-<li>类加载子系统负责从文件系统或者网络中加载Class文件，class文件在文件开头有特定的文件标识；</li>
-<li>ClassLoader只负责class文件的加载，至于它是否可以运行，则由Execution Engine决定</li>
-<li>加载的类信息存放于一块成为方法区的内存空间。除了类信息之外，方法区还会存放运行时常量池信息，可能还包括字符串字面量和数字常量（这部分常量信息是Class文件中常量池部分的内存映射）</li>
-</ol>
-<p><strong>类加载子系统的概览图</strong></p>
-<p><img src="/2021/06/19/jvm小结/jvm7.png" alt="avatar"></p>
-<p>类加载器子系统负责从文件系统或网络中加载class文件，class文件在文件头具有特定的文件标识。</p>
-<p>Classloader只负责class文件的加载，至于他是否可以运行，则由Execution Engine决定。</p>
-<p>加载的类信息存放于一块称为方法区的内存空间。除了类的信息外，方法区中还会存放运行时常量池信息，可能还包括字符串字面量和数字常量。</p>
-<p>类加载子系统主要包括三个环节：</p>
-<ul>
-<li>loading</li>
-<li>linking：verify，prepare，resolve</li>
-<li>initialization</li>
-</ul>
-<p>1.Loading（加载）环节</p>
-<ul>
-<li>通过一个类的全限定明获取定义此类的二进制字节流；</li>
-<li>将这个字节流所代表的的静态存储结构转化为方法区的运行时数据；</li>
-<li>在内存中生成一个代表这个类的java.lang.Class对象，作为方法区这个类的各种数据的访问入口</li>
-</ul>
-<p>2.Linking（链接）环节</p>
-<p>Verify(验证)</p>
-<ul>
-<li>目的在于确保Class文件的字节流中包含信息符合当前虚拟机要求，保证被加载类的正确性，不会危害虚拟机自身安全。</li>
-<li>主要包括四种验证，文件格式验证，源数据验证，字节码验证，符号引用验证。</li>
-</ul>
-<p>Prepare(准备)环节</p>
-<ul>
-<li>为类变量分配内存并且设置该类变量的默认初始值，即零值；</li>
-<li>这里不包含用final修饰的static，因为final在编译的时候就会分配了，准备阶段会显式初始化；</li>
-<li>不会为实例变量分配初始化，类变量会分配在方法去中，而实例变量是会随着对象一起分配到java堆中。</li>
-</ul>
-<p>Resolve(解析)</p>
-<ul>
-<li>将常量池内的符号引用转换为直接引用的过程。</li>
-<li>事实上，解析操作往往会伴随着jvm在执行完初始化之后再执行。</li>
-<li>符号引用就是一组符号来描述所引用的目标。符号应用的字面量形式明确定义在《java虚拟机规范》的class文件格式中。直接引用就是直接指向目标的指针、相对偏移量或一个间接定位到目标的句柄。</li>
-<li>解析动作主要针对类或接口、字段、类方法、接口方法、方法类型等。对应常量池中的CONSTANT_Class_info/CONSTANT_Fieldref_info、CONSTANT_Methodref_info等。</li>
-</ul>
-<p>3.Initialization（初始化）环节</p>
-<ul>
-<li>初始化阶段就是执行类构造器方法clinit（）的过程。</li>
-<li>此方法不需要定义，是javac编译器自动收集类中的所有类变量的赋值动作和静态代码块中的语句合并而来。</li>
-<li>构造器方法中指令按语句在源文件中的出现的顺序执行。</li>
-<li>Clinit不同于类的构造器（构造器是虚拟机视角下的init（））</li>
-<li>若该类有父类，jvm会保证子类的clinit（）执行前，父类的clinit（）已经执行完毕</li>
-<li>虚拟机必须保证一个类的clinit（）在多线程下被同步加载。</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">## 示例1 </span><br><span class="line">public class ClassInitTest &#123;</span><br><span class="line"></span><br><span class="line">    private static int num1=1;</span><br><span class="line"></span><br><span class="line">    static&#123;</span><br><span class="line">        num1=2;</span><br><span class="line">        num2=20;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private static int num2=10;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        System.out.println(num1);</span><br><span class="line">        System.out.println(num2);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">## 示例2</span><br><span class="line">public class ClassInitTest2 &#123;</span><br><span class="line"></span><br><span class="line">    static class Father &#123;</span><br><span class="line"></span><br><span class="line">        public static int num = 1;</span><br><span class="line"></span><br><span class="line">        static &#123;</span><br><span class="line">            num = 5;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    static class Son extends Father &#123;</span><br><span class="line"></span><br><span class="line">        private static int numSon = num;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        System.out.println(Son.numSon);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">## 示例3</span><br><span class="line">public class ClassTest3 &#123;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line"></span><br><span class="line">        Runnable r = ()-&gt;&#123;</span><br><span class="line">            System.out.println(&quot;开始&quot;);</span><br><span class="line">            ThreadInit threadInit = new ThreadInit();</span><br><span class="line">            System.out.println(&quot;结束&quot;);</span><br><span class="line">        &#125;;</span><br><span class="line"></span><br><span class="line">        Thread t1 = new Thread(r);</span><br><span class="line">        Thread t2 = new Thread(r);</span><br><span class="line"></span><br><span class="line">        t1.start();</span><br><span class="line">        t2.start();</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    static class ThreadInit &#123;</span><br><span class="line"></span><br><span class="line">        static &#123;</span><br><span class="line">            if(true)&#123;</span><br><span class="line">                System.out.println(&quot;加载当前类&quot;+Thread.currentThread().getName());</span><br><span class="line">                while (true)&#123;</span><br><span class="line"></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h4 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h4><ol>
-<li><a href="https://blog.csdn.net/qq_40368860/article/details/84447085" target="_blank" rel="noopener">https://blog.csdn.net/qq_40368860/article/details/84447085</a></li>
-<li><a href="https://blog.csdn.net/rabbit_in_android/article/details/50382739" target="_blank" rel="noopener">https://blog.csdn.net/rabbit_in_android/article/details/50382739</a></li>
-<li><a href="https://www.cnblogs.com/lwkdbk/p/12707708.html" target="_blank" rel="noopener">https://www.cnblogs.com/lwkdbk/p/12707708.html</a></li>
-</ol>
-]]></content>
-      <tags>
-        <tag>java</tag>
       </tags>
   </entry>
   <entry>
@@ -5239,6 +5143,169 @@
 ]]></content>
       <tags>
         <tag>性能测试</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>jvm小结</title>
+    <url>/2021/06/19/jvm%E5%B0%8F%E7%BB%93/</url>
+    <content><![CDATA[<h4 id="jvm整体架构"><a href="#jvm整体架构" class="headerlink" title="jvm整体架构"></a>jvm整体架构</h4><p>JVM(虚拟机)：指以软件的方式模拟具有完整硬件系统功能、运行在一个完全隔离环境中的完整计算机系统 ，是物理机的软件实现。jvm的整体架构如下<br><img src="/2021/06/19/jvm小结/jvm1.png" alt="avatar"></p>
+<p>详细的jvm整体架构如下<br><img src="/2021/06/19/jvm小结/jvm6.png" alt="avatar"></p>
+<p>在一个java进程中可能有很多正在运行的java线程，那么在每一个java线程中都会独立开辟本地方法栈，程序计算器，和Java栈的，而方法区和堆并不是独立开辟的，他们之间是可以共享的。</p>
+<p><strong>内存结构每个组成模块的具体概念</strong></p>
+<p>本地方法栈(线程私有)：登记native方法，在Execution Engine执行时加载本地方法库</p>
+<p>程序计数器（线程私有）：就是一个指针，指向方法区中的方法字节码（用来存储指向下一条指令的地址,也即将要执行的指令代码），由执行引擎读取下一条指令，是一个非常小的内存空间，几乎可以忽略不记。</p>
+<p>方法区(线程共享)：类的所有字段和方法字节码，以及一些特殊方法如构造函数，接口代码也在此定义。简单说，所有定义的方法的信息都保存在该区域，静态变量+常量+类信息(构造方法/接口定义)+运行时常量池都存在方法区中，虽然Java虚拟机规范把方法区描述为堆的一个逻辑部分，但是它却有一个别名叫做 Non-Heap（非堆），目的应该是与 Java 堆区分开来。</p>
+<p>Java栈（线程私有）： Java线程执行方法的内存模型，一个线程对应一个栈，每个方法在执行的同时都会创建一个栈帧（用于存储局部变量表，操作数栈，动态链接，方法出口等信息）不存在垃圾回收问题，只要线程一结束该栈就释放，生命周期和线程一致</p>
+<p>JVM对该区域规范了两种异常：</p>
+<p>1) 线程请求的栈深度大于虚拟机栈所允许的深度，将抛出StackOverFlowError异常</p>
+<p>2) 若虚拟机栈可动态扩展，当无法申请到足够内存空间时将抛出OutOfMemoryError，通过jvm参数–Xss指定栈空间，空间大小决定函数调用的深度</p>
+<p>堆(线程共享)：虚拟机启动时创建，用于存放对象实例，几乎所有的对象（包含常量池）都在堆上分配内存，当对象无法再该空间申请到内存时将抛出OutOfMemoryError异常。同时也是垃圾收集器管理的主要区域。可通过 -Xmx –Xms 参数来分别指定最大堆和最小堆</p>
+<p><strong>栈+堆+方法区的交互关系</strong></p>
+<p>HotSpot是使用指针的方式来访问对象，Java堆中会存放访问类元数据的地址，reference存储的就直接是对象的地址<br><img src="/2021/06/19/jvm小结/jvm2.png" alt="avatar"></p>
+<p>•堆(线程共享)：虚拟机启动时创建，用于存放对象实例，几乎所有的对象（包含常量池）都在堆上分配内存，当对象无法再该空间申请到内存时将抛出OutOfMemoryError异常。同时也是垃圾收集器管理的主要区域。可通过 -Xmx –Xms 参数来分别指定最大堆和最小堆<br><img src="/2021/06/19/jvm小结/jvm3.png" alt="avatar"></p>
+<p>新生区</p>
+<p>类诞生、成长、消亡的区域，一个类在这里产生，应用，最后被垃圾回收器收集，结束生命。</p>
+<p>新生区分为两部分： 伊甸区（Eden space）和幸存者区（Survivor pace） ，所有的类都是在伊甸区被new出来的。幸存区有两个： 0区（Survivor 0 space）和1区（Survivor 1 space）。当伊甸园的空间用完时，程序又需要创建对象，JVM的垃圾回收器将对伊甸园区进行垃圾回收(Minor GC)，将伊甸园区中的不再被其他对象所引用的对象进行销毁。然后将伊甸园中的剩余对象移动到幸存 0区。若幸存 0区也满了，再对该区进行垃圾回收，然后移动到1区。那如果1区也满了呢？</p>
+<p>老年区</p>
+<p>新生区经过多次GC仍然存活的对象移动到老年区。若老年区也满了，那么这个时候将产生MajorGC（FullGC），进行老年区的内存清理。若老年区执行了Full GC之后发现依然无法进行对象的保存，就会产生OOM异常“OutOfMemoryError”</p>
+<p>元数据区：元数据区取代了永久代(jdk1.8以前)，本质和永久代类似，都是对JVM规范中方法区的实现，区别在于元数据区并不在虚拟机中，而是使用本地物理内存，永久代在虚拟机中，永久代逻辑结构上属于堆，但是物理上不属于堆，堆大小=新生代+老年代。元数据区也有可能发生OutOfMemory异常。</p>
+<p>Jdk1.6及之前： 有永久代, 常量池在方法区</p>
+<p>Jdk1.7：       有永久代，但已经逐步“去永久代”，常量池在堆</p>
+<p>Jdk1.8及之后： 无永久代，常量池在元空间</p>
+<p>元数据区的动态扩展，默认–XX:MetaspaceSize值为21MB的高水位线。一旦触及则Full GC将被触发并卸载没有用的类（类对应的类加载器不再存活），然后高水位线将会重置。新的高水位线的值取决于GC后释放的元空间。如果释放的空间少，这个高水位线则上升。如果释放空间过多，则高水位线下降。</p>
+<p>为什么jdk1.8用元数据区取代了永久代？</p>
+<p>官方解释：移除永久代是为融合HotSpot JVM与 JRockit VM而做出的努力，因为JRockit没有永久代，不需要配置永久代</p>
+<p><strong>执行引擎</strong><br>读取运行时数据区的Java字节码并逐个执行<br><img src="/2021/06/19/jvm小结/jvm4.png" alt="avatar"></p>
+<p>JIT：在Java编程语言和环境中，即时编译器（JIT compiler，just-in-time compiler）是一个把Java的字节码（包括需要被解释的指令的程序）转换成可以直接发送给处理器的指令的程序。</p>
+<p><img src="/2021/06/19/jvm小结/jvm5.png" alt="avatar"></p>
+<h4 id="jvm生命周期"><a href="#jvm生命周期" class="headerlink" title="jvm生命周期"></a>jvm生命周期</h4><p>Java虚拟机的生命周期 一个运行中的Java虚拟机有着一个清晰的任务：执行Java程序。程序开始执行时他才运行，程序结束时他就停止。你在同一台机器上运行三个程序，就会有三个运行中的Java虚拟机。 Java虚拟机总是开始于一个main()方法，这个方法必须是公有、返回void、直接受一个字符串数组。在程序执行时，你必须给Java虚拟机指明这个包换main()方法的类名。 Main()方法是程序的起点，他被执行的线程初始化为程序的初始线程。程序中其他的线程都由他来启动。Java中的线程分为两种：守护线程（daemon）和普通线程（non-daemon）。守护线程是Java虚拟机自己使用的线程，比如负责垃圾收集GC的线程就是一个守护线程。当然，你也可 以把自己的程序用setDeamon设置为守护线程。包含Main()方法的初始线程不是守护线程。 只要Java虚拟机中还有普通的线程在执行，Java虚拟机就不会停止。如果有足够的权限，你可以调用exit()方法终止程序。</p>
+<h4 id="类加载器子系统"><a href="#类加载器子系统" class="headerlink" title="类加载器子系统"></a>类加载器子系统</h4><p><strong>类加载子系统的作用</strong></p>
+<ol>
+<li>类加载子系统负责从文件系统或者网络中加载Class文件，class文件在文件开头有特定的文件标识；</li>
+<li>ClassLoader只负责class文件的加载，至于它是否可以运行，则由Execution Engine决定</li>
+<li>加载的类信息存放于一块成为方法区的内存空间。除了类信息之外，方法区还会存放运行时常量池信息，可能还包括字符串字面量和数字常量（这部分常量信息是Class文件中常量池部分的内存映射）</li>
+</ol>
+<p><strong>类加载子系统的概览图</strong></p>
+<p><img src="/2021/06/19/jvm小结/jvm7.png" alt="avatar"></p>
+<p>类加载器子系统负责从文件系统或网络中加载class文件，class文件在文件头具有特定的文件标识。</p>
+<p>Classloader只负责class文件的加载，至于他是否可以运行，则由Execution Engine决定。</p>
+<p>加载的类信息存放于一块称为方法区的内存空间。除了类的信息外，方法区中还会存放运行时常量池信息，可能还包括字符串字面量和数字常量。</p>
+<p>类加载子系统主要包括三个环节：</p>
+<ul>
+<li>loading</li>
+<li>linking：verify，prepare，resolve</li>
+<li>initialization</li>
+</ul>
+<p>1.Loading（加载）环节</p>
+<ul>
+<li>通过一个类的全限定明获取定义此类的二进制字节流；</li>
+<li>将这个字节流所代表的的静态存储结构转化为方法区的运行时数据；</li>
+<li>在内存中生成一个代表这个类的java.lang.Class对象，作为方法区这个类的各种数据的访问入口</li>
+</ul>
+<p>2.Linking（链接）环节</p>
+<p>Verify(验证)</p>
+<ul>
+<li>目的在于确保Class文件的字节流中包含信息符合当前虚拟机要求，保证被加载类的正确性，不会危害虚拟机自身安全。</li>
+<li>主要包括四种验证，文件格式验证，源数据验证，字节码验证，符号引用验证。</li>
+</ul>
+<p>Prepare(准备)环节</p>
+<ul>
+<li>为类变量分配内存并且设置该类变量的默认初始值，即零值；</li>
+<li>这里不包含用final修饰的static，因为final在编译的时候就会分配了，准备阶段会显式初始化；</li>
+<li>不会为实例变量分配初始化，类变量会分配在方法去中，而实例变量是会随着对象一起分配到java堆中。</li>
+</ul>
+<p>Resolve(解析)</p>
+<ul>
+<li>将常量池内的符号引用转换为直接引用的过程。</li>
+<li>事实上，解析操作往往会伴随着jvm在执行完初始化之后再执行。</li>
+<li>符号引用就是一组符号来描述所引用的目标。符号应用的字面量形式明确定义在《java虚拟机规范》的class文件格式中。直接引用就是直接指向目标的指针、相对偏移量或一个间接定位到目标的句柄。</li>
+<li>解析动作主要针对类或接口、字段、类方法、接口方法、方法类型等。对应常量池中的CONSTANT_Class_info/CONSTANT_Fieldref_info、CONSTANT_Methodref_info等。</li>
+</ul>
+<p>3.Initialization（初始化）环节</p>
+<ul>
+<li>初始化阶段就是执行类构造器方法clinit（）的过程。</li>
+<li>此方法不需要定义，是javac编译器自动收集类中的所有类变量的赋值动作和静态代码块中的语句合并而来。</li>
+<li>构造器方法中指令按语句在源文件中的出现的顺序执行。</li>
+<li>Clinit不同于类的构造器（构造器是虚拟机视角下的init（））</li>
+<li>若该类有父类，jvm会保证子类的clinit（）执行前，父类的clinit（）已经执行完毕</li>
+<li>虚拟机必须保证一个类的clinit（）在多线程下被同步加载。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">## 示例1 </span><br><span class="line">public class ClassInitTest &#123;</span><br><span class="line"></span><br><span class="line">    private static int num1=1;</span><br><span class="line"></span><br><span class="line">    static&#123;</span><br><span class="line">        num1=2;</span><br><span class="line">        num2=20;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private static int num2=10;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        System.out.println(num1);</span><br><span class="line">        System.out.println(num2);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">## 示例2</span><br><span class="line">public class ClassInitTest2 &#123;</span><br><span class="line"></span><br><span class="line">    static class Father &#123;</span><br><span class="line"></span><br><span class="line">        public static int num = 1;</span><br><span class="line"></span><br><span class="line">        static &#123;</span><br><span class="line">            num = 5;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    static class Son extends Father &#123;</span><br><span class="line"></span><br><span class="line">        private static int numSon = num;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        System.out.println(Son.numSon);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">## 示例3</span><br><span class="line">public class ClassTest3 &#123;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line"></span><br><span class="line">        Runnable r = ()-&gt;&#123;</span><br><span class="line">            System.out.println(&quot;开始&quot;);</span><br><span class="line">            ThreadInit threadInit = new ThreadInit();</span><br><span class="line">            System.out.println(&quot;结束&quot;);</span><br><span class="line">        &#125;;</span><br><span class="line"></span><br><span class="line">        Thread t1 = new Thread(r);</span><br><span class="line">        Thread t2 = new Thread(r);</span><br><span class="line"></span><br><span class="line">        t1.start();</span><br><span class="line">        t2.start();</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    static class ThreadInit &#123;</span><br><span class="line"></span><br><span class="line">        static &#123;</span><br><span class="line">            if(true)&#123;</span><br><span class="line">                System.out.println(&quot;加载当前类&quot;+Thread.currentThread().getName());</span><br><span class="line">                while (true)&#123;</span><br><span class="line"></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="类加载器"><a href="#类加载器" class="headerlink" title="类加载器"></a>类加载器</h4><ul>
+<li>VM支持两种类型的加载器，分别为引导类加载器（BootStrap ClassLoader）和自定义类加载器（User-Defined ClassLoader）</li>
+<li>从概念上来讲，自定义类加载器一般指的是程序中由开发人员自定义的一类类加载器，但是java虚拟机规范却没有这么定义，而是将所有派生于抽象类ClassLoader的类加载器都划分为自定义类加载器。</li>
+<li>对于用户自定义类来说：使用系统类加载器AppClassLoader进行加载，java核心类库都是使用引导类加载器BootStrapClassLoader加载的。</li>
+</ul>
+<p><strong>启动类加载器（引导类加载器，BootStrap ClassLoader）</strong></p>
+<ul>
+<li>这个类加载使用C/C++语言实现的，嵌套在JVM内部</li>
+<li>它用来加载java的核心库（JAVA_HOME/jre/lib/rt.jar/resources.jar或sun.boot.class.path路径下的内容），用于提供JVM自身需要的类</li>
+<li>并不继承自java.lang.ClassLoader,没有父加载器</li>
+<li>加载拓展类和应用程序类加载器，并指定为他们的父加载器</li>
+<li><p>处于安全考虑，BootStrap启动类加载器只加载包名为java、javax、sun等开头的类</p>
+<p><strong>拓展类加载器（Extension ClassLoader）</strong></p>
+</li>
+<li><p>java语言编写 ，由sun.misc.Launcher$ExtClassLoader实现。</p>
+</li>
+<li>派生于ClassLoader类</li>
+<li>父类加载器为启动类加载器</li>
+<li>从java.ext.dirs系统属性所指定的目录中加载类库，或从JDK的安装目录的jre/lib/ext子目录（扩展目录）下加载类库。如果用户创建的JAR放在此目录下，也会由拓展类加载器自动加载</li>
+</ul>
+<p><strong>应用程序类加载器（系统类加载器，AppClassLoader）</strong></p>
+<ul>
+<li>java语言编写， 由sun.misc.Launcher$AppClassLoader实现。</li>
+<li>派生于ClassLoader类</li>
+<li>父类加载器为拓展类加载器</li>
+<li>它负责加载环境变量classpath或系统属性 java.class.path指定路径下的类库</li>
+<li>该类加载器是程序中默认的类加载器，一般来说，java应用的类都是由它来完成加载</li>
+<li>通过ClassLoader.getSystemClassLoader()方法可以获取到该类加载器</li>
+</ul>
+<p><strong>用户自定义类加载器</strong></p>
+<ul>
+<li>隔离加载类</li>
+<li>修改类加载的方式</li>
+<li>拓展加载源</li>
+<li>防止源码泄漏</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class CustomLoader extends ClassLoader &#123;</span><br><span class="line"></span><br><span class="line">    private final String path;</span><br><span class="line"></span><br><span class="line">    public CustomLoader(String path) &#123;</span><br><span class="line">        super(null);</span><br><span class="line">        this.path = path;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    protected Class&lt;?&gt; findClass(String name) throws ClassNotFoundException &#123;</span><br><span class="line"></span><br><span class="line">        byte[] data = new byte[0];</span><br><span class="line"></span><br><span class="line">        try &#123;</span><br><span class="line">            data = readBytes(name);</span><br><span class="line">        &#125; catch (IOException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">        return defineClass(name, data, 0, data.length);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private byte[] readBytes(String name) throws IOException &#123;</span><br><span class="line">        name = name.replaceAll(&quot;\\.&quot;, &quot;\\\\&quot;);</span><br><span class="line">        String classFilePath = path + name + &quot;.class&quot;;</span><br><span class="line">        File classFile = new File(classFilePath);</span><br><span class="line">        InputStream fis = null;</span><br><span class="line"></span><br><span class="line">        ByteArrayOutputStream bos = null;</span><br><span class="line">        byte[] bytes = new byte[1024];</span><br><span class="line"></span><br><span class="line">        byte[] readBytes = null;</span><br><span class="line"></span><br><span class="line">        try &#123;</span><br><span class="line">            bos = new ByteArrayOutputStream();</span><br><span class="line">            fis = new FileInputStream(classFile);</span><br><span class="line">            int length;</span><br><span class="line">            while ((length = fis.read(bytes)) != -1) &#123;</span><br><span class="line">                bos.write(bytes, 0, length);</span><br><span class="line">            &#125;</span><br><span class="line">            readBytes = bos.toByteArray();</span><br><span class="line"></span><br><span class="line">        &#125; catch (Exception e) &#123;</span><br><span class="line"></span><br><span class="line">        &#125; finally &#123;</span><br><span class="line">            if (fis != null) &#123;</span><br><span class="line">                fis.close();</span><br><span class="line">            &#125;</span><br><span class="line">            if (bos != null) &#123;</span><br><span class="line">                bos.close();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        return readBytes;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>ClassLoader的常用方法及获取方法</strong></p>
+<p>ClassLoader类，它是一个抽象类，其后所有的类加载器都继承自ClassLoader（不包括启动类加载器）<br><img src="/2021/06/19/jvm小结/loader1.png" alt="avatar"><br>获取ClassLoader的途径:<br><img src="/2021/06/19/jvm小结/loader2.png" alt="avatar"></p>
+<p><strong>双亲委派机制</strong></p>
+<p>ava虚拟机对class文件采用的是按需加载的方式，也就是说当需要使用该类时才会将她的class文件加载到内存生成的class对象。而且加载某个类的class文件时，java虚拟机采用的是双亲微拍模式，即把请求交由父类处理，它是一种任务委派模式</p>
+<p><img src="/2021/06/19/jvm小结/loader3.png" alt="avatar"></p>
+<p>双亲委派机制的优势：</p>
+<ul>
+<li>避免类的重复加载</li>
+<li>保护程序安全，防止核心API被随意篡改</li>
+</ul>
+<p><strong>沙箱安全机制</strong></p>
+<p>自定义String类，但是在加载自定义String类的时候回率先使用引导类加载器加载，而引导类加载器在加载过程中会先加载jdk自带的文件（rt.jar包中的java\lang\String.class）,报错信息说没有main方法就是因为加载的是rt.jar包中的String类。这样可以保证对java核心源代码的保护，这就是沙箱安全机制。</p>
+<p>注意：</p>
+<p>在jvm中表示两个class对象是否为同一个类存在的两个必要条件：</p>
+<ul>
+<li>类的完整类名必须一致，包括包名加载这个类的ClassLoader（指ClassLoader实例对象）必须相同。换句话说，在jvm中，即使这两个类对象（class对象）来源同一个Class文件，被同一个虚拟机所加载，但只要加载它们的ClassLoader实例对象不同，那么这两个类对象也是不相等的.</li>
+<li>JVM必须知道一个类型是有启动类加载器加载的还是由用户类加载器加载的。如果一个类型由用户类加载器加载的，那么jvm会将这个类加载器的一个引用作为类型信息的会议部分保存在方法区中。当解析一个类型到另一个类型的引用的时候，JVM需要保证两个类型的加载器是相同的。</li>
+</ul>
+<p><strong>类的主动使用和被动使用</strong></p>
+<p>主动使用，分为七种情况：</p>
+<ul>
+<li>创建类的实例</li>
+<li>访问某各类或接口的静态变量，或者对静态变量赋值</li>
+<li>调用类的静态方法</li>
+<li>反射 比如Class.forName(com.dsh.jvm.xxx)</li>
+<li>初始化一个类的子类</li>
+<li>java虚拟机启动时被标明为启动类的类</li>
+<li>JDK 7 开始提供的动态语言支持：</li>
+<li>java.lang.invoke.MethodHandle实例的解析结果REF_getStatic、REF_putStatic、REF_invokeStatic句柄对应的类没有初始化，则初始化</li>
+</ul>
+<h4 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h4><ol>
+<li><a href="https://blog.csdn.net/qq_40368860/article/details/84447085" target="_blank" rel="noopener">https://blog.csdn.net/qq_40368860/article/details/84447085</a></li>
+<li><a href="https://blog.csdn.net/rabbit_in_android/article/details/50382739" target="_blank" rel="noopener">https://blog.csdn.net/rabbit_in_android/article/details/50382739</a></li>
+<li><a href="https://www.cnblogs.com/lwkdbk/p/12707708.html" target="_blank" rel="noopener">https://www.cnblogs.com/lwkdbk/p/12707708.html</a></li>
+</ol>
+]]></content>
+      <tags>
+        <tag>java</tag>
       </tags>
   </entry>
   <entry>
