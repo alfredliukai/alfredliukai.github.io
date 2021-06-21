@@ -926,66 +926,6 @@
       </tags>
   </entry>
   <entry>
-    <title>jvm小结</title>
-    <url>/2021/06/19/jvm%E5%B0%8F%E7%BB%93/</url>
-    <content><![CDATA[<h4 id="jvm整体架构"><a href="#jvm整体架构" class="headerlink" title="jvm整体架构"></a>jvm整体架构</h4><p>JVM(虚拟机)：指以软件的方式模拟具有完整硬件系统功能、运行在一个完全隔离环境中的完整计算机系统 ，是物理机的软件实现。jvm的整体架构如下<br><img src="/2021/06/19/jvm小结/jvm1.png" alt="avatar"></p>
-<p>详细的jvm整体架构如下<br><img src="/2021/06/19/jvm小结/jvm6.png" alt="avatar"></p>
-<p>在一个java进程中可能有很多正在运行的java线程，那么在每一个java线程中都会独立开辟本地方法栈，程序计算器，和Java栈的，而方法区和堆并不是独立开辟的，他们之间是可以共享的。</p>
-<p><strong>内存结构每个组成模块的具体概念</strong></p>
-<p>本地方法栈(线程私有)：登记native方法，在Execution Engine执行时加载本地方法库</p>
-<p>程序计数器（线程私有）：就是一个指针，指向方法区中的方法字节码（用来存储指向下一条指令的地址,也即将要执行的指令代码），由执行引擎读取下一条指令，是一个非常小的内存空间，几乎可以忽略不记。</p>
-<p>方法区(线程共享)：类的所有字段和方法字节码，以及一些特殊方法如构造函数，接口代码也在此定义。简单说，所有定义的方法的信息都保存在该区域，静态变量+常量+类信息(构造方法/接口定义)+运行时常量池都存在方法区中，虽然Java虚拟机规范把方法区描述为堆的一个逻辑部分，但是它却有一个别名叫做 Non-Heap（非堆），目的应该是与 Java 堆区分开来。</p>
-<p>Java栈（线程私有）： Java线程执行方法的内存模型，一个线程对应一个栈，每个方法在执行的同时都会创建一个栈帧（用于存储局部变量表，操作数栈，动态链接，方法出口等信息）不存在垃圾回收问题，只要线程一结束该栈就释放，生命周期和线程一致</p>
-<p>JVM对该区域规范了两种异常：</p>
-<p>1) 线程请求的栈深度大于虚拟机栈所允许的深度，将抛出StackOverFlowError异常</p>
-<p>2) 若虚拟机栈可动态扩展，当无法申请到足够内存空间时将抛出OutOfMemoryError，通过jvm参数–Xss指定栈空间，空间大小决定函数调用的深度</p>
-<p>堆(线程共享)：虚拟机启动时创建，用于存放对象实例，几乎所有的对象（包含常量池）都在堆上分配内存，当对象无法再该空间申请到内存时将抛出OutOfMemoryError异常。同时也是垃圾收集器管理的主要区域。可通过 -Xmx –Xms 参数来分别指定最大堆和最小堆</p>
-<p><strong>栈+堆+方法区的交互关系</strong></p>
-<p>HotSpot是使用指针的方式来访问对象，Java堆中会存放访问类元数据的地址，reference存储的就直接是对象的地址<br><img src="/2021/06/19/jvm小结/jvm2.png" alt="avatar"></p>
-<p>•堆(线程共享)：虚拟机启动时创建，用于存放对象实例，几乎所有的对象（包含常量池）都在堆上分配内存，当对象无法再该空间申请到内存时将抛出OutOfMemoryError异常。同时也是垃圾收集器管理的主要区域。可通过 -Xmx –Xms 参数来分别指定最大堆和最小堆<br><img src="/2021/06/19/jvm小结/jvm3.png" alt="avatar"></p>
-<p>新生区</p>
-<p>类诞生、成长、消亡的区域，一个类在这里产生，应用，最后被垃圾回收器收集，结束生命。</p>
-<p>新生区分为两部分： 伊甸区（Eden space）和幸存者区（Survivor pace） ，所有的类都是在伊甸区被new出来的。幸存区有两个： 0区（Survivor 0 space）和1区（Survivor 1 space）。当伊甸园的空间用完时，程序又需要创建对象，JVM的垃圾回收器将对伊甸园区进行垃圾回收(Minor GC)，将伊甸园区中的不再被其他对象所引用的对象进行销毁。然后将伊甸园中的剩余对象移动到幸存 0区。若幸存 0区也满了，再对该区进行垃圾回收，然后移动到1区。那如果1区也满了呢？</p>
-<p>老年区</p>
-<p>新生区经过多次GC仍然存活的对象移动到老年区。若老年区也满了，那么这个时候将产生MajorGC（FullGC），进行老年区的内存清理。若老年区执行了Full GC之后发现依然无法进行对象的保存，就会产生OOM异常“OutOfMemoryError”</p>
-<p>元数据区：元数据区取代了永久代(jdk1.8以前)，本质和永久代类似，都是对JVM规范中方法区的实现，区别在于元数据区并不在虚拟机中，而是使用本地物理内存，永久代在虚拟机中，永久代逻辑结构上属于堆，但是物理上不属于堆，堆大小=新生代+老年代。元数据区也有可能发生OutOfMemory异常。</p>
-<p>Jdk1.6及之前： 有永久代, 常量池在方法区</p>
-<p>Jdk1.7：       有永久代，但已经逐步“去永久代”，常量池在堆</p>
-<p>Jdk1.8及之后： 无永久代，常量池在元空间</p>
-<p>元数据区的动态扩展，默认–XX:MetaspaceSize值为21MB的高水位线。一旦触及则Full GC将被触发并卸载没有用的类（类对应的类加载器不再存活），然后高水位线将会重置。新的高水位线的值取决于GC后释放的元空间。如果释放的空间少，这个高水位线则上升。如果释放空间过多，则高水位线下降。</p>
-<p>为什么jdk1.8用元数据区取代了永久代？</p>
-<p>官方解释：移除永久代是为融合HotSpot JVM与 JRockit VM而做出的努力，因为JRockit没有永久代，不需要配置永久代</p>
-<p><strong>执行引擎</strong><br>读取运行时数据区的Java字节码并逐个执行<br><img src="/2021/06/19/jvm小结/jvm4.png" alt="avatar"></p>
-<p>JIT：在Java编程语言和环境中，即时编译器（JIT compiler，just-in-time compiler）是一个把Java的字节码（包括需要被解释的指令的程序）转换成可以直接发送给处理器的指令的程序。</p>
-<p><img src="/2021/06/19/jvm小结/jvm5.png" alt="avatar"></p>
-<h4 id="jvm生命周期"><a href="#jvm生命周期" class="headerlink" title="jvm生命周期"></a>jvm生命周期</h4><p>Java虚拟机的生命周期 一个运行中的Java虚拟机有着一个清晰的任务：执行Java程序。程序开始执行时他才运行，程序结束时他就停止。你在同一台机器上运行三个程序，就会有三个运行中的Java虚拟机。 Java虚拟机总是开始于一个main()方法，这个方法必须是公有、返回void、直接受一个字符串数组。在程序执行时，你必须给Java虚拟机指明这个包换main()方法的类名。 Main()方法是程序的起点，他被执行的线程初始化为程序的初始线程。程序中其他的线程都由他来启动。Java中的线程分为两种：守护线程（daemon）和普通线程（non-daemon）。守护线程是Java虚拟机自己使用的线程，比如负责垃圾收集GC的线程就是一个守护线程。当然，你也可 以把自己的程序用setDeamon设置为守护线程。包含Main()方法的初始线程不是守护线程。 只要Java虚拟机中还有普通的线程在执行，Java虚拟机就不会停止。如果有足够的权限，你可以调用exit()方法终止程序。</p>
-<h4 id="类加载器子系统"><a href="#类加载器子系统" class="headerlink" title="类加载器子系统"></a>类加载器子系统</h4><p><strong>类加载子系统的作用</strong></p>
-<ol>
-<li>类加载子系统负责从文件系统或者网络中加载Class文件，class文件在文件开头有特定的文件标识；</li>
-<li>ClassLoader只负责class文件的加载，至于它是否可以运行，则由Execution Engine决定</li>
-<li>加载的类信息存放于一块成为方法区的内存空间。除了类信息之外，方法区还会存放运行时常量池信息，可能还包括字符串字面量和数字常量（这部分常量信息是Class文件中常量池部分的内存映射）</li>
-</ol>
-<p><strong>类加载子系统的概览图</strong></p>
-<p><img src="/2021/06/19/jvm小结/jvm7.png" alt="avatar"></p>
-<p>类加载子系统主要包括三个环节：</p>
-<ul>
-<li>loading</li>
-<li>linking：verify，prepare，resolve</li>
-<li>initialization</li>
-</ul>
-<p>1.Loading（加载）环节</p>
-<p>通过一个类的全限定明获取定义此类的二进制字节流；<br>将这个字节流所代表的的静态存储结构转化为方法区的运行时数据；<br>在内存中生成一个代表这个类的java.lang.Class对象，作为方法区这个类的各种数据的访问入口</p>
-<h4 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h4><ol>
-<li><a href="https://blog.csdn.net/qq_40368860/article/details/84447085" target="_blank" rel="noopener">https://blog.csdn.net/qq_40368860/article/details/84447085</a></li>
-<li><a href="https://blog.csdn.net/rabbit_in_android/article/details/50382739" target="_blank" rel="noopener">https://blog.csdn.net/rabbit_in_android/article/details/50382739</a></li>
-<li><a href="https://www.cnblogs.com/lwkdbk/p/12707708.html" target="_blank" rel="noopener">https://www.cnblogs.com/lwkdbk/p/12707708.html</a></li>
-</ol>
-]]></content>
-      <tags>
-        <tag>java</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>ks.cfg详解</title>
     <url>/2021/02/04/ks-cfg%E8%AF%A6%E8%A7%A3/</url>
     <content><![CDATA[<p>Kickstart文件中的主要项目及参数介绍(ks.cfg)：</p>
@@ -2482,44 +2422,6 @@
       </tags>
   </entry>
   <entry>
-    <title>网络模型总结</title>
-    <url>/2019/09/17/%E7%BD%91%E7%BB%9C%E6%A8%A1%E5%9E%8B%E6%80%BB%E7%BB%93/</url>
-    <content><![CDATA[<p>常用的五种网络IO模型是阻塞I/O，非阻塞I/O，I/O复用，事件(信号)驱动I/O，异步I/O。<br>为什么要发起系统调用？因为进程想要获取磁盘中的数据，而能和硬件打交道的只能是内核，进程通知内核说我要磁盘中的数据，此过程就是系统调用。<br>一次I/O的完成的步骤：当进程发起系统调用时，这个系统调用就进入内核模式，然后开始I/O操作。I/O操作分为两个步骤；<br>1、磁盘把数据装载到内核的内存空间，<br>2、内核的内存空间的数据copy到用户的内存空间中(此过程是I/O发生的地方)<br>以下是进程获取数据的详细图解过程；<br><img src="/2019/09/17/网络模型总结/net1.png" alt="avatar"><br>整个过程：此进程需要对磁盘中的数据进行操作，则会向内核发起一个系统调用，然后此进程，将会被切换出去，此进程会被挂起或者进入睡眠状态，也叫不可中断的睡眠，因为数据还没有得到，只有等到系统调用的结果完成后，则进程会被唤醒，继续接下来的操作，从系统调用的开始到系统调用结束经过的步骤：<br>①进程向内核发起一个系统调用，<br>②内核接收到系统调用，知道是对文件的请求，于是告诉磁盘，把文件读取出来<br>③磁盘接收到来着内核的命令后，把文件载入到内核的内存空间里面<br>④内核的内存空间接收到数据之后，把数据copy到用户进程的内存空间(此过程是I/O发生的地方)<br>⑤进程内存空间得到数据后，给内核发送通知<br>⑥内核把接收到的通知回复给进程，此过程为唤醒进程，然后进程得到数据，进行下一步操作<br>I/O发生的地方才会出现阻塞或非阻塞<br>阻塞：进程发起I/O调用，进程又不得不等待I/O的完成，此时CPU把进程切换出去，进程处于睡眠状态则此过程为阻塞I/O<br>阻塞I/O系统怎么通知进程？I/O完成，系统直接通知进程，则进程被唤醒</p>
-<h4 id="阻塞IO（blocking-I-O）"><a href="#阻塞IO（blocking-I-O）" class="headerlink" title="阻塞IO（blocking I/O）"></a>阻塞IO（blocking I/O）</h4><p>在内核将数据准备好之前，系统调用会一直等待所有的套接字，默认的是阻塞方式。<br><img src="/2019/09/17/网络模型总结/net2.png" alt="avatar"></p>
-<h4 id="非阻塞IO（noblocking-I-O）"><a href="#非阻塞IO（noblocking-I-O）" class="headerlink" title="非阻塞IO（noblocking I/O）"></a>非阻塞IO（noblocking I/O）</h4><p>每次客户询问内核是否有数据准备好，即文件描述符缓冲区是否就绪。当有数据报准备好时，就进行拷贝数据报的操作。当没有数据报准备好时，也不阻塞程序，内核直接返回未准备就绪的信号，等待用户程序的下一个轮寻。但是，轮寻对于CPU来说是较大的浪费，一般只有在特定的场景下才使用。<br><img src="/2019/09/17/网络模型总结/net3.png" alt="avatar"></p>
-<h4 id="IO多路复用"><a href="#IO多路复用" class="headerlink" title="IO多路复用"></a>IO多路复用</h4><p>IO多路转接是多了一个select函数，select函数有一个参数是文件描述符集合，对这些文件描述符进行循环监听，当某个文件描述符就绪时，就对这个文件描述符进行处理。<br><img src="/2019/09/17/网络模型总结/net4.png" alt="avatar"></p>
-<h4 id="异步IO（asynchronous-I-O）"><a href="#异步IO（asynchronous-I-O）" class="headerlink" title="异步IO（asynchronous I/O）"></a>异步IO（asynchronous I/O）</h4><p>当应用程序调用aio_read时，内核一方面去取数据报内容返回，另一方面将程序控制权还给应用进程，应用进程继续处理其他事情，是一种非阻塞的状态。<br>当内核中有数据报就绪时，由内核将数据报拷贝到应用程序中，返回aio_read中定义好的函数处理程序。<br><img src="/2019/09/17/网络模型总结/net5.png" alt="avatar"></p>
-<h4 id="阻塞、非阻塞，同步、异步"><a href="#阻塞、非阻塞，同步、异步" class="headerlink" title="阻塞、非阻塞，同步、异步"></a>阻塞、非阻塞，同步、异步</h4><p>关于同步和异步<br>同步和异步其实指的是，请求发起方对消息结果的获取是主动发起的，还是等被动通知的。如果是请求方主动发起的，一直在等待应答结果（同步阻塞），或者可以先去处理其他的事情，但要不断轮询查看发起的请求是否有应答结果（同步非阻塞 ）因为不管如何都要发起方主动获取消息结果，所以形式上还是同步操作。如果是由服务方通知的，也就是请求方发出请求后，要么在一直等待通知（异步阻塞），要么就先去干自己的事了（异步非阻塞），当事情处理完成之后，服务方会主动通知请求方，它的请求已经完成，这就是异步。异步通知的方式一般是通过状态改变，消息通知，或者回调函数来完成，大多数时候采用的都是回调函数。<br>关于阻塞和非阻塞<br>阻塞和非阻塞在计算机的世界里面，通常指的是针对IO的操作，如网络IO和磁盘IO等。那么什么是阻塞和非阻塞呢？简单的说就是我们调用了一个函数之后，在等待这个函数返回结果之前，当前的线程是处于挂起状态，还是运行状态，如果是挂起状态，就意味着当前线程什么都不能干，就等着获取结果，这就叫同步阻塞，如果仍然是运行状态，就意味当前线程是可以的继续处理其他任务，但要时不时的去看下是否有结果了，这就是同步非阻塞。</p>
-]]></content>
-      <tags>
-        <tag>linux</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>迭代器与生成器</title>
-    <url>/2021/06/11/%E8%BF%AD%E4%BB%A3%E5%99%A8%E4%B8%8E%E7%94%9F%E6%88%90%E5%99%A8/</url>
-    <content><![CDATA[<p><strong>生成器</strong></p>
-<p>生成器本质上就是一个函数，它记住了上一次返回时在函数体中的位置。</p>
-<p>对生成器函数的第二次（或第n次）调用，跳转到函数上一次挂起的位置。</p>
-<p>而且记录了程序执行的上下文。</p>
-<p>生成器不仅“记住”了它的数据状态，生成还记住了程序执行的位置。</p>
-<p><strong>迭代器</strong></p>
-<p>迭代器是一种支持next()操作的对象。它包含了一组元素，当执行next()操作时，返回其中一个元素。</p>
-<p>当所有元素都被返回后，再执行next()报异常—StopIteration</p>
-<p>生成器一定是可迭代的，也一定是迭代器对象</p>
-<p><strong>区别</strong></p>
-<ol>
-<li>生成器是生成元素的，迭代器是访问集合元素的一种方式</li>
-<li>迭代输出生成器的内容</li>
-<li>迭代器是一种支持next()操作的对象</li>
-<li>迭代器（iterator）：其中iterator对象表示的是一个数据流，可以把它看做一个有序序列，但我们不能提前知道序列的长度，只有通过nex()函数实现需要计算的下一个数据。可以看做生成器的一个子集。</li>
-</ol>
-]]></content>
-      <tags>
-        <tag>python</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>高并发、高性能、高可用相关概念</title>
     <url>/2021/03/30/%E9%AB%98%E5%B9%B6%E5%8F%91%E3%80%81%E9%AB%98%E6%80%A7%E8%83%BD%E3%80%81%E9%AB%98%E5%8F%AF%E7%94%A8%E7%9B%B8%E5%85%B3%E6%A6%82%E5%BF%B5/</url>
     <content><![CDATA[<h3 id="高并发"><a href="#高并发" class="headerlink" title="高并发"></a>高并发</h3><p>通常是指，通过设计保证系统能够同时并行处理很多请求。 高并发相关常用的一些指标有响应时间（Response Time），吞吐量（Throughput），每秒查询率QPS（Query Per Second），并发用户数等。</p>
@@ -2557,6 +2459,44 @@
 </ol>
 <h3 id="高可用"><a href="#高可用" class="headerlink" title="高可用"></a>高可用</h3><p>高可用性（High Availability）通常来描述一个系统经过专门的设计，从而减少停工时间，而保持其服务的高度可用性(一直都能用)。</p>
 ]]></content>
+  </entry>
+  <entry>
+    <title>网络模型总结</title>
+    <url>/2019/09/17/%E7%BD%91%E7%BB%9C%E6%A8%A1%E5%9E%8B%E6%80%BB%E7%BB%93/</url>
+    <content><![CDATA[<p>常用的五种网络IO模型是阻塞I/O，非阻塞I/O，I/O复用，事件(信号)驱动I/O，异步I/O。<br>为什么要发起系统调用？因为进程想要获取磁盘中的数据，而能和硬件打交道的只能是内核，进程通知内核说我要磁盘中的数据，此过程就是系统调用。<br>一次I/O的完成的步骤：当进程发起系统调用时，这个系统调用就进入内核模式，然后开始I/O操作。I/O操作分为两个步骤；<br>1、磁盘把数据装载到内核的内存空间，<br>2、内核的内存空间的数据copy到用户的内存空间中(此过程是I/O发生的地方)<br>以下是进程获取数据的详细图解过程；<br><img src="/2019/09/17/网络模型总结/net1.png" alt="avatar"><br>整个过程：此进程需要对磁盘中的数据进行操作，则会向内核发起一个系统调用，然后此进程，将会被切换出去，此进程会被挂起或者进入睡眠状态，也叫不可中断的睡眠，因为数据还没有得到，只有等到系统调用的结果完成后，则进程会被唤醒，继续接下来的操作，从系统调用的开始到系统调用结束经过的步骤：<br>①进程向内核发起一个系统调用，<br>②内核接收到系统调用，知道是对文件的请求，于是告诉磁盘，把文件读取出来<br>③磁盘接收到来着内核的命令后，把文件载入到内核的内存空间里面<br>④内核的内存空间接收到数据之后，把数据copy到用户进程的内存空间(此过程是I/O发生的地方)<br>⑤进程内存空间得到数据后，给内核发送通知<br>⑥内核把接收到的通知回复给进程，此过程为唤醒进程，然后进程得到数据，进行下一步操作<br>I/O发生的地方才会出现阻塞或非阻塞<br>阻塞：进程发起I/O调用，进程又不得不等待I/O的完成，此时CPU把进程切换出去，进程处于睡眠状态则此过程为阻塞I/O<br>阻塞I/O系统怎么通知进程？I/O完成，系统直接通知进程，则进程被唤醒</p>
+<h4 id="阻塞IO（blocking-I-O）"><a href="#阻塞IO（blocking-I-O）" class="headerlink" title="阻塞IO（blocking I/O）"></a>阻塞IO（blocking I/O）</h4><p>在内核将数据准备好之前，系统调用会一直等待所有的套接字，默认的是阻塞方式。<br><img src="/2019/09/17/网络模型总结/net2.png" alt="avatar"></p>
+<h4 id="非阻塞IO（noblocking-I-O）"><a href="#非阻塞IO（noblocking-I-O）" class="headerlink" title="非阻塞IO（noblocking I/O）"></a>非阻塞IO（noblocking I/O）</h4><p>每次客户询问内核是否有数据准备好，即文件描述符缓冲区是否就绪。当有数据报准备好时，就进行拷贝数据报的操作。当没有数据报准备好时，也不阻塞程序，内核直接返回未准备就绪的信号，等待用户程序的下一个轮寻。但是，轮寻对于CPU来说是较大的浪费，一般只有在特定的场景下才使用。<br><img src="/2019/09/17/网络模型总结/net3.png" alt="avatar"></p>
+<h4 id="IO多路复用"><a href="#IO多路复用" class="headerlink" title="IO多路复用"></a>IO多路复用</h4><p>IO多路转接是多了一个select函数，select函数有一个参数是文件描述符集合，对这些文件描述符进行循环监听，当某个文件描述符就绪时，就对这个文件描述符进行处理。<br><img src="/2019/09/17/网络模型总结/net4.png" alt="avatar"></p>
+<h4 id="异步IO（asynchronous-I-O）"><a href="#异步IO（asynchronous-I-O）" class="headerlink" title="异步IO（asynchronous I/O）"></a>异步IO（asynchronous I/O）</h4><p>当应用程序调用aio_read时，内核一方面去取数据报内容返回，另一方面将程序控制权还给应用进程，应用进程继续处理其他事情，是一种非阻塞的状态。<br>当内核中有数据报就绪时，由内核将数据报拷贝到应用程序中，返回aio_read中定义好的函数处理程序。<br><img src="/2019/09/17/网络模型总结/net5.png" alt="avatar"></p>
+<h4 id="阻塞、非阻塞，同步、异步"><a href="#阻塞、非阻塞，同步、异步" class="headerlink" title="阻塞、非阻塞，同步、异步"></a>阻塞、非阻塞，同步、异步</h4><p>关于同步和异步<br>同步和异步其实指的是，请求发起方对消息结果的获取是主动发起的，还是等被动通知的。如果是请求方主动发起的，一直在等待应答结果（同步阻塞），或者可以先去处理其他的事情，但要不断轮询查看发起的请求是否有应答结果（同步非阻塞 ）因为不管如何都要发起方主动获取消息结果，所以形式上还是同步操作。如果是由服务方通知的，也就是请求方发出请求后，要么在一直等待通知（异步阻塞），要么就先去干自己的事了（异步非阻塞），当事情处理完成之后，服务方会主动通知请求方，它的请求已经完成，这就是异步。异步通知的方式一般是通过状态改变，消息通知，或者回调函数来完成，大多数时候采用的都是回调函数。<br>关于阻塞和非阻塞<br>阻塞和非阻塞在计算机的世界里面，通常指的是针对IO的操作，如网络IO和磁盘IO等。那么什么是阻塞和非阻塞呢？简单的说就是我们调用了一个函数之后，在等待这个函数返回结果之前，当前的线程是处于挂起状态，还是运行状态，如果是挂起状态，就意味着当前线程什么都不能干，就等着获取结果，这就叫同步阻塞，如果仍然是运行状态，就意味当前线程是可以的继续处理其他任务，但要时不时的去看下是否有结果了，这就是同步非阻塞。</p>
+]]></content>
+      <tags>
+        <tag>linux</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>迭代器与生成器</title>
+    <url>/2021/06/11/%E8%BF%AD%E4%BB%A3%E5%99%A8%E4%B8%8E%E7%94%9F%E6%88%90%E5%99%A8/</url>
+    <content><![CDATA[<p><strong>生成器</strong></p>
+<p>生成器本质上就是一个函数，它记住了上一次返回时在函数体中的位置。</p>
+<p>对生成器函数的第二次（或第n次）调用，跳转到函数上一次挂起的位置。</p>
+<p>而且记录了程序执行的上下文。</p>
+<p>生成器不仅“记住”了它的数据状态，生成还记住了程序执行的位置。</p>
+<p><strong>迭代器</strong></p>
+<p>迭代器是一种支持next()操作的对象。它包含了一组元素，当执行next()操作时，返回其中一个元素。</p>
+<p>当所有元素都被返回后，再执行next()报异常—StopIteration</p>
+<p>生成器一定是可迭代的，也一定是迭代器对象</p>
+<p><strong>区别</strong></p>
+<ol>
+<li>生成器是生成元素的，迭代器是访问集合元素的一种方式</li>
+<li>迭代输出生成器的内容</li>
+<li>迭代器是一种支持next()操作的对象</li>
+<li>迭代器（iterator）：其中iterator对象表示的是一个数据流，可以把它看做一个有序序列，但我们不能提前知道序列的长度，只有通过nex()函数实现需要计算的下一个数据。可以看做生成器的一个子集。</li>
+</ol>
+]]></content>
+      <tags>
+        <tag>python</tag>
+      </tags>
   </entry>
   <entry>
     <title>HashTree小结</title>
@@ -3045,6 +2985,102 @@
 ]]></content>
       <tags>
         <tag>性能测试</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>jvm小结</title>
+    <url>/2021/06/19/jvm%E5%B0%8F%E7%BB%93/</url>
+    <content><![CDATA[<h4 id="jvm整体架构"><a href="#jvm整体架构" class="headerlink" title="jvm整体架构"></a>jvm整体架构</h4><p>JVM(虚拟机)：指以软件的方式模拟具有完整硬件系统功能、运行在一个完全隔离环境中的完整计算机系统 ，是物理机的软件实现。jvm的整体架构如下<br><img src="/2021/06/19/jvm小结/jvm1.png" alt="avatar"></p>
+<p>详细的jvm整体架构如下<br><img src="/2021/06/19/jvm小结/jvm6.png" alt="avatar"></p>
+<p>在一个java进程中可能有很多正在运行的java线程，那么在每一个java线程中都会独立开辟本地方法栈，程序计算器，和Java栈的，而方法区和堆并不是独立开辟的，他们之间是可以共享的。</p>
+<p><strong>内存结构每个组成模块的具体概念</strong></p>
+<p>本地方法栈(线程私有)：登记native方法，在Execution Engine执行时加载本地方法库</p>
+<p>程序计数器（线程私有）：就是一个指针，指向方法区中的方法字节码（用来存储指向下一条指令的地址,也即将要执行的指令代码），由执行引擎读取下一条指令，是一个非常小的内存空间，几乎可以忽略不记。</p>
+<p>方法区(线程共享)：类的所有字段和方法字节码，以及一些特殊方法如构造函数，接口代码也在此定义。简单说，所有定义的方法的信息都保存在该区域，静态变量+常量+类信息(构造方法/接口定义)+运行时常量池都存在方法区中，虽然Java虚拟机规范把方法区描述为堆的一个逻辑部分，但是它却有一个别名叫做 Non-Heap（非堆），目的应该是与 Java 堆区分开来。</p>
+<p>Java栈（线程私有）： Java线程执行方法的内存模型，一个线程对应一个栈，每个方法在执行的同时都会创建一个栈帧（用于存储局部变量表，操作数栈，动态链接，方法出口等信息）不存在垃圾回收问题，只要线程一结束该栈就释放，生命周期和线程一致</p>
+<p>JVM对该区域规范了两种异常：</p>
+<p>1) 线程请求的栈深度大于虚拟机栈所允许的深度，将抛出StackOverFlowError异常</p>
+<p>2) 若虚拟机栈可动态扩展，当无法申请到足够内存空间时将抛出OutOfMemoryError，通过jvm参数–Xss指定栈空间，空间大小决定函数调用的深度</p>
+<p>堆(线程共享)：虚拟机启动时创建，用于存放对象实例，几乎所有的对象（包含常量池）都在堆上分配内存，当对象无法再该空间申请到内存时将抛出OutOfMemoryError异常。同时也是垃圾收集器管理的主要区域。可通过 -Xmx –Xms 参数来分别指定最大堆和最小堆</p>
+<p><strong>栈+堆+方法区的交互关系</strong></p>
+<p>HotSpot是使用指针的方式来访问对象，Java堆中会存放访问类元数据的地址，reference存储的就直接是对象的地址<br><img src="/2021/06/19/jvm小结/jvm2.png" alt="avatar"></p>
+<p>•堆(线程共享)：虚拟机启动时创建，用于存放对象实例，几乎所有的对象（包含常量池）都在堆上分配内存，当对象无法再该空间申请到内存时将抛出OutOfMemoryError异常。同时也是垃圾收集器管理的主要区域。可通过 -Xmx –Xms 参数来分别指定最大堆和最小堆<br><img src="/2021/06/19/jvm小结/jvm3.png" alt="avatar"></p>
+<p>新生区</p>
+<p>类诞生、成长、消亡的区域，一个类在这里产生，应用，最后被垃圾回收器收集，结束生命。</p>
+<p>新生区分为两部分： 伊甸区（Eden space）和幸存者区（Survivor pace） ，所有的类都是在伊甸区被new出来的。幸存区有两个： 0区（Survivor 0 space）和1区（Survivor 1 space）。当伊甸园的空间用完时，程序又需要创建对象，JVM的垃圾回收器将对伊甸园区进行垃圾回收(Minor GC)，将伊甸园区中的不再被其他对象所引用的对象进行销毁。然后将伊甸园中的剩余对象移动到幸存 0区。若幸存 0区也满了，再对该区进行垃圾回收，然后移动到1区。那如果1区也满了呢？</p>
+<p>老年区</p>
+<p>新生区经过多次GC仍然存活的对象移动到老年区。若老年区也满了，那么这个时候将产生MajorGC（FullGC），进行老年区的内存清理。若老年区执行了Full GC之后发现依然无法进行对象的保存，就会产生OOM异常“OutOfMemoryError”</p>
+<p>元数据区：元数据区取代了永久代(jdk1.8以前)，本质和永久代类似，都是对JVM规范中方法区的实现，区别在于元数据区并不在虚拟机中，而是使用本地物理内存，永久代在虚拟机中，永久代逻辑结构上属于堆，但是物理上不属于堆，堆大小=新生代+老年代。元数据区也有可能发生OutOfMemory异常。</p>
+<p>Jdk1.6及之前： 有永久代, 常量池在方法区</p>
+<p>Jdk1.7：       有永久代，但已经逐步“去永久代”，常量池在堆</p>
+<p>Jdk1.8及之后： 无永久代，常量池在元空间</p>
+<p>元数据区的动态扩展，默认–XX:MetaspaceSize值为21MB的高水位线。一旦触及则Full GC将被触发并卸载没有用的类（类对应的类加载器不再存活），然后高水位线将会重置。新的高水位线的值取决于GC后释放的元空间。如果释放的空间少，这个高水位线则上升。如果释放空间过多，则高水位线下降。</p>
+<p>为什么jdk1.8用元数据区取代了永久代？</p>
+<p>官方解释：移除永久代是为融合HotSpot JVM与 JRockit VM而做出的努力，因为JRockit没有永久代，不需要配置永久代</p>
+<p><strong>执行引擎</strong><br>读取运行时数据区的Java字节码并逐个执行<br><img src="/2021/06/19/jvm小结/jvm4.png" alt="avatar"></p>
+<p>JIT：在Java编程语言和环境中，即时编译器（JIT compiler，just-in-time compiler）是一个把Java的字节码（包括需要被解释的指令的程序）转换成可以直接发送给处理器的指令的程序。</p>
+<p><img src="/2021/06/19/jvm小结/jvm5.png" alt="avatar"></p>
+<h4 id="jvm生命周期"><a href="#jvm生命周期" class="headerlink" title="jvm生命周期"></a>jvm生命周期</h4><p>Java虚拟机的生命周期 一个运行中的Java虚拟机有着一个清晰的任务：执行Java程序。程序开始执行时他才运行，程序结束时他就停止。你在同一台机器上运行三个程序，就会有三个运行中的Java虚拟机。 Java虚拟机总是开始于一个main()方法，这个方法必须是公有、返回void、直接受一个字符串数组。在程序执行时，你必须给Java虚拟机指明这个包换main()方法的类名。 Main()方法是程序的起点，他被执行的线程初始化为程序的初始线程。程序中其他的线程都由他来启动。Java中的线程分为两种：守护线程（daemon）和普通线程（non-daemon）。守护线程是Java虚拟机自己使用的线程，比如负责垃圾收集GC的线程就是一个守护线程。当然，你也可 以把自己的程序用setDeamon设置为守护线程。包含Main()方法的初始线程不是守护线程。 只要Java虚拟机中还有普通的线程在执行，Java虚拟机就不会停止。如果有足够的权限，你可以调用exit()方法终止程序。</p>
+<h4 id="类加载器子系统"><a href="#类加载器子系统" class="headerlink" title="类加载器子系统"></a>类加载器子系统</h4><p><strong>类加载子系统的作用</strong></p>
+<ol>
+<li>类加载子系统负责从文件系统或者网络中加载Class文件，class文件在文件开头有特定的文件标识；</li>
+<li>ClassLoader只负责class文件的加载，至于它是否可以运行，则由Execution Engine决定</li>
+<li>加载的类信息存放于一块成为方法区的内存空间。除了类信息之外，方法区还会存放运行时常量池信息，可能还包括字符串字面量和数字常量（这部分常量信息是Class文件中常量池部分的内存映射）</li>
+</ol>
+<p><strong>类加载子系统的概览图</strong></p>
+<p><img src="/2021/06/19/jvm小结/jvm7.png" alt="avatar"></p>
+<p>类加载器子系统负责从文件系统或网络中加载class文件，class文件在文件头具有特定的文件标识。</p>
+<p>Classloader只负责class文件的加载，至于他是否可以运行，则由Execution Engine决定。</p>
+<p>加载的类信息存放于一块称为方法区的内存空间。除了类的信息外，方法区中还会存放运行时常量池信息，可能还包括字符串字面量和数字常量。</p>
+<p>类加载子系统主要包括三个环节：</p>
+<ul>
+<li>loading</li>
+<li>linking：verify，prepare，resolve</li>
+<li>initialization</li>
+</ul>
+<p>1.Loading（加载）环节</p>
+<ul>
+<li>通过一个类的全限定明获取定义此类的二进制字节流；</li>
+<li>将这个字节流所代表的的静态存储结构转化为方法区的运行时数据；</li>
+<li>在内存中生成一个代表这个类的java.lang.Class对象，作为方法区这个类的各种数据的访问入口</li>
+</ul>
+<p>2.Linking（链接）环节</p>
+<p>Verify(验证)</p>
+<ul>
+<li>目的在于确保Class文件的字节流中包含信息符合当前虚拟机要求，保证被加载类的正确性，不会危害虚拟机自身安全。</li>
+<li>主要包括四种验证，文件格式验证，源数据验证，字节码验证，符号引用验证。</li>
+</ul>
+<p>Prepare(准备)环节</p>
+<ul>
+<li>为类变量分配内存并且设置该类变量的默认初始值，即零值；</li>
+<li>这里不包含用final修饰的static，因为final在编译的时候就会分配了，准备阶段会显式初始化；</li>
+<li>不会为实例变量分配初始化，类变量会分配在方法去中，而实例变量是会随着对象一起分配到java堆中。</li>
+</ul>
+<p>Resolve(解析)</p>
+<ul>
+<li>将常量池内的符号引用转换为直接引用的过程。</li>
+<li>事实上，解析操作往往会伴随着jvm在执行完初始化之后再执行。</li>
+<li>符号引用就是一组符号来描述所引用的目标。符号应用的字面量形式明确定义在《java虚拟机规范》的class文件格式中。直接引用就是直接指向目标的指针、相对偏移量或一个间接定位到目标的句柄。</li>
+<li>解析动作主要针对类或接口、字段、类方法、接口方法、方法类型等。对应常量池中的CONSTANT_Class_info/CONSTANT_Fieldref_info、CONSTANT_Methodref_info等。</li>
+</ul>
+<p>3.Initialization（初始化）环节</p>
+<ul>
+<li>初始化阶段就是执行类构造器方法clinit（）的过程。</li>
+<li>此方法不需要定义，是javac编译器自动收集类中的所有类变量的赋值动作和静态代码块中的语句合并而来。</li>
+<li>构造器方法中指令按语句在源文件中的出现的顺序执行。</li>
+<li>Clinit不同于类的构造器（构造器是虚拟机视角下的init（））</li>
+<li>若该类有父类，jvm会保证子类的clinit（）执行前，父类的clinit（）已经执行完毕</li>
+<li>虚拟机必须保证一个类的clinit（）在多线程下被同步加载。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">## 示例1 </span><br><span class="line">public class ClassInitTest &#123;</span><br><span class="line"></span><br><span class="line">    private static int num1=1;</span><br><span class="line"></span><br><span class="line">    static&#123;</span><br><span class="line">        num1=2;</span><br><span class="line">        num2=20;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private static int num2=10;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        System.out.println(num1);</span><br><span class="line">        System.out.println(num2);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">## 示例2</span><br><span class="line">public class ClassInitTest2 &#123;</span><br><span class="line"></span><br><span class="line">    static class Father &#123;</span><br><span class="line"></span><br><span class="line">        public static int num = 1;</span><br><span class="line"></span><br><span class="line">        static &#123;</span><br><span class="line">            num = 5;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    static class Son extends Father &#123;</span><br><span class="line"></span><br><span class="line">        private static int numSon = num;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        System.out.println(Son.numSon);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">## 示例3</span><br><span class="line">public class ClassTest3 &#123;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line"></span><br><span class="line">        Runnable r = ()-&gt;&#123;</span><br><span class="line">            System.out.println(&quot;开始&quot;);</span><br><span class="line">            ThreadInit threadInit = new ThreadInit();</span><br><span class="line">            System.out.println(&quot;结束&quot;);</span><br><span class="line">        &#125;;</span><br><span class="line"></span><br><span class="line">        Thread t1 = new Thread(r);</span><br><span class="line">        Thread t2 = new Thread(r);</span><br><span class="line"></span><br><span class="line">        t1.start();</span><br><span class="line">        t2.start();</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    static class ThreadInit &#123;</span><br><span class="line"></span><br><span class="line">        static &#123;</span><br><span class="line">            if(true)&#123;</span><br><span class="line">                System.out.println(&quot;加载当前类&quot;+Thread.currentThread().getName());</span><br><span class="line">                while (true)&#123;</span><br><span class="line"></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h4><ol>
+<li><a href="https://blog.csdn.net/qq_40368860/article/details/84447085" target="_blank" rel="noopener">https://blog.csdn.net/qq_40368860/article/details/84447085</a></li>
+<li><a href="https://blog.csdn.net/rabbit_in_android/article/details/50382739" target="_blank" rel="noopener">https://blog.csdn.net/rabbit_in_android/article/details/50382739</a></li>
+<li><a href="https://www.cnblogs.com/lwkdbk/p/12707708.html" target="_blank" rel="noopener">https://www.cnblogs.com/lwkdbk/p/12707708.html</a></li>
+</ol>
+]]></content>
+      <tags>
+        <tag>java</tag>
       </tags>
   </entry>
   <entry>
@@ -3870,61 +3906,6 @@
 ]]></content>
   </entry>
   <entry>
-    <title>tomcat系统架构及实现</title>
-    <url>/2019/10/02/tomcat%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84%E5%8F%8A%E5%AE%9E%E7%8E%B0/</url>
-    <content><![CDATA[<h4 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h4><p>1.Tomcat 要实现 2 个核心功能:</p>
-<ul>
-<li>处理 Socket 连接，负责网络字节流与 Request 和 Response 对象的转化。</li>
-<li>加载和管理 Servlet，以及具体处理 Request 请求。</li>
-</ul>
-<p>因此 Tomcat 设计了两个核心组件连接器(Connector)和容器(Container)来分别做 这两件事情。连接器负责对外交流，容器负责内部处理。</p>
-<p>2.Tomcat 支持的 I/O 模型有:</p>
-<ul>
-<li>NIO:非阻塞 I/O，采用 Java NIO 类库实现。</li>
-<li>NIO2:异步 I/O，采用 JDK 7 最新的 NIO2 类库实现。</li>
-<li>APR:采用 Apache 可移植运行库实现，是 C/C++ 编写的本地库。</li>
-</ul>
-<p>3.Tomcat 支持的应用层协议有:</p>
-<ul>
-<li>HTTP/1.1:这是大部分 Web 应用采用的访问协议。 </li>
-<li>AJP:用于和 Web 服务器集成(如 Apache)。 </li>
-<li>HTTP/2:HTTP 2.0 大幅度的提升了 Web 性能。</li>
-</ul>
-<p>Tomcat 为了实现支持多种 I/O 模型和应用层协议，一个容器可能对接多个连接器，就好比 一个房间有多个门。但是单独的连接器或者容器都不能对外提供服务，需要把它们组装起来 才能工作，组装后这个整体叫作 Service 组件。<br><img src="/2019/10/02/tomcat系统架构及实现/tomcat1.png" alt="avatar"><br>从图上你可以看到，最顶层是 Server，这里的 Server 指的就是一个 Tomcat 实例。一个 Server 中有一个或者多个 Service，一个 Service 中有多个连接器和一个容器。连接器与容 器之间通过标准的 ServletRequest 和 ServletResponse 通信。</p>
-<h4 id="连接器"><a href="#连接器" class="headerlink" title="连接器"></a>连接器</h4><p>1.主要功能</p>
-<ol>
-<li>连接器功能</li>
-<li>监听网络端口。</li>
-<li>接受网络连接请求。</li>
-<li>读取请求网络字节流。</li>
-<li>根据具体应用层协议(HTTP/AJP)解析字节流，生成统一的 Tomcat Request 对象。 将 Tomcat Request 对象转成标准的 ServletRequest。</li>
-<li>调用 Servlet 容器，得到 ServletResponse。</li>
-<li>将 ServletResponse 转成 Tomcat Response 对象。</li>
-<li>将 Tomcat Response 转成网络字节流。 </li>
-<li>将响应字节流写回给浏览器。</li>
-</ol>
-<p>通过分析连接器的详细功能列表，我们发现连接器需要完成 3 个高内聚的功能:</p>
-<ul>
-<li>网络通信。</li>
-<li>应用层协议解析。</li>
-<li>Tomcat Request/Response 与 ServletRequest/ServletResponse 的转化。</li>
-</ul>
-<p>因此 Tomcat 的设计者设计了 3 个组件来实现这 3 个功能，分别是 EndPoint、Processor 和 Adapter。EndPoint 负责提供字节流给 Processor，Processor 负责 提供 Tomcat Request 对象给 Adapter，Adapter 负责提供 ServletRequest 对象给容器。其中 Endpoint 和 Processor 放在一起抽象成了 ProtocolHandler 组件，它们的关系如下图所示。<br><img src="/2019/10/02/tomcat系统架构及实现/tomcat2.png" alt="avatar"></p>
-<p>2.ProtocolHandler 组件<br>连接器用 ProtocolHandler 来处理网络连接和应用层协议，包含了 2 个 重要部件:EndPoint 和 Processor。EndPoint 是通信端点，即通信监听的接口，是具体的 Socket 接收和发送处理器，是对传输层的抽象，因此 EndPoint 是用来实现 TCP/IP 协议的。如果说 EndPoint 是用来实现 TCP/IP 协议的，那么 Processor 用来实现 HTTP 协议， Processor 接收来自 EndPoint 的 Socket，读取字节流解析成 Tomcat Request 和Response对象，并通过 Adapter 将其提交到容器处理，Processor 是对应用层协议的抽象。<br>EndPoint 是一个接口，对应的抽象实现类是 AbstractEndpoint，而 AbstractEndpoint 的具体子类，比如在 NioEndpoint 和 Nio2Endpoint 中，有两个重要的子组件: Acceptor 和 SocketProcessor。其中 Acceptor 用于监听 Socket 连接请求。SocketProcessor 用于处理接收到的 Socket 请求，它实现 Runnable 接口，在 Run 方法里调用协议处理组件 Processor 进行处理。为 了提高处理能力，SocketProcessor 被提交到线程池来执行。而这个线程池叫作执行器 (Executor)。Processor 是一个接口，定义了请求的处理等方法。它的抽象实现类 AbstractProcessor 对一些协议共有的属性进行封装，没有对方法进行实现。具体的实现有 AJPProcessor、 HTTP11Processor 等，这些具体实现类实现了特定协议的解析方法和请求处理方式。<br><img src="/2019/10/02/tomcat系统架构及实现/tomcat3.png" alt="avatar"><br>从图中我们看到，EndPoint 接收到 Socket 连接后，生成一个 SocketProcessor 任务提交 到线程池去处理，SocketProcessor 的 Run 方法会调用 Processor 组件去解析应用层协 议，Processor 通过解析生成 Request 对象后，会调用 Adapter 的 Service 方法。</p>
-<p>3.Adapter 组件<br>Tomcat 定义了自己 的 Request 类来“存放”这些请求信息。ProtocolHandler 接口负责解析请求并生成 Tomcat Request 类。但是这个 Request 对象不是标准的 ServletRequest，也就意味着， 不能用 Tomcat Request 作为参数来调用容器。Tomcat 设计者的解决方案是引入 CoyoteAdapter，这是适配器模式的经典运用，连接器调用 CoyoteAdapter 的 Sevice 方法，传入的是 Tomcat Request 对象，CoyoteAdapter 负责将 Tomcat Request 转成 ServletRequest，再调用容器的 Service 方法。</p>
-<h4 id="多层容器"><a href="#多层容器" class="headerlink" title="多层容器"></a>多层容器</h4><p>1.容器的层次结构<br><img src="/2019/10/02/tomcat系统架构及实现/tomcat4.png" alt="avatar"><br>Context 表示一个 Web 应用程序;Wrapper 表示一个 Servlet，一个 Web 应用程序中可 能会有多个 Servlet;Host 代表的是一个虚拟主机，或者说一个站点，可以给 Tomcat 配 置多个虚拟主机地址，而一个虚拟主机下可以部署多个 Web 应用程序;Engine 表示引 擎，用来管理多个虚拟站点，一个 Service 最多只能有一个 Engine。<br>Tomcat 就是用组合模式来管理 这些容器的。具体实现方法是，所有容器组件都实现了 Container 接口，因此组合模式可 以使得用户对单容器对象和组合容器对象的使用具有一致性。这里单容器对象指的是最底层 的 Wrapper，组合容器对象指的是上面的 Context、Host 或者 Engine。Container 接口 定义如下:<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public interface Container extends Lifecycle &#123;</span><br><span class="line">    public void setName(String name);</span><br><span class="line">    public Container getParent();</span><br><span class="line">    public void setParent(Container container);</span><br><span class="line">    public void addChild(Container child);</span><br><span class="line">    public void removeChild(Container child);</span><br><span class="line"> 	public Container findChild(String name);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>2.请求定位 Servlet 的过程</p>
-<p>Tomcat 是用Mapper组件来完成这个任务的。Mapper组件的功能就是将用户请求的URL定位到一个Servlet，它的工作原理是:Mapper 件里保存了Web 应用的配置信息，其实就是容器组件与访问路径的映射关系， 比如Host容器里配置的域名、Context容器里的Web应用路径，以及Wrapper容器里Servlet 映射的路径，你可以想象这些配置信息就是一个多层次的Map。<br>首先，根据协议和端口号选定Service和Engine。Tomcat的每个连接器都监听不同的端口，比如Tomcat默认的HTTP连接器监听8080端口、默认的AJP连接器监听8009 端口。上面例子中的 URL 访问的是 8080 端 口，因此这个请求会被 HTTP 连接器接收，而一个连接器是属于一个 Service 组件的，这样 Service组件就确定了。我们还知道一个Service组件里除了有多个连接器，还有一个容器组件，具体来说就是一个Engine容器，因此Service确定了也就意味着 Engine也确定了。然后根据域名选定Host。之后根据URL路径找到Context组件。最后根据URL路径找到Wrapper(Servlet)。Context确定后，Mapper再根据 web.xml中配置的Servlet映射路径来找到具体的Wrapper和Servlet。<br>需要注意的是，并不是说只有Servlet才会去处理请求，实际上这个查找路径上的父子容器都会对请求做一些处理。连接器中的Adapter会调用容器的Service 方法来执行 Servlet，最先拿到请求的是Engine容器，Engine 容器对请求做一些处理后，会把请求传给自己子容器 Host继续处理，依次类推，最后这个请求会传给 Wrapper容器，Wrapper会调用最终的Servlet 来处理。<br>那么这个调用过程具体是怎么实现的呢?答案是使用Pipeline-Valve管道。Pipeline-Valve是责任链模式，责任链模式是指在一个请求处理的过程中有很多处理者依次对请求进行处理，每个处理者负责做自己相应的处理，处理完之后将再调用下一个处理者 继续处理。Valve表示一个处理点，比如权限认证和记录日志。如果你还不太理解的话，可以来看看Valve和Pipeline接口中的关键方法。<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public interface Valve &#123;</span><br><span class="line"> public Valve getNext();</span><br><span class="line"> public void setNext(Valve valve);</span><br><span class="line"> public void invoke(Request request, Response response)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>由于Valve是一个处理点，因此invoke方法就是来处理请求的。注意到Valve中有getNext和setNext方法，因此我们大概可以猜到有一个链表将Valve链起来了。<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public interface Pipeline extends Contained &#123;</span><br><span class="line">	public void addValve(Valve valve);</span><br><span class="line">	public Valve getBasic();</span><br><span class="line">	public void setBasic(Valve valve);</span><br><span class="line">	public Valve getFirst();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>整个调用过程由连接器中的 Adapter 触发的，它会调用 Engine 的第一个 Valve:<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">connector.getService().getContainer().getPipeline().getFirst().invoke(request, response)</span><br></pre></td></tr></table></figure></p>
-<p><img src="/2019/10/02/tomcat系统架构及实现/tomcat5.png" alt="avatar"></p>
-<p>Valve是Tomcat的私有机制，与Tomcat的基础架构/API是紧耦合的。Servlet API是公有的标准，所有的Web容器包括Jetty都支持Filter机制。另一个重要的区别是 Valve 工作在 Web 容器级别，拦截所有应用的请求;而Servlet Filter工作在应用级别，只能拦截某个Web应用的所有请求。如果想做整个Web容器 的拦截器，必须通过 Valve 来实现。</p>
-]]></content>
-      <tags>
-        <tag>java web</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>systemd小结</title>
     <url>/2021/03/12/systemd%E5%B0%8F%E7%BB%93/</url>
     <content><![CDATA[<h3 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h3><p>历史上，Linux 的启动一直采用init进程。下面的命令用来启动服务。</p>
@@ -3992,6 +3973,61 @@
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># 查看所有日志（默认情况下 ，只保存本次启动的日志）</span><br><span class="line">$ sudo journalctl</span><br><span class="line"></span><br><span class="line"># 查看内核日志（不显示应用日志）</span><br><span class="line">$ sudo journalctl -k</span><br><span class="line"></span><br><span class="line"># 查看系统本次启动的日志</span><br><span class="line">$ sudo journalctl -b</span><br><span class="line">$ sudo journalctl -b -0</span><br><span class="line"></span><br><span class="line"># 查看上一次启动的日志（需更改设置）</span><br><span class="line">$ sudo journalctl -b -1</span><br><span class="line"></span><br><span class="line"># 查看指定时间的日志</span><br><span class="line">$ sudo journalctl --since=&quot;2012-10-30 18:17:16&quot;</span><br><span class="line">$ sudo journalctl --since &quot;20 min ago&quot;</span><br><span class="line">$ sudo journalctl --since yesterday</span><br><span class="line">$ sudo journalctl --since &quot;2015-01-10&quot; --until &quot;2015-01-11 03:00&quot;</span><br><span class="line">$ sudo journalctl --since 09:00 --until &quot;1 hour ago&quot;</span><br><span class="line"></span><br><span class="line"># 显示尾部的最新10行日志</span><br><span class="line">$ sudo journalctl -n</span><br><span class="line"></span><br><span class="line"># 显示尾部指定行数的日志</span><br><span class="line">$ sudo journalctl -n 20</span><br><span class="line"></span><br><span class="line"># 实时滚动显示最新日志</span><br><span class="line">$ sudo journalctl -f</span><br><span class="line"></span><br><span class="line"># 查看指定服务的日志</span><br><span class="line">$ sudo journalctl /usr/lib/systemd/systemd</span><br><span class="line"></span><br><span class="line"># 查看指定进程的日志</span><br><span class="line">$ sudo journalctl _PID=1</span><br><span class="line"></span><br><span class="line"># 查看某个路径的脚本的日志</span><br><span class="line">$ sudo journalctl /usr/bin/bash</span><br><span class="line"></span><br><span class="line"># 查看指定用户的日志</span><br><span class="line">$ sudo journalctl _UID=33 --since today</span><br><span class="line"></span><br><span class="line"># 查看某个 Unit 的日志</span><br><span class="line">$ sudo journalctl -u nginx.service</span><br><span class="line">$ sudo journalctl -u nginx.service --since today</span><br><span class="line"></span><br><span class="line"># 实时滚动显示某个 Unit 的最新日志</span><br><span class="line">$ sudo journalctl -u nginx.service -f</span><br><span class="line"></span><br><span class="line"># 合并显示多个 Unit 的日志</span><br><span class="line">$ journalctl -u nginx.service -u php-fpm.service --since today</span><br><span class="line"></span><br><span class="line"># 查看指定优先级（及其以上级别）的日志，共有8级</span><br><span class="line"># 0: emerg</span><br><span class="line"># 1: alert</span><br><span class="line"># 2: crit</span><br><span class="line"># 3: err</span><br><span class="line"># 4: warning</span><br><span class="line"># 5: notice</span><br><span class="line"># 6: info</span><br><span class="line"># 7: debug</span><br><span class="line">$ sudo journalctl -p err -b</span><br><span class="line"></span><br><span class="line"># 日志默认分页输出，--no-pager 改为正常的标准输出</span><br><span class="line">$ sudo journalctl --no-pager</span><br><span class="line"></span><br><span class="line"># 以 JSON 格式（单行）输出</span><br><span class="line">$ sudo journalctl -b -u nginx.service -o json</span><br><span class="line"></span><br><span class="line"># 以 JSON 格式（多行）输出，可读性更好</span><br><span class="line">$ sudo journalctl -b -u nginx.serviceqq</span><br><span class="line"> -o json-pretty</span><br><span class="line"></span><br><span class="line"># 显示日志占据的硬盘空间</span><br><span class="line">$ sudo journalctl --disk-usage</span><br><span class="line"></span><br><span class="line"># 指定日志文件占据的最大空间</span><br><span class="line">$ sudo journalctl --vacuum-size=1G</span><br><span class="line"></span><br><span class="line"># 指定日志文件保存多久</span><br><span class="line">$ sudo journalctl --vacuum-time=1years</span><br></pre></td></tr></table></figure>]]></content>
       <tags>
         <tag>linux</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>tomcat系统架构及实现</title>
+    <url>/2019/10/02/tomcat%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84%E5%8F%8A%E5%AE%9E%E7%8E%B0/</url>
+    <content><![CDATA[<h4 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h4><p>1.Tomcat 要实现 2 个核心功能:</p>
+<ul>
+<li>处理 Socket 连接，负责网络字节流与 Request 和 Response 对象的转化。</li>
+<li>加载和管理 Servlet，以及具体处理 Request 请求。</li>
+</ul>
+<p>因此 Tomcat 设计了两个核心组件连接器(Connector)和容器(Container)来分别做 这两件事情。连接器负责对外交流，容器负责内部处理。</p>
+<p>2.Tomcat 支持的 I/O 模型有:</p>
+<ul>
+<li>NIO:非阻塞 I/O，采用 Java NIO 类库实现。</li>
+<li>NIO2:异步 I/O，采用 JDK 7 最新的 NIO2 类库实现。</li>
+<li>APR:采用 Apache 可移植运行库实现，是 C/C++ 编写的本地库。</li>
+</ul>
+<p>3.Tomcat 支持的应用层协议有:</p>
+<ul>
+<li>HTTP/1.1:这是大部分 Web 应用采用的访问协议。 </li>
+<li>AJP:用于和 Web 服务器集成(如 Apache)。 </li>
+<li>HTTP/2:HTTP 2.0 大幅度的提升了 Web 性能。</li>
+</ul>
+<p>Tomcat 为了实现支持多种 I/O 模型和应用层协议，一个容器可能对接多个连接器，就好比 一个房间有多个门。但是单独的连接器或者容器都不能对外提供服务，需要把它们组装起来 才能工作，组装后这个整体叫作 Service 组件。<br><img src="/2019/10/02/tomcat系统架构及实现/tomcat1.png" alt="avatar"><br>从图上你可以看到，最顶层是 Server，这里的 Server 指的就是一个 Tomcat 实例。一个 Server 中有一个或者多个 Service，一个 Service 中有多个连接器和一个容器。连接器与容 器之间通过标准的 ServletRequest 和 ServletResponse 通信。</p>
+<h4 id="连接器"><a href="#连接器" class="headerlink" title="连接器"></a>连接器</h4><p>1.主要功能</p>
+<ol>
+<li>连接器功能</li>
+<li>监听网络端口。</li>
+<li>接受网络连接请求。</li>
+<li>读取请求网络字节流。</li>
+<li>根据具体应用层协议(HTTP/AJP)解析字节流，生成统一的 Tomcat Request 对象。 将 Tomcat Request 对象转成标准的 ServletRequest。</li>
+<li>调用 Servlet 容器，得到 ServletResponse。</li>
+<li>将 ServletResponse 转成 Tomcat Response 对象。</li>
+<li>将 Tomcat Response 转成网络字节流。 </li>
+<li>将响应字节流写回给浏览器。</li>
+</ol>
+<p>通过分析连接器的详细功能列表，我们发现连接器需要完成 3 个高内聚的功能:</p>
+<ul>
+<li>网络通信。</li>
+<li>应用层协议解析。</li>
+<li>Tomcat Request/Response 与 ServletRequest/ServletResponse 的转化。</li>
+</ul>
+<p>因此 Tomcat 的设计者设计了 3 个组件来实现这 3 个功能，分别是 EndPoint、Processor 和 Adapter。EndPoint 负责提供字节流给 Processor，Processor 负责 提供 Tomcat Request 对象给 Adapter，Adapter 负责提供 ServletRequest 对象给容器。其中 Endpoint 和 Processor 放在一起抽象成了 ProtocolHandler 组件，它们的关系如下图所示。<br><img src="/2019/10/02/tomcat系统架构及实现/tomcat2.png" alt="avatar"></p>
+<p>2.ProtocolHandler 组件<br>连接器用 ProtocolHandler 来处理网络连接和应用层协议，包含了 2 个 重要部件:EndPoint 和 Processor。EndPoint 是通信端点，即通信监听的接口，是具体的 Socket 接收和发送处理器，是对传输层的抽象，因此 EndPoint 是用来实现 TCP/IP 协议的。如果说 EndPoint 是用来实现 TCP/IP 协议的，那么 Processor 用来实现 HTTP 协议， Processor 接收来自 EndPoint 的 Socket，读取字节流解析成 Tomcat Request 和Response对象，并通过 Adapter 将其提交到容器处理，Processor 是对应用层协议的抽象。<br>EndPoint 是一个接口，对应的抽象实现类是 AbstractEndpoint，而 AbstractEndpoint 的具体子类，比如在 NioEndpoint 和 Nio2Endpoint 中，有两个重要的子组件: Acceptor 和 SocketProcessor。其中 Acceptor 用于监听 Socket 连接请求。SocketProcessor 用于处理接收到的 Socket 请求，它实现 Runnable 接口，在 Run 方法里调用协议处理组件 Processor 进行处理。为 了提高处理能力，SocketProcessor 被提交到线程池来执行。而这个线程池叫作执行器 (Executor)。Processor 是一个接口，定义了请求的处理等方法。它的抽象实现类 AbstractProcessor 对一些协议共有的属性进行封装，没有对方法进行实现。具体的实现有 AJPProcessor、 HTTP11Processor 等，这些具体实现类实现了特定协议的解析方法和请求处理方式。<br><img src="/2019/10/02/tomcat系统架构及实现/tomcat3.png" alt="avatar"><br>从图中我们看到，EndPoint 接收到 Socket 连接后，生成一个 SocketProcessor 任务提交 到线程池去处理，SocketProcessor 的 Run 方法会调用 Processor 组件去解析应用层协 议，Processor 通过解析生成 Request 对象后，会调用 Adapter 的 Service 方法。</p>
+<p>3.Adapter 组件<br>Tomcat 定义了自己 的 Request 类来“存放”这些请求信息。ProtocolHandler 接口负责解析请求并生成 Tomcat Request 类。但是这个 Request 对象不是标准的 ServletRequest，也就意味着， 不能用 Tomcat Request 作为参数来调用容器。Tomcat 设计者的解决方案是引入 CoyoteAdapter，这是适配器模式的经典运用，连接器调用 CoyoteAdapter 的 Sevice 方法，传入的是 Tomcat Request 对象，CoyoteAdapter 负责将 Tomcat Request 转成 ServletRequest，再调用容器的 Service 方法。</p>
+<h4 id="多层容器"><a href="#多层容器" class="headerlink" title="多层容器"></a>多层容器</h4><p>1.容器的层次结构<br><img src="/2019/10/02/tomcat系统架构及实现/tomcat4.png" alt="avatar"><br>Context 表示一个 Web 应用程序;Wrapper 表示一个 Servlet，一个 Web 应用程序中可 能会有多个 Servlet;Host 代表的是一个虚拟主机，或者说一个站点，可以给 Tomcat 配 置多个虚拟主机地址，而一个虚拟主机下可以部署多个 Web 应用程序;Engine 表示引 擎，用来管理多个虚拟站点，一个 Service 最多只能有一个 Engine。<br>Tomcat 就是用组合模式来管理 这些容器的。具体实现方法是，所有容器组件都实现了 Container 接口，因此组合模式可 以使得用户对单容器对象和组合容器对象的使用具有一致性。这里单容器对象指的是最底层 的 Wrapper，组合容器对象指的是上面的 Context、Host 或者 Engine。Container 接口 定义如下:<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public interface Container extends Lifecycle &#123;</span><br><span class="line">    public void setName(String name);</span><br><span class="line">    public Container getParent();</span><br><span class="line">    public void setParent(Container container);</span><br><span class="line">    public void addChild(Container child);</span><br><span class="line">    public void removeChild(Container child);</span><br><span class="line"> 	public Container findChild(String name);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>2.请求定位 Servlet 的过程</p>
+<p>Tomcat 是用Mapper组件来完成这个任务的。Mapper组件的功能就是将用户请求的URL定位到一个Servlet，它的工作原理是:Mapper 件里保存了Web 应用的配置信息，其实就是容器组件与访问路径的映射关系， 比如Host容器里配置的域名、Context容器里的Web应用路径，以及Wrapper容器里Servlet 映射的路径，你可以想象这些配置信息就是一个多层次的Map。<br>首先，根据协议和端口号选定Service和Engine。Tomcat的每个连接器都监听不同的端口，比如Tomcat默认的HTTP连接器监听8080端口、默认的AJP连接器监听8009 端口。上面例子中的 URL 访问的是 8080 端 口，因此这个请求会被 HTTP 连接器接收，而一个连接器是属于一个 Service 组件的，这样 Service组件就确定了。我们还知道一个Service组件里除了有多个连接器，还有一个容器组件，具体来说就是一个Engine容器，因此Service确定了也就意味着 Engine也确定了。然后根据域名选定Host。之后根据URL路径找到Context组件。最后根据URL路径找到Wrapper(Servlet)。Context确定后，Mapper再根据 web.xml中配置的Servlet映射路径来找到具体的Wrapper和Servlet。<br>需要注意的是，并不是说只有Servlet才会去处理请求，实际上这个查找路径上的父子容器都会对请求做一些处理。连接器中的Adapter会调用容器的Service 方法来执行 Servlet，最先拿到请求的是Engine容器，Engine 容器对请求做一些处理后，会把请求传给自己子容器 Host继续处理，依次类推，最后这个请求会传给 Wrapper容器，Wrapper会调用最终的Servlet 来处理。<br>那么这个调用过程具体是怎么实现的呢?答案是使用Pipeline-Valve管道。Pipeline-Valve是责任链模式，责任链模式是指在一个请求处理的过程中有很多处理者依次对请求进行处理，每个处理者负责做自己相应的处理，处理完之后将再调用下一个处理者 继续处理。Valve表示一个处理点，比如权限认证和记录日志。如果你还不太理解的话，可以来看看Valve和Pipeline接口中的关键方法。<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public interface Valve &#123;</span><br><span class="line"> public Valve getNext();</span><br><span class="line"> public void setNext(Valve valve);</span><br><span class="line"> public void invoke(Request request, Response response)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>由于Valve是一个处理点，因此invoke方法就是来处理请求的。注意到Valve中有getNext和setNext方法，因此我们大概可以猜到有一个链表将Valve链起来了。<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public interface Pipeline extends Contained &#123;</span><br><span class="line">	public void addValve(Valve valve);</span><br><span class="line">	public Valve getBasic();</span><br><span class="line">	public void setBasic(Valve valve);</span><br><span class="line">	public Valve getFirst();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>整个调用过程由连接器中的 Adapter 触发的，它会调用 Engine 的第一个 Valve:<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">connector.getService().getContainer().getPipeline().getFirst().invoke(request, response)</span><br></pre></td></tr></table></figure></p>
+<p><img src="/2019/10/02/tomcat系统架构及实现/tomcat5.png" alt="avatar"></p>
+<p>Valve是Tomcat的私有机制，与Tomcat的基础架构/API是紧耦合的。Servlet API是公有的标准，所有的Web容器包括Jetty都支持Filter机制。另一个重要的区别是 Valve 工作在 Web 容器级别，拦截所有应用的请求;而Servlet Filter工作在应用级别，只能拦截某个Web应用的所有请求。如果想做整个Web容器 的拦截器，必须通过 Valve 来实现。</p>
+]]></content>
+      <tags>
+        <tag>java web</tag>
       </tags>
   </entry>
   <entry>
