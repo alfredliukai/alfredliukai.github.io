@@ -1,6 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>CRIT Supervisor running as root问题排查</title>
+    <url>/2021/06/10/CRIT-Supervisor-running-as-root%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/</url>
+    <content><![CDATA[<h4 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h4><p>项目中遇到如下问题:<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">2021-06-10 17:58:59,776 CRIT Supervisor running as root (no user in config file)</span><br><span class="line">2021-06-10 17:58:59,777 WARN Included extra file &quot;/etc/supervisord.d/aaa.ini&quot; during parsing</span><br><span class="line">2021-06-10 17:58:59,777 INFO Increased RLIMIT_NOFILE limit to 32768</span><br></pre></td></tr></table></figure></p>
+<h4 id="处理流程"><a href="#处理流程" class="headerlink" title="处理流程"></a>处理流程</h4><p>参考文章大致判断流程如下</p>
+<ol>
+<li>单个进程打开 fb 过多    /etc/security/limits.conf    修改文件或使用 prlimit 命令</li>
+<li>操作系统打开的 fb 过多    /proc/sys/fs/file-max    直接 echo 写入即可</li>
+<li>Systemd 对进程限制    LimitNOFILE=20480000    通常在 /etc/systemd/system/ 目录下</li>
+<li>Supervisor 对进程限制    minfds    通常在 /etc/supervisor/conf.d/ 目录下</li>
+<li>Inotify 达到上限    sysctl -p 或 /etc/sysctl.conf    该机制受到 2 个内核参数的影响</li>
+</ol>
+<p>因此，修改配置文件<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">user=root</span><br><span class="line">minfds=100000</span><br></pre></td></tr></table></figure></p>
+<h4 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h4><ol>
+<li><a href="https://github.com/Supervisor/supervisor/issues/308" target="_blank" rel="noopener">https://github.com/Supervisor/supervisor/issues/308</a></li>
+<li><a href="https://www.escapelife.site/posts/5457f758.html" target="_blank" rel="noopener">https://www.escapelife.site/posts/5457f758.html</a></li>
+<li><a href="https://www.cnblogs.com/orzs/p/12715841.html" target="_blank" rel="noopener">https://www.cnblogs.com/orzs/p/12715841.html</a></li>
+</ol>
+]]></content>
+      <tags>
+        <tag>linux</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>BloomFilter小结</title>
     <url>/2021/04/15/BloomFilter%E5%B0%8F%E7%BB%93/</url>
     <content><![CDATA[<h3 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h3><p>布隆过滤器（Bloom Filter）是由布隆（Burton Howard Bloom）在1970年提出的。它实际上是由一个很长的二进制向量（位向量）和一系列随机映射函数组成，布隆过滤器可以用于检索一个元素是否在一个集合中。它的优点是空间效率和查询时间都远远超过一般的算法，缺点是有一定的误识别率（假正例False positives，即Bloom Filter报告某一元素存在于某集合中，但是实际上该元素并不在集合中）和删除困难，但是没有识别错误的情形（即假反例False negatives，如果某个元素确实没有在该集合中，那么Bloom Filter 是不会报告该元素存在于集合中的，所以不会漏报）。因此，Bloom Filter不适合那些“零错误”的应用场合。而在能容忍低错误率的应用场合下，Bloom Filter通过极少的错误换取了存储空间的极大节省。</p>
@@ -44,29 +67,6 @@
 ]]></content>
       <tags>
         <tag>数据结构</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>CRIT Supervisor running as root问题排查</title>
-    <url>/2021/06/10/CRIT-Supervisor-running-as-root%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/</url>
-    <content><![CDATA[<h4 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h4><p>项目中遇到如下问题:<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">2021-06-10 17:58:59,776 CRIT Supervisor running as root (no user in config file)</span><br><span class="line">2021-06-10 17:58:59,777 WARN Included extra file &quot;/etc/supervisord.d/aaa.ini&quot; during parsing</span><br><span class="line">2021-06-10 17:58:59,777 INFO Increased RLIMIT_NOFILE limit to 32768</span><br></pre></td></tr></table></figure></p>
-<h4 id="处理流程"><a href="#处理流程" class="headerlink" title="处理流程"></a>处理流程</h4><p>参考文章大致判断流程如下</p>
-<ol>
-<li>单个进程打开 fb 过多    /etc/security/limits.conf    修改文件或使用 prlimit 命令</li>
-<li>操作系统打开的 fb 过多    /proc/sys/fs/file-max    直接 echo 写入即可</li>
-<li>Systemd 对进程限制    LimitNOFILE=20480000    通常在 /etc/systemd/system/ 目录下</li>
-<li>Supervisor 对进程限制    minfds    通常在 /etc/supervisor/conf.d/ 目录下</li>
-<li>Inotify 达到上限    sysctl -p 或 /etc/sysctl.conf    该机制受到 2 个内核参数的影响</li>
-</ol>
-<p>因此，修改配置文件<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">user=root</span><br><span class="line">minfds=100000</span><br></pre></td></tr></table></figure></p>
-<h4 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h4><ol>
-<li><a href="https://github.com/Supervisor/supervisor/issues/308" target="_blank" rel="noopener">https://github.com/Supervisor/supervisor/issues/308</a></li>
-<li><a href="https://www.escapelife.site/posts/5457f758.html" target="_blank" rel="noopener">https://www.escapelife.site/posts/5457f758.html</a></li>
-<li><a href="https://www.cnblogs.com/orzs/p/12715841.html" target="_blank" rel="noopener">https://www.cnblogs.com/orzs/p/12715841.html</a></li>
-</ol>
-]]></content>
-      <tags>
-        <tag>linux</tag>
       </tags>
   </entry>
   <entry>
@@ -350,6 +350,36 @@
       </tags>
   </entry>
   <entry>
+    <title>TUN/TAP设备浅析</title>
+    <url>/2021/01/28/TUN-TAP%E8%AE%BE%E5%A4%87%E6%B5%85%E6%9E%90/</url>
+    <content><![CDATA[<h3 id="TUN设备"><a href="#TUN设备" class="headerlink" title="TUN设备"></a>TUN设备</h3><p>TUN 设备是一种虚拟网络设备，通过此设备，程序可以方便地模拟网络行为。TUN 模拟的是一个三层设备,也就是说,通过它可以处理来自网络层的数据，更通俗一点的说，通过它，我们可以处理 IP 数据包。</p>
+<p>先来看看物理设备是如何工作的：</p>
+<p><img src="/2021/01/28/TUN-TAP设备浅析/tun1.png" alt="avatar"></p>
+<p>上图中的 eth0 表示我们主机已有的真实的网卡接口 (interface)。</p>
+<p>网卡接口 eth0 所代表的真实网卡通过网线(wire)和外部网络相连，该物理网卡收到的数据包会经由接口 eth0 传递给内核的网络协议栈(Network Stack)。然后协议栈对这些数据包进行进一步的处理。</p>
+<p>对于一些错误的数据包,协议栈可以选择丢弃；对于不属于本机的数据包，协议栈可以选择转发；而对于确实是传递给本机的数据包,而且该数据包确实被上层的应用所需要，协议栈会通过 Socket API 告知上层正在等待的应用程序。</p>
+<p>下面看看 TUN 的工作方式：</p>
+<p>数据包处理过程<br><img src="/2021/01/28/TUN-TAP设备浅析/tun2.png" alt="avatar"></p>
+<p>UDP_VPN<br><img src="/2021/01/28/TUN-TAP设备浅析/tun3.png" alt="avatar"></p>
+<p>我们知道，普通的网卡是通过网线来收发数据包的话，而 TUN 设备比较特殊，它通过一个文件收发数据包。</p>
+<p>如上图所示，tunX 和上面的 eth0 在逻辑上面是等价的， tunX 也代表了一个网络接口,虽然这个接口是系统通过软件所模拟出来的.</p>
+<p>网卡接口 tunX 所代表的虚拟网卡通过文件 /dev/tunX 与我们的应用程序(App) 相连，应用程序每次使用 write 之类的系统调用将数据写入该文件，这些数据会以网络层数据包的形式，通过该虚拟网卡，经由网络接口 tunX 传递给网络协议栈，同时该应用程序也可以通过 read 之类的系统调用，经由文件 /dev/tunX 读取到协议栈向 tunX 传递的所有数据包。</p>
+<p>此外，协议栈可以像操纵普通网卡一样来操纵 tunX 所代表的虚拟网卡。比如说，给 tunX 设定 IP 地址，设置路由，总之，在协议栈看来，tunX 所代表的网卡和其他普通的网卡区别不大，当然，硬要说区别，那还是有的,那就是 tunX 设备不存在 MAC 地址，这个很好理解，tunX 只模拟到了网络层，要 MAC地址没有任何意义。当然，如果是 tapX 的话，在协议栈的眼中，tapX 和真是网卡没有任何区别。</p>
+<p>如果我们使用 TUN 设备搭建一个基于 UDP 的 VPN ，那么整个处理过程可能是这幅样子：</p>
+<p><img src="/2021/01/28/TUN-TAP设备浅析/tun4.png" alt="avatar"></p>
+<p>首先，我们的应用程序通过 eth0 和远程的 UDP 程序相连,对方传递过来的 UDP 数据包经由左边的协议栈传递给了应用程序，UDP 数据包的内容其实是一个网络层的数据包，比如说 IP 数据报，应用程序接收到该数据包的数据（剥除了各种头部之后的 UDP 数据）之后，然后进行一定的处理，处理完成后将处理后的数据写入文件 /dev/tunX，这样，数据会第二次到达协议栈。需要注意的是，上图中绘制的两个协议栈其实是同一个协议栈，之所以这么画是为了叙述的方便。</p>
+<h3 id="TAP设备"><a href="#TAP设备" class="headerlink" title="TAP设备"></a>TAP设备</h3><p>TAP 设备与 TUN 设备工作方式完全相同，区别在于：</p>
+<ol>
+<li>TUN 设备是一个三层设备，它只模拟到了 IP 层，即网络层 我们可以通过 /dev/tunX 文件收发 IP 层数据包，它无法与物理网卡做 bridge，但是可以通过三层交换（如 ip_forward）与物理网卡连通。可以使用ifconfig之类的命令给该设备设定 IP 地址。</li>
+<li>TAP 设备是一个二层设备，它比 TUN 更加深入，通过 /dev/tapX 文件可以收发 MAC 层数据包，即数据链路层，拥有 MAC 层功能，可以与物理网卡做 bridge，支持 MAC 层广播。同样的，我们也可以通过ifconfig之类的命令给该设备设定 IP 地址，你如果愿意，我们可以给它设定 MAC 地址。</li>
+</ol>
+<p>最后，关于文章中出现的二层，三层，我这里说明一下，第一层是物理层，第二层是数据链路层，第三层是网络层，第四层是传输层。</p>
+]]></content>
+      <tags>
+        <tag>linux</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>TCP/IP中backlog参数</title>
     <url>/2020/02/15/TCP-IP%E4%B8%ADbacklog%E5%8F%82%E6%95%B0/</url>
     <content><![CDATA[<h4 id="TCP-IP协议中backlog参数"><a href="#TCP-IP协议中backlog参数" class="headerlink" title="TCP/IP协议中backlog参数"></a>TCP/IP协议中backlog参数</h4><p>TCP建立连接是要进行三次握手，但是否完成三次握手后，服务器就处理（accept）呢？<br>backlog其实是一个连接队列，在Linux内核2.2之前，backlog大小包括半连接状态和全连接状态两种队列大小。</p>
@@ -380,30 +410,25 @@
       </tags>
   </entry>
   <entry>
-    <title>TUN/TAP设备浅析</title>
-    <url>/2021/01/28/TUN-TAP%E8%AE%BE%E5%A4%87%E6%B5%85%E6%9E%90/</url>
-    <content><![CDATA[<h3 id="TUN设备"><a href="#TUN设备" class="headerlink" title="TUN设备"></a>TUN设备</h3><p>TUN 设备是一种虚拟网络设备，通过此设备，程序可以方便地模拟网络行为。TUN 模拟的是一个三层设备,也就是说,通过它可以处理来自网络层的数据，更通俗一点的说，通过它，我们可以处理 IP 数据包。</p>
-<p>先来看看物理设备是如何工作的：</p>
-<p><img src="/2021/01/28/TUN-TAP设备浅析/tun1.png" alt="avatar"></p>
-<p>上图中的 eth0 表示我们主机已有的真实的网卡接口 (interface)。</p>
-<p>网卡接口 eth0 所代表的真实网卡通过网线(wire)和外部网络相连，该物理网卡收到的数据包会经由接口 eth0 传递给内核的网络协议栈(Network Stack)。然后协议栈对这些数据包进行进一步的处理。</p>
-<p>对于一些错误的数据包,协议栈可以选择丢弃；对于不属于本机的数据包，协议栈可以选择转发；而对于确实是传递给本机的数据包,而且该数据包确实被上层的应用所需要，协议栈会通过 Socket API 告知上层正在等待的应用程序。</p>
-<p>下面看看 TUN 的工作方式：</p>
-<p>数据包处理过程<br><img src="/2021/01/28/TUN-TAP设备浅析/tun2.png" alt="avatar"></p>
-<p>UDP_VPN<br><img src="/2021/01/28/TUN-TAP设备浅析/tun3.png" alt="avatar"></p>
-<p>我们知道，普通的网卡是通过网线来收发数据包的话，而 TUN 设备比较特殊，它通过一个文件收发数据包。</p>
-<p>如上图所示，tunX 和上面的 eth0 在逻辑上面是等价的， tunX 也代表了一个网络接口,虽然这个接口是系统通过软件所模拟出来的.</p>
-<p>网卡接口 tunX 所代表的虚拟网卡通过文件 /dev/tunX 与我们的应用程序(App) 相连，应用程序每次使用 write 之类的系统调用将数据写入该文件，这些数据会以网络层数据包的形式，通过该虚拟网卡，经由网络接口 tunX 传递给网络协议栈，同时该应用程序也可以通过 read 之类的系统调用，经由文件 /dev/tunX 读取到协议栈向 tunX 传递的所有数据包。</p>
-<p>此外，协议栈可以像操纵普通网卡一样来操纵 tunX 所代表的虚拟网卡。比如说，给 tunX 设定 IP 地址，设置路由，总之，在协议栈看来，tunX 所代表的网卡和其他普通的网卡区别不大，当然，硬要说区别，那还是有的,那就是 tunX 设备不存在 MAC 地址，这个很好理解，tunX 只模拟到了网络层，要 MAC地址没有任何意义。当然，如果是 tapX 的话，在协议栈的眼中，tapX 和真是网卡没有任何区别。</p>
-<p>如果我们使用 TUN 设备搭建一个基于 UDP 的 VPN ，那么整个处理过程可能是这幅样子：</p>
-<p><img src="/2021/01/28/TUN-TAP设备浅析/tun4.png" alt="avatar"></p>
-<p>首先，我们的应用程序通过 eth0 和远程的 UDP 程序相连,对方传递过来的 UDP 数据包经由左边的协议栈传递给了应用程序，UDP 数据包的内容其实是一个网络层的数据包，比如说 IP 数据报，应用程序接收到该数据包的数据（剥除了各种头部之后的 UDP 数据）之后，然后进行一定的处理，处理完成后将处理后的数据写入文件 /dev/tunX，这样，数据会第二次到达协议栈。需要注意的是，上图中绘制的两个协议栈其实是同一个协议栈，之所以这么画是为了叙述的方便。</p>
-<h3 id="TAP设备"><a href="#TAP设备" class="headerlink" title="TAP设备"></a>TAP设备</h3><p>TAP 设备与 TUN 设备工作方式完全相同，区别在于：</p>
-<ol>
-<li>TUN 设备是一个三层设备，它只模拟到了 IP 层，即网络层 我们可以通过 /dev/tunX 文件收发 IP 层数据包，它无法与物理网卡做 bridge，但是可以通过三层交换（如 ip_forward）与物理网卡连通。可以使用ifconfig之类的命令给该设备设定 IP 地址。</li>
-<li>TAP 设备是一个二层设备，它比 TUN 更加深入，通过 /dev/tapX 文件可以收发 MAC 层数据包，即数据链路层，拥有 MAC 层功能，可以与物理网卡做 bridge，支持 MAC 层广播。同样的，我们也可以通过ifconfig之类的命令给该设备设定 IP 地址，你如果愿意，我们可以给它设定 MAC 地址。</li>
-</ol>
-<p>最后，关于文章中出现的二层，三层，我这里说明一下，第一层是物理层，第二层是数据链路层，第三层是网络层，第四层是传输层。</p>
+    <title>cryptsetup文件系统加密</title>
+    <url>/2021/01/26/cryptsetup%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E5%8A%A0%E5%AF%86/</url>
+    <content><![CDATA[<p>当Ubuntu Linux使用加密文件系统后，数据的安万能得到非常好的保护。在这种情况下，即使把我们的机器送给黑客，只要他们没有密钥，黑客看到的数据只会是一堆乱 码，毫无利用价值可言。<br>本文将周详介绍利用dm-crypt来创建加密文件系统的方法。和其他创建加密文件系统的方法相比，dm-crypt系统有着无可比拟的优越性：他的速度 更快，易用性更强。除此之外，他的适用面也非常广，能够运行在各种块设备上，即使这些设备使用了RAID和 LVM也毫无障碍。dm-crypt系统之所以具有这些好处，主要得益于该技术是建立在2.6版本内核的device-mapper特性之上的。 device-mapper是设计用来为在实际的块设备之上添加虚拟层提供一种通用灵活的方法，以方便研发人员实现映像、快照、级联和加密等处理。此外， dm-crypt使用了内核密码应用编程接口实现了透明的加密，并且兼容cryptloop系统。</p>
+<h3 id="一、设置内核"><a href="#一、设置内核" class="headerlink" title="一、设置内核"></a>一、设置内核</h3><p>dm-crypt利用内核的密码应用编程接口来完成密码操作。一般说来，内核通常将各种加密程式以模块的形式加载。对于256-bit AES来说，其安全强度已非常之高，即便用来保护绝密级的数据也足够了。因此本文中我们使用256-bit AES密码，为了确保你的内核已加载AES密码模块，请利用下列命令进行检查：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ cat /proc/crypto如果看到类似下面的输出的话，说明AES模块已加载：</span><br><span class="line">name         : aes</span><br><span class="line">module       : aes</span><br><span class="line">type         : cipher</span><br><span class="line">blocksize    : 16</span><br><span class="line">min keysize  : 16</span><br><span class="line">max keysize  : 32</span><br></pre></td></tr></table></figure></p>
+<p>否则，我们能利用modprobe来手工加载AES模块，命令如下所示：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ sudo modprobe aes</span><br></pre></td></tr></table></figure></p>
+<p>接下来安装dmsetup软件包，该软件包含有设置device-mapper所需的工具：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ sudo apt-get install dmsetup cryptsetup为检查dmsetup软件包是否已建立了设备映象程式，键入下列命令：</span><br><span class="line">$ ls -l /dev/mapper/control接下来加载dm-crypt内核模块：</span><br><span class="line">$ sudo modprobe dm-cryptdm-crypt加载后，他会用device-mapper自动注册。如果再次检验的话，device-mapper已能识别dm- crypt，并且把crypt 添加为可用的对象：</span><br><span class="line">$ sudo dmsetup targets如果一切顺利，目前你应该看到crypt的下列输出：</span><br><span class="line">crypt            v1.1.0</span><br><span class="line">striped          v1.0.2</span><br><span class="line">linear           v1.0.1</span><br><span class="line">error            v1.0.1</span><br></pre></td></tr></table></figure></p>
+<p>这说明我们的系统已为装载加密设备做好了准备。下面，我们先来建立一个加密设备。</p>
+<h3 id="二、建立加密设备"><a href="#二、建立加密设备" class="headerlink" title="二、建立加密设备"></a>二、建立加密设备</h3><p>要创建作为加密设备装载的文件系统，有两种选择：一是建立一个磁盘映像，然后作为回送设备加载；二是使用物理设备。无论那种情况，除了在建立和捆绑回送设备外，其他操作过程都是相似的。</p>
+<p>1.建立回送磁盘映象<br>如果你没有用来加密的物理设备（比如存储棒或另外的磁盘分区），作为替换，你能利用命令dd来建立一个空磁盘映象，然后将该映象作为回送设备来装载，照样 能用。下面我们以实例来加以介绍：<br>$ dd if=/dev/zero of=~/secret.img bs=1M count=100这里我们新建了一个大小为100 MB的磁盘映象，该映象名字为secret.img。要想改动其大小，能改动count的值。<br>接下来，我们利用losetup命令将该映象和一个回送设备联系起来：<br>$ sudo losetup /dev/loop/0 ~/secret.img目前，我们已得到了一个虚拟的块设备，其位于/dev/loop/0，并且我们能够如同使用其他设备那样来使用他。</p>
+<p>2.设置块设备<br>准备好了物理块设备（例如/dev/sda1），或是虚拟块设备（像前面那样建立了回送映象，并利用device-mapper将其作为加密的逻辑卷加载），我们就能进行块设备设置了。<br>下面我们使用cryptsetup来建立逻辑卷，并将其和块设备捆绑：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ sudo cryptsetup -y create myEncryptedFilesystem   /dev/DEVICENAME</span><br></pre></td></tr></table></figure>
+<p>其中，myEncryptedFilesystem 是新建的逻辑卷的名称。并且最后一个参数必须是将用作加密卷的块设备。所以，如果你要使用前面建立的回送映象作为虚拟块设备的话，应当运行以下命令：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ sudo cryptsetup -y create myEncryptedFilesystem  /dev/loop/0</span><br></pre></td></tr></table></figure>
+<p>无论是使用物理块设备还是虚拟块设备，程式都会要你输入逻辑卷的口令，-y的作用 在于要你输入两次口令以确保无误。这一点非常重要，因为一旦口令弄错，你就会把自己的数据锁住，这时谁也帮不了你了！<br>为了确认逻辑卷是否已建立，能使用下列命令进行检查一下：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ sudo dmsetup ls只要该命令列出了逻辑卷，就说明已成功建立了逻辑卷。不过根据机器的不同，设备号可能有所不同：</span><br><span class="line">myEncryptedFilesystem  (221, 0)device-mapper会把他的虚拟设备装载到/dev/mapper下面，所以，你的虚拟块设备应该是/dev/mapper /myEncryptedFilesystem ，尽管用起来他和其他块设备没什么不同，实际上他却是经过透明加密的。</span><br></pre></td></tr></table></figure></p>
+<p>如同物理设备相同，我们也能在虚拟设备上创建文件系统：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ sudo mkfs.ext3 /dev/mapper/myEncryptedFilesystem目前为新的虚拟块设备建立一个装载点，然后将其装载。命令如下所示：</span><br><span class="line">$ sudo mkdir /mnt/myEncryptedFilesystem</span><br><span class="line">$ sudo mount /dev/mapper/myEncryptedFilesystem  /mnt/myEncryptedFilesystem我们能够利用下面的命令 查看其装载后的情况：</span><br><span class="line">$ df -h /mnt/myEncryptedFilesystem</span><br><span class="line">Filesystem              Size  Used Avail Use% Mounted on</span><br><span class="line">/dev/mapper/myEncryptedFilesystem     97M  2.1M   90M   2% /mnt/myEncryptedFilesystem</span><br></pre></td></tr></table></figure>
+<p>非常好，我们看到装载的文件系统，尽管看起来和其他文件系统无异，但实际上写到/mnt/myEncryptedFilesystem /下的所有数据，在数据写入之前都是经过透明的加密处理后才写入磁盘的，因此，从该处读取的数据都是些密文。</p>
+<h3 id="三、卸载方法"><a href="#三、卸载方法" class="headerlink" title="三、卸载方法"></a>三、卸载方法</h3><p>要卸载加密文件系统，和平常的方法没什么两样：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ sudo umount /mnt/myEncryptedFilesystem 即便已卸载了块设备，在dm-crypt中仍然视为一个虚拟设备。如若不信，你能再次运行命令 </span><br><span class="line">sudo dmsetup ls 来验证一下，你会看到该设备依然会被列出。因为dm-crypt缓存了口令，所以机器上的其他用户不必知道口令就能重新装载该设备。为了避免这种情况 发生，你必须在卸载设备后从dm-crypt中显式的删除该设备。命令具体如下所示：</span><br><span class="line">$ sudo cryptsetup remove myEncryptedFilesystem此后，他将完全清除，要想再次装载的话，你必须再次输入口令。为了简化该过程，我们能利用一个简单的脚本来完 成卸载和清除工作：</span><br><span class="line">#!/bin/sh</span><br><span class="line">umount /mnt/myEncryptedFilesystem</span><br><span class="line">cryptsetup remove myEncryptedFilesystem</span><br></pre></td></tr></table></figure></p>
+<h3 id="四、重新装载"><a href="#四、重新装载" class="headerlink" title="四、重新装载"></a>四、重新装载</h3><p>在卸载加密设备后，我们非常可能还需作为普通用户来装载他们。为了简化该工作，我们需要在/etc/fstab文件中添加下列内容：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">/dev/mapper/myEncryptedFilesystem  /mnt/myEncryptedFilesystem  ext3 noauto,noatime 0 0此外，我们也能通过建立脚本来替我们完成dm-crypt设备的创建和卷的装载工作，方法是用实际设备的名称或文件路径来替换/dev /DEVICENAME：</span><br><span class="line">#!/bin/sh</span><br><span class="line">cryptsetup create myEncryptedFilesystem  /dev/DEVICENAME</span><br><span class="line">mount /dev/mapper/myEncryptedFilesystem  /mnt/myEncryptedFilesystem如果你使用的是回送设备 的话，你还能利用脚本来捆绑设备：</span><br><span class="line">#!/bin/sh</span><br><span class="line">losetup /dev/loop/0 ~/secret.img</span><br><span class="line">cryptsetup create myEncryptedFilesystem  /dev/loop/0</span><br><span class="line">mount /dev/mapper/myEncryptedFilesystem  /mnt/myEncryptedFilesystem如果你收到消息 “ioctl: LOOP_SET_FD: Device or resource busy”，这说明回送设备非常可能仍然装载在系统上。我们能利用sudo losetup -d /dev/loop/0命令将其删除。</span><br></pre></td></tr></table></figure></p>
 ]]></content>
       <tags>
         <tag>linux</tag>
@@ -440,31 +465,6 @@
 <h3 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h3><ol>
 <li><a href="https://blog.csdn.net/weixin_39278265/article/details/89006467" target="_blank" rel="noopener">https://blog.csdn.net/weixin_39278265/article/details/89006467</a></li>
 </ol>
-]]></content>
-      <tags>
-        <tag>linux</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>cryptsetup文件系统加密</title>
-    <url>/2021/01/26/cryptsetup%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E5%8A%A0%E5%AF%86/</url>
-    <content><![CDATA[<p>当Ubuntu Linux使用加密文件系统后，数据的安万能得到非常好的保护。在这种情况下，即使把我们的机器送给黑客，只要他们没有密钥，黑客看到的数据只会是一堆乱 码，毫无利用价值可言。<br>本文将周详介绍利用dm-crypt来创建加密文件系统的方法。和其他创建加密文件系统的方法相比，dm-crypt系统有着无可比拟的优越性：他的速度 更快，易用性更强。除此之外，他的适用面也非常广，能够运行在各种块设备上，即使这些设备使用了RAID和 LVM也毫无障碍。dm-crypt系统之所以具有这些好处，主要得益于该技术是建立在2.6版本内核的device-mapper特性之上的。 device-mapper是设计用来为在实际的块设备之上添加虚拟层提供一种通用灵活的方法，以方便研发人员实现映像、快照、级联和加密等处理。此外， dm-crypt使用了内核密码应用编程接口实现了透明的加密，并且兼容cryptloop系统。</p>
-<h3 id="一、设置内核"><a href="#一、设置内核" class="headerlink" title="一、设置内核"></a>一、设置内核</h3><p>dm-crypt利用内核的密码应用编程接口来完成密码操作。一般说来，内核通常将各种加密程式以模块的形式加载。对于256-bit AES来说，其安全强度已非常之高，即便用来保护绝密级的数据也足够了。因此本文中我们使用256-bit AES密码，为了确保你的内核已加载AES密码模块，请利用下列命令进行检查：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ cat /proc/crypto如果看到类似下面的输出的话，说明AES模块已加载：</span><br><span class="line">name         : aes</span><br><span class="line">module       : aes</span><br><span class="line">type         : cipher</span><br><span class="line">blocksize    : 16</span><br><span class="line">min keysize  : 16</span><br><span class="line">max keysize  : 32</span><br></pre></td></tr></table></figure></p>
-<p>否则，我们能利用modprobe来手工加载AES模块，命令如下所示：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ sudo modprobe aes</span><br></pre></td></tr></table></figure></p>
-<p>接下来安装dmsetup软件包，该软件包含有设置device-mapper所需的工具：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ sudo apt-get install dmsetup cryptsetup为检查dmsetup软件包是否已建立了设备映象程式，键入下列命令：</span><br><span class="line">$ ls -l /dev/mapper/control接下来加载dm-crypt内核模块：</span><br><span class="line">$ sudo modprobe dm-cryptdm-crypt加载后，他会用device-mapper自动注册。如果再次检验的话，device-mapper已能识别dm- crypt，并且把crypt 添加为可用的对象：</span><br><span class="line">$ sudo dmsetup targets如果一切顺利，目前你应该看到crypt的下列输出：</span><br><span class="line">crypt            v1.1.0</span><br><span class="line">striped          v1.0.2</span><br><span class="line">linear           v1.0.1</span><br><span class="line">error            v1.0.1</span><br></pre></td></tr></table></figure></p>
-<p>这说明我们的系统已为装载加密设备做好了准备。下面，我们先来建立一个加密设备。</p>
-<h3 id="二、建立加密设备"><a href="#二、建立加密设备" class="headerlink" title="二、建立加密设备"></a>二、建立加密设备</h3><p>要创建作为加密设备装载的文件系统，有两种选择：一是建立一个磁盘映像，然后作为回送设备加载；二是使用物理设备。无论那种情况，除了在建立和捆绑回送设备外，其他操作过程都是相似的。</p>
-<p>1.建立回送磁盘映象<br>如果你没有用来加密的物理设备（比如存储棒或另外的磁盘分区），作为替换，你能利用命令dd来建立一个空磁盘映象，然后将该映象作为回送设备来装载，照样 能用。下面我们以实例来加以介绍：<br>$ dd if=/dev/zero of=~/secret.img bs=1M count=100这里我们新建了一个大小为100 MB的磁盘映象，该映象名字为secret.img。要想改动其大小，能改动count的值。<br>接下来，我们利用losetup命令将该映象和一个回送设备联系起来：<br>$ sudo losetup /dev/loop/0 ~/secret.img目前，我们已得到了一个虚拟的块设备，其位于/dev/loop/0，并且我们能够如同使用其他设备那样来使用他。</p>
-<p>2.设置块设备<br>准备好了物理块设备（例如/dev/sda1），或是虚拟块设备（像前面那样建立了回送映象，并利用device-mapper将其作为加密的逻辑卷加载），我们就能进行块设备设置了。<br>下面我们使用cryptsetup来建立逻辑卷，并将其和块设备捆绑：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ sudo cryptsetup -y create myEncryptedFilesystem   /dev/DEVICENAME</span><br></pre></td></tr></table></figure>
-<p>其中，myEncryptedFilesystem 是新建的逻辑卷的名称。并且最后一个参数必须是将用作加密卷的块设备。所以，如果你要使用前面建立的回送映象作为虚拟块设备的话，应当运行以下命令：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ sudo cryptsetup -y create myEncryptedFilesystem  /dev/loop/0</span><br></pre></td></tr></table></figure>
-<p>无论是使用物理块设备还是虚拟块设备，程式都会要你输入逻辑卷的口令，-y的作用 在于要你输入两次口令以确保无误。这一点非常重要，因为一旦口令弄错，你就会把自己的数据锁住，这时谁也帮不了你了！<br>为了确认逻辑卷是否已建立，能使用下列命令进行检查一下：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ sudo dmsetup ls只要该命令列出了逻辑卷，就说明已成功建立了逻辑卷。不过根据机器的不同，设备号可能有所不同：</span><br><span class="line">myEncryptedFilesystem  (221, 0)device-mapper会把他的虚拟设备装载到/dev/mapper下面，所以，你的虚拟块设备应该是/dev/mapper /myEncryptedFilesystem ，尽管用起来他和其他块设备没什么不同，实际上他却是经过透明加密的。</span><br></pre></td></tr></table></figure></p>
-<p>如同物理设备相同，我们也能在虚拟设备上创建文件系统：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ sudo mkfs.ext3 /dev/mapper/myEncryptedFilesystem目前为新的虚拟块设备建立一个装载点，然后将其装载。命令如下所示：</span><br><span class="line">$ sudo mkdir /mnt/myEncryptedFilesystem</span><br><span class="line">$ sudo mount /dev/mapper/myEncryptedFilesystem  /mnt/myEncryptedFilesystem我们能够利用下面的命令 查看其装载后的情况：</span><br><span class="line">$ df -h /mnt/myEncryptedFilesystem</span><br><span class="line">Filesystem              Size  Used Avail Use% Mounted on</span><br><span class="line">/dev/mapper/myEncryptedFilesystem     97M  2.1M   90M   2% /mnt/myEncryptedFilesystem</span><br></pre></td></tr></table></figure>
-<p>非常好，我们看到装载的文件系统，尽管看起来和其他文件系统无异，但实际上写到/mnt/myEncryptedFilesystem /下的所有数据，在数据写入之前都是经过透明的加密处理后才写入磁盘的，因此，从该处读取的数据都是些密文。</p>
-<h3 id="三、卸载方法"><a href="#三、卸载方法" class="headerlink" title="三、卸载方法"></a>三、卸载方法</h3><p>要卸载加密文件系统，和平常的方法没什么两样：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ sudo umount /mnt/myEncryptedFilesystem 即便已卸载了块设备，在dm-crypt中仍然视为一个虚拟设备。如若不信，你能再次运行命令 </span><br><span class="line">sudo dmsetup ls 来验证一下，你会看到该设备依然会被列出。因为dm-crypt缓存了口令，所以机器上的其他用户不必知道口令就能重新装载该设备。为了避免这种情况 发生，你必须在卸载设备后从dm-crypt中显式的删除该设备。命令具体如下所示：</span><br><span class="line">$ sudo cryptsetup remove myEncryptedFilesystem此后，他将完全清除，要想再次装载的话，你必须再次输入口令。为了简化该过程，我们能利用一个简单的脚本来完 成卸载和清除工作：</span><br><span class="line">#!/bin/sh</span><br><span class="line">umount /mnt/myEncryptedFilesystem</span><br><span class="line">cryptsetup remove myEncryptedFilesystem</span><br></pre></td></tr></table></figure></p>
-<h3 id="四、重新装载"><a href="#四、重新装载" class="headerlink" title="四、重新装载"></a>四、重新装载</h3><p>在卸载加密设备后，我们非常可能还需作为普通用户来装载他们。为了简化该工作，我们需要在/etc/fstab文件中添加下列内容：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">/dev/mapper/myEncryptedFilesystem  /mnt/myEncryptedFilesystem  ext3 noauto,noatime 0 0此外，我们也能通过建立脚本来替我们完成dm-crypt设备的创建和卷的装载工作，方法是用实际设备的名称或文件路径来替换/dev /DEVICENAME：</span><br><span class="line">#!/bin/sh</span><br><span class="line">cryptsetup create myEncryptedFilesystem  /dev/DEVICENAME</span><br><span class="line">mount /dev/mapper/myEncryptedFilesystem  /mnt/myEncryptedFilesystem如果你使用的是回送设备 的话，你还能利用脚本来捆绑设备：</span><br><span class="line">#!/bin/sh</span><br><span class="line">losetup /dev/loop/0 ~/secret.img</span><br><span class="line">cryptsetup create myEncryptedFilesystem  /dev/loop/0</span><br><span class="line">mount /dev/mapper/myEncryptedFilesystem  /mnt/myEncryptedFilesystem如果你收到消息 “ioctl: LOOP_SET_FD: Device or resource busy”，这说明回送设备非常可能仍然装载在系统上。我们能利用sudo losetup -d /dev/loop/0命令将其删除。</span><br></pre></td></tr></table></figure></p>
 ]]></content>
       <tags>
         <tag>linux</tag>
@@ -631,6 +631,43 @@
       </tags>
   </entry>
   <entry>
+    <title>git中的对象简介</title>
+    <url>/2020/07/08/git%E4%B8%AD%E7%9A%84%E5%AF%B9%E8%B1%A1%E7%AE%80%E4%BB%8B/</url>
+    <content><![CDATA[<p>为了加深git中底层对象的理解，特意整理如下文章。<br>Git 保存的不是文件的变化或者差异，而是一系列不同时刻的 快照 。</p>
+<p>在进行提交操作时，Git 会保存一个提交对象（commit object）。 知道了 Git 保存数据的方式，我们可以很自然的想到——该提交对象会包含一个指向暂存内容快照的指针。 但不仅仅是这样，该提交对象还包含了作者的姓名和邮箱、提交时输入的信息以及指向它的父对象的指针。 首次提交产生的提交对象没有父对象，普通提交操作产生的提交对象有一个父对象， 而由多个分支合并产生的提交对象有多个父对象，</p>
+<p>为了更加形象地说明，我们假设现在有一个工作目录，里面包含了三个将要被暂存和提交的文件。 暂存操作会为每一个文件计算校验和（使用我们在 起步 中提到的 SHA-1 哈希算法），然后会把当前版本的文件快照保存到 Git 仓库中 （Git 使用 blob 对象来保存它们），最终将校验和加入到暂存区域等待提交：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ git add README test.rb LICENSE</span><br><span class="line">$ git commit -m &apos;The initial commit of my project&apos;</span><br></pre></td></tr></table></figure>
+<p>当使用 git commit 进行提交操作时，Git 会先计算每一个子目录（本例中只有项目根目录）的校验和， 然后在 Git 仓库中这些校验和保存为树对象。随后，Git 便会创建一个提交对象， 它除了包含上面提到的那些信息外，还包含指向这个树对象（项目根目录）的指针。 如此一来，Git 就可以在需要的时候重现此次保存的快照。</p>
+<p>现在，Git 仓库中有五个对象：三个 blob 对象（保存着文件快照）、一个 树 对象 （记录着目录结构和 blob 对象索引）以及一个 提交 对象（包含着指向前述树对象的指针和所有提交信息）。<br><img src="/2020/07/08/git中的对象简介/git1.png" alt="avatar"><br>Figure 9. 首次提交对象及其树结构<br>做些修改后再次提交，那么这次产生的提交对象会包含一个指向上次提交对象（父对象）的指针。<br><img src="/2020/07/08/git中的对象简介/git2.png" alt="avatar"><br>Figure 10. 提交对象及其父对象<br>Git 的分支，其实本质上仅仅是指向提交对象的可变指针。 Git 的默认分支名字是 master。 在多次提交操作之后，你其实已经有一个指向最后那个提交对象的 master 分支。 master 分支会在每次提交时自动向前移动。<br><img src="/2020/07/08/git中的对象简介/git3.png" alt="avatar"><br>Figure 11. 分支及其提交历史</p>
+<h4 id="分支创建"><a href="#分支创建" class="headerlink" title="分支创建"></a>分支创建</h4><p>Git 是怎么创建新分支的呢？ 很简单，它只是为你创建了一个可以移动的新的指针。 比如，创建一个 testing 分支， 你需要使用 git branch 命令：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ git branch testing</span><br></pre></td></tr></table></figure></p>
+<p>这会在当前所在的提交对象上创建一个指针。<br><img src="/2020/07/08/git中的对象简介/git4.png" alt="avatar"></p>
+<p>Figure 12. 两个指向相同提交历史的分支<br>那么，Git 又是怎么知道当前在哪一个分支上呢？ 也很简单，它有一个名为 HEAD 的特殊指针。 请注意它和许多其它版本控制系统（如 Subversion 或 CVS）里的 HEAD 概念完全不同。 在 Git 中，它是一个指针，指向当前所在的本地分支（译注：将 HEAD 想象为当前分支的别名）。 在本例中，你仍然在 master 分支上。 因为 git branch 命令仅仅 创建 一个新分支，并不会自动切换到新分支中去。</p>
+<p><img src="/2020/07/08/git中的对象简介/git5.png" alt="avatar"></p>
+<p>Figure 13. HEAD 指向当前所在的分支<br>你可以简单地使用 git log 命令查看各个分支当前所指的对象。 提供这一功能的参数是 –decorate<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ git log --oneline --decorate</span><br><span class="line">f30ab (HEAD -&gt; master, testing) add feature #32 - ability to add new formats to the central interface</span><br><span class="line">34ac2 Fixed bug #1328 - stack overflow under certain conditions</span><br><span class="line">98ca9 The initial commit of my project</span><br></pre></td></tr></table></figure></p>
+<p>正如你所见，当前 master 和 testing 分支均指向校验和以 f30ab 开头的提交对象。</p>
+<h4 id="分支切换"><a href="#分支切换" class="headerlink" title="分支切换"></a>分支切换</h4><p>要切换到一个已存在的分支，你需要使用 git checkout 命令。 我们现在切换到新创建的 testing 分支去：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ git checkout testing</span><br></pre></td></tr></table></figure>
+<p>这样 HEAD 就指向 testing 分支了。</p>
+<p><img src="/2020/07/08/git中的对象简介/git6.png" alt="avatar"></p>
+<p>Figure 14. HEAD 指向当前所在的分支<br>那么，这样的实现方式会给我们带来什么好处呢？ 现在不妨再提交一次：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ vim test.rb</span><br><span class="line">$ git commit -a -m &apos;made a change&apos;</span><br></pre></td></tr></table></figure>
+<p><img src="/2020/07/08/git中的对象简介/git7.png" alt="avatar"></p>
+<p>Figure 15. HEAD 分支随着提交操作自动向前移动<br>如图所示，你的 testing 分支向前移动了，但是 master 分支却没有，它仍然指向运行 git checkout 时所指的对象。 这就有意思了，现在我们切换回 master 分支看看：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ git checkout master</span><br></pre></td></tr></table></figure>
+<p><img src="/2020/07/08/git中的对象简介/git8.png" alt="avatar"><br>Figure 16. 检出时 HEAD 随之移动<br>这条命令做了两件事。 一是使 HEAD 指回 master 分支，二是将工作目录恢复成 master 分支所指向的快照内容。 也就是说，你现在做修改的话，项目将始于一个较旧的版本。 本质上来讲，这就是忽略 testing 分支所做的修改，以便于向另一个方向进行开发。</p>
+<p>我们不妨再稍微做些修改并提交：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ vim test.rb</span><br><span class="line">$ git commit -a -m &apos;made other changes&apos;</span><br></pre></td></tr></table></figure>
+<p>现在，这个项目的提交历史已经产生了分叉（参见 项目分叉历史）。 因为刚才你创建了一个新分支，并切换过去进行了一些工作，随后又切换回 master 分支进行了另外一些工作。 上述两次改动针对的是不同分支：你可以在不同分支间不断地来回切换和工作，并在时机成熟时将它们合并起来。 而所有这些工作，你需要的命令只有 branch、checkout 和 commit。<br><img src="/2020/07/08/git中的对象简介/git9.png" alt="avatar"><br>Figure 17. 项目分叉历史<br>你可以简单地使用 git log 命令查看分叉历史。 运行 git log –oneline –decorate –graph –all ，它会输出你的提交历史、各个分支的指向以及项目的分支分叉情况。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ git log --oneline --decorate --graph --all</span><br><span class="line">* c2b9e (HEAD, master) made other changes</span><br><span class="line">| * 87ab2 (testing) made a change</span><br><span class="line">|/</span><br><span class="line">* f30ab add feature #32 - ability to add new formats to the</span><br><span class="line">* 34ac2 fixed bug #1328 - stack overflow under certain conditions</span><br><span class="line">* 98ca9 initial commit of my project</span><br></pre></td></tr></table></figure>
+<p>由于 Git 的分支实质上仅是包含所指对象校验和（长度为 40 的 SHA-1 值字符串）的文件，所以它的创建和销毁都异常高效。 创建一个新分支就相当于往一个文件中写入 41 个字节（40 个字符和 1 个换行符），如此的简单能不快吗？</p>
+<p>这与过去大多数版本控制系统形成了鲜明的对比，它们在创建分支时，将所有的项目文件都复制一遍，并保存到一个特定的目录。 完成这样繁琐的过程通常需要好几秒钟，有时甚至需要好几分钟。所需时间的长短，完全取决于项目的规模。 而在 Git 中，任何规模的项目都能在瞬间创建新分支。 同时，由于每次提交都会记录父对象，所以寻找恰当的合并基础（译注：即共同祖先）也是同样的简单和高效。 这些高效的特性使得 Git 鼓励开发人员频繁地创建和使用分支。</p>
+<h4 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h4><p><a href="https://git-scm.com/book/zh/v2/Git-%E5%88%86%E6%94%AF-%E5%88%86%E6%94%AF%E7%AE%80%E4%BB%8B" target="_blank" rel="noopener">https://git-scm.com/book/zh/v2/Git-%E5%88%86%E6%94%AF-%E5%88%86%E6%94%AF%E7%AE%80%E4%BB%8B</a></p>
+]]></content>
+      <tags>
+        <tag>git</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>git常用命令</title>
     <url>/2020/04/05/git%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/</url>
     <content><![CDATA[<h4 id="git-branch"><a href="#git-branch" class="headerlink" title="git branch"></a>git branch</h4><ul>
@@ -745,40 +782,17 @@
       </tags>
   </entry>
   <entry>
-    <title>git中的对象简介</title>
-    <url>/2020/07/08/git%E4%B8%AD%E7%9A%84%E5%AF%B9%E8%B1%A1%E7%AE%80%E4%BB%8B/</url>
-    <content><![CDATA[<p>为了加深git中底层对象的理解，特意整理如下文章。<br>Git 保存的不是文件的变化或者差异，而是一系列不同时刻的 快照 。</p>
-<p>在进行提交操作时，Git 会保存一个提交对象（commit object）。 知道了 Git 保存数据的方式，我们可以很自然的想到——该提交对象会包含一个指向暂存内容快照的指针。 但不仅仅是这样，该提交对象还包含了作者的姓名和邮箱、提交时输入的信息以及指向它的父对象的指针。 首次提交产生的提交对象没有父对象，普通提交操作产生的提交对象有一个父对象， 而由多个分支合并产生的提交对象有多个父对象，</p>
-<p>为了更加形象地说明，我们假设现在有一个工作目录，里面包含了三个将要被暂存和提交的文件。 暂存操作会为每一个文件计算校验和（使用我们在 起步 中提到的 SHA-1 哈希算法），然后会把当前版本的文件快照保存到 Git 仓库中 （Git 使用 blob 对象来保存它们），最终将校验和加入到暂存区域等待提交：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ git add README test.rb LICENSE</span><br><span class="line">$ git commit -m &apos;The initial commit of my project&apos;</span><br></pre></td></tr></table></figure>
-<p>当使用 git commit 进行提交操作时，Git 会先计算每一个子目录（本例中只有项目根目录）的校验和， 然后在 Git 仓库中这些校验和保存为树对象。随后，Git 便会创建一个提交对象， 它除了包含上面提到的那些信息外，还包含指向这个树对象（项目根目录）的指针。 如此一来，Git 就可以在需要的时候重现此次保存的快照。</p>
-<p>现在，Git 仓库中有五个对象：三个 blob 对象（保存着文件快照）、一个 树 对象 （记录着目录结构和 blob 对象索引）以及一个 提交 对象（包含着指向前述树对象的指针和所有提交信息）。<br><img src="/2020/07/08/git中的对象简介/git1.png" alt="avatar"><br>Figure 9. 首次提交对象及其树结构<br>做些修改后再次提交，那么这次产生的提交对象会包含一个指向上次提交对象（父对象）的指针。<br><img src="/2020/07/08/git中的对象简介/git2.png" alt="avatar"><br>Figure 10. 提交对象及其父对象<br>Git 的分支，其实本质上仅仅是指向提交对象的可变指针。 Git 的默认分支名字是 master。 在多次提交操作之后，你其实已经有一个指向最后那个提交对象的 master 分支。 master 分支会在每次提交时自动向前移动。<br><img src="/2020/07/08/git中的对象简介/git3.png" alt="avatar"><br>Figure 11. 分支及其提交历史</p>
-<h4 id="分支创建"><a href="#分支创建" class="headerlink" title="分支创建"></a>分支创建</h4><p>Git 是怎么创建新分支的呢？ 很简单，它只是为你创建了一个可以移动的新的指针。 比如，创建一个 testing 分支， 你需要使用 git branch 命令：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ git branch testing</span><br></pre></td></tr></table></figure></p>
-<p>这会在当前所在的提交对象上创建一个指针。<br><img src="/2020/07/08/git中的对象简介/git4.png" alt="avatar"></p>
-<p>Figure 12. 两个指向相同提交历史的分支<br>那么，Git 又是怎么知道当前在哪一个分支上呢？ 也很简单，它有一个名为 HEAD 的特殊指针。 请注意它和许多其它版本控制系统（如 Subversion 或 CVS）里的 HEAD 概念完全不同。 在 Git 中，它是一个指针，指向当前所在的本地分支（译注：将 HEAD 想象为当前分支的别名）。 在本例中，你仍然在 master 分支上。 因为 git branch 命令仅仅 创建 一个新分支，并不会自动切换到新分支中去。</p>
-<p><img src="/2020/07/08/git中的对象简介/git5.png" alt="avatar"></p>
-<p>Figure 13. HEAD 指向当前所在的分支<br>你可以简单地使用 git log 命令查看各个分支当前所指的对象。 提供这一功能的参数是 –decorate<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ git log --oneline --decorate</span><br><span class="line">f30ab (HEAD -&gt; master, testing) add feature #32 - ability to add new formats to the central interface</span><br><span class="line">34ac2 Fixed bug #1328 - stack overflow under certain conditions</span><br><span class="line">98ca9 The initial commit of my project</span><br></pre></td></tr></table></figure></p>
-<p>正如你所见，当前 master 和 testing 分支均指向校验和以 f30ab 开头的提交对象。</p>
-<h4 id="分支切换"><a href="#分支切换" class="headerlink" title="分支切换"></a>分支切换</h4><p>要切换到一个已存在的分支，你需要使用 git checkout 命令。 我们现在切换到新创建的 testing 分支去：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ git checkout testing</span><br></pre></td></tr></table></figure>
-<p>这样 HEAD 就指向 testing 分支了。</p>
-<p><img src="/2020/07/08/git中的对象简介/git6.png" alt="avatar"></p>
-<p>Figure 14. HEAD 指向当前所在的分支<br>那么，这样的实现方式会给我们带来什么好处呢？ 现在不妨再提交一次：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ vim test.rb</span><br><span class="line">$ git commit -a -m &apos;made a change&apos;</span><br></pre></td></tr></table></figure>
-<p><img src="/2020/07/08/git中的对象简介/git7.png" alt="avatar"></p>
-<p>Figure 15. HEAD 分支随着提交操作自动向前移动<br>如图所示，你的 testing 分支向前移动了，但是 master 分支却没有，它仍然指向运行 git checkout 时所指的对象。 这就有意思了，现在我们切换回 master 分支看看：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ git checkout master</span><br></pre></td></tr></table></figure>
-<p><img src="/2020/07/08/git中的对象简介/git8.png" alt="avatar"><br>Figure 16. 检出时 HEAD 随之移动<br>这条命令做了两件事。 一是使 HEAD 指回 master 分支，二是将工作目录恢复成 master 分支所指向的快照内容。 也就是说，你现在做修改的话，项目将始于一个较旧的版本。 本质上来讲，这就是忽略 testing 分支所做的修改，以便于向另一个方向进行开发。</p>
-<p>我们不妨再稍微做些修改并提交：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ vim test.rb</span><br><span class="line">$ git commit -a -m &apos;made other changes&apos;</span><br></pre></td></tr></table></figure>
-<p>现在，这个项目的提交历史已经产生了分叉（参见 项目分叉历史）。 因为刚才你创建了一个新分支，并切换过去进行了一些工作，随后又切换回 master 分支进行了另外一些工作。 上述两次改动针对的是不同分支：你可以在不同分支间不断地来回切换和工作，并在时机成熟时将它们合并起来。 而所有这些工作，你需要的命令只有 branch、checkout 和 commit。<br><img src="/2020/07/08/git中的对象简介/git9.png" alt="avatar"><br>Figure 17. 项目分叉历史<br>你可以简单地使用 git log 命令查看分叉历史。 运行 git log –oneline –decorate –graph –all ，它会输出你的提交历史、各个分支的指向以及项目的分支分叉情况。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ git log --oneline --decorate --graph --all</span><br><span class="line">* c2b9e (HEAD, master) made other changes</span><br><span class="line">| * 87ab2 (testing) made a change</span><br><span class="line">|/</span><br><span class="line">* f30ab add feature #32 - ability to add new formats to the</span><br><span class="line">* 34ac2 fixed bug #1328 - stack overflow under certain conditions</span><br><span class="line">* 98ca9 initial commit of my project</span><br></pre></td></tr></table></figure>
-<p>由于 Git 的分支实质上仅是包含所指对象校验和（长度为 40 的 SHA-1 值字符串）的文件，所以它的创建和销毁都异常高效。 创建一个新分支就相当于往一个文件中写入 41 个字节（40 个字符和 1 个换行符），如此的简单能不快吗？</p>
-<p>这与过去大多数版本控制系统形成了鲜明的对比，它们在创建分支时，将所有的项目文件都复制一遍，并保存到一个特定的目录。 完成这样繁琐的过程通常需要好几秒钟，有时甚至需要好几分钟。所需时间的长短，完全取决于项目的规模。 而在 Git 中，任何规模的项目都能在瞬间创建新分支。 同时，由于每次提交都会记录父对象，所以寻找恰当的合并基础（译注：即共同祖先）也是同样的简单和高效。 这些高效的特性使得 Git 鼓励开发人员频繁地创建和使用分支。</p>
-<h4 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h4><p><a href="https://git-scm.com/book/zh/v2/Git-%E5%88%86%E6%94%AF-%E5%88%86%E6%94%AF%E7%AE%80%E4%BB%8B" target="_blank" rel="noopener">https://git-scm.com/book/zh/v2/Git-%E5%88%86%E6%94%AF-%E5%88%86%E6%94%AF%E7%AE%80%E4%BB%8B</a></p>
+    <title>golang下sync包整理</title>
+    <url>/2019/04/04/golang%E4%B8%8Bsync%E5%8C%85%E6%95%B4%E7%90%86/</url>
+    <content><![CDATA[<h4 id="sync-Mutex"><a href="#sync-Mutex" class="headerlink" title="sync.Mutex"></a>sync.Mutex</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">type Locker interface &#123;</span><br><span class="line">        Lock()</span><br><span class="line">        Unlock()</span><br><span class="line">&#125;</span><br><span class="line">互斥锁 Mutex</span><br><span class="line">func (m *Mutex) Lock()</span><br><span class="line">func (m *Mutex) Unlock()</span><br><span class="line">读写锁 RWMutex</span><br><span class="line">func (rw *RWMutex) Lock()</span><br><span class="line">func (rw *RWMutex) Unlock()</span><br><span class="line">func (rw *RWMutex) RLock()</span><br><span class="line">func (rw *RWMutex) RUnlock()</span><br></pre></td></tr></table></figure>
+<p>同时只能有一个 goroutine 能够获得写锁定。<br>同时可以有任意多个 gorouinte 获得读锁定。<br>同时只能存在写锁定或读锁定（读和写互斥）。<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">func main()&#123;</span><br><span class="line">	var a = 0</span><br><span class="line">	var lock sync.Mutex</span><br><span class="line">	//var rwlock sync.RWMutex</span><br><span class="line">	for i:=0; i&lt;50;i++&#123;</span><br><span class="line">		go func(idx int) &#123;</span><br><span class="line">			lock.Lock()</span><br><span class="line">			defer lock.Unlock()</span><br><span class="line">			a+=1</span><br><span class="line">			fmt.Printf(&quot;goroutine %d, a=%d\n&quot;, idx, a)</span><br><span class="line">		&#125;(i)</span><br><span class="line">	&#125;</span><br><span class="line">	time.Sleep(time.Second)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h4 id="sync-Once"><a href="#sync-Once" class="headerlink" title="sync.Once"></a>sync.Once</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">type Once struct &#123;</span><br><span class="line">        // 非暴露字段</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func (o *Once) Do(f func())</span><br></pre></td></tr></table></figure>
+<p>使用前先定义 Once 类型变量：var once Once<br>使用的时候向 Once 类型变量传入函数：once.Do(func() { init() })<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">import (</span><br><span class="line">	&quot;fmt&quot;</span><br><span class="line">	&quot;sync&quot;</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">func main()&#123;</span><br><span class="line">	testOnce()</span><br><span class="line">&#125;</span><br><span class="line">func testOnce()&#123;</span><br><span class="line">	var once sync.Once</span><br><span class="line">	testOnceFunction := func()&#123;</span><br><span class="line">		fmt.Println(&quot;Only once&quot;)</span><br><span class="line">	&#125;</span><br><span class="line">	done := make(chan bool)</span><br><span class="line">	a:=0</span><br><span class="line">	var lock sync.Mutex</span><br><span class="line">	for i:=0;i&lt;10;i++&#123;</span><br><span class="line">		go func()&#123;</span><br><span class="line">			lock.Lock()</span><br><span class="line">			defer lock.Unlock()</span><br><span class="line">			once.Do(testOnceFunction)</span><br><span class="line">			fmt.Println(&quot;a=&quot;,a)</span><br><span class="line">			a++</span><br><span class="line">			done &lt;-true</span><br><span class="line">		&#125;()</span><br><span class="line">	&#125;</span><br><span class="line">	for j:=0;j&lt;10;j++&#123;</span><br><span class="line">		&lt;-done</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h4 id="sync-Pool"><a href="#sync-Pool" class="headerlink" title="sync.Pool"></a>sync.Pool</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">type Pool</span><br><span class="line">func (p *Pool) Get() interface&#123;&#125;  </span><br><span class="line">func (p *Pool) Put(x interface&#123;&#125;)  </span><br><span class="line">New func() interface&#123;&#125;</span><br></pre></td></tr></table></figure>
+<p>这个类设计的目的是用来保存和复用临时对象，以减少内存分配，降低CG压力。<br>Get返回Pool中的任意一个对象。<br>如果Pool为空，则调用New返回一个新创建的对象。<br>如果没有设置New，则返回nil。<br>还有一个重要的特性是，放进Pool中的对象，会在说不准什么时候被回收掉。<br>所以如果事先Put进去100个对象，下次Get的时候发现Pool是空也是有可能的。<br>不过这个特性的一个好处就在于不用担心Pool会一直增长，因为Go已经帮你在Pool中做了回收机制。<br>这个清理过程是在每次垃圾回收之前做的。垃圾回收是固定两分钟触发一次。<br>而且每次清理会将Pool中的所有对象都清理掉！<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">func main()&#123;</span><br><span class="line">    // 建立对象</span><br><span class="line">    var pipe = &amp;sync.Pool&#123;New:func()interface&#123;&#125;&#123;return &quot;Hello,BeiJing&quot;&#125;&#125;</span><br><span class="line">    // 准备放入的字符串</span><br><span class="line">    val := &quot;Hello,World!&quot;</span><br><span class="line">    // 放入</span><br><span class="line">    pipe.Put(val)</span><br><span class="line">    // 取出</span><br><span class="line">    log.Println(pipe.Get())</span><br><span class="line">    // 再取就没有了,会自动调用NEW</span><br><span class="line">    log.Println(pipe.Get())</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 ]]></content>
       <tags>
-        <tag>git</tag>
+        <tag>golang</tag>
       </tags>
   </entry>
   <entry>
@@ -795,20 +809,6 @@
       <categories>
         <category>golang</category>
       </categories>
-      <tags>
-        <tag>golang</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>golang下sync包整理</title>
-    <url>/2019/04/04/golang%E4%B8%8Bsync%E5%8C%85%E6%95%B4%E7%90%86/</url>
-    <content><![CDATA[<h4 id="sync-Mutex"><a href="#sync-Mutex" class="headerlink" title="sync.Mutex"></a>sync.Mutex</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">type Locker interface &#123;</span><br><span class="line">        Lock()</span><br><span class="line">        Unlock()</span><br><span class="line">&#125;</span><br><span class="line">互斥锁 Mutex</span><br><span class="line">func (m *Mutex) Lock()</span><br><span class="line">func (m *Mutex) Unlock()</span><br><span class="line">读写锁 RWMutex</span><br><span class="line">func (rw *RWMutex) Lock()</span><br><span class="line">func (rw *RWMutex) Unlock()</span><br><span class="line">func (rw *RWMutex) RLock()</span><br><span class="line">func (rw *RWMutex) RUnlock()</span><br></pre></td></tr></table></figure>
-<p>同时只能有一个 goroutine 能够获得写锁定。<br>同时可以有任意多个 gorouinte 获得读锁定。<br>同时只能存在写锁定或读锁定（读和写互斥）。<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">func main()&#123;</span><br><span class="line">	var a = 0</span><br><span class="line">	var lock sync.Mutex</span><br><span class="line">	//var rwlock sync.RWMutex</span><br><span class="line">	for i:=0; i&lt;50;i++&#123;</span><br><span class="line">		go func(idx int) &#123;</span><br><span class="line">			lock.Lock()</span><br><span class="line">			defer lock.Unlock()</span><br><span class="line">			a+=1</span><br><span class="line">			fmt.Printf(&quot;goroutine %d, a=%d\n&quot;, idx, a)</span><br><span class="line">		&#125;(i)</span><br><span class="line">	&#125;</span><br><span class="line">	time.Sleep(time.Second)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h4 id="sync-Once"><a href="#sync-Once" class="headerlink" title="sync.Once"></a>sync.Once</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">type Once struct &#123;</span><br><span class="line">        // 非暴露字段</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func (o *Once) Do(f func())</span><br></pre></td></tr></table></figure>
-<p>使用前先定义 Once 类型变量：var once Once<br>使用的时候向 Once 类型变量传入函数：once.Do(func() { init() })<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">import (</span><br><span class="line">	&quot;fmt&quot;</span><br><span class="line">	&quot;sync&quot;</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">func main()&#123;</span><br><span class="line">	testOnce()</span><br><span class="line">&#125;</span><br><span class="line">func testOnce()&#123;</span><br><span class="line">	var once sync.Once</span><br><span class="line">	testOnceFunction := func()&#123;</span><br><span class="line">		fmt.Println(&quot;Only once&quot;)</span><br><span class="line">	&#125;</span><br><span class="line">	done := make(chan bool)</span><br><span class="line">	a:=0</span><br><span class="line">	var lock sync.Mutex</span><br><span class="line">	for i:=0;i&lt;10;i++&#123;</span><br><span class="line">		go func()&#123;</span><br><span class="line">			lock.Lock()</span><br><span class="line">			defer lock.Unlock()</span><br><span class="line">			once.Do(testOnceFunction)</span><br><span class="line">			fmt.Println(&quot;a=&quot;,a)</span><br><span class="line">			a++</span><br><span class="line">			done &lt;-true</span><br><span class="line">		&#125;()</span><br><span class="line">	&#125;</span><br><span class="line">	for j:=0;j&lt;10;j++&#123;</span><br><span class="line">		&lt;-done</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h4 id="sync-Pool"><a href="#sync-Pool" class="headerlink" title="sync.Pool"></a>sync.Pool</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">type Pool</span><br><span class="line">func (p *Pool) Get() interface&#123;&#125;  </span><br><span class="line">func (p *Pool) Put(x interface&#123;&#125;)  </span><br><span class="line">New func() interface&#123;&#125;</span><br></pre></td></tr></table></figure>
-<p>这个类设计的目的是用来保存和复用临时对象，以减少内存分配，降低CG压力。<br>Get返回Pool中的任意一个对象。<br>如果Pool为空，则调用New返回一个新创建的对象。<br>如果没有设置New，则返回nil。<br>还有一个重要的特性是，放进Pool中的对象，会在说不准什么时候被回收掉。<br>所以如果事先Put进去100个对象，下次Get的时候发现Pool是空也是有可能的。<br>不过这个特性的一个好处就在于不用担心Pool会一直增长，因为Go已经帮你在Pool中做了回收机制。<br>这个清理过程是在每次垃圾回收之前做的。垃圾回收是固定两分钟触发一次。<br>而且每次清理会将Pool中的所有对象都清理掉！<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">func main()&#123;</span><br><span class="line">    // 建立对象</span><br><span class="line">    var pipe = &amp;sync.Pool&#123;New:func()interface&#123;&#125;&#123;return &quot;Hello,BeiJing&quot;&#125;&#125;</span><br><span class="line">    // 准备放入的字符串</span><br><span class="line">    val := &quot;Hello,World!&quot;</span><br><span class="line">    // 放入</span><br><span class="line">    pipe.Put(val)</span><br><span class="line">    // 取出</span><br><span class="line">    log.Println(pipe.Get())</span><br><span class="line">    // 再取就没有了,会自动调用NEW</span><br><span class="line">    log.Println(pipe.Get())</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-]]></content>
       <tags>
         <tag>golang</tag>
       </tags>
@@ -2189,6 +2189,74 @@
       </tags>
   </entry>
   <entry>
+    <title>开源协议概览</title>
+    <url>/2021/06/22/%E5%BC%80%E6%BA%90%E5%8D%8F%E8%AE%AE%E6%A6%82%E8%A7%88/</url>
+    <content><![CDATA[<p>在申请专利的过程中，因为系统中涉及相关组件，其中组件使用的协议有可能会涉及商业开源问题，小结下开源协议的异同点如下。</p>
+<p>世界上的开源许可证（Open Source License）大概有上百种，我们常用的开源软件协议大致有GPL、BSD、MIT、Mozilla、Apache和LGPL。</p>
+<p>由宽松到严紧排序，常用的开源许可证有：</p>
+<ol>
+<li>MIT许可证</li>
+<li>BSD许可证</li>
+<li>Apache许可证</li>
+<li>LGPL许可证</li>
+<li>GPL许可证</li>
+</ol>
+<p>MIT、BSD 许可证都源自大学，体现了简单、开放和包容的特点。</p>
+<p>MIT、BSD、Apache 三者都支持闭源的后续开发。</p>
+<p>GPL、LGPL 传染性开源，编译的代码里用了这里的代码，都必须开源。</p>
+<p>其它License，最好都在产品上说明使用了，署名保留原作者就ok。</p>
+<p><strong>MIT（MIT）</strong></p>
+<p>来源于大学，MIT 许可证是史上最为简洁和慷慨（permissive）的开源协议之一。作者只想保留版权,而无任何其他了限制.也就是说,你必须在你的发行版里包含原许可协议的声明,无论你是以二进制发布的还是以源代码发布的。</p>
+<p>简言之：</p>
+<ul>
+<li>用户可以拿你的代码做任何想做的事情</li>
+<li>用户在项目副本中要包含版权声明和许可声明</li>
+<li>你无需承担任何责任</li>
+</ul>
+<p>应用案例有：JQuery、Rails 等</p>
+<p><strong>BSD开源协议（original BSD license、FreeBSD license、Original BSD license）</strong></p>
+<p>来源于大学，BSD可证与MIT差不多，也非常简单、慷慨。</p>
+<p>BSD开源协议是一个给于使用者很大自由的协议。基本上使用者可以”为所欲为”,可以自由的使用，修改源代码，也可以将修改后的代码作为开源或者专有软件再发布。</p>
+<p>但”为所欲为”的前提当你发布使用了BSD协议的代码，或则以BSD协议代码为基础做二次开发自己的产品时，需要满足三个条件：</p>
+<ul>
+<li>如果再发布的产品中包含源代码，则在源代码中必须带有原来代码中的BSD协议。</li>
+<li>如果再发布的只是二进制类库/软件，则需要在类库/软件的文档和版权声明中包含原来代码中的BSD协议。</li>
+<li>不可以用开源代码的作者/机构名字和原来产品的名字做市场推广。</li>
+</ul>
+<p>BSD 代码鼓励代码共享，但需要尊重代码作者的著作权。BSD由于允许使用者修改和重新发布代码，也允许使用或在BSD代码上开发商业软件发布和销售，因此是对 商业集成很友好的协议。而很多的公司企业在选用开源产品的时候都首选BSD协议，因为可以完全控制这些第三方的代码，在必要的时候可以修改或者二次开发。</p>
+<p><strong>Apache Licence 2.0（Apache License, Version 2.0、Apache License, Version 1.1、Apache License, Version 1.0）</strong></p>
+<p>来自apache，类似MIT许可证，但它重视专利权。</p>
+<p>Apache Licence是著名的非盈利开源组织Apache采用的协议。该协议和BSD类似，同样鼓励代码共享和尊重原作者的著作权，同样允许代码修改，再发布（作为开源或商业软件）。需要满足的条件也和BSD类似：</p>
+<ol>
+<li>需要给代码的用户一份Apache Licence</li>
+<li>如果你修改了代码，需要再被修改的文件中说明。</li>
+<li>在延伸的代码中（修改和有源代码衍生的代码中）需要带有原来代码中的协议，商标，专利声明和其他原来作者规定需要包含的说明。</li>
+<li>如果再发布的产品中包含一个Notice文件，则在Notice文件中需要带有Apache Licence。你可以在Notice中增加自己的许可，但不可以表现为对Apache Licence构成更改。</li>
+</ol>
+<p>Apache Licence也是对商业应用友好的许可。使用者也可以在需要的时候修改代码来满足需要并作为开源或商业产品发布/销售。</p>
+<p>应用案例有：Apache 家族、SVN、NuGet 等等。</p>
+<p><strong>LGPL（GNU Lesser General Public License）</strong></p>
+<p>来源自由软件联盟GNU，可以翻译为更宽松的GPL协议，也属于传染性开源。</p>
+<p>LGPL是GPL的一个为主要为类库使用设计的开源协议。和GPL要求任何使用/修改/衍生之GPL类库的的软件必须采用GPL协议不同。LGPL 允许商业软件通过类库引用(link)方式使用LGPL类库而不需要开源商业软件的代码。这使得采用LGPL协议的开源代码可以被商业软件作为类库引用并 发布和销售。</p>
+<p>但是如果修改LGPL协议的代码或者衍生，则所有修改的代码，涉及修改部分的额外代码和衍生的代码都必须采用LGPL协议。因此LGPL协议的开源 代码很适合作为第三方类库被商业软件引用，但不适合希望以LGPL协议代码为基础，通过修改和衍生的方式做二次开发的商业软件采用。</p>
+<p>GPL/LGPL都保障原作者的知识产权，避免有人利用开源代码复制并开发类似的产品。</p>
+<p><strong>GPL（GNU General Public License）</strong></p>
+<p>来源自由软件联盟GNU，GPL/LGPL侧重于代码及衍生代码的开源与免费使用。</p>
+<p>GPL协议的主要内容是只要在一个软件中使用(”使用”指类库引用，修改后的代码或者衍生代码)GPL 协议的产品，则该软件产品必须也采用GPL协议，既必须也是开源和免费。这就是所谓的”传染性”。GPL协议的产品作为一个单独的产品使用没有任何问题，还可以享受免费的优势。</p>
+<p>由于GPL严格要求使用了GPL类库的软件产品必须使用GPL协议，对于使用GPL协议的开源代码，商业软件或者对代码有保密要求的部门就不适合集成/采用作为类库和二次开发的基础。</p>
+<p>我们很熟悉的Linux就是采用了GPL。GPL协议和BSD, Apache Licence等鼓励代码重用的许可很不一样。GPL的出发点是代码的开源/免费使用和引用/修改/衍生代码的开源/免费使用，但不允许修改后和衍生的代码做为闭源的商业软件发布和销售。这也就是为什么我们能用免费的各种linux，包括商业公司的linux和linux上各种各样的由个人，组织，以及商 业软件公司开发的免费软件了。</p>
+<p>其它细节如再发布的时候需要伴随GPL协议等和BSD/Apache等类似。</p>
+<p>应用案例：Linux</p>
+<p><strong>参考文献</strong></p>
+<ol>
+<li><a href="https://zhuanlan.zhihu.com/p/87855729" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/87855729</a></li>
+</ol>
+]]></content>
+      <tags>
+        <tag>网络协议</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>循环队列</title>
     <url>/2019/09/01/%E5%BE%AA%E7%8E%AF%E9%98%9F%E5%88%97/</url>
     <content><![CDATA[<h4 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h4><p>队列(Queue)两端同意操作的类型不一样：<br>能够进行删除的一端称为队头，这样的操作也叫出队dequeue；<br>能够进行插入的一端称为队尾，这样的操作也叫入队enqueue。<br>1、添加一个属性size用来记录眼下的元素个数。<br>目的是当head=rear的时候。通过size=0还是size=数组长度。来区分队列为空，或者队列已满。<br>2、数组中仅仅存储数组大小-1个元素，保证rear转一圈之后不会和head相等。也就是队列满的时候。rear+1=head，中间刚好空一个元素。<br>当rear=head的时候。一定是队列空了。<br>解决这种问题的常见做法是这种：<br>使用一标记，用以区分这样的易混淆的情形。<br>牺牲一个元素空间。当front和rear相等时，为空。当rear的下一个位置是front时，为满。<br><img src="/2019/09/01/循环队列/queue.png" alt="avatar"></p>
@@ -2231,34 +2299,6 @@
 ]]></content>
       <tags>
         <tag>数据结构</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>服务器网口分类及顺序确认</title>
-    <url>/2021/04/22/%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%BD%91%E5%8F%A3%E5%88%86%E7%B1%BB%E5%8F%8A%E9%A1%BA%E5%BA%8F%E7%A1%AE%E8%AE%A4/</url>
-    <content><![CDATA[<h4 id="服务器网卡光口和电口的区别"><a href="#服务器网卡光口和电口的区别" class="headerlink" title="服务器网卡光口和电口的区别"></a>服务器网卡光口和电口的区别</h4><p>光纤接口简称为光口也可称之为G口 (意思是G光纤口)，是用来连接光纤线缆的物理接口。其原理是利用了光从光密介质进入光疏介质从而发生了全反射。一般是应用于机房、机柜等大型设备的一个光纤带宽接口。</p>
-<p>电口就是普通的双绞线(TwirstPair)接口，传输的是电信号，而电口是相对光口来讲的，是指防火器的物理特性，主要指铜缆，是处理的电信号。目前使用普遍的网络接口有百兆电口和千兆电口、万兆电口等。简单来说，电口就是普通的网线接口，一般速率为10M、100M或者1000M。</p>
-<p>服务器网卡光口和电口网卡的主要区别主要是在于传输距离上，服务器电口网卡的传输距离只能到100米，而服务器光口网卡分为单模和多模，多模一般传输几百米，单模传输可以达到几千米，什么传输速率的，都一样的。</p>
-<p>电口网卡：电口是服务器和网络中对RJ45等各种双绞线接口的统称，其原因是这些端口都使用电作为信息的承载介质，不过有时它也会包含同轴电缆端口。通常电口可能使用百兆以太网、千兆以太网、万兆以太网或其它种类的传输协议。<br><img src="/2021/04/22/服务器网口分类及顺序确认/net1.png" alt="avatar"></p>
-<p>光口网卡：光口是服务器和网络中对各种光纤端口的统称，它是以光作为信息的承载介质。光口可能包含有从ST到SFF(小型化光纤连接器，以 MTRJ和LC为主)的各种光纤接口，因此在布线施工后期配备光纤跳线时，需要核实光口的光纤接口种类，以免在布线配置时假定的光纤跳线种类与实际使用的要求不匹。<br><img src="/2021/04/22/服务器网口分类及顺序确认/net2.png" alt="avatar"></p>
-<h4 id="多网卡Linux服务器如何确定网口位置"><a href="#多网卡Linux服务器如何确定网口位置" class="headerlink" title="多网卡Linux服务器如何确定网口位置"></a>多网卡Linux服务器如何确定网口位置</h4><p>在配置有多个网络接口的设备时我们会犯难，eth0、eth1、……到底是那个接口？</p>
-<p>今天为大家介绍一个小工具，ethtool，他可以帮助你解决这个问题。</p>
-<p>我使用的机器是Fedora Linux 系统，打开终端，输入ethtool –help 显示帮助信息，下面我就简要介绍一下最常用的两个功能。</p>
-<p>功能1</p>
-<p>ethtool DEVNAME   查看相应设备名称对应的设备信息</p>
-<p>使用方法如下：<br>ethtool eth3</p>
-<p>显示了eth3 的接口类型，连接模式，速率等等信息，方便你找到相应的网卡。（如果是网线Supported ports 就是TP，如果是光纤则显示Fiber）</p>
-<p><img src="/2021/04/22/服务器网口分类及顺序确认/net3.png" alt="avatar"></p>
-<p>功能2</p>
-<p>ethtool -p DEVNAME   查看相应设备名称对应的设备位置</p>
-<p>使用方法如下：<br>ethtool -p eth0</p>
-<p>回车后与eth0 相对应的网卡接口旁边的指示灯就会闪烁，这样你就能很快确定eth0 网口的位置啦。（按下Ctrl+C 结束命令，停止闪烁）</p>
-<h4 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h4><ol>
-<li><a href="http://www.grt-china.com/xinwenzixun/518.html" target="_blank" rel="noopener">http://www.grt-china.com/xinwenzixun/518.html</a></li>
-</ol>
-]]></content>
-      <tags>
-        <tag>linux</tag>
       </tags>
   </entry>
   <entry>
@@ -2310,16 +2350,31 @@
       </tags>
   </entry>
   <entry>
-    <title>浅拷贝与深拷贝以及引用</title>
-    <url>/2020/08/03/%E6%B5%85%E6%8B%B7%E8%B4%9D%E4%B8%8E%E6%B7%B1%E6%8B%B7%E8%B4%9D%E4%BB%A5%E5%8F%8A%E5%BC%95%E7%94%A8/</url>
-    <content><![CDATA[<h2 id="Python-变量存储情况"><a href="#Python-变量存储情况" class="headerlink" title="Python 变量存储情况"></a>Python 变量存储情况</h2><p>在高级语言中，变量是对内存及其地址的抽象。对于python 而言，python 的一切变量都是对象，变量的存储，采用了引用语义的方式，存储的只是一个变量的值所在的内存地址，而不是指这个变量的本身:</p>
-<p>引用语义：在 python 中，变量保存的是对象(值)的引用，我们称为 引用语义。采用这种方式，变量所需的存储空间大小一致，因为变量只是保存了一个引用。也被称为对象语义和指针语义。</p>
-<p>值语义：有些语言采用的不是这种方式，它们把变量的值直接保存在变量的存储区里，这种方式被我们称为值语义，例如 C 语言，采用这种存储方式，每一个变量在内存中所占的空间就要根据变量实际的大小而定，无法固定下来。</p>
-<p>值语义和引用语义的区别：</p>
-<p>值语义： 死的、 傻的、 简单的、 具体的、 可复制的<br>引用语义： 活的、 聪明的、 复杂的、 抽象的、 不可复制的</p>
+    <title>服务器网口分类及顺序确认</title>
+    <url>/2021/04/22/%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%BD%91%E5%8F%A3%E5%88%86%E7%B1%BB%E5%8F%8A%E9%A1%BA%E5%BA%8F%E7%A1%AE%E8%AE%A4/</url>
+    <content><![CDATA[<h4 id="服务器网卡光口和电口的区别"><a href="#服务器网卡光口和电口的区别" class="headerlink" title="服务器网卡光口和电口的区别"></a>服务器网卡光口和电口的区别</h4><p>光纤接口简称为光口也可称之为G口 (意思是G光纤口)，是用来连接光纤线缆的物理接口。其原理是利用了光从光密介质进入光疏介质从而发生了全反射。一般是应用于机房、机柜等大型设备的一个光纤带宽接口。</p>
+<p>电口就是普通的双绞线(TwirstPair)接口，传输的是电信号，而电口是相对光口来讲的，是指防火器的物理特性，主要指铜缆，是处理的电信号。目前使用普遍的网络接口有百兆电口和千兆电口、万兆电口等。简单来说，电口就是普通的网线接口，一般速率为10M、100M或者1000M。</p>
+<p>服务器网卡光口和电口网卡的主要区别主要是在于传输距离上，服务器电口网卡的传输距离只能到100米，而服务器光口网卡分为单模和多模，多模一般传输几百米，单模传输可以达到几千米，什么传输速率的，都一样的。</p>
+<p>电口网卡：电口是服务器和网络中对RJ45等各种双绞线接口的统称，其原因是这些端口都使用电作为信息的承载介质，不过有时它也会包含同轴电缆端口。通常电口可能使用百兆以太网、千兆以太网、万兆以太网或其它种类的传输协议。<br><img src="/2021/04/22/服务器网口分类及顺序确认/net1.png" alt="avatar"></p>
+<p>光口网卡：光口是服务器和网络中对各种光纤端口的统称，它是以光作为信息的承载介质。光口可能包含有从ST到SFF(小型化光纤连接器，以 MTRJ和LC为主)的各种光纤接口，因此在布线施工后期配备光纤跳线时，需要核实光口的光纤接口种类，以免在布线配置时假定的光纤跳线种类与实际使用的要求不匹。<br><img src="/2021/04/22/服务器网口分类及顺序确认/net2.png" alt="avatar"></p>
+<h4 id="多网卡Linux服务器如何确定网口位置"><a href="#多网卡Linux服务器如何确定网口位置" class="headerlink" title="多网卡Linux服务器如何确定网口位置"></a>多网卡Linux服务器如何确定网口位置</h4><p>在配置有多个网络接口的设备时我们会犯难，eth0、eth1、……到底是那个接口？</p>
+<p>今天为大家介绍一个小工具，ethtool，他可以帮助你解决这个问题。</p>
+<p>我使用的机器是Fedora Linux 系统，打开终端，输入ethtool –help 显示帮助信息，下面我就简要介绍一下最常用的两个功能。</p>
+<p>功能1</p>
+<p>ethtool DEVNAME   查看相应设备名称对应的设备信息</p>
+<p>使用方法如下：<br>ethtool eth3</p>
+<p>显示了eth3 的接口类型，连接模式，速率等等信息，方便你找到相应的网卡。（如果是网线Supported ports 就是TP，如果是光纤则显示Fiber）</p>
+<p><img src="/2021/04/22/服务器网口分类及顺序确认/net3.png" alt="avatar"></p>
+<p>功能2</p>
+<p>ethtool -p DEVNAME   查看相应设备名称对应的设备位置</p>
+<p>使用方法如下：<br>ethtool -p eth0</p>
+<p>回车后与eth0 相对应的网卡接口旁边的指示灯就会闪烁，这样你就能很快确定eth0 网口的位置啦。（按下Ctrl+C 结束命令，停止闪烁）</p>
+<h4 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h4><ol>
+<li><a href="http://www.grt-china.com/xinwenzixun/518.html" target="_blank" rel="noopener">http://www.grt-china.com/xinwenzixun/518.html</a></li>
+</ol>
 ]]></content>
       <tags>
-        <tag>python</tag>
+        <tag>linux</tag>
       </tags>
   </entry>
   <entry>
@@ -2337,6 +2392,19 @@
 <p>开源协议的选择：</p>
 <p>GPL许可：是 GNU General Public License 的缩写，既GNU通用公共许可协议，是自由软件基金会（GNU）发布的一个软件首选许可，GPL许可一共发布的三个不版本，最新一版是2007年公布的GPLv3，最著名的使用GPL许可的软件就是大Linux。GPL许可的特点就是，使用GPL软件(包括类库)或者源代码（不管多少）的发布的新产品（包括新增源代码和可执行二进制文件）也必须使用GPL协议，也要公开源代码。由于这个许可具有一定的开源强制性，很多大公司对GPL许可的开源软件的选择还是比较谨慎的。GPL 协议有很多变种：比如LGPL, AGPL<br>LGPL : LGPL 是 GNU Lesser General Public License 的缩写 既GNU宽通用公共许可证，相比于GPL，其开源强制性弱一些，对商用软件更加友好，使用该许可的著名软件是Linux下的办公软件 OpenOffice。按照该许可协议的要求，以类库方式引入基于LGPL许可的软件可以不开源其衍生产品的源代码，单对于LGPL许可授权的源代码进行修改或者和修改相关的衍生代码则必须开源且使用LGPL许可进行授权。<br>AGPL：Affero General Public License，简称Affero GPL或AGPL，Affero 是一家公司名称，AGPL最初由该公司撰写，改许可是相当于GPL的增强版本，主要是对通过网络发布服务进行限制。GPL许可本身限制的是软件的“发布”行为，只要是使用了GPL许可的源代码或者二进制文件，必须开源且以同样以GPL许可进行授权，但到了互联网十点，很多互联网公司并不发布软件实体，而是提供“服务”，所以GPL的约束力就明显下降了，AGPL许可的目的就是填补这个所谓的“漏洞”，改许可要求，除了GPL本身的约束以外，所有基于AGPL许可软件提供网络服务，其相关源代码必须开源，所以在AGPL许可下，网络服务也被看做一种分发形式。所以很多互联网公司禁止使用 AGPL 许可的开源软件。<br>BSD许可：BSD（BSD是Berkly Software Distribution的简写）许可最初使用在加州大学伯克利分校发布的 BSD Unix 系统上，随着BSD系统的发展，BSD许可也随之沿用下来。相比于GPL 和 MPL 的严格要求，BSD 许可的的要求就非常宽松，给予使用者非常大的自由度。在该许可下的软件可以自由使用修改，也可以将修改后的代码再次发布，而且可以是按照闭源的私有软件进行发布，只需要在发布的软件和中保留BSD许可协议文件即可，但未经许可不能使用原作者或者机构名义进行宣传和推广。+<br>MPL许可：MPL是 The Mozilla Public License 的做些。是1998年初Netscape的 Mozilla小组为其开源软件项目设计的软件许可证。MPL许可允许经过MPL授权的源代码和其他授权的文件（包括源代码和二进制文件）混合使用，甚至剥和私有软件混合使用，这相当于GPL许可和BSD或类似许可的折中，其既有一定的开源强制性，又保留一定的私有权利。按照该许可要求，使用基于MPL授权源代码的部分，包括对MPL源代码的修改部分，必须保持MPL授权，这一点和GPL协议类似，但新增代码发布的可使用其他方式授权，甚至是私有授权，也可以比闭源的方式。<br>MIT 许可：MIT 许可是来自麻省理工学院（Massachusetts Institute of Technology, MIT），该许可被认为是最自由的开源协议之一，也是应用最为广泛的开源协议(据blackduck——一家对软件源代码进行合规审计的公司，统计，全球有将近1/3的开源软件使用MIT开源协议)，他的协议声明非常简短，他和BSD许可类似，允许自由修改发布基于MIT的代码和软件，只需要你的发行版里包含原始协议文件即可，其他无任何限制，及时使用原始作者的名义进行推广。使用MIT许可的著名软件有ssh 客户端软件jquery,Rails，putty 和 xwindows等。<br>Apache 2.0许可：改协议是由Apache软件基金会发布的许可，最初用在像Apache web Server这样Apache的内部软件中，2004年公布了2.0版本。其限制条件和BSD类似，允许自由修改和使用、发布软件，但要求保留版权，相比于BSD许可，该许可对版权要求的更细，每一个被修改后的原始文件都要著名原始版权声明。使用 Apache 2.0许可 著名的软件有 Android ,Apache web server，swift 等。</p>
 ]]></content>
+  </entry>
+  <entry>
+    <title>浅拷贝与深拷贝以及引用</title>
+    <url>/2020/08/03/%E6%B5%85%E6%8B%B7%E8%B4%9D%E4%B8%8E%E6%B7%B1%E6%8B%B7%E8%B4%9D%E4%BB%A5%E5%8F%8A%E5%BC%95%E7%94%A8/</url>
+    <content><![CDATA[<h2 id="Python-变量存储情况"><a href="#Python-变量存储情况" class="headerlink" title="Python 变量存储情况"></a>Python 变量存储情况</h2><p>在高级语言中，变量是对内存及其地址的抽象。对于python 而言，python 的一切变量都是对象，变量的存储，采用了引用语义的方式，存储的只是一个变量的值所在的内存地址，而不是指这个变量的本身:</p>
+<p>引用语义：在 python 中，变量保存的是对象(值)的引用，我们称为 引用语义。采用这种方式，变量所需的存储空间大小一致，因为变量只是保存了一个引用。也被称为对象语义和指针语义。</p>
+<p>值语义：有些语言采用的不是这种方式，它们把变量的值直接保存在变量的存储区里，这种方式被我们称为值语义，例如 C 语言，采用这种存储方式，每一个变量在内存中所占的空间就要根据变量实际的大小而定，无法固定下来。</p>
+<p>值语义和引用语义的区别：</p>
+<p>值语义： 死的、 傻的、 简单的、 具体的、 可复制的<br>引用语义： 活的、 聪明的、 复杂的、 抽象的、 不可复制的</p>
+]]></content>
+      <tags>
+        <tag>python</tag>
+      </tags>
   </entry>
   <entry>
     <title>浅析GIT分支模型</title>
@@ -2652,6 +2720,31 @@
       </tags>
   </entry>
   <entry>
+    <title>SkipList总结</title>
+    <url>/2019/08/17/SkipList%E6%80%BB%E7%BB%93/</url>
+    <content><![CDATA[<h4 id="skiplist简介"><a href="#skiplist简介" class="headerlink" title="skiplist简介"></a>skiplist简介</h4><p>skip List是一种随机化的数据结构，基于并联的链表，实现简单，插入、删除、查找的复杂度均为O(logN)（大多数情况下），因为其性能匹敌红黑树且实现较为简单，因此在很多著名项目都用跳表来代替红黑树，例如LevelDB、Redis的底层存储结构就是用的SkipList。<br>目前常用的key-value数据结构有三种：Hash表、红黑树、SkipList，它们各自有着不同的优缺点：<br>Hash表：插入、查找最快，为O(1)；如使用链表实现则可实现无锁；数据有序化需要显式的排序操作。<br>红黑树：插入、查找为O(logn)，但常数项较小；无锁实现的复杂性很高，一般需要加锁；数据天然有序。<br>SkipList：插入、查找为O(logn)，但常数项比红黑树要大；底层结构为链表，可无锁实现；数据天然有序。</p>
+<h4 id="SkipList基本数据结构及其实现"><a href="#SkipList基本数据结构及其实现" class="headerlink" title="SkipList基本数据结构及其实现"></a>SkipList基本数据结构及其实现</h4><p>一个跳表，应该具有以下特征：</p>
+<p>1、一个跳表应该有几个层（level）组成；<br>通常是10-20层，leveldb中默认为12层。</p>
+<p>2、跳表的第0层包含所有的元素；<br>且节点值是有序的。</p>
+<p>3、每一层都是一个有序的链表；<br>层数越高应越稀疏，这样在高层次中能’跳过’许多的不符合条件的数据。</p>
+<p>4、如果元素x出现在第i层，则所有比i小的层都包含x；</p>
+<p>5、每个节点包含key及其对应的value和一个指向该节点第n层的下个节点的指针数组<br>x-&gt;next[level]表示第level层的x的下一个节点</p>
+<p><img src="/2019/08/17/SkipList总结/list1.png" alt="avatar"><br>一个有序的链表，我们选取它的一半的节点用来建索引，这样如果插入一个节点，我们比较的次数就减少了一半。这种做法，虽然增加了50%的空间，但是性能提高了一倍。如上图。既然，我们已经提取了一层节点索引，那么，可以在第一层索引上再提取索引。如下图。</p>
+<p><img src="/2019/08/17/SkipList总结/list2.png" alt="avatar"><br>对于node5来说，它的next：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">node5-&gt;next[2] = tailNode;</span><br><span class="line">node5-&gt;next[1] = node7;</span><br><span class="line">node5-&gt;next[0] = node6;</span><br></pre></td></tr></table></figure></p>
+<p>对于node7来说，它的next：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">node7-&gt;next[1] = node9;</span><br><span class="line">node7-&gt;next[0] = node8;</span><br></pre></td></tr></table></figure></p>
+<p>对于node3来说，它的next：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">node3-&gt;next[0] = node4;</span><br></pre></td></tr></table></figure></p>
+<h4 id="skiplist查找"><a href="#skiplist查找" class="headerlink" title="skiplist查找"></a>skiplist查找</h4><p><img src="/2019/08/17/SkipList总结/list3.png" alt="avatar"><br>综上：<br>当targetNode-&gt;next[i]的值 &lt; 待查找的值时，令targetNode = targetNode-&gt;next[i]，targetNode移到第i级的下一个结点；<br>当targetNode-&gt;next[i]的值 &gt; 待查找的值时，向下降级，i- - ，不改变targetNode；<br>当targetNode-&gt;next[i]的值 = 待查找的值时，向下降级，i- - ，不改变targetNode。<br>最后，再次比较targetNode-&gt;next[0]和theElement，判断是否找到。<br>所以整个运算下来，targetNode是要查找的节点前面那个节点。<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">/* 如果存在 x, 返回 x 所在的节点， </span><br><span class="line"> * 否则返回 x 的后继节点 */  </span><br><span class="line">find(x)   </span><br><span class="line">&#123;  </span><br><span class="line">    p = top;  </span><br><span class="line">    while (1) &#123;  </span><br><span class="line">        while (p-&gt;next-&gt;key &lt; x)  </span><br><span class="line">            p = p-&gt;next;  </span><br><span class="line">        if (p-&gt;down == NULL)   </span><br><span class="line">            return p-&gt;next;  </span><br><span class="line">        p = p-&gt;down;  </span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure></p>
+<h4 id="skiplist插入"><a href="#skiplist插入" class="headerlink" title="skiplist插入"></a>skiplist插入</h4><p>插入的步骤：<br>新节点和各层索引节点逐一比较，确定原链表的插入位置。O（logN）<br>把索引插入到原链表。O（1）<br>利用抛硬币的随机方式，决定新节点是否提升为上一级索引。结果为“正”则提升并继续抛硬币，结果为“负”则停止。O（logN）<br>总体上，跳表插入操作的时间复杂度是O（logN），而这种数据结构所占空间是2N，既空间复杂度是 O（N）。</p>
+<h4 id="skiplist删除"><a href="#skiplist删除" class="headerlink" title="skiplist删除"></a>skiplist删除</h4><p><img src="/2019/08/17/SkipList总结/list4.jpg" alt="avatar"><br>自上而下，查找第一次出现节点的索引，并逐层找到每一层对应的节点。O（logN）<br>删除每一层查找到的节点，如果该层只剩下1个节点，删除整个一层（原链表除外）。O（logN）<br>总体上，跳表删除操作的时间复杂度是O（N）</p>
+<h4 id="skiplist实现"><a href="#skiplist实现" class="headerlink" title="skiplist实现"></a>skiplist实现</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">package com.hqq.list;</span><br><span class="line"></span><br><span class="line">import java.net.CacheRequest;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> * SkipListNode</span><br><span class="line"> * 跳跃表的节点,包括key-value和上下左右4个指针</span><br><span class="line"> * Created by heqianqian on 2017/6/1.</span><br><span class="line"> */</span><br><span class="line">public class SkipListNode&lt;T&gt; &#123;</span><br><span class="line">    private int key;</span><br><span class="line">    private T value;</span><br><span class="line">    public SkipListNode&lt;T&gt; up, down, left, right;</span><br><span class="line"></span><br><span class="line">    public static final int HEAD_KEY = Integer.MIN_VALUE;//负无穷</span><br><span class="line">    public static final int TAIL_KEY = Integer.MAX_VALUE;//正无穷</span><br><span class="line"></span><br><span class="line">    public SkipListNode(int k, T v) &#123;</span><br><span class="line">        this.key = k;</span><br><span class="line">        this.value = v;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public int getKey() &#123;</span><br><span class="line">        return key;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void setKey(int key) &#123;</span><br><span class="line">        this.key = key;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public T getValue() &#123;</span><br><span class="line">        return value;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void setValue(T value) &#123;</span><br><span class="line">        this.value = value;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @SuppressWarnings(&quot;unchecked&quot;)</span><br><span class="line">    public boolean equals(Object o) &#123;</span><br><span class="line">        if (this == o) &#123;</span><br><span class="line">            return true;</span><br><span class="line">        &#125;</span><br><span class="line">        if (o == null) &#123;</span><br><span class="line">            return false;</span><br><span class="line">        &#125;</span><br><span class="line">        if (!(o instanceof SkipListNode&lt;?&gt;)) &#123;</span><br><span class="line">            return false;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        SkipListNode&lt;T&gt; ent;</span><br><span class="line">        try &#123;</span><br><span class="line">            ent = (SkipListNode&lt;T&gt;) o;</span><br><span class="line">        &#125; catch (Exception e) &#123;</span><br><span class="line">            return false;</span><br><span class="line">        &#125;</span><br><span class="line">        return (ent.getKey() == key) &amp;&amp; (ent.getValue() == value);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public String toString() &#123;</span><br><span class="line">        return &quot;key-value:&quot;+key+&quot;-&quot;+value;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">package com.hqq.list;</span><br><span class="line"></span><br><span class="line">import java.util.Comparator;</span><br><span class="line">import java.util.Random;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> * SkipList</span><br><span class="line"> * 不固定层级的跳跃表</span><br><span class="line"> * Created by heqianqian on 2017/6/1.</span><br><span class="line"> */</span><br><span class="line">public class SkipList&lt;T extends Comparable&lt;? super T&gt;&gt; &#123;</span><br><span class="line"></span><br><span class="line">    private SkipListNode&lt;T&gt; head, tail;</span><br><span class="line">    private int nodes;//节点总数</span><br><span class="line">    private int listLevel;//层数</span><br><span class="line">    private Random random;//用于产生随机数</span><br><span class="line">    private static final double PROBABILITY = 0.5;//向上提升一个的概率</span><br><span class="line"></span><br><span class="line">    public SkipList() &#123;</span><br><span class="line">        random = new Random();</span><br><span class="line">        clear();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 清空跳跃表</span><br><span class="line">     */</span><br><span class="line">    public void clear() &#123;</span><br><span class="line">        head = new SkipListNode&lt;T&gt;(SkipListNode.HEAD_KEY, null);</span><br><span class="line">        tail = new SkipListNode&lt;T&gt;(SkipListNode.TAIL_KEY, null);</span><br><span class="line">        horizontalLink(head, tail);</span><br><span class="line">        listLevel = 0;</span><br><span class="line">        nodes = 0;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 水平双向连接</span><br><span class="line">     */</span><br><span class="line">    private void horizontalLink(SkipListNode&lt;T&gt; node1, SkipListNode&lt;T&gt; node2) &#123;</span><br><span class="line">        node1.right = node2;</span><br><span class="line">        node2.left = node1;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 垂直双向连接</span><br><span class="line">     */</span><br><span class="line">    private void vertiacallLink(SkipListNode&lt;T&gt; node1, SkipListNode&lt;T&gt; node2) &#123;</span><br><span class="line">        node1.down = node2;</span><br><span class="line">        node2.up = node1;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 在最下面一层，找到要插入的位置前面的那个key</span><br><span class="line">     */</span><br><span class="line">    private SkipListNode&lt;T&gt; findNode(int key) &#123;</span><br><span class="line">        SkipListNode&lt;T&gt; p = head;</span><br><span class="line">        while (true) &#123;</span><br><span class="line">            while (p.right.getKey() != SkipListNode.TAIL_KEY &amp;&amp; p.right.getKey() &lt;= key) &#123;</span><br><span class="line">                p = p.right;</span><br><span class="line">            &#125;</span><br><span class="line">            if (p.down != null) &#123;</span><br><span class="line">                p = p.down;</span><br><span class="line">            &#125; else &#123;</span><br><span class="line">                break;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return p;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 查找是否存储key，存在则返回该节点，否则返回null</span><br><span class="line">     */</span><br><span class="line">    public SkipListNode&lt;T&gt; search(int key) &#123;</span><br><span class="line">        SkipListNode&lt;T&gt; p = findNode(key);</span><br><span class="line">        return (key == p.getKey()) ? p : null;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 向跳跃表中添加key-value</span><br><span class="line">     */</span><br><span class="line">    public void put(int k, T v) &#123;</span><br><span class="line">        SkipListNode&lt;T&gt; p = findNode(k);</span><br><span class="line">        //如果key值相同，替换原来的vaule即可结束</span><br><span class="line">        if (k == p.getKey()) &#123;</span><br><span class="line">            p.setValue(v);</span><br><span class="line">            return;</span><br><span class="line">        &#125;</span><br><span class="line">        SkipListNode&lt;T&gt; q = new SkipListNode&lt;T&gt;(k, v);</span><br><span class="line">        backLink(p, q);</span><br><span class="line">        int currentLevel = 0;//当前所层次是0</span><br><span class="line">        //产生随机数</span><br><span class="line">        while (random.nextDouble() &lt; PROBABILITY) &#123;</span><br><span class="line">            //新建一个层</span><br><span class="line">            if (currentLevel &gt;= listLevel) &#123;</span><br><span class="line">                listLevel++;</span><br><span class="line">                SkipListNode&lt;T&gt; p1 = new SkipListNode&lt;T&gt;(SkipListNode.HEAD_KEY, null);</span><br><span class="line">                SkipListNode&lt;T&gt; p2 = new SkipListNode&lt;T&gt;(SkipListNode.TAIL_KEY, null);</span><br><span class="line">                horizontalLink(p1, p2);</span><br><span class="line">                vertiacallLink(p1, head);</span><br><span class="line">                vertiacallLink(p2, tail);</span><br><span class="line">                head = p1;</span><br><span class="line">                tail = p2;</span><br><span class="line">            &#125;</span><br><span class="line">            //把p移动到上一层</span><br><span class="line">            while (p.up == null) &#123;</span><br><span class="line">                p = p.left;</span><br><span class="line">            &#125;</span><br><span class="line">            p = p.up;</span><br><span class="line"></span><br><span class="line">            SkipListNode&lt;T&gt; e = new SkipListNode&lt;T&gt;(k, null);</span><br><span class="line">            backLink(p, e);</span><br><span class="line">            vertiacallLink(e, q);</span><br><span class="line">            q = e;</span><br><span class="line">            currentLevel++;</span><br><span class="line">        &#125;</span><br><span class="line">        nodes++;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 在node1后插入node2</span><br><span class="line">     */</span><br><span class="line">    private void backLink(SkipListNode&lt;T&gt; node1, SkipListNode&lt;T&gt; node2) &#123;</span><br><span class="line">        node2.left = node1;</span><br><span class="line">        node2.right = node1.right;</span><br><span class="line">        node1.right.left = node2;</span><br><span class="line">        node1.right = node2;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public boolean isEmpty() &#123;</span><br><span class="line">        return nodes == 0;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public int size() &#123;</span><br><span class="line">        return nodes;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public String toString() &#123;</span><br><span class="line">        if (isEmpty()) &#123;</span><br><span class="line">            return &quot;跳跃表为空&quot;;</span><br><span class="line">        &#125;</span><br><span class="line">        StringBuilder builder = new StringBuilder();</span><br><span class="line">        SkipListNode&lt;T&gt; p = head;</span><br><span class="line">        while (p.down != null) &#123;</span><br><span class="line">            p = p.down;</span><br><span class="line">        &#125;</span><br><span class="line">        while (p.left != null) &#123;</span><br><span class="line">            p = p.left;</span><br><span class="line">        &#125;</span><br><span class="line">        if (p.right != null) &#123;</span><br><span class="line">            p = p.right;</span><br><span class="line">        &#125;</span><br><span class="line">        while (p.right != null) &#123;</span><br><span class="line">            builder.append(p);</span><br><span class="line">            builder.append(&quot;\n&quot;);</span><br><span class="line">            p = p.right;</span><br><span class="line">        &#125;</span><br><span class="line">        return builder.toString();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h4><ul>
+<li><a href="https://blog.csdn.net/Thousa_Ho/article/details/72830054" target="_blank" rel="noopener">https://blog.csdn.net/Thousa_Ho/article/details/72830054</a></li>
+<li><a href="https://blog.csdn.net/wugemao/article/details/83826211" target="_blank" rel="noopener">https://blog.csdn.net/wugemao/article/details/83826211</a></li>
+</ul>
+]]></content>
+  </entry>
+  <entry>
     <title>Supervisor使用总结</title>
     <url>/2020/08/24/Supervisor%E4%BD%BF%E7%94%A8%E6%80%BB%E7%BB%93/</url>
     <content><![CDATA[<h2 id="一、supervisor简介"><a href="#一、supervisor简介" class="headerlink" title="一、supervisor简介"></a>一、supervisor简介</h2><p>Supervisor是用Python开发的一套通用的进程管理程序，能将一个普通的命令行进程变为后台daemon，并监控进程状态，异常退出时能自动重启。它是通过fork/exec的方式把这些被管理的进程当作supervisor的子进程来启动，这样只要在supervisor的配置文件中，把要管理的进程的可执行文件的路径写进去即可。也实现当子进程挂掉的时候，父进程可以准确获取子进程挂掉的信息的，可以选择是否自己启动和报警。supervisor还提供了一个功能，可以为supervisord或者每个子进程，设置一个非root的user，这个user就可以管理它对应的进程。</p>
@@ -2693,31 +2786,6 @@
       <tags>
         <tag>linux</tag>
       </tags>
-  </entry>
-  <entry>
-    <title>SkipList总结</title>
-    <url>/2019/08/17/SkipList%E6%80%BB%E7%BB%93/</url>
-    <content><![CDATA[<h4 id="skiplist简介"><a href="#skiplist简介" class="headerlink" title="skiplist简介"></a>skiplist简介</h4><p>skip List是一种随机化的数据结构，基于并联的链表，实现简单，插入、删除、查找的复杂度均为O(logN)（大多数情况下），因为其性能匹敌红黑树且实现较为简单，因此在很多著名项目都用跳表来代替红黑树，例如LevelDB、Redis的底层存储结构就是用的SkipList。<br>目前常用的key-value数据结构有三种：Hash表、红黑树、SkipList，它们各自有着不同的优缺点：<br>Hash表：插入、查找最快，为O(1)；如使用链表实现则可实现无锁；数据有序化需要显式的排序操作。<br>红黑树：插入、查找为O(logn)，但常数项较小；无锁实现的复杂性很高，一般需要加锁；数据天然有序。<br>SkipList：插入、查找为O(logn)，但常数项比红黑树要大；底层结构为链表，可无锁实现；数据天然有序。</p>
-<h4 id="SkipList基本数据结构及其实现"><a href="#SkipList基本数据结构及其实现" class="headerlink" title="SkipList基本数据结构及其实现"></a>SkipList基本数据结构及其实现</h4><p>一个跳表，应该具有以下特征：</p>
-<p>1、一个跳表应该有几个层（level）组成；<br>通常是10-20层，leveldb中默认为12层。</p>
-<p>2、跳表的第0层包含所有的元素；<br>且节点值是有序的。</p>
-<p>3、每一层都是一个有序的链表；<br>层数越高应越稀疏，这样在高层次中能’跳过’许多的不符合条件的数据。</p>
-<p>4、如果元素x出现在第i层，则所有比i小的层都包含x；</p>
-<p>5、每个节点包含key及其对应的value和一个指向该节点第n层的下个节点的指针数组<br>x-&gt;next[level]表示第level层的x的下一个节点</p>
-<p><img src="/2019/08/17/SkipList总结/list1.png" alt="avatar"><br>一个有序的链表，我们选取它的一半的节点用来建索引，这样如果插入一个节点，我们比较的次数就减少了一半。这种做法，虽然增加了50%的空间，但是性能提高了一倍。如上图。既然，我们已经提取了一层节点索引，那么，可以在第一层索引上再提取索引。如下图。</p>
-<p><img src="/2019/08/17/SkipList总结/list2.png" alt="avatar"><br>对于node5来说，它的next：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">node5-&gt;next[2] = tailNode;</span><br><span class="line">node5-&gt;next[1] = node7;</span><br><span class="line">node5-&gt;next[0] = node6;</span><br></pre></td></tr></table></figure></p>
-<p>对于node7来说，它的next：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">node7-&gt;next[1] = node9;</span><br><span class="line">node7-&gt;next[0] = node8;</span><br></pre></td></tr></table></figure></p>
-<p>对于node3来说，它的next：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">node3-&gt;next[0] = node4;</span><br></pre></td></tr></table></figure></p>
-<h4 id="skiplist查找"><a href="#skiplist查找" class="headerlink" title="skiplist查找"></a>skiplist查找</h4><p><img src="/2019/08/17/SkipList总结/list3.png" alt="avatar"><br>综上：<br>当targetNode-&gt;next[i]的值 &lt; 待查找的值时，令targetNode = targetNode-&gt;next[i]，targetNode移到第i级的下一个结点；<br>当targetNode-&gt;next[i]的值 &gt; 待查找的值时，向下降级，i- - ，不改变targetNode；<br>当targetNode-&gt;next[i]的值 = 待查找的值时，向下降级，i- - ，不改变targetNode。<br>最后，再次比较targetNode-&gt;next[0]和theElement，判断是否找到。<br>所以整个运算下来，targetNode是要查找的节点前面那个节点。<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">/* 如果存在 x, 返回 x 所在的节点， </span><br><span class="line"> * 否则返回 x 的后继节点 */  </span><br><span class="line">find(x)   </span><br><span class="line">&#123;  </span><br><span class="line">    p = top;  </span><br><span class="line">    while (1) &#123;  </span><br><span class="line">        while (p-&gt;next-&gt;key &lt; x)  </span><br><span class="line">            p = p-&gt;next;  </span><br><span class="line">        if (p-&gt;down == NULL)   </span><br><span class="line">            return p-&gt;next;  </span><br><span class="line">        p = p-&gt;down;  </span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure></p>
-<h4 id="skiplist插入"><a href="#skiplist插入" class="headerlink" title="skiplist插入"></a>skiplist插入</h4><p>插入的步骤：<br>新节点和各层索引节点逐一比较，确定原链表的插入位置。O（logN）<br>把索引插入到原链表。O（1）<br>利用抛硬币的随机方式，决定新节点是否提升为上一级索引。结果为“正”则提升并继续抛硬币，结果为“负”则停止。O（logN）<br>总体上，跳表插入操作的时间复杂度是O（logN），而这种数据结构所占空间是2N，既空间复杂度是 O（N）。</p>
-<h4 id="skiplist删除"><a href="#skiplist删除" class="headerlink" title="skiplist删除"></a>skiplist删除</h4><p><img src="/2019/08/17/SkipList总结/list4.jpg" alt="avatar"><br>自上而下，查找第一次出现节点的索引，并逐层找到每一层对应的节点。O（logN）<br>删除每一层查找到的节点，如果该层只剩下1个节点，删除整个一层（原链表除外）。O（logN）<br>总体上，跳表删除操作的时间复杂度是O（N）</p>
-<h4 id="skiplist实现"><a href="#skiplist实现" class="headerlink" title="skiplist实现"></a>skiplist实现</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">package com.hqq.list;</span><br><span class="line"></span><br><span class="line">import java.net.CacheRequest;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> * SkipListNode</span><br><span class="line"> * 跳跃表的节点,包括key-value和上下左右4个指针</span><br><span class="line"> * Created by heqianqian on 2017/6/1.</span><br><span class="line"> */</span><br><span class="line">public class SkipListNode&lt;T&gt; &#123;</span><br><span class="line">    private int key;</span><br><span class="line">    private T value;</span><br><span class="line">    public SkipListNode&lt;T&gt; up, down, left, right;</span><br><span class="line"></span><br><span class="line">    public static final int HEAD_KEY = Integer.MIN_VALUE;//负无穷</span><br><span class="line">    public static final int TAIL_KEY = Integer.MAX_VALUE;//正无穷</span><br><span class="line"></span><br><span class="line">    public SkipListNode(int k, T v) &#123;</span><br><span class="line">        this.key = k;</span><br><span class="line">        this.value = v;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public int getKey() &#123;</span><br><span class="line">        return key;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void setKey(int key) &#123;</span><br><span class="line">        this.key = key;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public T getValue() &#123;</span><br><span class="line">        return value;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void setValue(T value) &#123;</span><br><span class="line">        this.value = value;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @SuppressWarnings(&quot;unchecked&quot;)</span><br><span class="line">    public boolean equals(Object o) &#123;</span><br><span class="line">        if (this == o) &#123;</span><br><span class="line">            return true;</span><br><span class="line">        &#125;</span><br><span class="line">        if (o == null) &#123;</span><br><span class="line">            return false;</span><br><span class="line">        &#125;</span><br><span class="line">        if (!(o instanceof SkipListNode&lt;?&gt;)) &#123;</span><br><span class="line">            return false;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        SkipListNode&lt;T&gt; ent;</span><br><span class="line">        try &#123;</span><br><span class="line">            ent = (SkipListNode&lt;T&gt;) o;</span><br><span class="line">        &#125; catch (Exception e) &#123;</span><br><span class="line">            return false;</span><br><span class="line">        &#125;</span><br><span class="line">        return (ent.getKey() == key) &amp;&amp; (ent.getValue() == value);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public String toString() &#123;</span><br><span class="line">        return &quot;key-value:&quot;+key+&quot;-&quot;+value;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">package com.hqq.list;</span><br><span class="line"></span><br><span class="line">import java.util.Comparator;</span><br><span class="line">import java.util.Random;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> * SkipList</span><br><span class="line"> * 不固定层级的跳跃表</span><br><span class="line"> * Created by heqianqian on 2017/6/1.</span><br><span class="line"> */</span><br><span class="line">public class SkipList&lt;T extends Comparable&lt;? super T&gt;&gt; &#123;</span><br><span class="line"></span><br><span class="line">    private SkipListNode&lt;T&gt; head, tail;</span><br><span class="line">    private int nodes;//节点总数</span><br><span class="line">    private int listLevel;//层数</span><br><span class="line">    private Random random;//用于产生随机数</span><br><span class="line">    private static final double PROBABILITY = 0.5;//向上提升一个的概率</span><br><span class="line"></span><br><span class="line">    public SkipList() &#123;</span><br><span class="line">        random = new Random();</span><br><span class="line">        clear();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 清空跳跃表</span><br><span class="line">     */</span><br><span class="line">    public void clear() &#123;</span><br><span class="line">        head = new SkipListNode&lt;T&gt;(SkipListNode.HEAD_KEY, null);</span><br><span class="line">        tail = new SkipListNode&lt;T&gt;(SkipListNode.TAIL_KEY, null);</span><br><span class="line">        horizontalLink(head, tail);</span><br><span class="line">        listLevel = 0;</span><br><span class="line">        nodes = 0;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 水平双向连接</span><br><span class="line">     */</span><br><span class="line">    private void horizontalLink(SkipListNode&lt;T&gt; node1, SkipListNode&lt;T&gt; node2) &#123;</span><br><span class="line">        node1.right = node2;</span><br><span class="line">        node2.left = node1;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 垂直双向连接</span><br><span class="line">     */</span><br><span class="line">    private void vertiacallLink(SkipListNode&lt;T&gt; node1, SkipListNode&lt;T&gt; node2) &#123;</span><br><span class="line">        node1.down = node2;</span><br><span class="line">        node2.up = node1;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 在最下面一层，找到要插入的位置前面的那个key</span><br><span class="line">     */</span><br><span class="line">    private SkipListNode&lt;T&gt; findNode(int key) &#123;</span><br><span class="line">        SkipListNode&lt;T&gt; p = head;</span><br><span class="line">        while (true) &#123;</span><br><span class="line">            while (p.right.getKey() != SkipListNode.TAIL_KEY &amp;&amp; p.right.getKey() &lt;= key) &#123;</span><br><span class="line">                p = p.right;</span><br><span class="line">            &#125;</span><br><span class="line">            if (p.down != null) &#123;</span><br><span class="line">                p = p.down;</span><br><span class="line">            &#125; else &#123;</span><br><span class="line">                break;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return p;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 查找是否存储key，存在则返回该节点，否则返回null</span><br><span class="line">     */</span><br><span class="line">    public SkipListNode&lt;T&gt; search(int key) &#123;</span><br><span class="line">        SkipListNode&lt;T&gt; p = findNode(key);</span><br><span class="line">        return (key == p.getKey()) ? p : null;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 向跳跃表中添加key-value</span><br><span class="line">     */</span><br><span class="line">    public void put(int k, T v) &#123;</span><br><span class="line">        SkipListNode&lt;T&gt; p = findNode(k);</span><br><span class="line">        //如果key值相同，替换原来的vaule即可结束</span><br><span class="line">        if (k == p.getKey()) &#123;</span><br><span class="line">            p.setValue(v);</span><br><span class="line">            return;</span><br><span class="line">        &#125;</span><br><span class="line">        SkipListNode&lt;T&gt; q = new SkipListNode&lt;T&gt;(k, v);</span><br><span class="line">        backLink(p, q);</span><br><span class="line">        int currentLevel = 0;//当前所层次是0</span><br><span class="line">        //产生随机数</span><br><span class="line">        while (random.nextDouble() &lt; PROBABILITY) &#123;</span><br><span class="line">            //新建一个层</span><br><span class="line">            if (currentLevel &gt;= listLevel) &#123;</span><br><span class="line">                listLevel++;</span><br><span class="line">                SkipListNode&lt;T&gt; p1 = new SkipListNode&lt;T&gt;(SkipListNode.HEAD_KEY, null);</span><br><span class="line">                SkipListNode&lt;T&gt; p2 = new SkipListNode&lt;T&gt;(SkipListNode.TAIL_KEY, null);</span><br><span class="line">                horizontalLink(p1, p2);</span><br><span class="line">                vertiacallLink(p1, head);</span><br><span class="line">                vertiacallLink(p2, tail);</span><br><span class="line">                head = p1;</span><br><span class="line">                tail = p2;</span><br><span class="line">            &#125;</span><br><span class="line">            //把p移动到上一层</span><br><span class="line">            while (p.up == null) &#123;</span><br><span class="line">                p = p.left;</span><br><span class="line">            &#125;</span><br><span class="line">            p = p.up;</span><br><span class="line"></span><br><span class="line">            SkipListNode&lt;T&gt; e = new SkipListNode&lt;T&gt;(k, null);</span><br><span class="line">            backLink(p, e);</span><br><span class="line">            vertiacallLink(e, q);</span><br><span class="line">            q = e;</span><br><span class="line">            currentLevel++;</span><br><span class="line">        &#125;</span><br><span class="line">        nodes++;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 在node1后插入node2</span><br><span class="line">     */</span><br><span class="line">    private void backLink(SkipListNode&lt;T&gt; node1, SkipListNode&lt;T&gt; node2) &#123;</span><br><span class="line">        node2.left = node1;</span><br><span class="line">        node2.right = node1.right;</span><br><span class="line">        node1.right.left = node2;</span><br><span class="line">        node1.right = node2;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public boolean isEmpty() &#123;</span><br><span class="line">        return nodes == 0;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public int size() &#123;</span><br><span class="line">        return nodes;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public String toString() &#123;</span><br><span class="line">        if (isEmpty()) &#123;</span><br><span class="line">            return &quot;跳跃表为空&quot;;</span><br><span class="line">        &#125;</span><br><span class="line">        StringBuilder builder = new StringBuilder();</span><br><span class="line">        SkipListNode&lt;T&gt; p = head;</span><br><span class="line">        while (p.down != null) &#123;</span><br><span class="line">            p = p.down;</span><br><span class="line">        &#125;</span><br><span class="line">        while (p.left != null) &#123;</span><br><span class="line">            p = p.left;</span><br><span class="line">        &#125;</span><br><span class="line">        if (p.right != null) &#123;</span><br><span class="line">            p = p.right;</span><br><span class="line">        &#125;</span><br><span class="line">        while (p.right != null) &#123;</span><br><span class="line">            builder.append(p);</span><br><span class="line">            builder.append(&quot;\n&quot;);</span><br><span class="line">            p = p.right;</span><br><span class="line">        &#125;</span><br><span class="line">        return builder.toString();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h4 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h4><ul>
-<li><a href="https://blog.csdn.net/Thousa_Ho/article/details/72830054" target="_blank" rel="noopener">https://blog.csdn.net/Thousa_Ho/article/details/72830054</a></li>
-<li><a href="https://blog.csdn.net/wugemao/article/details/83826211" target="_blank" rel="noopener">https://blog.csdn.net/wugemao/article/details/83826211</a></li>
-</ul>
-]]></content>
   </entry>
   <entry>
     <title>es总结2</title>
