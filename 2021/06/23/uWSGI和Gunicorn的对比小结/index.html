@@ -92,7 +92,7 @@
 <meta property="og:image" content="https://alfredliukai.github.io/2021/06/23/uWSGI和Gunicorn的对比小结/gun2.png">
 <meta property="og:image" content="https://alfredliukai.github.io/2021/06/23/uWSGI和Gunicorn的对比小结/gun3.png">
 <meta property="og:image" content="https://alfredliukai.github.io/2021/06/23/uWSGI和Gunicorn的对比小结/gun4.png">
-<meta property="og:updated_time" content="2021-06-23T16:00:48.000Z">
+<meta property="og:updated_time" content="2021-06-23T16:13:48.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="uWSGI和Gunicorn的对比小结">
 <meta name="twitter:description" content="由于uWGSI使用的是GPL2开源协议，Gunicorn使用的是MIT协议，商业使用为了规避相关法律风险，业务上有打算把uWSGI替换成Gunicorn，小结下两种组件的使用及区别。 简介相同点 perfork是一种服务端编程模型, Nginx, Gunicorn, uWSGI都是这种模型的实现, 简单的说perfok就是master进程启动注册一堆信号处理函数, 创建listen socket">
@@ -370,21 +370,9 @@
 <p>不同于Gunicorn, uWSGI是使用C写的, 它的socket fd创建, worker进程的启动都是使用C语言系统接口来实现的, 在worker进程处理循环中, 解析了http请求后, 使用python的C接口生成environ对象, 再把这个对象作为参数塞到暴露出来的WSGI application函数中调用. 而这一切都是在C程序中进行, 只是在处理请求的时候交给python虚拟机调用application. 完全使用C语言实现的好处是性能会好一些.</p>
 <p>除了支持http协议, uWSGI还实现了uwsgi协议, 一般我们会在uWSGI服务器前面使用Nginx作为负载均衡, 如果使用http协议, 请求在转发到uWSGI前已经在Nginx这里解析了一遍, 转发到uWSGI又会重新解析一遍. uWSGI为了追求性能, 设计了uwsgi协议, 在Nginx解析完以后直接把解析好的结果通过uwsgi协议转发到uWSGI服务器, uWSGI拿到请求按格式生成environ对象, 不需要重复解析请求. 如果用Nginx配合uWSGI, 最好使用uwsgi协议来转发请求.</p>
 <p>除了是一个WSGI服务器, uWSGI还是一个开发框架, 它提供了缓存, 队列, rpc等等功能, 在github找找就会发现有人用它的缓存写了一个Django cache backend, 用它的队列实现异步任务这些东西, 但是用了这些东西技术栈也就跟uWSGI绑定在一起, 所以一般也只是把uWSGI当作WSGI服务器来用。</p>
-<p>Nginx</p>
-<p>使用多个进程监听同一端口就绕不开惊群这个话题, fork子进程, 子进程共享listen socket fd, 多个子进程同时accept阻塞, 在请求到达时内核会唤醒所有accept的进程, 然而只有一个进程能accept成功, 其它进程accept失败再次阻塞, 影响系统性能, 这就是惊群. Linux 2.6内核更新以后多个进程accept只有一个进程会被唤醒, 但是如果使用epoll还是会产生惊群现象.</p>
-<p>Nginx为了解决epoll惊群问题, 使用进程间互斥锁, 只有拿到锁的进程才能把listen fd加入到epoll中, 在accept完成后再释放锁.</p>
-<p>但是在高并发情况下, 获取锁的开销也会影响性能, 一般会建议把锁配置关掉. 直到Nginx 1.9.1更新支持了socket的SO_REUSEPORT选项, 惊群问题才算解决, listen socket fd不再是在master进程中创建, 而是每个worker进程创建一个通过SO_REUSEPORT 选项来复用端口, 内核会自行选择一个fd来唤醒, 并且有负载均衡算法.</p>
-<p>Gunicorn与uWSGI都支持reuse_port选项, 在使用时可以通过压测来评估一下reuse_port是否能提升性能.</p>
-<p>一般我们会在Gunicorn/uWSGI前面再加一层Nginx, 这样做的原因有一下几点：</p>
-<ol>
-<li>做负载均衡</li>
-<li>静态文件服务器</li>
-<li>更安全</li>
-<li>扛并发</li>
-</ol>
 <h4 id="测试对比"><a href="#测试对比" class="headerlink" title="测试对比"></a>测试对比</h4><p>组里其他同学测试简单测试如下：</p>
 <p><img src="/2021/06/23/uWSGI和Gunicorn的对比小结/uwsgi.png" alt="avatar"></p>
-<p>与<a href="http://www.zh-noone.cn/2019/11/gunicorn-uwsgi%E6%80%A7%E8%83%BD%E5%AF%B9%E6%AF%94/" target="_blank" rel="noopener">http://www.zh-noone.cn/2019/11/gunicorn-uwsgi%E6%80%A7%E8%83%BD%E5%AF%B9%E6%AF%94/</a> 文章中测试结果大体一致。其中改文章中总结使用方式如下：</p>
+<p>与<a href="http://www.zh-noone.cn/2019/11/gunicorn-uwsgi%E6%80%A7%E8%83%BD%E5%AF%B9%E6%AF%94/" target="_blank" rel="noopener">http://www.zh-noone.cn/2019/11/gunicorn-uwsgi%E6%80%A7%E8%83%BD%E5%AF%B9%E6%AF%94/</a> 文章中测试结果大体一致。其中该文章中总结使用方式如下：</p>
 <p><strong>gunicorn小结</strong></p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">werkzeug:RPS:681.30/sec</span><br><span class="line"></span><br><span class="line">sync:RPS:615.97/sec</span><br><span class="line"></span><br><span class="line">gevent:RPS:1030.56/sec</span><br><span class="line"></span><br><span class="line">eventlet(preload模式):RPS:616.65/sec</span><br><span class="line"></span><br><span class="line">eventlet(非preload模式):1048.65/sec</span><br></pre></td></tr></table></figure>
 <p><strong>uwsgi小结</strong></p>
@@ -402,7 +390,6 @@
 <p><img src="/2021/06/23/uWSGI和Gunicorn的对比小结/gun2.png" alt="avatar"></p>
 <p>有Gevent和Eventlet两种，都是基于Greenlet实现的。</p>
 <p>用了异步worker，就能同时处理不止一个请求，就不会出现上面同步worker那样，一个请求就把后续请求都block阻塞住的情况了。</p>
-<p>Python的协程实现；可以理解为微线程。（协程是program级的“线程”，而真正的线程是OS级的。）为了更好使用协程来完成多任务，python中的greenlet模块对其封装，从而使得切换任务变的更加简单。不同的Greenlet只能在同一个线程内的不同代码段间切换；同一个线程里，每次也只能有一个Greenlet在run。Greenlet的调度也不由系统完成，而是在用户层面实现，因而其切换的开销比线程要小。</p>
 <p>Gevent是一个Python网络函数库，它通过Greenlet协程+libev快速事件循环，实现了异步模型。有了Gevent，切换Greenlet时就不再需要手动切换，而是当一个Greenlet遇到I/O时，Gevent能自动切换Greenlet，保证总有Greenlet在运行，而无需等待I/O。</p>
 <p>异步worker是怎样实现并发，使得一个worker就能同时处理很多请求的呢？</p>
 <p>以Gevent为例，每个请求的连接是一个Greenlet协程。Gevent虽然只有一个线程、同时只能处理一个请求，但是在这个请求的异步事件没准备好、进入IO等待时，能主动yield让出控制权、而不是阻塞其他请求的协程，而是先让其他协程执行，当自己的IO准备好时，事件循环会将它从yield让出控制权的地方，继续恢复执行。</p>

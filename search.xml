@@ -101,21 +101,6 @@
       </tags>
   </entry>
   <entry>
-    <title>Linux的loop设备</title>
-    <url>/2021/01/26/Linux%E7%9A%84loop%E8%AE%BE%E5%A4%87/</url>
-    <content><![CDATA[<h3 id="loop设备介绍"><a href="#loop设备介绍" class="headerlink" title="loop设备介绍"></a>loop设备介绍</h3><p>在类 UNIX 系统里，loop 设备是一种伪设备(pseudo-device)，或者也可以说是仿真设备。它能使我们像块设备一样访问一个文件。</p>
-<p>在使用之前，一个 loop 设备必须要和一个文件进行连接。这种结合方式给用户提供了一个替代块特殊文件的接口。因此，如果这个文件包含有一个完整的文件系统，那么这个文件就可以像一个磁盘设备一样被 mount 起来。</p>
-<p>上面说的文件格式，我们经常见到的是 CD 或 DVD 的 ISO 光盘镜像文件或者是软盘(硬盘)的 *.img 镜像文件。通过这种 loop mount (回环mount)的方式，这些镜像文件就可以被 mount 到当前文件系统的一个目录下。</p>
-<p>至此，顺便可以再理解一下 loop 之含义：对于第一层文件系统，它直接安装在我们计算机的物理设备之上；而对于这种被 mount 起来的镜像文件(它也包含有文件系统)，它是建立在第一层文件系统之上，这样看来，它就像是在第一层文件系统之上再绕了一圈的文件系统，所以称为 loop。</p>
-<h3 id="losetup命令"><a href="#losetup命令" class="headerlink" title="losetup命令"></a>losetup命令</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">losetup [ -e encryption ] [ -o offset ] loop_device file</span><br><span class="line">losetup [ -d ] loop_device</span><br></pre></td></tr></table></figure>
-<p>说明：<br>此命令用来设置循环设备。循环设备可把文件虚拟成块设备，籍此来模拟整个文件系统，让用户得以将其视为硬盘驱动器，光驱或软驱等设备，并挂入当作目录来使用。<br>上面，命令格式中的选项与参数名：<br>-e 表示加密的方式<br>-o 设置数据偏移量<br>-d 卸载设备</p>
-<p>loop_device 循环设备名，在 linux 下如 /dev/loop0 , /dev/loop1 等。<br>file 要与循环设备相关联的文件名，这个往往是一个磁盘镜象文件，如 *.img</p>
-<h3 id="实例"><a href="#实例" class="headerlink" title="实例"></a>实例</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">1. 创建空的磁盘镜像文件，这里创建一个1.44M的软盘</span><br><span class="line">dd if=/dev/zero of=floppy.img bs=512 count=2880</span><br><span class="line"></span><br><span class="line">2. 使用 losetup将磁盘镜像文件虚拟成快设备</span><br><span class="line">losetup /dev/loop1 floppy.img</span><br><span class="line"></span><br><span class="line">3. 挂载块设备</span><br><span class="line">mount /dev/loop0 /tmp</span><br><span class="line">经过上面的三步之后，我们就可以通过/tmp目录，像访问真实快设备一样来访问磁盘镜像文件floppy.img</span><br><span class="line"></span><br><span class="line">4. 卸载loop设备</span><br><span class="line">umount /tmp</span><br><span class="line">losetup -d /dev/loop1</span><br></pre></td></tr></table></figure>]]></content>
-      <tags>
-        <tag>linux</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Idea创建maven项目问题解决</title>
     <url>/2020/05/05/Idea%E5%88%9B%E5%BB%BAmaven%E9%A1%B9%E7%9B%AE%E9%97%AE%E9%A2%98%E8%A7%A3%E5%86%B3/</url>
     <content><![CDATA[<h3 id="困扰"><a href="#困扰" class="headerlink" title="困扰"></a>困扰</h3><p>Intellij idea是一款非常强大的编辑器，可以很方便地帮我们创建maven项目，有用过的同学应该都深有体会，但我们经常会遇到一个困扰，那就是用idea创建maven项目时，速度很慢，往往需要好几分钟的时间，有时甚至会卡住，主要原因是创建maven项目时默认是下载求网络上的一个文件archetype-catalog.xml，该文件的大小有5-6M，下载的速度很慢，导致创建过程也变得很慢。</p>
@@ -151,6 +136,21 @@
 ]]></content>
       <tags>
         <tag>工程工具</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Linux的loop设备</title>
+    <url>/2021/01/26/Linux%E7%9A%84loop%E8%AE%BE%E5%A4%87/</url>
+    <content><![CDATA[<h3 id="loop设备介绍"><a href="#loop设备介绍" class="headerlink" title="loop设备介绍"></a>loop设备介绍</h3><p>在类 UNIX 系统里，loop 设备是一种伪设备(pseudo-device)，或者也可以说是仿真设备。它能使我们像块设备一样访问一个文件。</p>
+<p>在使用之前，一个 loop 设备必须要和一个文件进行连接。这种结合方式给用户提供了一个替代块特殊文件的接口。因此，如果这个文件包含有一个完整的文件系统，那么这个文件就可以像一个磁盘设备一样被 mount 起来。</p>
+<p>上面说的文件格式，我们经常见到的是 CD 或 DVD 的 ISO 光盘镜像文件或者是软盘(硬盘)的 *.img 镜像文件。通过这种 loop mount (回环mount)的方式，这些镜像文件就可以被 mount 到当前文件系统的一个目录下。</p>
+<p>至此，顺便可以再理解一下 loop 之含义：对于第一层文件系统，它直接安装在我们计算机的物理设备之上；而对于这种被 mount 起来的镜像文件(它也包含有文件系统)，它是建立在第一层文件系统之上，这样看来，它就像是在第一层文件系统之上再绕了一圈的文件系统，所以称为 loop。</p>
+<h3 id="losetup命令"><a href="#losetup命令" class="headerlink" title="losetup命令"></a>losetup命令</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">losetup [ -e encryption ] [ -o offset ] loop_device file</span><br><span class="line">losetup [ -d ] loop_device</span><br></pre></td></tr></table></figure>
+<p>说明：<br>此命令用来设置循环设备。循环设备可把文件虚拟成块设备，籍此来模拟整个文件系统，让用户得以将其视为硬盘驱动器，光驱或软驱等设备，并挂入当作目录来使用。<br>上面，命令格式中的选项与参数名：<br>-e 表示加密的方式<br>-o 设置数据偏移量<br>-d 卸载设备</p>
+<p>loop_device 循环设备名，在 linux 下如 /dev/loop0 , /dev/loop1 等。<br>file 要与循环设备相关联的文件名，这个往往是一个磁盘镜象文件，如 *.img</p>
+<h3 id="实例"><a href="#实例" class="headerlink" title="实例"></a>实例</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">1. 创建空的磁盘镜像文件，这里创建一个1.44M的软盘</span><br><span class="line">dd if=/dev/zero of=floppy.img bs=512 count=2880</span><br><span class="line"></span><br><span class="line">2. 使用 losetup将磁盘镜像文件虚拟成快设备</span><br><span class="line">losetup /dev/loop1 floppy.img</span><br><span class="line"></span><br><span class="line">3. 挂载块设备</span><br><span class="line">mount /dev/loop0 /tmp</span><br><span class="line">经过上面的三步之后，我们就可以通过/tmp目录，像访问真实快设备一样来访问磁盘镜像文件floppy.img</span><br><span class="line"></span><br><span class="line">4. 卸载loop设备</span><br><span class="line">umount /tmp</span><br><span class="line">losetup -d /dev/loop1</span><br></pre></td></tr></table></figure>]]></content>
+      <tags>
+        <tag>linux</tag>
       </tags>
   </entry>
   <entry>
@@ -1709,6 +1709,64 @@
 ]]></content>
   </entry>
   <entry>
+    <title>python基础小结</title>
+    <url>/2021/02/18/python%E5%9F%BA%E7%A1%80%E5%B0%8F%E7%BB%93/</url>
+    <content><![CDATA[<h3 id="python中sys-argv函数精简概括"><a href="#python中sys-argv函数精简概括" class="headerlink" title="python中sys.argv函数精简概括"></a>python中sys.argv函数精简概括</h3><ul>
+<li>sys.argv[0]：给定脚本名是 ‘-‘ （标准输入）时，sys.argv[0] 是 ‘-‘。使用 -c command 时，sys.argv[0] 是 ‘-c’。如果使用选项 -m module，sys.argv[0] 就是包含目录的模块全名。</li>
+<li>sys.argv[1]：sys.argv[1]是输出了参数所组成的列表的第一个元素</li>
+<li>sys.argv[1:]：sys.argv[1:]是输出了参数所组成的列表，空格分割</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">import sys</span><br><span class="line">print(sys.argv[0])</span><br><span class="line">print(sys.argv[1])</span><br><span class="line">print(sys.argv[1:])</span><br></pre></td></tr></table></figure>
+<h3 id="python文件编码说明"><a href="#python文件编码说明" class="headerlink" title="python文件编码说明"></a>python文件编码说明</h3><p>python 支持3种编码声明，一般常用能见到下面两种</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">1.# -*- coding: utf-8 -*-</span><br><span class="line"></span><br><span class="line">这种写法是为了兼容Emacs的编码声明</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">2.短一点，但Emacs不能用# coding=utf-8</span><br><span class="line"></span><br><span class="line">短一点，但Emacs不能用</span><br></pre></td></tr></table></figure>
+<p>之所以要声明未编码类型 ，主要是中文出错的问题。</p>
+<p>在python 文件开头（一般是第一行或第二行），用来说明你的Python源程序文件用使用的编码。缺省情况下你的程序需要使用ascii码来写，但如果在其中写中文的话，python解释器一般会报错，但如果加上你所用的文件编码，python就会自动处理不再报错。</p>
+<p>这里要注意的是：</p>
+<p>1.coding 后面使用 “:” 或 “=” 都可以</p>
+<p>2.但是， “:” 或 “=” 必须和 coding之间没有空格。之前我就试过有空格声明失败，还是不支持中文。至于 “:” 或 “=” 后面，有没有空格就没所谓了。</p>
+<h3 id="Python-c-执行命令"><a href="#Python-c-执行命令" class="headerlink" title="Python -c 执行命令"></a>Python -c 执行命令</h3><h4 id="1-查看-Python-版本"><a href="#1-查看-Python-版本" class="headerlink" title="1. 查看 Python 版本"></a>1. 查看 Python 版本</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">strong@foreverstrong:~$ python -V</span><br><span class="line">Python 3.6.8</span><br><span class="line">strong@foreverstrong:~$ </span><br><span class="line"></span><br><span class="line">strong@foreverstrong:~$ python --version</span><br><span class="line">Python 3.6.8</span><br><span class="line">strong@foreverstrong:~$</span><br></pre></td></tr></table></figure>
+<h4 id="2-查看-Python-安装路径"><a href="#2-查看-Python-安装路径" class="headerlink" title="2. 查看 Python 安装路径"></a>2. 查看 Python 安装路径</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">strong@foreverstrong:~$ python -c &quot;import sys; print(sys.executable)&quot;</span><br><span class="line">/usr/bin/python</span><br><span class="line">strong@foreverstrong:~$ </span><br><span class="line"></span><br><span class="line"></span><br><span class="line">strong@foreverstrong:~$ python -c &quot;import os; print(os.sys.executable)&quot;</span><br><span class="line">/usr/bin/python</span><br><span class="line">strong@foreverstrong:~$ </span><br><span class="line"></span><br><span class="line">strong@foreverstrong:~$ python -c &quot;import os; path = os.sys.executable; folder=path[0 : path.rfind(os.sep)]; print(folder)&quot;</span><br><span class="line">/usr/bin</span><br><span class="line">strong@foreverstrong:~$</span><br></pre></td></tr></table></figure>
+<h3 id="Python-m-执行命令"><a href="#Python-m-执行命令" class="headerlink" title="Python -m 执行命令"></a>Python -m 执行命令</h3><blockquote>
+<p>在 Python3 中，只需一行命令就能实现一个简单的 HTTP 服务：</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">python -m http.server 8000</span><br><span class="line"> </span><br><span class="line"># 注:在 Python2 中是这样</span><br><span class="line">python -m SimpleHTTPServer 8000</span><br></pre></td></tr></table></figure>
+<p>执行后，在本机打开“ <a href="http://localhost:8000" target="_blank" rel="noopener">http://localhost:8000</a>  ”，或者在局域网内的其它机器上打开“  http://本机ip:8000   ”，就能访问到执行目录下的内容。</p>
+<blockquote>
+<p>与此类似，我们只需要一行命令“python -m pydoc -p xxx”，就能生成 HTML 格式的官方帮助文档，可以在浏览器中访问。</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">python -m pydoc -p 9000</span><br></pre></td></tr></table></figure>
+<p>上面的命令执行了 pydoc 模块，会在 9000 端口启动一个 http 服务.</p>
+<blockquote>
+<p>它的第三个常见用法是执行 pdb 的调试命令“python -m pdb xxx.py”，以调试模式来执行“xxx.py”脚本：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">python -m pdb test.py</span><br></pre></td></tr></table></figure></p>
+</blockquote>
+<blockquote>
+<p>第四个同样挺有用的场景是用 timeit 在命令行中测试一小段代码的运行时间。以下的 3 段代码，用不同的方式拼接 “0-1-2-……-99” 数字串。可以直观地看出它们的效率差异：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">python -m timeit &quot;&apos;-&apos;.join(str(n) for n in range(100))&quot;</span><br><span class="line">python -m timeit &quot;&apos;-&apos;.join([str(n) for n in range(100)])&quot;</span><br><span class="line">python -m timeit &quot;&apos;-&apos;.join(map(str,range(100)))&quot;</span><br></pre></td></tr></table></figure></p>
+</blockquote>
+<blockquote>
+<p>最后，还有一种常常被人忽略的场景：“python -m pip install xxx”。我们可能会习惯性地使用“pip install xxx”，或者做了版本区分时用“pip3 install xxx”，总之不在前面用“python -m”做指定。但这种写法可能会出问题。</p>
+</blockquote>
+<h3 id="m-选项的两种原理解析"><a href="#m-选项的两种原理解析" class="headerlink" title="-m 选项的两种原理解析"></a>-m 选项的两种原理解析</h3><p>看了前面的几种典型用法，你是否开始好奇： “-m”是怎么运作的？它是怎么实现的？</p>
+<p>对于“python -m name”，一句话解释： Python 会检索 sys.path ，查找名字为“name”的模块或者包（含命名空间包），并将其内容当成“<strong>main</strong>”模块来执行。</p>
+<p><strong>1、对于普通模块</strong></p>
+<p>以“.py”为后缀的文件就是一个模块，在“-m”之后使用时，只需要使用模块名，不需要写出后缀，但前提是该模块名是有效的，且不能是用 C 语言写成的模块。</p>
+<p>在“-m”之后，如果是一个无效的模块名，则会报错“No module named xxx”。</p>
+<p>如果是一个带后缀的模块，则首先会导入该模块，然后可能报错：Error while finding module specification for ‘xxx.py’ (AttributeError: module ‘xxx’ has no attribute ‘<strong>path</strong>‘。</p>
+<p><img src="/2021/02/18/python基础小结/python1.png" alt="avatar"></p>
+<p>对于一个普通模块，有时候这两种写法表面看起来是等效的：<br>两种写法都会把定位到的模块脚本当成主程序入口来执行，即在执行时，该脚本的 <strong>name</strong> 都是”<strong>main</strong>“，跟 import 导入方式是不同的。</p>
+<p>但它的前提是：在执行目录中存在着“test.py”，且只有唯一的“test”模块。对于本例，如果换一个目录执行的话，“python test.py”当然会报找不到文件的错误，然而，“python -m test”却不会报错，因为解释器在遍历 sys.path 时可以找到同名的“test”模块，并且执行：</p>
+<p><img src="/2021/02/18/python基础小结/python2.png" alt="avatar"></p>
+<p>由此差异，我们其实可以总结出“-m”的用法： 已知一个模块的名字，但不知道它的文件路径，那么使用“-m”就意味着交给解释器自行查找，若找到，则当成脚本执行。</p>
+<p>直接运行脚本时，相当于给出了脚本的完整路径（不管是绝对路径还是相对路径），解释器根据 文件系统的查找机制， 定位到该脚本，然后执行 使用“-m”方式时，解释器需要在不 import 的情况下，在 所有模块命名空间 中查找，定位到脚本的路径，然后执行。为了实现这个过程，解释器会借助两个模块： pkgutil 和 runpy ，前者用来获取所有的模块列表，后者根据模块名来定位并执行脚本 </p>
+<p><strong>2、对于包内模块</strong></p>
+<p>如果“-m”之后要执行的是一个包，那么解释器经过前面提到的查找过程，先定位到该包，然后会去执行它的“<strong>main</strong>”子模块，也就是说，在包目录下需要实现一个“<strong>main</strong>.py”文件。</p>
+<p>换句话说，假设有个包的名称是“pname”，那么， “python -m pname”，其实就等效于“python -m pname.<strong>main</strong>”。</p>
+]]></content>
+      <tags>
+        <tag>python</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>python中的魔法函数</title>
     <url>/2021/04/21/python%E4%B8%AD%E7%9A%84%E9%AD%94%E6%B3%95%E5%87%BD%E6%95%B0/</url>
     <content><![CDATA[<h4 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h4><p>在Python的类中，以两个下划线开头、两个下划线结尾的方法，如常见的 ：<strong>init</strong>、<strong>str</strong>、<strong>del</strong>等，就被称为「魔术方法」（Magic methods）。魔术方法在类或对象的某些事件出发后会自动执行，如果希望根据自己的程序定制特殊功能的类，那么就需要对这些方法进行重写。使用这些「魔法方法」，我们可以非常方便地给类添加特殊的功能。</p>
@@ -1780,64 +1838,6 @@
 <li><a href="https://www.jb51.net/article/85719.htm" target="_blank" rel="noopener">https://www.jb51.net/article/85719.htm</a></li>
 <li><a href="https://blog.csdn.net/weixin_45901519/article/details/110482428" target="_blank" rel="noopener">https://blog.csdn.net/weixin_45901519/article/details/110482428</a></li>
 </ol>
-]]></content>
-      <tags>
-        <tag>python</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>python基础小结</title>
-    <url>/2021/02/18/python%E5%9F%BA%E7%A1%80%E5%B0%8F%E7%BB%93/</url>
-    <content><![CDATA[<h3 id="python中sys-argv函数精简概括"><a href="#python中sys-argv函数精简概括" class="headerlink" title="python中sys.argv函数精简概括"></a>python中sys.argv函数精简概括</h3><ul>
-<li>sys.argv[0]：给定脚本名是 ‘-‘ （标准输入）时，sys.argv[0] 是 ‘-‘。使用 -c command 时，sys.argv[0] 是 ‘-c’。如果使用选项 -m module，sys.argv[0] 就是包含目录的模块全名。</li>
-<li>sys.argv[1]：sys.argv[1]是输出了参数所组成的列表的第一个元素</li>
-<li>sys.argv[1:]：sys.argv[1:]是输出了参数所组成的列表，空格分割</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">import sys</span><br><span class="line">print(sys.argv[0])</span><br><span class="line">print(sys.argv[1])</span><br><span class="line">print(sys.argv[1:])</span><br></pre></td></tr></table></figure>
-<h3 id="python文件编码说明"><a href="#python文件编码说明" class="headerlink" title="python文件编码说明"></a>python文件编码说明</h3><p>python 支持3种编码声明，一般常用能见到下面两种</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">1.# -*- coding: utf-8 -*-</span><br><span class="line"></span><br><span class="line">这种写法是为了兼容Emacs的编码声明</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">2.短一点，但Emacs不能用# coding=utf-8</span><br><span class="line"></span><br><span class="line">短一点，但Emacs不能用</span><br></pre></td></tr></table></figure>
-<p>之所以要声明未编码类型 ，主要是中文出错的问题。</p>
-<p>在python 文件开头（一般是第一行或第二行），用来说明你的Python源程序文件用使用的编码。缺省情况下你的程序需要使用ascii码来写，但如果在其中写中文的话，python解释器一般会报错，但如果加上你所用的文件编码，python就会自动处理不再报错。</p>
-<p>这里要注意的是：</p>
-<p>1.coding 后面使用 “:” 或 “=” 都可以</p>
-<p>2.但是， “:” 或 “=” 必须和 coding之间没有空格。之前我就试过有空格声明失败，还是不支持中文。至于 “:” 或 “=” 后面，有没有空格就没所谓了。</p>
-<h3 id="Python-c-执行命令"><a href="#Python-c-执行命令" class="headerlink" title="Python -c 执行命令"></a>Python -c 执行命令</h3><h4 id="1-查看-Python-版本"><a href="#1-查看-Python-版本" class="headerlink" title="1. 查看 Python 版本"></a>1. 查看 Python 版本</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">strong@foreverstrong:~$ python -V</span><br><span class="line">Python 3.6.8</span><br><span class="line">strong@foreverstrong:~$ </span><br><span class="line"></span><br><span class="line">strong@foreverstrong:~$ python --version</span><br><span class="line">Python 3.6.8</span><br><span class="line">strong@foreverstrong:~$</span><br></pre></td></tr></table></figure>
-<h4 id="2-查看-Python-安装路径"><a href="#2-查看-Python-安装路径" class="headerlink" title="2. 查看 Python 安装路径"></a>2. 查看 Python 安装路径</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">strong@foreverstrong:~$ python -c &quot;import sys; print(sys.executable)&quot;</span><br><span class="line">/usr/bin/python</span><br><span class="line">strong@foreverstrong:~$ </span><br><span class="line"></span><br><span class="line"></span><br><span class="line">strong@foreverstrong:~$ python -c &quot;import os; print(os.sys.executable)&quot;</span><br><span class="line">/usr/bin/python</span><br><span class="line">strong@foreverstrong:~$ </span><br><span class="line"></span><br><span class="line">strong@foreverstrong:~$ python -c &quot;import os; path = os.sys.executable; folder=path[0 : path.rfind(os.sep)]; print(folder)&quot;</span><br><span class="line">/usr/bin</span><br><span class="line">strong@foreverstrong:~$</span><br></pre></td></tr></table></figure>
-<h3 id="Python-m-执行命令"><a href="#Python-m-执行命令" class="headerlink" title="Python -m 执行命令"></a>Python -m 执行命令</h3><blockquote>
-<p>在 Python3 中，只需一行命令就能实现一个简单的 HTTP 服务：</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">python -m http.server 8000</span><br><span class="line"> </span><br><span class="line"># 注:在 Python2 中是这样</span><br><span class="line">python -m SimpleHTTPServer 8000</span><br></pre></td></tr></table></figure>
-<p>执行后，在本机打开“ <a href="http://localhost:8000" target="_blank" rel="noopener">http://localhost:8000</a>  ”，或者在局域网内的其它机器上打开“  http://本机ip:8000   ”，就能访问到执行目录下的内容。</p>
-<blockquote>
-<p>与此类似，我们只需要一行命令“python -m pydoc -p xxx”，就能生成 HTML 格式的官方帮助文档，可以在浏览器中访问。</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">python -m pydoc -p 9000</span><br></pre></td></tr></table></figure>
-<p>上面的命令执行了 pydoc 模块，会在 9000 端口启动一个 http 服务.</p>
-<blockquote>
-<p>它的第三个常见用法是执行 pdb 的调试命令“python -m pdb xxx.py”，以调试模式来执行“xxx.py”脚本：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">python -m pdb test.py</span><br></pre></td></tr></table></figure></p>
-</blockquote>
-<blockquote>
-<p>第四个同样挺有用的场景是用 timeit 在命令行中测试一小段代码的运行时间。以下的 3 段代码，用不同的方式拼接 “0-1-2-……-99” 数字串。可以直观地看出它们的效率差异：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">python -m timeit &quot;&apos;-&apos;.join(str(n) for n in range(100))&quot;</span><br><span class="line">python -m timeit &quot;&apos;-&apos;.join([str(n) for n in range(100)])&quot;</span><br><span class="line">python -m timeit &quot;&apos;-&apos;.join(map(str,range(100)))&quot;</span><br></pre></td></tr></table></figure></p>
-</blockquote>
-<blockquote>
-<p>最后，还有一种常常被人忽略的场景：“python -m pip install xxx”。我们可能会习惯性地使用“pip install xxx”，或者做了版本区分时用“pip3 install xxx”，总之不在前面用“python -m”做指定。但这种写法可能会出问题。</p>
-</blockquote>
-<h3 id="m-选项的两种原理解析"><a href="#m-选项的两种原理解析" class="headerlink" title="-m 选项的两种原理解析"></a>-m 选项的两种原理解析</h3><p>看了前面的几种典型用法，你是否开始好奇： “-m”是怎么运作的？它是怎么实现的？</p>
-<p>对于“python -m name”，一句话解释： Python 会检索 sys.path ，查找名字为“name”的模块或者包（含命名空间包），并将其内容当成“<strong>main</strong>”模块来执行。</p>
-<p><strong>1、对于普通模块</strong></p>
-<p>以“.py”为后缀的文件就是一个模块，在“-m”之后使用时，只需要使用模块名，不需要写出后缀，但前提是该模块名是有效的，且不能是用 C 语言写成的模块。</p>
-<p>在“-m”之后，如果是一个无效的模块名，则会报错“No module named xxx”。</p>
-<p>如果是一个带后缀的模块，则首先会导入该模块，然后可能报错：Error while finding module specification for ‘xxx.py’ (AttributeError: module ‘xxx’ has no attribute ‘<strong>path</strong>‘。</p>
-<p><img src="/2021/02/18/python基础小结/python1.png" alt="avatar"></p>
-<p>对于一个普通模块，有时候这两种写法表面看起来是等效的：<br>两种写法都会把定位到的模块脚本当成主程序入口来执行，即在执行时，该脚本的 <strong>name</strong> 都是”<strong>main</strong>“，跟 import 导入方式是不同的。</p>
-<p>但它的前提是：在执行目录中存在着“test.py”，且只有唯一的“test”模块。对于本例，如果换一个目录执行的话，“python test.py”当然会报找不到文件的错误，然而，“python -m test”却不会报错，因为解释器在遍历 sys.path 时可以找到同名的“test”模块，并且执行：</p>
-<p><img src="/2021/02/18/python基础小结/python2.png" alt="avatar"></p>
-<p>由此差异，我们其实可以总结出“-m”的用法： 已知一个模块的名字，但不知道它的文件路径，那么使用“-m”就意味着交给解释器自行查找，若找到，则当成脚本执行。</p>
-<p>直接运行脚本时，相当于给出了脚本的完整路径（不管是绝对路径还是相对路径），解释器根据 文件系统的查找机制， 定位到该脚本，然后执行 使用“-m”方式时，解释器需要在不 import 的情况下，在 所有模块命名空间 中查找，定位到脚本的路径，然后执行。为了实现这个过程，解释器会借助两个模块： pkgutil 和 runpy ，前者用来获取所有的模块列表，后者根据模块名来定位并执行脚本 </p>
-<p><strong>2、对于包内模块</strong></p>
-<p>如果“-m”之后要执行的是一个包，那么解释器经过前面提到的查找过程，先定位到该包，然后会去执行它的“<strong>main</strong>”子模块，也就是说，在包目录下需要实现一个“<strong>main</strong>.py”文件。</p>
-<p>换句话说，假设有个包的名称是“pname”，那么， “python -m pname”，其实就等效于“python -m pname.<strong>main</strong>”。</p>
 ]]></content>
       <tags>
         <tag>python</tag>
@@ -2180,6 +2180,15 @@
       </tags>
   </entry>
   <entry>
+    <title>多路复用机制与javaNIO</title>
+    <url>/2019/09/17/%E5%A4%9A%E8%B7%AF%E5%A4%8D%E7%94%A8%E6%9C%BA%E5%88%B6%E4%B8%8EjavaNIO/</url>
+    <content><![CDATA[<h4 id="IO多路复用"><a href="#IO多路复用" class="headerlink" title="IO多路复用"></a>IO多路复用</h4><p>select，poll，epoll都是IO多路复用的机制。I/O多路复用就通过一种机制，可以监视多个描述符，一旦某个描述符就绪（一般是读就绪或者写就绪），能够通知程序进行相应的读写操作。但select，poll，epoll本质上都是同步I/O，因为他们都需要在读写事件就绪后自己负责进行读写，也就是说这个读写过程是阻塞的，而异步I/O则无需自己负责进行读写，异步I/O的实现会负责把数据从内核拷贝到用户空间。<br>1、select实现<br><img src="/2019/09/17/多路复用机制与javaNIO/select.png" alt="avatar"><br>（1）使用copy_from_user从用户空间拷贝fd_set到内核空间<br>（2）注册回调函数<strong>pollwait<br>（3）遍历所有fd，调用其对应的poll方法（对于socket，这个poll方法是sock_poll，sock_poll根据情况会调用到tcp_poll,udp_poll或者datagram_poll）<br>（4）以tcp_poll为例，其核心实现就是</strong>pollwait，也就是上面注册的回调函数。<br>（5）__pollwait的主要工作就是把current（当前进程）挂到设备的等待队列中，不同的设备有不同的等待队列，对于tcp_poll来说，其等待队列是sk-&gt;sk_sleep（注意把进程挂到等待队列中并不代表进程已经睡眠了）。在设备收到一条消息（网络设备）或填写完文件数据（磁盘设备）后，会唤醒设备等待队列上睡眠的进程，这时current便被唤醒了。<br>（6）poll方法返回时会返回一个描述读写操作是否就绪的mask掩码，根据这个mask掩码给fd_set赋值。<br>（7）如果遍历完所有的fd，还没有返回一个可读写的mask掩码，则会调用schedule_timeout是调用select的进程（也就是current）进入睡眠。当设备驱动发生自身资源可读写后，会唤醒其等待队列上睡眠的进程。如果超过一定的超时时间（schedule_timeout指定），还是没人唤醒，则调用select的进程会重新被唤醒获得CPU，进而重新遍历fd，判断有没有就绪的fd。<br>（8）把fd_set从内核空间拷贝到用户空间。<br>总结：<br>select的几大缺点：<br>（1）每次调用select，都需要把fd集合从用户态拷贝到内核态，这个开销在fd很多时会很大<br>（2）同时每次调用select都需要在内核遍历传递进来的所有fd，这个开销在fd很多时也很大<br>（3）select支持的文件描述符数量太小了，默认是1024</p>
+]]></content>
+      <tags>
+        <tag>java</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>开源协议概览</title>
     <url>/2021/06/22/%E5%BC%80%E6%BA%90%E5%8D%8F%E8%AE%AE%E6%A6%82%E8%A7%88/</url>
     <content><![CDATA[<p>在申请专利的过程中，因为系统中涉及相关组件，其中组件使用的协议有可能会涉及商业开源问题，小结下开源协议的异同点如下。</p>
@@ -2369,19 +2378,6 @@
       </tags>
   </entry>
   <entry>
-    <title>浅拷贝与深拷贝以及引用</title>
-    <url>/2020/08/03/%E6%B5%85%E6%8B%B7%E8%B4%9D%E4%B8%8E%E6%B7%B1%E6%8B%B7%E8%B4%9D%E4%BB%A5%E5%8F%8A%E5%BC%95%E7%94%A8/</url>
-    <content><![CDATA[<h2 id="Python-变量存储情况"><a href="#Python-变量存储情况" class="headerlink" title="Python 变量存储情况"></a>Python 变量存储情况</h2><p>在高级语言中，变量是对内存及其地址的抽象。对于python 而言，python 的一切变量都是对象，变量的存储，采用了引用语义的方式，存储的只是一个变量的值所在的内存地址，而不是指这个变量的本身:</p>
-<p>引用语义：在 python 中，变量保存的是对象(值)的引用，我们称为 引用语义。采用这种方式，变量所需的存储空间大小一致，因为变量只是保存了一个引用。也被称为对象语义和指针语义。</p>
-<p>值语义：有些语言采用的不是这种方式，它们把变量的值直接保存在变量的存储区里，这种方式被我们称为值语义，例如 C 语言，采用这种存储方式，每一个变量在内存中所占的空间就要根据变量实际的大小而定，无法固定下来。</p>
-<p>值语义和引用语义的区别：</p>
-<p>值语义： 死的、 傻的、 简单的、 具体的、 可复制的<br>引用语义： 活的、 聪明的、 复杂的、 抽象的、 不可复制的</p>
-]]></content>
-      <tags>
-        <tag>python</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>架构与开源</title>
     <url>/2019/09/13/%E6%9E%B6%E6%9E%84%E4%B8%8E%E5%BC%80%E6%BA%90/</url>
     <content><![CDATA[<h4 id="1-关于架构与技术栈"><a href="#1-关于架构与技术栈" class="headerlink" title="1.关于架构与技术栈"></a>1.关于架构与技术栈</h4><p>技术架构一遍经过三个阶段，创建期、瓶颈期和退化期，就像下面这张图所画:<br><img src="/2019/09/13/架构与开源/arti.png" alt="avatar"><br>架构的选型要注意以下几点：功能预见性（功能性）、系统可用性、容错性、可靠性、性能够快、可伸缩、可维护性、安全性、成本、可度量性;<br>架构的选型的误区：“重复造轮子”、脱离实际业务需求、避免无意义的重构、功能完成是完事了、技术解决一切；</p>
@@ -2396,6 +2392,19 @@
 <p>开源协议的选择：</p>
 <p>GPL许可：是 GNU General Public License 的缩写，既GNU通用公共许可协议，是自由软件基金会（GNU）发布的一个软件首选许可，GPL许可一共发布的三个不版本，最新一版是2007年公布的GPLv3，最著名的使用GPL许可的软件就是大Linux。GPL许可的特点就是，使用GPL软件(包括类库)或者源代码（不管多少）的发布的新产品（包括新增源代码和可执行二进制文件）也必须使用GPL协议，也要公开源代码。由于这个许可具有一定的开源强制性，很多大公司对GPL许可的开源软件的选择还是比较谨慎的。GPL 协议有很多变种：比如LGPL, AGPL<br>LGPL : LGPL 是 GNU Lesser General Public License 的缩写 既GNU宽通用公共许可证，相比于GPL，其开源强制性弱一些，对商用软件更加友好，使用该许可的著名软件是Linux下的办公软件 OpenOffice。按照该许可协议的要求，以类库方式引入基于LGPL许可的软件可以不开源其衍生产品的源代码，单对于LGPL许可授权的源代码进行修改或者和修改相关的衍生代码则必须开源且使用LGPL许可进行授权。<br>AGPL：Affero General Public License，简称Affero GPL或AGPL，Affero 是一家公司名称，AGPL最初由该公司撰写，改许可是相当于GPL的增强版本，主要是对通过网络发布服务进行限制。GPL许可本身限制的是软件的“发布”行为，只要是使用了GPL许可的源代码或者二进制文件，必须开源且以同样以GPL许可进行授权，但到了互联网十点，很多互联网公司并不发布软件实体，而是提供“服务”，所以GPL的约束力就明显下降了，AGPL许可的目的就是填补这个所谓的“漏洞”，改许可要求，除了GPL本身的约束以外，所有基于AGPL许可软件提供网络服务，其相关源代码必须开源，所以在AGPL许可下，网络服务也被看做一种分发形式。所以很多互联网公司禁止使用 AGPL 许可的开源软件。<br>BSD许可：BSD（BSD是Berkly Software Distribution的简写）许可最初使用在加州大学伯克利分校发布的 BSD Unix 系统上，随着BSD系统的发展，BSD许可也随之沿用下来。相比于GPL 和 MPL 的严格要求，BSD 许可的的要求就非常宽松，给予使用者非常大的自由度。在该许可下的软件可以自由使用修改，也可以将修改后的代码再次发布，而且可以是按照闭源的私有软件进行发布，只需要在发布的软件和中保留BSD许可协议文件即可，但未经许可不能使用原作者或者机构名义进行宣传和推广。+<br>MPL许可：MPL是 The Mozilla Public License 的做些。是1998年初Netscape的 Mozilla小组为其开源软件项目设计的软件许可证。MPL许可允许经过MPL授权的源代码和其他授权的文件（包括源代码和二进制文件）混合使用，甚至剥和私有软件混合使用，这相当于GPL许可和BSD或类似许可的折中，其既有一定的开源强制性，又保留一定的私有权利。按照该许可要求，使用基于MPL授权源代码的部分，包括对MPL源代码的修改部分，必须保持MPL授权，这一点和GPL协议类似，但新增代码发布的可使用其他方式授权，甚至是私有授权，也可以比闭源的方式。<br>MIT 许可：MIT 许可是来自麻省理工学院（Massachusetts Institute of Technology, MIT），该许可被认为是最自由的开源协议之一，也是应用最为广泛的开源协议(据blackduck——一家对软件源代码进行合规审计的公司，统计，全球有将近1/3的开源软件使用MIT开源协议)，他的协议声明非常简短，他和BSD许可类似，允许自由修改发布基于MIT的代码和软件，只需要你的发行版里包含原始协议文件即可，其他无任何限制，及时使用原始作者的名义进行推广。使用MIT许可的著名软件有ssh 客户端软件jquery,Rails，putty 和 xwindows等。<br>Apache 2.0许可：改协议是由Apache软件基金会发布的许可，最初用在像Apache web Server这样Apache的内部软件中，2004年公布了2.0版本。其限制条件和BSD类似，允许自由修改和使用、发布软件，但要求保留版权，相比于BSD许可，该许可对版权要求的更细，每一个被修改后的原始文件都要著名原始版权声明。使用 Apache 2.0许可 著名的软件有 Android ,Apache web server，swift 等。</p>
 ]]></content>
+  </entry>
+  <entry>
+    <title>浅拷贝与深拷贝以及引用</title>
+    <url>/2020/08/03/%E6%B5%85%E6%8B%B7%E8%B4%9D%E4%B8%8E%E6%B7%B1%E6%8B%B7%E8%B4%9D%E4%BB%A5%E5%8F%8A%E5%BC%95%E7%94%A8/</url>
+    <content><![CDATA[<h2 id="Python-变量存储情况"><a href="#Python-变量存储情况" class="headerlink" title="Python 变量存储情况"></a>Python 变量存储情况</h2><p>在高级语言中，变量是对内存及其地址的抽象。对于python 而言，python 的一切变量都是对象，变量的存储，采用了引用语义的方式，存储的只是一个变量的值所在的内存地址，而不是指这个变量的本身:</p>
+<p>引用语义：在 python 中，变量保存的是对象(值)的引用，我们称为 引用语义。采用这种方式，变量所需的存储空间大小一致，因为变量只是保存了一个引用。也被称为对象语义和指针语义。</p>
+<p>值语义：有些语言采用的不是这种方式，它们把变量的值直接保存在变量的存储区里，这种方式被我们称为值语义，例如 C 语言，采用这种存储方式，每一个变量在内存中所占的空间就要根据变量实际的大小而定，无法固定下来。</p>
+<p>值语义和引用语义的区别：</p>
+<p>值语义： 死的、 傻的、 简单的、 具体的、 可复制的<br>引用语义： 活的、 聪明的、 复杂的、 抽象的、 不可复制的</p>
+]]></content>
+      <tags>
+        <tag>python</tag>
+      </tags>
   </entry>
   <entry>
     <title>浅析GIT分支模型</title>
@@ -2481,6 +2490,20 @@
       </tags>
   </entry>
   <entry>
+    <title>网络模型总结</title>
+    <url>/2019/09/17/%E7%BD%91%E7%BB%9C%E6%A8%A1%E5%9E%8B%E6%80%BB%E7%BB%93/</url>
+    <content><![CDATA[<p>常用的五种网络IO模型是阻塞I/O，非阻塞I/O，I/O复用，事件(信号)驱动I/O，异步I/O。<br>为什么要发起系统调用？因为进程想要获取磁盘中的数据，而能和硬件打交道的只能是内核，进程通知内核说我要磁盘中的数据，此过程就是系统调用。<br>一次I/O的完成的步骤：当进程发起系统调用时，这个系统调用就进入内核模式，然后开始I/O操作。I/O操作分为两个步骤；<br>1、磁盘把数据装载到内核的内存空间，<br>2、内核的内存空间的数据copy到用户的内存空间中(此过程是I/O发生的地方)<br>以下是进程获取数据的详细图解过程；<br><img src="/2019/09/17/网络模型总结/net1.png" alt="avatar"><br>整个过程：此进程需要对磁盘中的数据进行操作，则会向内核发起一个系统调用，然后此进程，将会被切换出去，此进程会被挂起或者进入睡眠状态，也叫不可中断的睡眠，因为数据还没有得到，只有等到系统调用的结果完成后，则进程会被唤醒，继续接下来的操作，从系统调用的开始到系统调用结束经过的步骤：<br>①进程向内核发起一个系统调用，<br>②内核接收到系统调用，知道是对文件的请求，于是告诉磁盘，把文件读取出来<br>③磁盘接收到来着内核的命令后，把文件载入到内核的内存空间里面<br>④内核的内存空间接收到数据之后，把数据copy到用户进程的内存空间(此过程是I/O发生的地方)<br>⑤进程内存空间得到数据后，给内核发送通知<br>⑥内核把接收到的通知回复给进程，此过程为唤醒进程，然后进程得到数据，进行下一步操作<br>I/O发生的地方才会出现阻塞或非阻塞<br>阻塞：进程发起I/O调用，进程又不得不等待I/O的完成，此时CPU把进程切换出去，进程处于睡眠状态则此过程为阻塞I/O<br>阻塞I/O系统怎么通知进程？I/O完成，系统直接通知进程，则进程被唤醒</p>
+<h4 id="阻塞IO（blocking-I-O）"><a href="#阻塞IO（blocking-I-O）" class="headerlink" title="阻塞IO（blocking I/O）"></a>阻塞IO（blocking I/O）</h4><p>在内核将数据准备好之前，系统调用会一直等待所有的套接字，默认的是阻塞方式。<br><img src="/2019/09/17/网络模型总结/net2.png" alt="avatar"></p>
+<h4 id="非阻塞IO（noblocking-I-O）"><a href="#非阻塞IO（noblocking-I-O）" class="headerlink" title="非阻塞IO（noblocking I/O）"></a>非阻塞IO（noblocking I/O）</h4><p>每次客户询问内核是否有数据准备好，即文件描述符缓冲区是否就绪。当有数据报准备好时，就进行拷贝数据报的操作。当没有数据报准备好时，也不阻塞程序，内核直接返回未准备就绪的信号，等待用户程序的下一个轮寻。但是，轮寻对于CPU来说是较大的浪费，一般只有在特定的场景下才使用。<br><img src="/2019/09/17/网络模型总结/net3.png" alt="avatar"></p>
+<h4 id="IO多路复用"><a href="#IO多路复用" class="headerlink" title="IO多路复用"></a>IO多路复用</h4><p>IO多路转接是多了一个select函数，select函数有一个参数是文件描述符集合，对这些文件描述符进行循环监听，当某个文件描述符就绪时，就对这个文件描述符进行处理。<br><img src="/2019/09/17/网络模型总结/net4.png" alt="avatar"></p>
+<h4 id="异步IO（asynchronous-I-O）"><a href="#异步IO（asynchronous-I-O）" class="headerlink" title="异步IO（asynchronous I/O）"></a>异步IO（asynchronous I/O）</h4><p>当应用程序调用aio_read时，内核一方面去取数据报内容返回，另一方面将程序控制权还给应用进程，应用进程继续处理其他事情，是一种非阻塞的状态。<br>当内核中有数据报就绪时，由内核将数据报拷贝到应用程序中，返回aio_read中定义好的函数处理程序。<br><img src="/2019/09/17/网络模型总结/net5.png" alt="avatar"></p>
+<h4 id="阻塞、非阻塞，同步、异步"><a href="#阻塞、非阻塞，同步、异步" class="headerlink" title="阻塞、非阻塞，同步、异步"></a>阻塞、非阻塞，同步、异步</h4><p>关于同步和异步<br>同步和异步其实指的是，请求发起方对消息结果的获取是主动发起的，还是等被动通知的。如果是请求方主动发起的，一直在等待应答结果（同步阻塞），或者可以先去处理其他的事情，但要不断轮询查看发起的请求是否有应答结果（同步非阻塞 ）因为不管如何都要发起方主动获取消息结果，所以形式上还是同步操作。如果是由服务方通知的，也就是请求方发出请求后，要么在一直等待通知（异步阻塞），要么就先去干自己的事了（异步非阻塞），当事情处理完成之后，服务方会主动通知请求方，它的请求已经完成，这就是异步。异步通知的方式一般是通过状态改变，消息通知，或者回调函数来完成，大多数时候采用的都是回调函数。<br>关于阻塞和非阻塞<br>阻塞和非阻塞在计算机的世界里面，通常指的是针对IO的操作，如网络IO和磁盘IO等。那么什么是阻塞和非阻塞呢？简单的说就是我们调用了一个函数之后，在等待这个函数返回结果之前，当前的线程是处于挂起状态，还是运行状态，如果是挂起状态，就意味着当前线程什么都不能干，就等着获取结果，这就叫同步阻塞，如果仍然是运行状态，就意味当前线程是可以的继续处理其他任务，但要时不时的去看下是否有结果了，这就是同步非阻塞。</p>
+]]></content>
+      <tags>
+        <tag>linux</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>迭代器与生成器</title>
     <url>/2021/06/11/%E8%BF%AD%E4%BB%A3%E5%99%A8%E4%B8%8E%E7%94%9F%E6%88%90%E5%99%A8/</url>
     <content><![CDATA[<p><strong>生成器</strong></p>
@@ -2502,20 +2525,6 @@
 ]]></content>
       <tags>
         <tag>python</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>网络模型总结</title>
-    <url>/2019/09/17/%E7%BD%91%E7%BB%9C%E6%A8%A1%E5%9E%8B%E6%80%BB%E7%BB%93/</url>
-    <content><![CDATA[<p>常用的五种网络IO模型是阻塞I/O，非阻塞I/O，I/O复用，事件(信号)驱动I/O，异步I/O。<br>为什么要发起系统调用？因为进程想要获取磁盘中的数据，而能和硬件打交道的只能是内核，进程通知内核说我要磁盘中的数据，此过程就是系统调用。<br>一次I/O的完成的步骤：当进程发起系统调用时，这个系统调用就进入内核模式，然后开始I/O操作。I/O操作分为两个步骤；<br>1、磁盘把数据装载到内核的内存空间，<br>2、内核的内存空间的数据copy到用户的内存空间中(此过程是I/O发生的地方)<br>以下是进程获取数据的详细图解过程；<br><img src="/2019/09/17/网络模型总结/net1.png" alt="avatar"><br>整个过程：此进程需要对磁盘中的数据进行操作，则会向内核发起一个系统调用，然后此进程，将会被切换出去，此进程会被挂起或者进入睡眠状态，也叫不可中断的睡眠，因为数据还没有得到，只有等到系统调用的结果完成后，则进程会被唤醒，继续接下来的操作，从系统调用的开始到系统调用结束经过的步骤：<br>①进程向内核发起一个系统调用，<br>②内核接收到系统调用，知道是对文件的请求，于是告诉磁盘，把文件读取出来<br>③磁盘接收到来着内核的命令后，把文件载入到内核的内存空间里面<br>④内核的内存空间接收到数据之后，把数据copy到用户进程的内存空间(此过程是I/O发生的地方)<br>⑤进程内存空间得到数据后，给内核发送通知<br>⑥内核把接收到的通知回复给进程，此过程为唤醒进程，然后进程得到数据，进行下一步操作<br>I/O发生的地方才会出现阻塞或非阻塞<br>阻塞：进程发起I/O调用，进程又不得不等待I/O的完成，此时CPU把进程切换出去，进程处于睡眠状态则此过程为阻塞I/O<br>阻塞I/O系统怎么通知进程？I/O完成，系统直接通知进程，则进程被唤醒</p>
-<h4 id="阻塞IO（blocking-I-O）"><a href="#阻塞IO（blocking-I-O）" class="headerlink" title="阻塞IO（blocking I/O）"></a>阻塞IO（blocking I/O）</h4><p>在内核将数据准备好之前，系统调用会一直等待所有的套接字，默认的是阻塞方式。<br><img src="/2019/09/17/网络模型总结/net2.png" alt="avatar"></p>
-<h4 id="非阻塞IO（noblocking-I-O）"><a href="#非阻塞IO（noblocking-I-O）" class="headerlink" title="非阻塞IO（noblocking I/O）"></a>非阻塞IO（noblocking I/O）</h4><p>每次客户询问内核是否有数据准备好，即文件描述符缓冲区是否就绪。当有数据报准备好时，就进行拷贝数据报的操作。当没有数据报准备好时，也不阻塞程序，内核直接返回未准备就绪的信号，等待用户程序的下一个轮寻。但是，轮寻对于CPU来说是较大的浪费，一般只有在特定的场景下才使用。<br><img src="/2019/09/17/网络模型总结/net3.png" alt="avatar"></p>
-<h4 id="IO多路复用"><a href="#IO多路复用" class="headerlink" title="IO多路复用"></a>IO多路复用</h4><p>IO多路转接是多了一个select函数，select函数有一个参数是文件描述符集合，对这些文件描述符进行循环监听，当某个文件描述符就绪时，就对这个文件描述符进行处理。<br><img src="/2019/09/17/网络模型总结/net4.png" alt="avatar"></p>
-<h4 id="异步IO（asynchronous-I-O）"><a href="#异步IO（asynchronous-I-O）" class="headerlink" title="异步IO（asynchronous I/O）"></a>异步IO（asynchronous I/O）</h4><p>当应用程序调用aio_read时，内核一方面去取数据报内容返回，另一方面将程序控制权还给应用进程，应用进程继续处理其他事情，是一种非阻塞的状态。<br>当内核中有数据报就绪时，由内核将数据报拷贝到应用程序中，返回aio_read中定义好的函数处理程序。<br><img src="/2019/09/17/网络模型总结/net5.png" alt="avatar"></p>
-<h4 id="阻塞、非阻塞，同步、异步"><a href="#阻塞、非阻塞，同步、异步" class="headerlink" title="阻塞、非阻塞，同步、异步"></a>阻塞、非阻塞，同步、异步</h4><p>关于同步和异步<br>同步和异步其实指的是，请求发起方对消息结果的获取是主动发起的，还是等被动通知的。如果是请求方主动发起的，一直在等待应答结果（同步阻塞），或者可以先去处理其他的事情，但要不断轮询查看发起的请求是否有应答结果（同步非阻塞 ）因为不管如何都要发起方主动获取消息结果，所以形式上还是同步操作。如果是由服务方通知的，也就是请求方发出请求后，要么在一直等待通知（异步阻塞），要么就先去干自己的事了（异步非阻塞），当事情处理完成之后，服务方会主动通知请求方，它的请求已经完成，这就是异步。异步通知的方式一般是通过状态改变，消息通知，或者回调函数来完成，大多数时候采用的都是回调函数。<br>关于阻塞和非阻塞<br>阻塞和非阻塞在计算机的世界里面，通常指的是针对IO的操作，如网络IO和磁盘IO等。那么什么是阻塞和非阻塞呢？简单的说就是我们调用了一个函数之后，在等待这个函数返回结果之前，当前的线程是处于挂起状态，还是运行状态，如果是挂起状态，就意味着当前线程什么都不能干，就等着获取结果，这就叫同步阻塞，如果仍然是运行状态，就意味当前线程是可以的继续处理其他任务，但要时不时的去看下是否有结果了，这就是同步非阻塞。</p>
-]]></content>
-      <tags>
-        <tag>linux</tag>
       </tags>
   </entry>
   <entry>
@@ -2556,15 +2565,6 @@
 </ol>
 <h3 id="高可用"><a href="#高可用" class="headerlink" title="高可用"></a>高可用</h3><p>高可用性（High Availability）通常来描述一个系统经过专门的设计，从而减少停工时间，而保持其服务的高度可用性(一直都能用)。</p>
 ]]></content>
-  </entry>
-  <entry>
-    <title>多路复用机制与javaNIO</title>
-    <url>/2019/09/17/%E5%A4%9A%E8%B7%AF%E5%A4%8D%E7%94%A8%E6%9C%BA%E5%88%B6%E4%B8%8EjavaNIO/</url>
-    <content><![CDATA[<h4 id="IO多路复用"><a href="#IO多路复用" class="headerlink" title="IO多路复用"></a>IO多路复用</h4><p>select，poll，epoll都是IO多路复用的机制。I/O多路复用就通过一种机制，可以监视多个描述符，一旦某个描述符就绪（一般是读就绪或者写就绪），能够通知程序进行相应的读写操作。但select，poll，epoll本质上都是同步I/O，因为他们都需要在读写事件就绪后自己负责进行读写，也就是说这个读写过程是阻塞的，而异步I/O则无需自己负责进行读写，异步I/O的实现会负责把数据从内核拷贝到用户空间。<br>1、select实现<br><img src="/2019/09/17/多路复用机制与javaNIO/select.png" alt="avatar"><br>（1）使用copy_from_user从用户空间拷贝fd_set到内核空间<br>（2）注册回调函数<strong>pollwait<br>（3）遍历所有fd，调用其对应的poll方法（对于socket，这个poll方法是sock_poll，sock_poll根据情况会调用到tcp_poll,udp_poll或者datagram_poll）<br>（4）以tcp_poll为例，其核心实现就是</strong>pollwait，也就是上面注册的回调函数。<br>（5）__pollwait的主要工作就是把current（当前进程）挂到设备的等待队列中，不同的设备有不同的等待队列，对于tcp_poll来说，其等待队列是sk-&gt;sk_sleep（注意把进程挂到等待队列中并不代表进程已经睡眠了）。在设备收到一条消息（网络设备）或填写完文件数据（磁盘设备）后，会唤醒设备等待队列上睡眠的进程，这时current便被唤醒了。<br>（6）poll方法返回时会返回一个描述读写操作是否就绪的mask掩码，根据这个mask掩码给fd_set赋值。<br>（7）如果遍历完所有的fd，还没有返回一个可读写的mask掩码，则会调用schedule_timeout是调用select的进程（也就是current）进入睡眠。当设备驱动发生自身资源可读写后，会唤醒其等待队列上睡眠的进程。如果超过一定的超时时间（schedule_timeout指定），还是没人唤醒，则调用select的进程会重新被唤醒获得CPU，进而重新遍历fd，判断有没有就绪的fd。<br>（8）把fd_set从内核空间拷贝到用户空间。<br>总结：<br>select的几大缺点：<br>（1）每次调用select，都需要把fd集合从用户态拷贝到内核态，这个开销在fd很多时会很大<br>（2）同时每次调用select都需要在内核遍历传递进来的所有fd，这个开销在fd很多时也很大<br>（3）select支持的文件描述符数量太小了，默认是1024</p>
-]]></content>
-      <tags>
-        <tag>java</tag>
-      </tags>
   </entry>
   <entry>
     <title>HashTree小结</title>
@@ -4136,6 +4136,89 @@
 ]]></content>
   </entry>
   <entry>
+    <title>uWSGI和Gunicorn的对比小结</title>
+    <url>/2021/06/23/uWSGI%E5%92%8CGunicorn%E7%9A%84%E5%AF%B9%E6%AF%94%E5%B0%8F%E7%BB%93/</url>
+    <content><![CDATA[<p>由于uWGSI使用的是GPL2开源协议，Gunicorn使用的是MIT协议，商业使用为了规避相关法律风险，业务上有打算把uWSGI替换成Gunicorn，小结下两种组件的使用及区别。</p>
+<h4 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h4><p><strong>相同点</strong></p>
+<p>perfork是一种服务端编程模型, Nginx, Gunicorn, uWSGI都是这种模型的实现, 简单的说perfok就是master进程启动注册一堆信号处理函数, 创建listen socket fd, fork出多个worker子进程, 子进程执行accept循环处理请求(这里简化模型, 当然也可以用select, epoll多路复用), master进程只负责监控worker进程状态, 通过pipeline通信来控制worker进程.</p>
+<p>perfork模型使用master进程来监控worker进程状态, 避免了我们使用supervisor来监控进程, 还支持多种信号来控制worker的数量, 使得CPU能充分得到利用, 多个worker进程监听同一端口, 可以配置reuse_port参数在worker进程间负载均衡.</p>
+<p><strong>区别</strong></p>
+<p>Gunicorn</p>
+<p>Gunicorn是使用Python实现的WSGI服务器, 直接提供了http服务, 并且在woker上提供了多种选择, gevent, eventlet这些都支持, 在多worker最大化里用CPU的同时, 还可以使用协程来提供并发支撑, 对于网络IO密集的服务比较有利.</p>
+<p>同时Gunicorn也很容易就改造成一个TCP的服务, 比如doge重写worker类, 在针对长连接的服务时, 最好开启reuse_port, 避免worker进程负载不均。</p>
+<p>uWSGI</p>
+<p>不同于Gunicorn, uWSGI是使用C写的, 它的socket fd创建, worker进程的启动都是使用C语言系统接口来实现的, 在worker进程处理循环中, 解析了http请求后, 使用python的C接口生成environ对象, 再把这个对象作为参数塞到暴露出来的WSGI application函数中调用. 而这一切都是在C程序中进行, 只是在处理请求的时候交给python虚拟机调用application. 完全使用C语言实现的好处是性能会好一些.</p>
+<p>除了支持http协议, uWSGI还实现了uwsgi协议, 一般我们会在uWSGI服务器前面使用Nginx作为负载均衡, 如果使用http协议, 请求在转发到uWSGI前已经在Nginx这里解析了一遍, 转发到uWSGI又会重新解析一遍. uWSGI为了追求性能, 设计了uwsgi协议, 在Nginx解析完以后直接把解析好的结果通过uwsgi协议转发到uWSGI服务器, uWSGI拿到请求按格式生成environ对象, 不需要重复解析请求. 如果用Nginx配合uWSGI, 最好使用uwsgi协议来转发请求.</p>
+<p>除了是一个WSGI服务器, uWSGI还是一个开发框架, 它提供了缓存, 队列, rpc等等功能, 在github找找就会发现有人用它的缓存写了一个Django cache backend, 用它的队列实现异步任务这些东西, 但是用了这些东西技术栈也就跟uWSGI绑定在一起, 所以一般也只是把uWSGI当作WSGI服务器来用。</p>
+<h4 id="测试对比"><a href="#测试对比" class="headerlink" title="测试对比"></a>测试对比</h4><p>组里其他同学测试简单测试如下：</p>
+<p><img src="/2021/06/23/uWSGI和Gunicorn的对比小结/uwsgi.png" alt="avatar"></p>
+<p>与<a href="http://www.zh-noone.cn/2019/11/gunicorn-uwsgi%E6%80%A7%E8%83%BD%E5%AF%B9%E6%AF%94/" target="_blank" rel="noopener">http://www.zh-noone.cn/2019/11/gunicorn-uwsgi%E6%80%A7%E8%83%BD%E5%AF%B9%E6%AF%94/</a> 文章中测试结果大体一致。其中该文章中总结使用方式如下：</p>
+<p><strong>gunicorn小结</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">werkzeug:RPS:681.30/sec</span><br><span class="line"></span><br><span class="line">sync:RPS:615.97/sec</span><br><span class="line"></span><br><span class="line">gevent:RPS:1030.56/sec</span><br><span class="line"></span><br><span class="line">eventlet(preload模式):RPS:616.65/sec</span><br><span class="line"></span><br><span class="line">eventlet(非preload模式):1048.65/sec</span><br></pre></td></tr></table></figure>
+<p><strong>uwsgi小结</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">打印日志:RPS:1605.11/sec</span><br><span class="line"></span><br><span class="line">不打印日志(preload模式):RPS:1868.42/sec</span><br><span class="line"></span><br><span class="line">不打印日志(非preload模式):RPS:1433.42/sec</span><br><span class="line"></span><br><span class="line">gunicorn+nginx+eventlet:RPS:1030.56/sec</span><br></pre></td></tr></table></figure>
+<p><strong>小结</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">gunicorn 最好使用eventlet(非preload模式)</span><br><span class="line"></span><br><span class="line">uwsgi+nginx 最好使用不打印日志(preload模式)</span><br><span class="line"></span><br><span class="line">gunicorn与uwsgi比较最好使用uwsgi</span><br></pre></td></tr></table></figure>
+<h4 id="Gunicorn简介"><a href="#Gunicorn简介" class="headerlink" title="Gunicorn简介"></a>Gunicorn简介</h4><p>Gunicorn，是一个针对Python的、在Unix系统上运行的、用来解析HTTP请求的网关服务。它的特点是：能和大多数的Python web框架兼容；使用简单；轻量级的资源消耗；高性能。</p>
+<p><strong>Sync Workers（同步workers）</strong></p>
+<p><img src="/2021/06/23/uWSGI和Gunicorn的对比小结/gun1.png" alt="avatar"></p>
+<p>默认的、最简单的worker模式，是同步模式。</p>
+<p>每个worker进程，一次只处理一个请求；如果此时又有其他请求被分配到这个worker进程，那只好被阻塞了，要先等第一个请求完成 。并且，一个请求一个进程，并发时，显然很占CPU和内存。</p>
+<p>因此，只适合在访问量不大、CPU密集而非I/O密集的情形。</p>
+<p>不过也不是没有好处；好处是，即使一个worker进程crash了，也只会影响一个请求。</p>
+<p><strong>Async Workers（异步workers）</strong></p>
+<p><img src="/2021/06/23/uWSGI和Gunicorn的对比小结/gun2.png" alt="avatar"></p>
+<p>有Gevent和Eventlet两种，都是基于Greenlet实现的。</p>
+<p>用了异步worker，就能同时处理不止一个请求，就不会出现上面同步worker那样，一个请求就把后续请求都block阻塞住的情况了。</p>
+<p>Gevent是一个Python网络函数库，它通过Greenlet协程+libev快速事件循环，实现了异步模型。有了Gevent，切换Greenlet时就不再需要手动切换，而是当一个Greenlet遇到I/O时，Gevent能自动切换Greenlet，保证总有Greenlet在运行，而无需等待I/O。</p>
+<p>异步worker是怎样实现并发，使得一个worker就能同时处理很多请求的呢？</p>
+<p>以Gevent为例，每个请求的连接是一个Greenlet协程。Gevent虽然只有一个线程、同时只能处理一个请求，但是在这个请求的异步事件没准备好、进入IO等待时，能主动yield让出控制权、而不是阻塞其他请求的协程，而是先让其他协程执行，当自己的IO准备好时，事件循环会将它从yield让出控制权的地方，继续恢复执行。</p>
+<p>这样，Gevent就能在不同请求间不断切换，从而实现并发，以充分利用CPU、减少IO等待。并且，因为切换的Greenlet是“微线程”，它操作的维度是函数，而不是线程/进程，所以来回切换的开销，就没有那么大。</p>
+<p>就我个人理解，同步worker和Gevent异步worker，这两种worker类型是最常用的。一般来说，我们的web app多半属于外部IO密集型（总要访问db、访问第三方服务等等），所以用Gunicorn的Gevent异步worker，就非常合理。</p>
+<p>而如果你的web app是CPU密集型，或者你希望请求之间不要互相影响，那么可以选择Gunicorn的同步worker。</p>
+<p><strong>Tornado Workers</strong></p>
+<p>用来配合Tornado使用。</p>
+<p>Tornado是一个Python框架和网络库，可以提供异步IO非阻塞型模型，来处理长延时请求。</p>
+<p><img src="/2021/06/23/uWSGI和Gunicorn的对比小结/gun3.png" alt="avatar"></p>
+<p><strong>AsyncIO Workers</strong></p>
+<p>分成gthread和gaiohttp两种模式。</p>
+<p>gaiohttp利用aiohttp库，在服务端和客户端执行异步IO操作。支持web socket。</p>
+<p>gthread是一种全线程worker，worker与线程池保持连接，线程会等待接收请求，一个请求一个线程。在Gunicorn启动时，除了可配置worker进程数，还可以配每个进程里的thread线程数。</p>
+<p><img src="/2021/06/23/uWSGI和Gunicorn的对比小结/gun4.png" alt="avatar"></p>
+<h4 id="Gunicorn是怎样实现高并发的"><a href="#Gunicorn是怎样实现高并发的" class="headerlink" title="Gunicorn是怎样实现高并发的"></a>Gunicorn是怎样实现高并发的</h4><p>Gunicorn启动时，就把worker进程预先fork出来了。当多个请求到来的时候，会轮流复用这些worker进程，从而能提高服务器的并发负载能力。至于worker数的配置，一般推荐2<em>CPU数+1。这样推荐，背后的想法是，在任何时间，都有大概一半的worker是在做I/O，剩下一半才是需要CPU的。如果在开多进程的同时，也开多线程（也就是选择gthread类型的worker），那么，配置总的并发数（worker进程数</em>线程数），仍然建议2*CPU数+1。</p>
+<p>flask+Gunicorn(gevent)高并发的解决方法探究如下：</p>
+<p>方案一：使用gevent做协程，从而解决高并发的问题，通过Gunicorn(with gevent)的形式对app进行包装，从而来启动服务</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># 使用gevent做异步（默认worker是同步的）    多进程+协程</span><br><span class="line">gunicorn -w 8 --bind 0.0.0.0:8000 -k &apos;gevent&apos; 运行文件名称:Flask程序实例名</span><br><span class="line"></span><br><span class="line"># 使用gunicorn命令启动flask项目 </span><br><span class="line"># -w 8 </span><br><span class="line">	8个进程</span><br><span class="line"># --bind 0.0.0.0:8000 </span><br><span class="line">	ip + 端口</span><br><span class="line"># -k &apos;gevent&apos;</span><br><span class="line">	协程</span><br></pre></td></tr></table></figure>
+<p>方案二： 将运行的信息加载到配置文件中</p>
+<p>使用gunicorn + gevent 开启高并发</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># 多进程</span><br><span class="line">import multiprocessing </span><br><span class="line"></span><br><span class="line">&quot;&quot;&quot;gunicorn+gevent 的配置文件&quot;&quot;&quot;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"># 预加载资源</span><br><span class="line">preload_app = True</span><br><span class="line"># 绑定 ip + 端口</span><br><span class="line">bind = &quot;0.0.0.0:5000&quot;</span><br><span class="line"># 进程数 = cup数量 * 2 + 1</span><br><span class="line">workers = multiprocessing.cpu_count() * 2 + 1</span><br><span class="line"></span><br><span class="line"># 线程数 = cup数量 * 2 </span><br><span class="line">threads = multiprocessing.cpu_count() * 2</span><br><span class="line"></span><br><span class="line"># 等待队列最大长度,超过这个长度的链接将被拒绝连接</span><br><span class="line">backlog = 2048</span><br><span class="line"></span><br><span class="line"># 工作模式--协程</span><br><span class="line">worker_class = &quot;gevent&quot;</span><br><span class="line"></span><br><span class="line"># 最大客户客户端并发数量,对使用线程和协程的worker的工作有影响</span><br><span class="line"># 服务器配置设置的值  1200：中小型项目  上万并发： 中大型</span><br><span class="line"># 服务器硬件：宽带+数据库+内存</span><br><span class="line"># 服务器的架构：集群 主从</span><br><span class="line">worker_connections = 1200</span><br><span class="line"></span><br><span class="line"># 进程名称</span><br><span class="line">proc_name = &apos;gunicorn.pid&apos;</span><br><span class="line"># 进程pid记录文件</span><br><span class="line">pidfile = &apos;app_run.log&apos;</span><br><span class="line"># 日志等级</span><br><span class="line">loglevel = &apos;debug&apos;</span><br><span class="line"># 日志文件名</span><br><span class="line">logfile = &apos;debug.log&apos;</span><br><span class="line"># 访问记录</span><br><span class="line">accesslog = &apos;access.log&apos;</span><br><span class="line"># 访问记录格式</span><br><span class="line">access_log_format = &apos;%(h)s %(t)s %(U)s %(q)s&apos;</span><br></pre></td></tr></table></figure>
+<p>执行 ：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">gunicorn -c gunicorn_config.py flask_server:app</span><br></pre></td></tr></table></figure></p>
+<p><strong>协程 第三方封装库</strong></p>
+<p>gevent = greenlet + python.monkey（底层使用 libevent 时间复杂度： O(N * logN)）</p>
+<p>meinheld = greenlet + picoev (时间复杂度： O(N) )</p>
+<p>eventlet</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">meinheld和gevent都能实现异步，但是测评中meinheld比gevent的性能好很多，不过因为meinheld支持的比较少，一般都是配合gunicorn使用的。下面分析一下meinheld和gevent性能差距主要原因，分别使用的是picoev和lievent。</span><br><span class="line"></span><br><span class="line"># libevent</span><br><span class="line">主要实现：使用堆（优先队列）作为timer事件的算法（nlogn）,IO和信号的实现均使用了双向队列（用链表实现）。</span><br><span class="line">时间复杂度： O(N * logN)</span><br><span class="line"></span><br><span class="line"># picoev</span><br><span class="line">picoev主要优化有两点。 </span><br><span class="line">1. 主要是考虑是fd（file descriptors）在unix中是用比较小的正整数表示的，那么把fd的相关信息，全部存储在一个array中，这样使得查找快速，在操作socket状态时会更加的快。 </span><br><span class="line"></span><br><span class="line">2. 第二点是对于timer事件的算法优化，通过环形缓冲区(128)和bit vector实现查看部分源码可以看出，主要实现是每个时间点对应的是缓冲区的一个位置，每个缓存区使用bit vector 表示fd的数值，相当于一种hash映射所以时间复杂度为(o(n))，n为那个缓存区所存的fd数量。</span><br><span class="line"></span><br><span class="line">时间复杂度： O(N)</span><br><span class="line"></span><br><span class="line">性能： picoev &gt; libevent</span><br></pre></td></tr></table></figure>
+<h4 id="Gunicorn源码概览"><a href="#Gunicorn源码概览" class="headerlink" title="Gunicorn源码概览"></a>Gunicorn源码概览</h4><p>gunicorn源码的入口文件为<strong>main</strong>.py<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">from gunicorn.app.wsgiapp import run</span><br><span class="line">run()</span><br></pre></td></tr></table></figure></p>
+<p>在初始化加载相关配置文件后，调用 Arbiter(self).run()方法</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">def run(self):</span><br><span class="line">    &quot;Main master loop.&quot;</span><br><span class="line">    self.start()</span><br><span class="line">    util._setproctitle(&quot;master [%s]&quot; % self.proc_name)</span><br><span class="line"></span><br><span class="line">    try:</span><br><span class="line">        self.manage_workers()</span><br><span class="line"></span><br><span class="line">        while True:</span><br><span class="line">            self.maybe_promote_master()</span><br><span class="line"></span><br><span class="line">            sig = self.SIG_QUEUE.pop(0) if self.SIG_QUEUE else None</span><br><span class="line">            if sig is None:</span><br><span class="line">                self.sleep()</span><br><span class="line">                self.murder_workers()</span><br><span class="line">                self.manage_workers()</span><br><span class="line">                continue</span><br><span class="line"></span><br><span class="line">            if sig not in self.SIG_NAMES:</span><br><span class="line">                self.log.info(&quot;Ignoring unknown signal: %s&quot;, sig)</span><br><span class="line">                continue</span><br><span class="line"></span><br><span class="line">            signame = self.SIG_NAMES.get(sig)</span><br><span class="line">            handler = getattr(self, &quot;handle_%s&quot; % signame, None)</span><br><span class="line">            if not handler:</span><br><span class="line">                self.log.error(&quot;Unhandled signal: %s&quot;, signame)</span><br><span class="line">                continue</span><br><span class="line">            self.log.info(&quot;Handling signal: %s&quot;, signame)</span><br><span class="line">            handler()</span><br><span class="line">            self.wakeup()</span><br><span class="line">    except (StopIteration, KeyboardInterrupt):</span><br><span class="line">        self.halt()</span><br><span class="line">    except HaltServer as inst:</span><br><span class="line">        self.halt(reason=inst.reason, exit_status=inst.exit_status)</span><br><span class="line">    except SystemExit:</span><br><span class="line">        raise</span><br><span class="line">    except Exception:</span><br><span class="line">        self.log.info(&quot;Unhandled exception in main loop&quot;,</span><br><span class="line">                      exc_info=True)</span><br><span class="line">        self.stop(False)</span><br><span class="line">        if self.pidfile is not None:</span><br><span class="line">            self.pidfile.unlink()</span><br><span class="line">        sys.exit(-1)</span><br></pre></td></tr></table></figure>
+<p>其中self.start()会根据配置文件加载相关运行信息，包括worker工作方式。在manage_workers代码如下</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">def manage_workers(self):</span><br><span class="line">    &quot;&quot;&quot;\</span><br><span class="line">    Maintain the number of workers by spawning or killing</span><br><span class="line">    as required.</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line">    if len(self.WORKERS) &lt; self.num_workers:</span><br><span class="line">        self.spawn_workers()</span><br><span class="line"></span><br><span class="line">    workers = self.WORKERS.items()</span><br><span class="line">    workers = sorted(workers, key=lambda w: w[1].age)</span><br><span class="line">    while len(workers) &gt; self.num_workers:</span><br><span class="line">        (pid, _) = workers.pop(0)</span><br><span class="line">        self.kill_worker(pid, signal.SIGTERM)</span><br><span class="line"></span><br><span class="line">    active_worker_count = len(workers)</span><br><span class="line">    if self._last_logged_active_worker_count != active_worker_count:</span><br><span class="line">        self._last_logged_active_worker_count = active_worker_count</span><br><span class="line">        self.log.debug(&quot;&#123;0&#125; workers&quot;.format(active_worker_count),</span><br><span class="line">                       extra=&#123;&quot;metric&quot;: &quot;gunicorn.workers&quot;,</span><br><span class="line">                              &quot;value&quot;: active_worker_count,</span><br><span class="line">                              &quot;mtype&quot;: &quot;gauge&quot;&#125;)</span><br></pre></td></tr></table></figure>
+<p>在spawn_worker中有初始化进程代码</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">def spawn_worker(self):</span><br><span class="line">       self.worker_age += 1</span><br><span class="line">       worker = self.worker_class(self.worker_age, self.pid, self.LISTENERS,</span><br><span class="line">                                  self.app, self.timeout / 2.0,</span><br><span class="line">                                  self.cfg, self.log)</span><br><span class="line">       self.cfg.pre_fork(self, worker)</span><br><span class="line">       pid = os.fork()</span><br><span class="line">       if pid != 0:</span><br><span class="line">           worker.pid = pid</span><br><span class="line">           self.WORKERS[pid] = worker</span><br><span class="line">           return pid</span><br><span class="line"></span><br><span class="line">       # Do not inherit the temporary files of other workers</span><br><span class="line">       for sibling in self.WORKERS.values():</span><br><span class="line">           sibling.tmp.close()</span><br><span class="line"></span><br><span class="line">       # Process Child</span><br><span class="line">       worker.pid = os.getpid()</span><br><span class="line">       try:</span><br><span class="line">           util._setproctitle(&quot;worker [%s]&quot; % self.proc_name)</span><br><span class="line">           self.log.info(&quot;Booting worker with pid: %s&quot;, worker.pid)</span><br><span class="line">           self.cfg.post_fork(self, worker)</span><br><span class="line">           worker.init_process()</span><br><span class="line">           sys.exit(0)</span><br><span class="line">       except SystemExit:</span><br><span class="line">           raise</span><br><span class="line">       except AppImportError as e:</span><br><span class="line">           self.log.debug(&quot;Exception while loading the application&quot;,</span><br><span class="line">                          exc_info=True)</span><br><span class="line">           print(&quot;%s&quot; % e, file=sys.stderr)</span><br><span class="line">           sys.stderr.flush()</span><br><span class="line">           sys.exit(self.APP_LOAD_ERROR)</span><br><span class="line">       except Exception:</span><br><span class="line">           self.log.exception(&quot;Exception in worker process&quot;)</span><br><span class="line">           if not worker.booted:</span><br><span class="line">               sys.exit(self.WORKER_BOOT_ERROR)</span><br><span class="line">           sys.exit(-1)</span><br><span class="line">       finally:</span><br><span class="line">           self.log.info(&quot;Worker exiting (pid: %s)&quot;, worker.pid)</span><br><span class="line">           try:</span><br><span class="line">               worker.tmp.close()</span><br><span class="line">               self.cfg.worker_exit(self, worker)</span><br><span class="line">           except Exception:</span><br><span class="line">               self.log.warning(&quot;Exception during worker exit:\n%s&quot;,</span><br><span class="line">                                traceback.format_exc())</span><br></pre></td></tr></table></figure>
+<p>在init_process中就能够选择不同类型的worker了。</p>
+<h4 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h4><ol>
+<li><a href="https://pypi.org/project/gunicorn/" target="_blank" rel="noopener">https://pypi.org/project/gunicorn/</a></li>
+<li><a href="https://www.cnblogs.com/xuegqcto/p/10411943.html" target="_blank" rel="noopener">https://www.cnblogs.com/xuegqcto/p/10411943.html</a></li>
+<li><a href="http://www.zh-noone.cn/2019/11/gunicorn-uwsgi%E6%80%A7%E8%83%BD%E5%AF%B9%E6%AF%94/" target="_blank" rel="noopener">http://www.zh-noone.cn/2019/11/gunicorn-uwsgi%E6%80%A7%E8%83%BD%E5%AF%B9%E6%AF%94/</a></li>
+<li><a href="https://blog.csdn.net/dadajuan_plus/article/details/106571287" target="_blank" rel="noopener">https://blog.csdn.net/dadajuan_plus/article/details/106571287</a></li>
+<li><a href="https://blog.csdn.net/weixin_46072106/article/details/109708788" target="_blank" rel="noopener">https://blog.csdn.net/weixin_46072106/article/details/109708788</a></li>
+</ol>
+]]></content>
+      <tags>
+        <tag>python</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>分布式事务与mq</title>
     <url>/2021/06/04/%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1%E4%B8%8Emq/</url>
     <content><![CDATA[<h4 id="传统事务"><a href="#传统事务" class="headerlink" title="传统事务"></a>传统事务</h4><p>一个严格意义的事务实现，应该具有4个属性：原子性、一致性、隔离性、持久性。这四个属性通常称为ACID特性。</p>
@@ -5492,104 +5575,6 @@
       </tags>
   </entry>
   <entry>
-    <title>linux系统启动小结</title>
-    <url>/2021/05/24/linux%E7%B3%BB%E7%BB%9F%E5%90%AF%E5%8A%A8%E5%B0%8F%E7%BB%93/</url>
-    <content><![CDATA[<h4 id="BIOS、EFI、UEFI"><a href="#BIOS、EFI、UEFI" class="headerlink" title="BIOS、EFI、UEFI"></a>BIOS、EFI、UEFI</h4><p>BIOS存储在BIOS芯片中，而现在的新式电脑用的基本都是UEFI启动，早期的过渡电脑用的都是EFI启动。其实EFI或UEFI的一部分也是存储在一个芯片中，由于它们在表面形式、基本功能上和BIOS差不多，所以习惯上我们也把存储EFI/UEFI的芯片叫做EFI/UEFI BIOS芯片，EFI/UEFI也叫做EFI/UEFI BIOS，但在实际上它们和BIOS根本是不一样的，所以最好还是把后面的“BIOS”尾巴去掉为好，下面就来具体谈一下BIOS、EFI和UEFI。</p>
-<p>BIOS本身是汇编语言代码，是在16位实模式下调用INT 13H中断执行的，由于x86-64是一个高度兼容的指令集，也为了迁就BIOS的16位实模式的运行环境，所以即使现在的CPU都已是64位，如果还是在BIOS启动（基本见于09年以前的主板），在开机时仍然都是在16位实模式下执行的。16位实模式直接能访问的内存只有1MB，就算你安了4G、8G或者16G还是32G内存，到了BIOS上一律只先认前1MB。在这1MB内存中，前640K称为基本内存，后面384K内存留给开机必要硬件和各类BIOS本身使用，了解了这些，下面谈一下BIOS启动计算机的具体过程。</p>
-<p>当按下电源开关时，电源就开始向主板和其他设备供电，这时电压还不稳定，在早期的南北桥主板上，由主板北桥向CPU发复位信号，对CPU初始化；稳定电压后复位信号便撤掉。而对于现在的单南桥主板，则由CPU自身调整稳定电压达到初始化的目的，当电压稳定后，CPU便在系统BIOS保留的内存地址处执行跳转BIOS起始处指令，开始执行POST自检。</p>
-<p>在POST自检中，BIOS只检查系统的必要核心硬件是否有问题，主要是CPU、640K基本内存、显卡是否正常，PS/2键盘控制器、系统时钟是否有错误等等。由于POST检查在显卡初始化以前，因此在这个阶段如发生错误，是无法在屏幕上显示的，不过主板上还有个报警扬声器，而且如果主板的8255外围可编程接口芯片没有损坏的话，POST报警声音一定是会出来的。可以根据报警声的不同大致判断错误所在，一般情况下，一声短“嘀”声基本代表正常启动，不同的错误则是不同的短“嘀”声和长“嘀”声组合。POST自检结束后，BIOS开始调用中断完成各种硬件初始化工作。</p>
-<p>硬件初始化工作中，主要说明两点，首先经过POST检测后，电脑终于出现了开机启动画面，这就是已经检测到了显卡并完成了初始化。但是请注意，由于BIOS是在16位实模式运行，因此该画面是以VGA分辨率（640*480，纵横比4:3）显示的，因为实模式最高支持的就是VGA。以前的小14-17寸CRT显示器由于都是4:3比例，最高分辨率也比较低，因此这个开机启动画面没有什么违和感，但现在的液晶显示器基本上都是宽屏16:9的，分辨率也较高，因此在这样的显示屏下，启动画面上的一切东西显示都可以说“惨不忍睹”——图形被拉长，字体很大很模糊，可以很明显看到显示字体的锯齿。第二，BIOS只识别到由主引导记录（MBR）初始化的硬盘，之所以说明这点，是因为后续的EFI或UEFI采用了一种新的GUID磁盘分区系统（GPT）格式，这种硬盘在BIOS下是无法识别的。硬件全部初始化完毕后，接下来进入更新ESCD阶段。</p>
-<p>在ESCD更新阶段中，BIOS将对存储在CMOS中和操作系统交换的硬件配置数据进行检测，如果系统硬件发生变动，则会更新该数据，否则不更新保持原状不变，ESCD检测或更新结束后，BIOS将完成最后一项工作，就是启动操作系统。</p>
-<p>最后这一步中，BIOS根据CMOS中用户指定的硬件启动顺序，读取相应设备的启动或引导记录，引导相应设备上的操作系统启动，进入操作系统，此后便由操作系统接替BIOS负责硬件和软件间的相互通信。如果发现所有硬件都没有能引导操作系统的记录，则会在屏幕上显示相应错误信息，并将电脑维持在16位实模式。</p>
-<p>EFI，是Extensible Firmware Interface的词头缩写，直译过来就是可扩展固件接口，它是用模块化、高级语言（主要是C语言）构建的一个小型化系统，它和BIOS一样，主要在启动过程中完成硬件初始化，但它是直接利用加载EFI驱动的方式，识别系统硬件并完成硬件初始化，彻底摒弃读各种中断执行。EFI驱动并不是直接面向CPU的代码，而是由EFI字节码编写成，EFI字节码是专用于EFI的虚拟机器指令，需要在EFI驱动运行环境DXE下解释运行，这样EFI既可以实现通配，又提供了良好的兼容。此外，EFI完全是32位或64位，摒弃16位实模式，在EFI中就可以实现处理器的最大寻址，因此可以在任何内存地址存放任何信息。另外，由于EFI的驱动开发非常简单，基于EFI的驱动模型原则上可以使EFI接触到所有硬件功能，在EFI上实现文件读写，网络浏览都是完全可能的。BIOS上的的CMOS设置程序在EFI上是作为一个个EFI程序来执行的，硬件设置是硬件设置程序、而启动管理则是另一个程序，保存CMOS又是另一个程序，虽然它们在形式的Shell上是在一起的。</p>
-<p>EFI在功能上完全等同于一个轻量化的OS，但是EFI在制定时就定位到不足以成为专业OS的地位上，首先，它只是一个硬件和操作系统间的一个接口；其次，EFI不提供中断访问机制，EFI必须用轮询的方式检查并解释硬件，较OS下的驱动执行效率较低，最后，EFI只有简单的存储器管理机制，在段保护模式下只将存储器分段，所有程序都可以存取任何一段位置，不提供真实的保护服务。伴随着EFI，一种全新的GUID磁盘分区系统（GPT）被引入支持，传统MBR磁盘只能存在4个主分区，只有在创建主分区不足4个时，可以建立一个扩展分区，再在其上建立被系统识别的逻辑分区，逻辑分区也是有数量的，太多的逻辑分区会严重影响系统启动，MBR硬盘分区最大仅支持2T容量，对于现在的大容量硬盘来说也是浪费。GPT支持任意多的分区，每个分区大小原则上是无限制的，但实际上受到OS的规定限制不能做到无限，不过比MBR的2T限制是非常重要的进步。GPT的分区类型由GUID表唯一指定，基本不可能出现重复，其中的EFI系统分区可以被EFI存取，用来存取部分驱动和应用程序，虽然这原则上会使EFI系统分区变得不安全，但是一般这里放置的都是些“边缘”数据，即使其被破坏，一般也不会造成严重后果，而且也能够简单的恢复回来。</p>
-<p>当EFI发展到1.1的时候，英特尔决定把EFI公之于众，于是后续的2.0吸引了众多公司加入，EFI也不再属于英特尔，而是属于了Unified EFI Form的国际组织，EFI在2.0后也遂改称为UEFI，UEFI，其中的EFI和原来是一个意思，U则是Unified（一元化、统一）的缩写，所以UEFI的意思就是“统一的可扩展固件接口”，与前身EFI相比，UEFI主要有以下改进：</p>
-<p>首先，UEFI具有完整的图形驱动功能，之前的EFI虽然原则上加入了图形驱动，但为了保证EFI和BIOS的良好过渡，EFI多数还是一种类DOS界面（仍然是640<em>480VGA分辨率），只支持PS/2键盘操作（极少数支持鼠标操作），不支持USB键盘和鼠标。到了UEFI，则是拥有了完整的图形驱动，无论是PS/2还是USB键盘和鼠标，UEFI一律是支持的，而且UEFI在显卡也支持GOP VBIOS的时候，显示的设置界面是显卡高分辨率按640</em>480或1024*768显示，因此画面虽小但很清楚，但是这样会导致屏幕周围大片留黑，不过鱼和熊掌不可兼得，除非UEFI默认窗口大小也是最高分辨率</p>
-<p>其次，UEFI具有一个独特的功能，安全启动，而EFI是没有安全启动的，安全启动（Secure Boot），实际上通俗的解释是叫做固件验证。开启UEFI的安全启动后，主板会根据TPM芯片（或者CPU内置的TPM）记录的硬件签名对各硬件判断，只有符合认证的硬件驱动才会被加载，而Win8以后的Windows则是在操作系统加载的过程中对硬件驱动继续查签名，符合Windows记录的硬件才能被Windows加载，这在一定程度上降低了启动型程序在操作系统启动前被预加载造成的风险，但是这也会造成系统安装变得垄断</p>
-<p>无论EFI还是UEFI，都必须要有预加载环境、驱动执行环境、驱动程序等必要部分组成，为了支持部分旧设备（如在UEFI下挂载传统MBR硬盘，不支持UEFI启动的显卡在UEFI下仍然支持运行等），还需要一个CSM兼容性支持模块、EFI或UEFI都是仅支持GPT磁盘引导系统的，下面就具体谈一下EFI或UEFI启动计算机的过程。</p>
-<p>一般地，预加载环境和驱动执行环境是存储在UEFI（UEFI BIOS）芯片中的，当打开电源开关时，电脑的主要部件都开始有了供电，与BIOS不同的是，UEFI预加载环境首先开始执行，负责CPU和内存（是全部容量）的初始化工作，这里如出现重要问题，电脑即使有报警喇叭也不会响，因为UEFI没有去驱动8255发声，不过预加载环境只检查CPU和内存，如果这两个主要硬件出问题，屏幕没显示可以立即确定，另外一些主板会有提供LED提示，可根据CPU或内存亮灯大致判断故障。</p>
-<p>CPU和内存初始化成功后，驱动执行环境（DXE）载入，当DXE载入后，UEFI就具有了枚举并加载UEFI驱动程序的能力，在此阶段，UEFI会枚举搜索各个硬件的UEFI驱动并相继加载，完成硬件初始化工作，这相比BIOS的读中断加载速度会快的多，同样如加载显卡的UEFI驱动成功，电脑也会出现启动画面，硬件驱动全部加载完毕后，最后同BIOS一样，也得去启动操作系统。</p>
-<p>在启动操作系统的阶段，同样是根据启动记录的启动顺序，转到相应设备（仅限GPT设备，如果启动传统MBR设备，则需要打开CSM支持）的引导记录，引导操作系统并进入，这里需要注意的是，UEFI在检测到无任何操作系统启动设备时，会直接进入UEFI设置页面，而不是像BIOS那样黑屏显示相关信息。</p>
-<p>综上对BIOS和UEFI启动计算机过程的叙述，可以概括为：BIOS先要对CPU初始化，然后跳转到BIOS启动处进行POST自检，此过程如有严重错误，则电脑会用不同的报警声音提醒，接下来采用读中断的方式加载各种硬件，完成硬件初始化后进入操作系统启动过程；而UEFI则是运行预加载环境先直接初始化CPU和内存，CPU和内存若有问题则直接黑屏，其后启动PXE采用枚举方式搜索各种硬件并加载驱动，完成硬件初始化，之后同样进入操作系统启动过程。</p>
-<p>此外，BIOS是16位汇编语言程序，只能运行在16位实模式，可访问的内存只有1MB，而UEFI是32位或64位高级语言程序（C语言程序），突破实模式限制，可以达到要求的最大寻址。</p>
-<h4 id="genisoimage、mkisofs"><a href="#genisoimage、mkisofs" class="headerlink" title="genisoimage、mkisofs"></a>genisoimage、mkisofs</h4><p><strong>genisoimage</strong></p>
-<p>功能说明：建立ISO 9660映像文件。  </p>
-<p>常用命令：genisoimage -o imagename.iso file </p>
-<p>语 法：mkisofs [-adDfhJlLNrRTvz][-print-size][-quiet][-A ][-abstract ][-b ][-biblio ][-c ][-C ][-copyright ][-hide ][-hide-joliet ][-log-file ][-m ][-M ][-o ][-p ][-P ][-sysid ][-V ][-volset ][-volset-size ][-volset-seqno ][-x ][目录或文件]  </p>
-<p><strong>mkisofs</strong></p>
-<p>命令: mkisofs(make iso file system)</p>
-<p>功能说明：建立ISO 9660映像文件。</p>
-<p>语 法：mkisofs [-adDfhJlLNrRTvz][-print-size][-quiet][-A &lt;应用程序ID&gt;][-abstract &lt;摘要文件&gt;][-b &lt;开机映像文件&gt;][-biblio ][-c &lt;开机文件名称&gt;][-C &lt;盘区编号，磁区编号&gt;][-copyright &lt;版权信息文件&gt;][-hide &lt;目录或文件名&gt;][-hide-joliet &lt;文件或目录名&gt;][-log-file &lt;记录文件&gt;][-m &lt;目录或文件名&gt;][-M &lt;开机映像文件&gt;][-o &lt;映像文件&gt;][-p &lt;数据处理人&gt;][-P &lt;光盘发行人&gt;][-sysid &lt;系统ID &gt;][-V &lt;光盘ID &gt;][-volset &lt;卷册集ID&gt;][-volset-size &lt;光盘总数&gt;][-volset-seqno &lt;卷册序号&gt;][-x &lt;目录&gt;][目录或文件]</p>
-<p>补充说明：mkisofs可将指定的目录与文件做成ISO 9660格式的映像文件，以供刻录光盘。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">参 数：</span><br><span class="line">-a或--all mkisofs通常不处理备份文件。使用此参数可以把备份文件加到映像文件中。</span><br><span class="line">-A&lt;应用程序ID&gt;或-appid&lt;应用程序ID&gt; 指定光盘的应用程序ID。</span><br><span class="line">-abstract&lt;摘要文件&gt; 指定摘要文件的文件名。</span><br><span class="line">-b&lt;开机映像文件&gt;或-eltorito-boot&lt;开机映像文件&gt; 指定在制作可开机光盘时所需的开机映像文件。</span><br><span class="line">-biblio 指定ISBN文件的文件名，ISBN文件位于光盘根目录下，记录光盘的ISBN。</span><br><span class="line">-c&lt;开机文件名称&gt; 制作可开机光盘时，mkisofs会将开机映像文件中的全-eltorito-catalog&lt;开机文件名称&gt;全部内容作成一个文件。</span><br><span class="line">-C&lt;盘区编号，盘区编号&gt; 将许多节区合成一个映像文件时，必须使用此参数。</span><br><span class="line">-copyright&lt;版权信息文件&gt; 指定版权信息文件的文件名。</span><br><span class="line">-d或-omit-period 省略文件后的句号。</span><br><span class="line">-D或-disable-deep-relocation ISO 9660最多只能处理8层的目录，超过8层的部分，RRIP会自动将它们设置成ISO 9660兼容的格式。使用-D参数可关闭此功能。</span><br><span class="line">-f或-follow-links 忽略符号连接。</span><br><span class="line">-h 显示帮助。</span><br><span class="line">-hide&lt;目录或文件名&gt; 使指定的目录或文件在ISO 9660或Rock RidgeExtensions的系统中隐藏。</span><br><span class="line">-hide-joliet&lt;目录或文件名&gt; 使指定的目录或文件在Joliet系统中隐藏。</span><br><span class="line">-J或-joliet 使用Joliet格式的目录与文件名称。</span><br><span class="line">-l或-full-iso9660-filenames 使用ISO 9660 32字符长度的文件名。</span><br><span class="line">-L或-allow-leading-dots 允许文件名的第一个字符为句号。</span><br><span class="line">-log-file&lt;记录文件&gt; 在执行过程中若有错误信息，预设会显示在屏幕上。</span><br><span class="line">-m&lt;目录或文件名&gt;或-exclude&lt;目录或文件名&gt; 指定的目录或文件名将不会房入映像文件中。</span><br><span class="line">-M&lt;映像文件&gt;或-prev-session&lt;映像文件&gt; 与指定的映像文件合并。</span><br><span class="line">-N或-omit-version-number 省略ISO 9660文件中的版本信息。</span><br><span class="line">-o&lt;映像文件&gt;或-output&lt;映像文件&gt; 指定映像文件的名称。</span><br><span class="line">-p&lt;数据处理人&gt;或-preparer&lt;数据处理人&gt; 记录光盘的数据处理人。</span><br><span class="line">-print-size 显示预估的文件系统大小。</span><br><span class="line">-quiet 执行时不显示任何信息。</span><br><span class="line">-r或-rational-rock 使用Rock Ridge Extensions，并开放全部文件的读取权限。</span><br><span class="line">-R或-rock 使用Rock Ridge Extensions。</span><br><span class="line">-sysid&lt;系统ID&gt; 指定光盘的系统ID。</span><br><span class="line">-T或-translation-table 建立文件名的转换表，适用于不支持Rock Ridge Extensions的系统上。</span><br><span class="line">-v或-verbose 执行时显示详细的信息。</span><br><span class="line">-V&lt;光盘ID</span><br></pre></td></tr></table></figure>
-<h4 id="UEFI-GPT引导基础"><a href="#UEFI-GPT引导基础" class="headerlink" title="UEFI+GPT引导基础"></a>UEFI+GPT引导基础</h4><p><strong>GPT及其优势</strong></p>
-<p>GPT和MBR是两种不同的分区方案。目前在Windows下广泛采用的磁盘分区方案仍然是MBR分区结构，但不容怀疑GPT是今后的趋势。我们可将MBR磁盘分区结构用下图简单表示（Windows下基本磁盘、4个主分区）：</p>
-<p><img src="/2021/05/24/linux系统启动小结/gpt1.png" alt="avatar"></p>
-<p>为了方便计算机访问硬盘，把硬盘上的空间划分成许许多多的区块（英文叫sectors，即扇区），然后给每个区块分配一个地址，称为逻辑块地址（即LBA）。</p>
-<p>在MBR磁盘的第一个扇区内保存着启动代码和硬盘分区表。启动代码的作用是指引计算机从活动分区引导启动操作系统（BIOS下启动操作系统的方式）；分区表的作用是记录硬盘的分区信息。在MBR中，分区表的大小是固定的，一共可容纳4个主分区信息。在MBR分区表中逻辑块地址采用32位二进制数表示，因此一共可表示2^32（2的32次方）个逻辑块地址。如果一个扇区大小为512字节，那么硬盘最大分区容量仅为2TB。</p>
-<p>GPT磁盘分区结构可用下图简单表示（Windows下基本磁盘）：</p>
-<p><img src="/2021/05/24/linux系统启动小结/gpt2.png" alt="avatar"></p>
-<p>GPT分区结构<br>可以看到，在GTP磁盘的第一个数据块中同样有一个与MBR（主引导记录）类似的标记，叫做PMBR。PMBR的作用是，当使用不支持GPT的分区工具时，整个硬盘将显示为一个受保护的分区，以防止分区表及硬盘数据遭到破坏。UEFI并不从PMBR中获取GPT磁盘的分区信息，它有自己的分区表，即GPT分区表。</p>
-<p>GPT的分区方案之所以比MBR更先进，是因为在GPT分区表头中可自定义分区数量的最大值，也就是说GPT分区表的大小不是固定的。在Windows中，微软设定GPT磁盘最大分区数量为128个。另外，GPT分区方案中逻辑块地址（LBA）采用64位二进制数表示，可以计算一下2^64是一个多么庞大的数据，以我们的需求来讲完全有理由认为这个大小约等于无限。除此之外，GPT分区方案在硬盘的末端还有一个备份分区表，保证了分区信息不容易丢失。</p>
-<h4 id="安装系统启动过程"><a href="#安装系统启动过程" class="headerlink" title="安装系统启动过程"></a>安装系统启动过程</h4><p>以光盘安装操作系统为例，当我们安装系统时，它是怎么一步步读取光盘中的必要文件，从而实现系统的安装；不论是哪种安装方法，光盘、硬盘、网络等等，涉及的系统安装必要文件是一样的；</p>
-<p>第一步：读取MBR： isolinux/boot.cat ###boot.cat的作用就相当于启动流程中的MBR的446字节效果</p>
-<p>第二步: 读取isolinux/isolinux.bin ###isolinux.bin的作用等价于grub的第二阶段</p>
-<p>第三步：加载配置文件： isolinux/isolinux.cfg ###这个文件就是启动菜单；自定义启动菜单可以修改此文件</p>
-<p>第四步：根据配置文件定义调用内核文件</p>
-<ul>
-<li>加载内核： isolinuz/vmlinuz</li>
-<li>向内核传递参数： append initrd=initrd.img</li>
-</ul>
-<p>第五步：装载根文件系统，并启动anaconda ###anaconda就是kickstart文件</p>
-<p>默认启动GUI接口</p>
-<p>若是显式指定使用GUI接口： 向内核传递text参数即可</p>
-<p>(1)按tab键,在后面增加text ###tab进入的就是isolinux.cfg内容</p>
-<p>(2)按ESC键： boot: linux text ###boot后面接label的内容，就进入相应的模式；如boot：rescue 当然如果是boot：linux rescue 进入的也是救援模式，因为linux和rescue之间就差一个rescue</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[root@centos6 ~]#lsblk</span><br><span class="line">NAME   MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT</span><br><span class="line">sr0     11:0    1  3.7G  0 rom  /mnt</span><br><span class="line">sda      8:0    0  200G  0 disk </span><br><span class="line">├─sda1   8:1    0    1G  0 part /boot</span><br><span class="line">├─sda2   8:2    0 48.8G  0 part /</span><br><span class="line">├─sda3   8:3    0 29.3G  0 part /data</span><br><span class="line">├─sda4   8:4    0    1K  0 part </span><br><span class="line">└─sda5   8:5    0    2G  0 part [SWAP]</span><br><span class="line">[root@centos6 ~]#cd /mnt/</span><br><span class="line">[root@centos6 mnt]#ls</span><br><span class="line">CentOS_BuildTag  isolinux                  RPM-GPG-KEY-CentOS-Debug-6</span><br><span class="line">EFI              Packages                  RPM-GPG-KEY-CentOS-Security-6</span><br><span class="line">EULA             RELEASE-NOTES-en-US.html  RPM-GPG-KEY-CentOS-Testing-6</span><br><span class="line">GPL              repodata                  TRANS.TBL</span><br><span class="line">images           RPM-GPG-KEY-CentOS-6</span><br><span class="line">[root@centos6 mnt]#cd isolinux/</span><br><span class="line">[root@centos6 isolinux]#ls   ###此部分就是官方提供的光盘安装系统，提供的必要文件</span><br><span class="line">boot.cat  grub.conf   isolinux.bin  memtest     TRANS.TBL     vmlinuz</span><br><span class="line">boot.msg  initrd.img  isolinux.cfg  splash.jpg  vesamenu.c32</span><br><span class="line">[root@centos6 isolinux]#</span><br></pre></td></tr></table></figure>
-<p><strong>系统引导文件分析—isolinux.cfg</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[root@centos6 isolinux]#cat isolinux.cfg</span><br><span class="line">default vesamenu.c32    ###启动菜单的样式</span><br><span class="line">#prompt 1</span><br><span class="line">timeout 600</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">display boot.msg   ####启动时的背景图片，以及下面设置了相关的菜单主题风格</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">menu background splash.jpg</span><br><span class="line">menu title Welcome to CentOS 6.10!</span><br><span class="line">menu color border 0 #ffffffff #00000000</span><br><span class="line">menu color sel 7 #ffffffff #ff000000</span><br><span class="line">menu color title 0 #ffffffff #00000000</span><br><span class="line">menu color tabmsg 0 #ffffffff #00000000</span><br><span class="line">menu color unsel 0 #ffffffff #00000000</span><br><span class="line">menu color hotsel 0 #ff000000 #ffffffff</span><br><span class="line">menu color hotkey 7 #ffffffff #ff000000</span><br><span class="line">menu color scrollbar 0 #ffffffff #00000000</span><br><span class="line">label linux   ###下面的五个label定义了启动系统可供选择的五个模式，对照图片可以一一对应</span><br><span class="line">  menu label ^Install or upgrade an existing system</span><br><span class="line">  menu default</span><br><span class="line">  kernel vmlinuz</span><br><span class="line">  append initrd=initrd.img</span><br><span class="line">label vesa</span><br><span class="line">  menu label Install system with ^basic video driver</span><br><span class="line">  kernel vmlinuz</span><br><span class="line">  append initrd=initrd.img nomodeset</span><br><span class="line">label rescue</span><br><span class="line">  menu label ^Rescue installed system</span><br><span class="line">  kernel vmlinuz</span><br><span class="line">  append initrd=initrd.img rescue</span><br><span class="line">label local</span><br><span class="line">  menu label Boot from ^local drive</span><br><span class="line">  localboot 0xffff</span><br><span class="line">label memtest86</span><br><span class="line">  menu label ^Memory test</span><br><span class="line">  kernel memtest</span><br><span class="line">  append -</span><br></pre></td></tr></table></figure>
-<h4 id="CentOS-7-UEFI模式"><a href="#CentOS-7-UEFI模式" class="headerlink" title="CentOS 7 UEFI模式"></a>CentOS 7 UEFI模式</h4><ol>
-<li>UEFI模式下EFI目录是必须的，legacy模式下EFI可以删除</li>
-</ol>
-<p><img src="/2021/05/24/linux系统启动小结/uefi1.png" alt="avatar"></p>
-<ol start="2">
-<li>ks引导文件在grub.cfg里修改</li>
-</ol>
-<p><img src="/2021/05/24/linux系统启动小结/uefi2.png" alt="avatar"></p>
-<p><img src="/2021/05/24/linux系统启动小结/uefi3.png" alt="avatar"></p>
-<ol start="3">
-<li>efiboot.img文件是UEFI模式下必须的</li>
-</ol>
-<p><img src="/2021/05/24/linux系统启动小结/uefi4.png" alt="avatar"></p>
-<ol start="4">
-<li>UEFI模式需要有如下包支持</li>
-</ol>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">grub2-efi、grub2-tools、grub2-tools-extra、grub2-tools-minimal、grub2-common、shim、mokutil、efivar-libs、efibootmgr</span><br></pre></td></tr></table></figure>
-<ol start="5">
-<li>legacy和UEFI模式ks文件的区别是磁盘分区，UEFI模式多了一个/boot/efi分区</li>
-</ol>
-<p><img src="/2021/05/24/linux系统启动小结/uefi5.png" alt="avatar"></p>
-<ol start="6">
-<li>UEFI打包方式和legacy模式不一样,命令如下</li>
-</ol>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">genisoimage -v -cache-inodes -joliet-long -R -J -T \</span><br><span class="line">-o /$iso_dir/CentOS-7_x86_64-UEFI.iso -b isolinux/isolinux.bin -c isolinux/boot.cat \</span><br><span class="line">-no-emul-boot -boot-load-size 4 -boot-info-table -eltorito-alt-boot -b images/efiboot.img -no-emul-boot -input-charset</span><br></pre></td></tr></table></figure>
-<h4 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h4><ol>
-<li><a href="https://blog.csdn.net/ZhangSong051052/article/details/80670970" target="_blank" rel="noopener">https://blog.csdn.net/ZhangSong051052/article/details/80670970</a></li>
-<li><a href="https://www.cnblogs.com/klb561/p/9108712.html" target="_blank" rel="noopener">https://www.cnblogs.com/klb561/p/9108712.html</a></li>
-<li><a href="https://zhuanlan.zhihu.com/p/45791653" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/45791653</a></li>
-<li><a href="https://zhuanlan.zhihu.com/p/345519855" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/345519855</a></li>
-<li><a href="https://developer.aliyun.com/article/523995" target="_blank" rel="noopener">https://developer.aliyun.com/article/523995</a></li>
-<li><strong><a href="https://www.zhihu.com/question/21672895" target="_blank" rel="noopener">https://www.zhihu.com/question/21672895</a></strong></li>
-<li><a href="https://blog.51cto.com/xlogin/1261632" target="_blank" rel="noopener">https://blog.51cto.com/xlogin/1261632</a></li>
-<li><a href="https://yangfannie.com/1930.html" target="_blank" rel="noopener">https://yangfannie.com/1930.html</a></li>
-<li><a href="https://www.iruanmi.com/what-is-gpt-and-what-is-uefi/" target="_blank" rel="noopener">https://www.iruanmi.com/what-is-gpt-and-what-is-uefi/</a></li>
-</ol>
-]]></content>
-      <tags>
-        <tag>linux</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>linux文件系统小结</title>
     <url>/2021/05/08/linux%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E5%B0%8F%E7%BB%93/</url>
     <content><![CDATA[<h3 id="文件系统"><a href="#文件系统" class="headerlink" title="文件系统"></a>文件系统</h3><h4 id="Linux"><a href="#Linux" class="headerlink" title="Linux"></a>Linux</h4><p>Linux：存在几十个文件系统类型：ext2，ext3，ext4，xfs，brtfs，zfs（man 5 fs可以取得全部文件系统的介绍）</p>
@@ -5724,6 +5709,104 @@
 <li><a href="https://www.cnblogs.com/f-ck-need-u/p/7048971.html" target="_blank" rel="noopener">https://www.cnblogs.com/f-ck-need-u/p/7048971.html</a></li>
 <li><a href="https://blog.csdn.net/s361260777/article/details/82631170" target="_blank" rel="noopener">https://blog.csdn.net/s361260777/article/details/82631170</a></li>
 <li><a href="https://www.cnblogs.com/f-ck-need-u/p/7049233.html" target="_blank" rel="noopener">https://www.cnblogs.com/f-ck-need-u/p/7049233.html</a></li>
+</ol>
+]]></content>
+      <tags>
+        <tag>linux</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>linux系统启动小结</title>
+    <url>/2021/05/24/linux%E7%B3%BB%E7%BB%9F%E5%90%AF%E5%8A%A8%E5%B0%8F%E7%BB%93/</url>
+    <content><![CDATA[<h4 id="BIOS、EFI、UEFI"><a href="#BIOS、EFI、UEFI" class="headerlink" title="BIOS、EFI、UEFI"></a>BIOS、EFI、UEFI</h4><p>BIOS存储在BIOS芯片中，而现在的新式电脑用的基本都是UEFI启动，早期的过渡电脑用的都是EFI启动。其实EFI或UEFI的一部分也是存储在一个芯片中，由于它们在表面形式、基本功能上和BIOS差不多，所以习惯上我们也把存储EFI/UEFI的芯片叫做EFI/UEFI BIOS芯片，EFI/UEFI也叫做EFI/UEFI BIOS，但在实际上它们和BIOS根本是不一样的，所以最好还是把后面的“BIOS”尾巴去掉为好，下面就来具体谈一下BIOS、EFI和UEFI。</p>
+<p>BIOS本身是汇编语言代码，是在16位实模式下调用INT 13H中断执行的，由于x86-64是一个高度兼容的指令集，也为了迁就BIOS的16位实模式的运行环境，所以即使现在的CPU都已是64位，如果还是在BIOS启动（基本见于09年以前的主板），在开机时仍然都是在16位实模式下执行的。16位实模式直接能访问的内存只有1MB，就算你安了4G、8G或者16G还是32G内存，到了BIOS上一律只先认前1MB。在这1MB内存中，前640K称为基本内存，后面384K内存留给开机必要硬件和各类BIOS本身使用，了解了这些，下面谈一下BIOS启动计算机的具体过程。</p>
+<p>当按下电源开关时，电源就开始向主板和其他设备供电，这时电压还不稳定，在早期的南北桥主板上，由主板北桥向CPU发复位信号，对CPU初始化；稳定电压后复位信号便撤掉。而对于现在的单南桥主板，则由CPU自身调整稳定电压达到初始化的目的，当电压稳定后，CPU便在系统BIOS保留的内存地址处执行跳转BIOS起始处指令，开始执行POST自检。</p>
+<p>在POST自检中，BIOS只检查系统的必要核心硬件是否有问题，主要是CPU、640K基本内存、显卡是否正常，PS/2键盘控制器、系统时钟是否有错误等等。由于POST检查在显卡初始化以前，因此在这个阶段如发生错误，是无法在屏幕上显示的，不过主板上还有个报警扬声器，而且如果主板的8255外围可编程接口芯片没有损坏的话，POST报警声音一定是会出来的。可以根据报警声的不同大致判断错误所在，一般情况下，一声短“嘀”声基本代表正常启动，不同的错误则是不同的短“嘀”声和长“嘀”声组合。POST自检结束后，BIOS开始调用中断完成各种硬件初始化工作。</p>
+<p>硬件初始化工作中，主要说明两点，首先经过POST检测后，电脑终于出现了开机启动画面，这就是已经检测到了显卡并完成了初始化。但是请注意，由于BIOS是在16位实模式运行，因此该画面是以VGA分辨率（640*480，纵横比4:3）显示的，因为实模式最高支持的就是VGA。以前的小14-17寸CRT显示器由于都是4:3比例，最高分辨率也比较低，因此这个开机启动画面没有什么违和感，但现在的液晶显示器基本上都是宽屏16:9的，分辨率也较高，因此在这样的显示屏下，启动画面上的一切东西显示都可以说“惨不忍睹”——图形被拉长，字体很大很模糊，可以很明显看到显示字体的锯齿。第二，BIOS只识别到由主引导记录（MBR）初始化的硬盘，之所以说明这点，是因为后续的EFI或UEFI采用了一种新的GUID磁盘分区系统（GPT）格式，这种硬盘在BIOS下是无法识别的。硬件全部初始化完毕后，接下来进入更新ESCD阶段。</p>
+<p>在ESCD更新阶段中，BIOS将对存储在CMOS中和操作系统交换的硬件配置数据进行检测，如果系统硬件发生变动，则会更新该数据，否则不更新保持原状不变，ESCD检测或更新结束后，BIOS将完成最后一项工作，就是启动操作系统。</p>
+<p>最后这一步中，BIOS根据CMOS中用户指定的硬件启动顺序，读取相应设备的启动或引导记录，引导相应设备上的操作系统启动，进入操作系统，此后便由操作系统接替BIOS负责硬件和软件间的相互通信。如果发现所有硬件都没有能引导操作系统的记录，则会在屏幕上显示相应错误信息，并将电脑维持在16位实模式。</p>
+<p>EFI，是Extensible Firmware Interface的词头缩写，直译过来就是可扩展固件接口，它是用模块化、高级语言（主要是C语言）构建的一个小型化系统，它和BIOS一样，主要在启动过程中完成硬件初始化，但它是直接利用加载EFI驱动的方式，识别系统硬件并完成硬件初始化，彻底摒弃读各种中断执行。EFI驱动并不是直接面向CPU的代码，而是由EFI字节码编写成，EFI字节码是专用于EFI的虚拟机器指令，需要在EFI驱动运行环境DXE下解释运行，这样EFI既可以实现通配，又提供了良好的兼容。此外，EFI完全是32位或64位，摒弃16位实模式，在EFI中就可以实现处理器的最大寻址，因此可以在任何内存地址存放任何信息。另外，由于EFI的驱动开发非常简单，基于EFI的驱动模型原则上可以使EFI接触到所有硬件功能，在EFI上实现文件读写，网络浏览都是完全可能的。BIOS上的的CMOS设置程序在EFI上是作为一个个EFI程序来执行的，硬件设置是硬件设置程序、而启动管理则是另一个程序，保存CMOS又是另一个程序，虽然它们在形式的Shell上是在一起的。</p>
+<p>EFI在功能上完全等同于一个轻量化的OS，但是EFI在制定时就定位到不足以成为专业OS的地位上，首先，它只是一个硬件和操作系统间的一个接口；其次，EFI不提供中断访问机制，EFI必须用轮询的方式检查并解释硬件，较OS下的驱动执行效率较低，最后，EFI只有简单的存储器管理机制，在段保护模式下只将存储器分段，所有程序都可以存取任何一段位置，不提供真实的保护服务。伴随着EFI，一种全新的GUID磁盘分区系统（GPT）被引入支持，传统MBR磁盘只能存在4个主分区，只有在创建主分区不足4个时，可以建立一个扩展分区，再在其上建立被系统识别的逻辑分区，逻辑分区也是有数量的，太多的逻辑分区会严重影响系统启动，MBR硬盘分区最大仅支持2T容量，对于现在的大容量硬盘来说也是浪费。GPT支持任意多的分区，每个分区大小原则上是无限制的，但实际上受到OS的规定限制不能做到无限，不过比MBR的2T限制是非常重要的进步。GPT的分区类型由GUID表唯一指定，基本不可能出现重复，其中的EFI系统分区可以被EFI存取，用来存取部分驱动和应用程序，虽然这原则上会使EFI系统分区变得不安全，但是一般这里放置的都是些“边缘”数据，即使其被破坏，一般也不会造成严重后果，而且也能够简单的恢复回来。</p>
+<p>当EFI发展到1.1的时候，英特尔决定把EFI公之于众，于是后续的2.0吸引了众多公司加入，EFI也不再属于英特尔，而是属于了Unified EFI Form的国际组织，EFI在2.0后也遂改称为UEFI，UEFI，其中的EFI和原来是一个意思，U则是Unified（一元化、统一）的缩写，所以UEFI的意思就是“统一的可扩展固件接口”，与前身EFI相比，UEFI主要有以下改进：</p>
+<p>首先，UEFI具有完整的图形驱动功能，之前的EFI虽然原则上加入了图形驱动，但为了保证EFI和BIOS的良好过渡，EFI多数还是一种类DOS界面（仍然是640<em>480VGA分辨率），只支持PS/2键盘操作（极少数支持鼠标操作），不支持USB键盘和鼠标。到了UEFI，则是拥有了完整的图形驱动，无论是PS/2还是USB键盘和鼠标，UEFI一律是支持的，而且UEFI在显卡也支持GOP VBIOS的时候，显示的设置界面是显卡高分辨率按640</em>480或1024*768显示，因此画面虽小但很清楚，但是这样会导致屏幕周围大片留黑，不过鱼和熊掌不可兼得，除非UEFI默认窗口大小也是最高分辨率</p>
+<p>其次，UEFI具有一个独特的功能，安全启动，而EFI是没有安全启动的，安全启动（Secure Boot），实际上通俗的解释是叫做固件验证。开启UEFI的安全启动后，主板会根据TPM芯片（或者CPU内置的TPM）记录的硬件签名对各硬件判断，只有符合认证的硬件驱动才会被加载，而Win8以后的Windows则是在操作系统加载的过程中对硬件驱动继续查签名，符合Windows记录的硬件才能被Windows加载，这在一定程度上降低了启动型程序在操作系统启动前被预加载造成的风险，但是这也会造成系统安装变得垄断</p>
+<p>无论EFI还是UEFI，都必须要有预加载环境、驱动执行环境、驱动程序等必要部分组成，为了支持部分旧设备（如在UEFI下挂载传统MBR硬盘，不支持UEFI启动的显卡在UEFI下仍然支持运行等），还需要一个CSM兼容性支持模块、EFI或UEFI都是仅支持GPT磁盘引导系统的，下面就具体谈一下EFI或UEFI启动计算机的过程。</p>
+<p>一般地，预加载环境和驱动执行环境是存储在UEFI（UEFI BIOS）芯片中的，当打开电源开关时，电脑的主要部件都开始有了供电，与BIOS不同的是，UEFI预加载环境首先开始执行，负责CPU和内存（是全部容量）的初始化工作，这里如出现重要问题，电脑即使有报警喇叭也不会响，因为UEFI没有去驱动8255发声，不过预加载环境只检查CPU和内存，如果这两个主要硬件出问题，屏幕没显示可以立即确定，另外一些主板会有提供LED提示，可根据CPU或内存亮灯大致判断故障。</p>
+<p>CPU和内存初始化成功后，驱动执行环境（DXE）载入，当DXE载入后，UEFI就具有了枚举并加载UEFI驱动程序的能力，在此阶段，UEFI会枚举搜索各个硬件的UEFI驱动并相继加载，完成硬件初始化工作，这相比BIOS的读中断加载速度会快的多，同样如加载显卡的UEFI驱动成功，电脑也会出现启动画面，硬件驱动全部加载完毕后，最后同BIOS一样，也得去启动操作系统。</p>
+<p>在启动操作系统的阶段，同样是根据启动记录的启动顺序，转到相应设备（仅限GPT设备，如果启动传统MBR设备，则需要打开CSM支持）的引导记录，引导操作系统并进入，这里需要注意的是，UEFI在检测到无任何操作系统启动设备时，会直接进入UEFI设置页面，而不是像BIOS那样黑屏显示相关信息。</p>
+<p>综上对BIOS和UEFI启动计算机过程的叙述，可以概括为：BIOS先要对CPU初始化，然后跳转到BIOS启动处进行POST自检，此过程如有严重错误，则电脑会用不同的报警声音提醒，接下来采用读中断的方式加载各种硬件，完成硬件初始化后进入操作系统启动过程；而UEFI则是运行预加载环境先直接初始化CPU和内存，CPU和内存若有问题则直接黑屏，其后启动PXE采用枚举方式搜索各种硬件并加载驱动，完成硬件初始化，之后同样进入操作系统启动过程。</p>
+<p>此外，BIOS是16位汇编语言程序，只能运行在16位实模式，可访问的内存只有1MB，而UEFI是32位或64位高级语言程序（C语言程序），突破实模式限制，可以达到要求的最大寻址。</p>
+<h4 id="genisoimage、mkisofs"><a href="#genisoimage、mkisofs" class="headerlink" title="genisoimage、mkisofs"></a>genisoimage、mkisofs</h4><p><strong>genisoimage</strong></p>
+<p>功能说明：建立ISO 9660映像文件。  </p>
+<p>常用命令：genisoimage -o imagename.iso file </p>
+<p>语 法：mkisofs [-adDfhJlLNrRTvz][-print-size][-quiet][-A ][-abstract ][-b ][-biblio ][-c ][-C ][-copyright ][-hide ][-hide-joliet ][-log-file ][-m ][-M ][-o ][-p ][-P ][-sysid ][-V ][-volset ][-volset-size ][-volset-seqno ][-x ][目录或文件]  </p>
+<p><strong>mkisofs</strong></p>
+<p>命令: mkisofs(make iso file system)</p>
+<p>功能说明：建立ISO 9660映像文件。</p>
+<p>语 法：mkisofs [-adDfhJlLNrRTvz][-print-size][-quiet][-A &lt;应用程序ID&gt;][-abstract &lt;摘要文件&gt;][-b &lt;开机映像文件&gt;][-biblio ][-c &lt;开机文件名称&gt;][-C &lt;盘区编号，磁区编号&gt;][-copyright &lt;版权信息文件&gt;][-hide &lt;目录或文件名&gt;][-hide-joliet &lt;文件或目录名&gt;][-log-file &lt;记录文件&gt;][-m &lt;目录或文件名&gt;][-M &lt;开机映像文件&gt;][-o &lt;映像文件&gt;][-p &lt;数据处理人&gt;][-P &lt;光盘发行人&gt;][-sysid &lt;系统ID &gt;][-V &lt;光盘ID &gt;][-volset &lt;卷册集ID&gt;][-volset-size &lt;光盘总数&gt;][-volset-seqno &lt;卷册序号&gt;][-x &lt;目录&gt;][目录或文件]</p>
+<p>补充说明：mkisofs可将指定的目录与文件做成ISO 9660格式的映像文件，以供刻录光盘。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">参 数：</span><br><span class="line">-a或--all mkisofs通常不处理备份文件。使用此参数可以把备份文件加到映像文件中。</span><br><span class="line">-A&lt;应用程序ID&gt;或-appid&lt;应用程序ID&gt; 指定光盘的应用程序ID。</span><br><span class="line">-abstract&lt;摘要文件&gt; 指定摘要文件的文件名。</span><br><span class="line">-b&lt;开机映像文件&gt;或-eltorito-boot&lt;开机映像文件&gt; 指定在制作可开机光盘时所需的开机映像文件。</span><br><span class="line">-biblio 指定ISBN文件的文件名，ISBN文件位于光盘根目录下，记录光盘的ISBN。</span><br><span class="line">-c&lt;开机文件名称&gt; 制作可开机光盘时，mkisofs会将开机映像文件中的全-eltorito-catalog&lt;开机文件名称&gt;全部内容作成一个文件。</span><br><span class="line">-C&lt;盘区编号，盘区编号&gt; 将许多节区合成一个映像文件时，必须使用此参数。</span><br><span class="line">-copyright&lt;版权信息文件&gt; 指定版权信息文件的文件名。</span><br><span class="line">-d或-omit-period 省略文件后的句号。</span><br><span class="line">-D或-disable-deep-relocation ISO 9660最多只能处理8层的目录，超过8层的部分，RRIP会自动将它们设置成ISO 9660兼容的格式。使用-D参数可关闭此功能。</span><br><span class="line">-f或-follow-links 忽略符号连接。</span><br><span class="line">-h 显示帮助。</span><br><span class="line">-hide&lt;目录或文件名&gt; 使指定的目录或文件在ISO 9660或Rock RidgeExtensions的系统中隐藏。</span><br><span class="line">-hide-joliet&lt;目录或文件名&gt; 使指定的目录或文件在Joliet系统中隐藏。</span><br><span class="line">-J或-joliet 使用Joliet格式的目录与文件名称。</span><br><span class="line">-l或-full-iso9660-filenames 使用ISO 9660 32字符长度的文件名。</span><br><span class="line">-L或-allow-leading-dots 允许文件名的第一个字符为句号。</span><br><span class="line">-log-file&lt;记录文件&gt; 在执行过程中若有错误信息，预设会显示在屏幕上。</span><br><span class="line">-m&lt;目录或文件名&gt;或-exclude&lt;目录或文件名&gt; 指定的目录或文件名将不会房入映像文件中。</span><br><span class="line">-M&lt;映像文件&gt;或-prev-session&lt;映像文件&gt; 与指定的映像文件合并。</span><br><span class="line">-N或-omit-version-number 省略ISO 9660文件中的版本信息。</span><br><span class="line">-o&lt;映像文件&gt;或-output&lt;映像文件&gt; 指定映像文件的名称。</span><br><span class="line">-p&lt;数据处理人&gt;或-preparer&lt;数据处理人&gt; 记录光盘的数据处理人。</span><br><span class="line">-print-size 显示预估的文件系统大小。</span><br><span class="line">-quiet 执行时不显示任何信息。</span><br><span class="line">-r或-rational-rock 使用Rock Ridge Extensions，并开放全部文件的读取权限。</span><br><span class="line">-R或-rock 使用Rock Ridge Extensions。</span><br><span class="line">-sysid&lt;系统ID&gt; 指定光盘的系统ID。</span><br><span class="line">-T或-translation-table 建立文件名的转换表，适用于不支持Rock Ridge Extensions的系统上。</span><br><span class="line">-v或-verbose 执行时显示详细的信息。</span><br><span class="line">-V&lt;光盘ID</span><br></pre></td></tr></table></figure>
+<h4 id="UEFI-GPT引导基础"><a href="#UEFI-GPT引导基础" class="headerlink" title="UEFI+GPT引导基础"></a>UEFI+GPT引导基础</h4><p><strong>GPT及其优势</strong></p>
+<p>GPT和MBR是两种不同的分区方案。目前在Windows下广泛采用的磁盘分区方案仍然是MBR分区结构，但不容怀疑GPT是今后的趋势。我们可将MBR磁盘分区结构用下图简单表示（Windows下基本磁盘、4个主分区）：</p>
+<p><img src="/2021/05/24/linux系统启动小结/gpt1.png" alt="avatar"></p>
+<p>为了方便计算机访问硬盘，把硬盘上的空间划分成许许多多的区块（英文叫sectors，即扇区），然后给每个区块分配一个地址，称为逻辑块地址（即LBA）。</p>
+<p>在MBR磁盘的第一个扇区内保存着启动代码和硬盘分区表。启动代码的作用是指引计算机从活动分区引导启动操作系统（BIOS下启动操作系统的方式）；分区表的作用是记录硬盘的分区信息。在MBR中，分区表的大小是固定的，一共可容纳4个主分区信息。在MBR分区表中逻辑块地址采用32位二进制数表示，因此一共可表示2^32（2的32次方）个逻辑块地址。如果一个扇区大小为512字节，那么硬盘最大分区容量仅为2TB。</p>
+<p>GPT磁盘分区结构可用下图简单表示（Windows下基本磁盘）：</p>
+<p><img src="/2021/05/24/linux系统启动小结/gpt2.png" alt="avatar"></p>
+<p>GPT分区结构<br>可以看到，在GTP磁盘的第一个数据块中同样有一个与MBR（主引导记录）类似的标记，叫做PMBR。PMBR的作用是，当使用不支持GPT的分区工具时，整个硬盘将显示为一个受保护的分区，以防止分区表及硬盘数据遭到破坏。UEFI并不从PMBR中获取GPT磁盘的分区信息，它有自己的分区表，即GPT分区表。</p>
+<p>GPT的分区方案之所以比MBR更先进，是因为在GPT分区表头中可自定义分区数量的最大值，也就是说GPT分区表的大小不是固定的。在Windows中，微软设定GPT磁盘最大分区数量为128个。另外，GPT分区方案中逻辑块地址（LBA）采用64位二进制数表示，可以计算一下2^64是一个多么庞大的数据，以我们的需求来讲完全有理由认为这个大小约等于无限。除此之外，GPT分区方案在硬盘的末端还有一个备份分区表，保证了分区信息不容易丢失。</p>
+<h4 id="安装系统启动过程"><a href="#安装系统启动过程" class="headerlink" title="安装系统启动过程"></a>安装系统启动过程</h4><p>以光盘安装操作系统为例，当我们安装系统时，它是怎么一步步读取光盘中的必要文件，从而实现系统的安装；不论是哪种安装方法，光盘、硬盘、网络等等，涉及的系统安装必要文件是一样的；</p>
+<p>第一步：读取MBR： isolinux/boot.cat ###boot.cat的作用就相当于启动流程中的MBR的446字节效果</p>
+<p>第二步: 读取isolinux/isolinux.bin ###isolinux.bin的作用等价于grub的第二阶段</p>
+<p>第三步：加载配置文件： isolinux/isolinux.cfg ###这个文件就是启动菜单；自定义启动菜单可以修改此文件</p>
+<p>第四步：根据配置文件定义调用内核文件</p>
+<ul>
+<li>加载内核： isolinuz/vmlinuz</li>
+<li>向内核传递参数： append initrd=initrd.img</li>
+</ul>
+<p>第五步：装载根文件系统，并启动anaconda ###anaconda就是kickstart文件</p>
+<p>默认启动GUI接口</p>
+<p>若是显式指定使用GUI接口： 向内核传递text参数即可</p>
+<p>(1)按tab键,在后面增加text ###tab进入的就是isolinux.cfg内容</p>
+<p>(2)按ESC键： boot: linux text ###boot后面接label的内容，就进入相应的模式；如boot：rescue 当然如果是boot：linux rescue 进入的也是救援模式，因为linux和rescue之间就差一个rescue</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[root@centos6 ~]#lsblk</span><br><span class="line">NAME   MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT</span><br><span class="line">sr0     11:0    1  3.7G  0 rom  /mnt</span><br><span class="line">sda      8:0    0  200G  0 disk </span><br><span class="line">├─sda1   8:1    0    1G  0 part /boot</span><br><span class="line">├─sda2   8:2    0 48.8G  0 part /</span><br><span class="line">├─sda3   8:3    0 29.3G  0 part /data</span><br><span class="line">├─sda4   8:4    0    1K  0 part </span><br><span class="line">└─sda5   8:5    0    2G  0 part [SWAP]</span><br><span class="line">[root@centos6 ~]#cd /mnt/</span><br><span class="line">[root@centos6 mnt]#ls</span><br><span class="line">CentOS_BuildTag  isolinux                  RPM-GPG-KEY-CentOS-Debug-6</span><br><span class="line">EFI              Packages                  RPM-GPG-KEY-CentOS-Security-6</span><br><span class="line">EULA             RELEASE-NOTES-en-US.html  RPM-GPG-KEY-CentOS-Testing-6</span><br><span class="line">GPL              repodata                  TRANS.TBL</span><br><span class="line">images           RPM-GPG-KEY-CentOS-6</span><br><span class="line">[root@centos6 mnt]#cd isolinux/</span><br><span class="line">[root@centos6 isolinux]#ls   ###此部分就是官方提供的光盘安装系统，提供的必要文件</span><br><span class="line">boot.cat  grub.conf   isolinux.bin  memtest     TRANS.TBL     vmlinuz</span><br><span class="line">boot.msg  initrd.img  isolinux.cfg  splash.jpg  vesamenu.c32</span><br><span class="line">[root@centos6 isolinux]#</span><br></pre></td></tr></table></figure>
+<p><strong>系统引导文件分析—isolinux.cfg</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[root@centos6 isolinux]#cat isolinux.cfg</span><br><span class="line">default vesamenu.c32    ###启动菜单的样式</span><br><span class="line">#prompt 1</span><br><span class="line">timeout 600</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">display boot.msg   ####启动时的背景图片，以及下面设置了相关的菜单主题风格</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">menu background splash.jpg</span><br><span class="line">menu title Welcome to CentOS 6.10!</span><br><span class="line">menu color border 0 #ffffffff #00000000</span><br><span class="line">menu color sel 7 #ffffffff #ff000000</span><br><span class="line">menu color title 0 #ffffffff #00000000</span><br><span class="line">menu color tabmsg 0 #ffffffff #00000000</span><br><span class="line">menu color unsel 0 #ffffffff #00000000</span><br><span class="line">menu color hotsel 0 #ff000000 #ffffffff</span><br><span class="line">menu color hotkey 7 #ffffffff #ff000000</span><br><span class="line">menu color scrollbar 0 #ffffffff #00000000</span><br><span class="line">label linux   ###下面的五个label定义了启动系统可供选择的五个模式，对照图片可以一一对应</span><br><span class="line">  menu label ^Install or upgrade an existing system</span><br><span class="line">  menu default</span><br><span class="line">  kernel vmlinuz</span><br><span class="line">  append initrd=initrd.img</span><br><span class="line">label vesa</span><br><span class="line">  menu label Install system with ^basic video driver</span><br><span class="line">  kernel vmlinuz</span><br><span class="line">  append initrd=initrd.img nomodeset</span><br><span class="line">label rescue</span><br><span class="line">  menu label ^Rescue installed system</span><br><span class="line">  kernel vmlinuz</span><br><span class="line">  append initrd=initrd.img rescue</span><br><span class="line">label local</span><br><span class="line">  menu label Boot from ^local drive</span><br><span class="line">  localboot 0xffff</span><br><span class="line">label memtest86</span><br><span class="line">  menu label ^Memory test</span><br><span class="line">  kernel memtest</span><br><span class="line">  append -</span><br></pre></td></tr></table></figure>
+<h4 id="CentOS-7-UEFI模式"><a href="#CentOS-7-UEFI模式" class="headerlink" title="CentOS 7 UEFI模式"></a>CentOS 7 UEFI模式</h4><ol>
+<li>UEFI模式下EFI目录是必须的，legacy模式下EFI可以删除</li>
+</ol>
+<p><img src="/2021/05/24/linux系统启动小结/uefi1.png" alt="avatar"></p>
+<ol start="2">
+<li>ks引导文件在grub.cfg里修改</li>
+</ol>
+<p><img src="/2021/05/24/linux系统启动小结/uefi2.png" alt="avatar"></p>
+<p><img src="/2021/05/24/linux系统启动小结/uefi3.png" alt="avatar"></p>
+<ol start="3">
+<li>efiboot.img文件是UEFI模式下必须的</li>
+</ol>
+<p><img src="/2021/05/24/linux系统启动小结/uefi4.png" alt="avatar"></p>
+<ol start="4">
+<li>UEFI模式需要有如下包支持</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">grub2-efi、grub2-tools、grub2-tools-extra、grub2-tools-minimal、grub2-common、shim、mokutil、efivar-libs、efibootmgr</span><br></pre></td></tr></table></figure>
+<ol start="5">
+<li>legacy和UEFI模式ks文件的区别是磁盘分区，UEFI模式多了一个/boot/efi分区</li>
+</ol>
+<p><img src="/2021/05/24/linux系统启动小结/uefi5.png" alt="avatar"></p>
+<ol start="6">
+<li>UEFI打包方式和legacy模式不一样,命令如下</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">genisoimage -v -cache-inodes -joliet-long -R -J -T \</span><br><span class="line">-o /$iso_dir/CentOS-7_x86_64-UEFI.iso -b isolinux/isolinux.bin -c isolinux/boot.cat \</span><br><span class="line">-no-emul-boot -boot-load-size 4 -boot-info-table -eltorito-alt-boot -b images/efiboot.img -no-emul-boot -input-charset</span><br></pre></td></tr></table></figure>
+<h4 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h4><ol>
+<li><a href="https://blog.csdn.net/ZhangSong051052/article/details/80670970" target="_blank" rel="noopener">https://blog.csdn.net/ZhangSong051052/article/details/80670970</a></li>
+<li><a href="https://www.cnblogs.com/klb561/p/9108712.html" target="_blank" rel="noopener">https://www.cnblogs.com/klb561/p/9108712.html</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/45791653" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/45791653</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/345519855" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/345519855</a></li>
+<li><a href="https://developer.aliyun.com/article/523995" target="_blank" rel="noopener">https://developer.aliyun.com/article/523995</a></li>
+<li><strong><a href="https://www.zhihu.com/question/21672895" target="_blank" rel="noopener">https://www.zhihu.com/question/21672895</a></strong></li>
+<li><a href="https://blog.51cto.com/xlogin/1261632" target="_blank" rel="noopener">https://blog.51cto.com/xlogin/1261632</a></li>
+<li><a href="https://yangfannie.com/1930.html" target="_blank" rel="noopener">https://yangfannie.com/1930.html</a></li>
+<li><a href="https://www.iruanmi.com/what-is-gpt-and-what-is-uefi/" target="_blank" rel="noopener">https://www.iruanmi.com/what-is-gpt-and-what-is-uefi/</a></li>
 </ol>
 ]]></content>
       <tags>
@@ -6207,102 +6290,6 @@
 </li>
 </ul>
 ]]></content>
-  </entry>
-  <entry>
-    <title>uWSGI和Gunicorn的对比小结</title>
-    <url>/2021/06/23/uWSGI%E5%92%8CGunicorn%E7%9A%84%E5%AF%B9%E6%AF%94%E5%B0%8F%E7%BB%93/</url>
-    <content><![CDATA[<p>由于uWGSI使用的是GPL2开源协议，Gunicorn使用的是MIT协议，商业使用为了规避相关法律风险，业务上有打算把uWSGI替换成Gunicorn，小结下两种组件的使用及区别。</p>
-<h4 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h4><p><strong>相同点</strong></p>
-<p>perfork是一种服务端编程模型, Nginx, Gunicorn, uWSGI都是这种模型的实现, 简单的说perfok就是master进程启动注册一堆信号处理函数, 创建listen socket fd, fork出多个worker子进程, 子进程执行accept循环处理请求(这里简化模型, 当然也可以用select, epoll多路复用), master进程只负责监控worker进程状态, 通过pipeline通信来控制worker进程.</p>
-<p>perfork模型使用master进程来监控worker进程状态, 避免了我们使用supervisor来监控进程, 还支持多种信号来控制worker的数量, 使得CPU能充分得到利用, 多个worker进程监听同一端口, 可以配置reuse_port参数在worker进程间负载均衡.</p>
-<p><strong>区别</strong></p>
-<p>Gunicorn</p>
-<p>Gunicorn是使用Python实现的WSGI服务器, 直接提供了http服务, 并且在woker上提供了多种选择, gevent, eventlet这些都支持, 在多worker最大化里用CPU的同时, 还可以使用协程来提供并发支撑, 对于网络IO密集的服务比较有利.</p>
-<p>同时Gunicorn也很容易就改造成一个TCP的服务, 比如doge重写worker类, 在针对长连接的服务时, 最好开启reuse_port, 避免worker进程负载不均。</p>
-<p>uWSGI</p>
-<p>不同于Gunicorn, uWSGI是使用C写的, 它的socket fd创建, worker进程的启动都是使用C语言系统接口来实现的, 在worker进程处理循环中, 解析了http请求后, 使用python的C接口生成environ对象, 再把这个对象作为参数塞到暴露出来的WSGI application函数中调用. 而这一切都是在C程序中进行, 只是在处理请求的时候交给python虚拟机调用application. 完全使用C语言实现的好处是性能会好一些.</p>
-<p>除了支持http协议, uWSGI还实现了uwsgi协议, 一般我们会在uWSGI服务器前面使用Nginx作为负载均衡, 如果使用http协议, 请求在转发到uWSGI前已经在Nginx这里解析了一遍, 转发到uWSGI又会重新解析一遍. uWSGI为了追求性能, 设计了uwsgi协议, 在Nginx解析完以后直接把解析好的结果通过uwsgi协议转发到uWSGI服务器, uWSGI拿到请求按格式生成environ对象, 不需要重复解析请求. 如果用Nginx配合uWSGI, 最好使用uwsgi协议来转发请求.</p>
-<p>除了是一个WSGI服务器, uWSGI还是一个开发框架, 它提供了缓存, 队列, rpc等等功能, 在github找找就会发现有人用它的缓存写了一个Django cache backend, 用它的队列实现异步任务这些东西, 但是用了这些东西技术栈也就跟uWSGI绑定在一起, 所以一般也只是把uWSGI当作WSGI服务器来用。</p>
-<p>Nginx</p>
-<p>使用多个进程监听同一端口就绕不开惊群这个话题, fork子进程, 子进程共享listen socket fd, 多个子进程同时accept阻塞, 在请求到达时内核会唤醒所有accept的进程, 然而只有一个进程能accept成功, 其它进程accept失败再次阻塞, 影响系统性能, 这就是惊群. Linux 2.6内核更新以后多个进程accept只有一个进程会被唤醒, 但是如果使用epoll还是会产生惊群现象.</p>
-<p>Nginx为了解决epoll惊群问题, 使用进程间互斥锁, 只有拿到锁的进程才能把listen fd加入到epoll中, 在accept完成后再释放锁.</p>
-<p>但是在高并发情况下, 获取锁的开销也会影响性能, 一般会建议把锁配置关掉. 直到Nginx 1.9.1更新支持了socket的SO_REUSEPORT选项, 惊群问题才算解决, listen socket fd不再是在master进程中创建, 而是每个worker进程创建一个通过SO_REUSEPORT 选项来复用端口, 内核会自行选择一个fd来唤醒, 并且有负载均衡算法.</p>
-<p>Gunicorn与uWSGI都支持reuse_port选项, 在使用时可以通过压测来评估一下reuse_port是否能提升性能.</p>
-<p>一般我们会在Gunicorn/uWSGI前面再加一层Nginx, 这样做的原因有一下几点：</p>
-<ol>
-<li>做负载均衡</li>
-<li>静态文件服务器</li>
-<li>更安全</li>
-<li>扛并发</li>
-</ol>
-<h4 id="测试对比"><a href="#测试对比" class="headerlink" title="测试对比"></a>测试对比</h4><p>组里其他同学测试简单测试如下：</p>
-<p><img src="/2021/06/23/uWSGI和Gunicorn的对比小结/uwsgi.png" alt="avatar"></p>
-<p>与<a href="http://www.zh-noone.cn/2019/11/gunicorn-uwsgi%E6%80%A7%E8%83%BD%E5%AF%B9%E6%AF%94/" target="_blank" rel="noopener">http://www.zh-noone.cn/2019/11/gunicorn-uwsgi%E6%80%A7%E8%83%BD%E5%AF%B9%E6%AF%94/</a> 文章中测试结果大体一致。其中改文章中总结使用方式如下：</p>
-<p><strong>gunicorn小结</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">werkzeug:RPS:681.30/sec</span><br><span class="line"></span><br><span class="line">sync:RPS:615.97/sec</span><br><span class="line"></span><br><span class="line">gevent:RPS:1030.56/sec</span><br><span class="line"></span><br><span class="line">eventlet(preload模式):RPS:616.65/sec</span><br><span class="line"></span><br><span class="line">eventlet(非preload模式):1048.65/sec</span><br></pre></td></tr></table></figure>
-<p><strong>uwsgi小结</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">打印日志:RPS:1605.11/sec</span><br><span class="line"></span><br><span class="line">不打印日志(preload模式):RPS:1868.42/sec</span><br><span class="line"></span><br><span class="line">不打印日志(非preload模式):RPS:1433.42/sec</span><br><span class="line"></span><br><span class="line">gunicorn+nginx+eventlet:RPS:1030.56/sec</span><br></pre></td></tr></table></figure>
-<p><strong>小结</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">gunicorn 最好使用eventlet(非preload模式)</span><br><span class="line"></span><br><span class="line">uwsgi+nginx 最好使用不打印日志(preload模式)</span><br><span class="line"></span><br><span class="line">gunicorn与uwsgi比较最好使用uwsgi</span><br></pre></td></tr></table></figure>
-<h4 id="Gunicorn简介"><a href="#Gunicorn简介" class="headerlink" title="Gunicorn简介"></a>Gunicorn简介</h4><p>Gunicorn，是一个针对Python的、在Unix系统上运行的、用来解析HTTP请求的网关服务。它的特点是：能和大多数的Python web框架兼容；使用简单；轻量级的资源消耗；高性能。</p>
-<p><strong>Sync Workers（同步workers）</strong></p>
-<p><img src="/2021/06/23/uWSGI和Gunicorn的对比小结/gun1.png" alt="avatar"></p>
-<p>默认的、最简单的worker模式，是同步模式。</p>
-<p>每个worker进程，一次只处理一个请求；如果此时又有其他请求被分配到这个worker进程，那只好被阻塞了，要先等第一个请求完成 。并且，一个请求一个进程，并发时，显然很占CPU和内存。</p>
-<p>因此，只适合在访问量不大、CPU密集而非I/O密集的情形。</p>
-<p>不过也不是没有好处；好处是，即使一个worker进程crash了，也只会影响一个请求。</p>
-<p><strong>Async Workers（异步workers）</strong></p>
-<p><img src="/2021/06/23/uWSGI和Gunicorn的对比小结/gun2.png" alt="avatar"></p>
-<p>有Gevent和Eventlet两种，都是基于Greenlet实现的。</p>
-<p>用了异步worker，就能同时处理不止一个请求，就不会出现上面同步worker那样，一个请求就把后续请求都block阻塞住的情况了。</p>
-<p>Python的协程实现；可以理解为微线程。（协程是program级的“线程”，而真正的线程是OS级的。）为了更好使用协程来完成多任务，python中的greenlet模块对其封装，从而使得切换任务变的更加简单。不同的Greenlet只能在同一个线程内的不同代码段间切换；同一个线程里，每次也只能有一个Greenlet在run。Greenlet的调度也不由系统完成，而是在用户层面实现，因而其切换的开销比线程要小。</p>
-<p>Gevent是一个Python网络函数库，它通过Greenlet协程+libev快速事件循环，实现了异步模型。有了Gevent，切换Greenlet时就不再需要手动切换，而是当一个Greenlet遇到I/O时，Gevent能自动切换Greenlet，保证总有Greenlet在运行，而无需等待I/O。</p>
-<p>异步worker是怎样实现并发，使得一个worker就能同时处理很多请求的呢？</p>
-<p>以Gevent为例，每个请求的连接是一个Greenlet协程。Gevent虽然只有一个线程、同时只能处理一个请求，但是在这个请求的异步事件没准备好、进入IO等待时，能主动yield让出控制权、而不是阻塞其他请求的协程，而是先让其他协程执行，当自己的IO准备好时，事件循环会将它从yield让出控制权的地方，继续恢复执行。</p>
-<p>这样，Gevent就能在不同请求间不断切换，从而实现并发，以充分利用CPU、减少IO等待。并且，因为切换的Greenlet是“微线程”，它操作的维度是函数，而不是线程/进程，所以来回切换的开销，就没有那么大。</p>
-<p>就我个人理解，同步worker和Gevent异步worker，这两种worker类型是最常用的。一般来说，我们的web app多半属于外部IO密集型（总要访问db、访问第三方服务等等），所以用Gunicorn的Gevent异步worker，就非常合理。</p>
-<p>而如果你的web app是CPU密集型，或者你希望请求之间不要互相影响，那么可以选择Gunicorn的同步worker。</p>
-<p><strong>Tornado Workers</strong></p>
-<p>用来配合Tornado使用。</p>
-<p>Tornado是一个Python框架和网络库，可以提供异步IO非阻塞型模型，来处理长延时请求。</p>
-<p><img src="/2021/06/23/uWSGI和Gunicorn的对比小结/gun3.png" alt="avatar"></p>
-<p><strong>AsyncIO Workers</strong></p>
-<p>分成gthread和gaiohttp两种模式。</p>
-<p>gaiohttp利用aiohttp库，在服务端和客户端执行异步IO操作。支持web socket。</p>
-<p>gthread是一种全线程worker，worker与线程池保持连接，线程会等待接收请求，一个请求一个线程。在Gunicorn启动时，除了可配置worker进程数，还可以配每个进程里的thread线程数。</p>
-<p><img src="/2021/06/23/uWSGI和Gunicorn的对比小结/gun4.png" alt="avatar"></p>
-<h4 id="Gunicorn是怎样实现高并发的"><a href="#Gunicorn是怎样实现高并发的" class="headerlink" title="Gunicorn是怎样实现高并发的"></a>Gunicorn是怎样实现高并发的</h4><p>Gunicorn启动时，就把worker进程预先fork出来了。当多个请求到来的时候，会轮流复用这些worker进程，从而能提高服务器的并发负载能力。至于worker数的配置，一般推荐2<em>CPU数+1。这样推荐，背后的想法是，在任何时间，都有大概一半的worker是在做I/O，剩下一半才是需要CPU的。如果在开多进程的同时，也开多线程（也就是选择gthread类型的worker），那么，配置总的并发数（worker进程数</em>线程数），仍然建议2*CPU数+1。</p>
-<p>flask+Gunicorn(gevent)高并发的解决方法探究如下：</p>
-<p>方案一：使用gevent做协程，从而解决高并发的问题，通过Gunicorn(with gevent)的形式对app进行包装，从而来启动服务</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># 使用gevent做异步（默认worker是同步的）    多进程+协程</span><br><span class="line">gunicorn -w 8 --bind 0.0.0.0:8000 -k &apos;gevent&apos; 运行文件名称:Flask程序实例名</span><br><span class="line"></span><br><span class="line"># 使用gunicorn命令启动flask项目 </span><br><span class="line"># -w 8 </span><br><span class="line">	8个进程</span><br><span class="line"># --bind 0.0.0.0:8000 </span><br><span class="line">	ip + 端口</span><br><span class="line"># -k &apos;gevent&apos;</span><br><span class="line">	协程</span><br></pre></td></tr></table></figure>
-<p>方案二： 将运行的信息加载到配置文件中</p>
-<p>使用gunicorn + gevent 开启高并发</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># 多进程</span><br><span class="line">import multiprocessing </span><br><span class="line"></span><br><span class="line">&quot;&quot;&quot;gunicorn+gevent 的配置文件&quot;&quot;&quot;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"># 预加载资源</span><br><span class="line">preload_app = True</span><br><span class="line"># 绑定 ip + 端口</span><br><span class="line">bind = &quot;0.0.0.0:5000&quot;</span><br><span class="line"># 进程数 = cup数量 * 2 + 1</span><br><span class="line">workers = multiprocessing.cpu_count() * 2 + 1</span><br><span class="line"></span><br><span class="line"># 线程数 = cup数量 * 2 </span><br><span class="line">threads = multiprocessing.cpu_count() * 2</span><br><span class="line"></span><br><span class="line"># 等待队列最大长度,超过这个长度的链接将被拒绝连接</span><br><span class="line">backlog = 2048</span><br><span class="line"></span><br><span class="line"># 工作模式--协程</span><br><span class="line">worker_class = &quot;gevent&quot;</span><br><span class="line"></span><br><span class="line"># 最大客户客户端并发数量,对使用线程和协程的worker的工作有影响</span><br><span class="line"># 服务器配置设置的值  1200：中小型项目  上万并发： 中大型</span><br><span class="line"># 服务器硬件：宽带+数据库+内存</span><br><span class="line"># 服务器的架构：集群 主从</span><br><span class="line">worker_connections = 1200</span><br><span class="line"></span><br><span class="line"># 进程名称</span><br><span class="line">proc_name = &apos;gunicorn.pid&apos;</span><br><span class="line"># 进程pid记录文件</span><br><span class="line">pidfile = &apos;app_run.log&apos;</span><br><span class="line"># 日志等级</span><br><span class="line">loglevel = &apos;debug&apos;</span><br><span class="line"># 日志文件名</span><br><span class="line">logfile = &apos;debug.log&apos;</span><br><span class="line"># 访问记录</span><br><span class="line">accesslog = &apos;access.log&apos;</span><br><span class="line"># 访问记录格式</span><br><span class="line">access_log_format = &apos;%(h)s %(t)s %(U)s %(q)s&apos;</span><br></pre></td></tr></table></figure>
-<p>执行 ：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">gunicorn -c gunicorn_config.py flask_server:app</span><br></pre></td></tr></table></figure></p>
-<p><strong>协程 第三方封装库</strong></p>
-<p>gevent = greenlet + python.monkey（底层使用 libevent 时间复杂度： O(N * logN)）</p>
-<p>meinheld = greenlet + picoev (时间复杂度： O(N) )</p>
-<p>eventlet</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">meinheld和gevent都能实现异步，但是测评中meinheld比gevent的性能好很多，不过因为meinheld支持的比较少，一般都是配合gunicorn使用的。下面分析一下meinheld和gevent性能差距主要原因，分别使用的是picoev和lievent。</span><br><span class="line"></span><br><span class="line"># libevent</span><br><span class="line">主要实现：使用堆（优先队列）作为timer事件的算法（nlogn）,IO和信号的实现均使用了双向队列（用链表实现）。</span><br><span class="line">时间复杂度： O(N * logN)</span><br><span class="line"></span><br><span class="line"># picoev</span><br><span class="line">picoev主要优化有两点。 </span><br><span class="line">1. 主要是考虑是fd（file descriptors）在unix中是用比较小的正整数表示的，那么把fd的相关信息，全部存储在一个array中，这样使得查找快速，在操作socket状态时会更加的快。 </span><br><span class="line"></span><br><span class="line">2. 第二点是对于timer事件的算法优化，通过环形缓冲区(128)和bit vector实现查看部分源码可以看出，主要实现是每个时间点对应的是缓冲区的一个位置，每个缓存区使用bit vector 表示fd的数值，相当于一种hash映射所以时间复杂度为(o(n))，n为那个缓存区所存的fd数量。</span><br><span class="line"></span><br><span class="line">时间复杂度： O(N)</span><br><span class="line"></span><br><span class="line">性能： picoev &gt; libevent</span><br></pre></td></tr></table></figure>
-<h4 id="Gunicorn源码概览"><a href="#Gunicorn源码概览" class="headerlink" title="Gunicorn源码概览"></a>Gunicorn源码概览</h4><p>gunicorn源码的入口文件为<strong>main</strong>.py<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">from gunicorn.app.wsgiapp import run</span><br><span class="line">run()</span><br></pre></td></tr></table></figure></p>
-<p>在初始化加载相关配置文件后，调用 Arbiter(self).run()方法</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">def run(self):</span><br><span class="line">    &quot;Main master loop.&quot;</span><br><span class="line">    self.start()</span><br><span class="line">    util._setproctitle(&quot;master [%s]&quot; % self.proc_name)</span><br><span class="line"></span><br><span class="line">    try:</span><br><span class="line">        self.manage_workers()</span><br><span class="line"></span><br><span class="line">        while True:</span><br><span class="line">            self.maybe_promote_master()</span><br><span class="line"></span><br><span class="line">            sig = self.SIG_QUEUE.pop(0) if self.SIG_QUEUE else None</span><br><span class="line">            if sig is None:</span><br><span class="line">                self.sleep()</span><br><span class="line">                self.murder_workers()</span><br><span class="line">                self.manage_workers()</span><br><span class="line">                continue</span><br><span class="line"></span><br><span class="line">            if sig not in self.SIG_NAMES:</span><br><span class="line">                self.log.info(&quot;Ignoring unknown signal: %s&quot;, sig)</span><br><span class="line">                continue</span><br><span class="line"></span><br><span class="line">            signame = self.SIG_NAMES.get(sig)</span><br><span class="line">            handler = getattr(self, &quot;handle_%s&quot; % signame, None)</span><br><span class="line">            if not handler:</span><br><span class="line">                self.log.error(&quot;Unhandled signal: %s&quot;, signame)</span><br><span class="line">                continue</span><br><span class="line">            self.log.info(&quot;Handling signal: %s&quot;, signame)</span><br><span class="line">            handler()</span><br><span class="line">            self.wakeup()</span><br><span class="line">    except (StopIteration, KeyboardInterrupt):</span><br><span class="line">        self.halt()</span><br><span class="line">    except HaltServer as inst:</span><br><span class="line">        self.halt(reason=inst.reason, exit_status=inst.exit_status)</span><br><span class="line">    except SystemExit:</span><br><span class="line">        raise</span><br><span class="line">    except Exception:</span><br><span class="line">        self.log.info(&quot;Unhandled exception in main loop&quot;,</span><br><span class="line">                      exc_info=True)</span><br><span class="line">        self.stop(False)</span><br><span class="line">        if self.pidfile is not None:</span><br><span class="line">            self.pidfile.unlink()</span><br><span class="line">        sys.exit(-1)</span><br></pre></td></tr></table></figure>
-<p>其中self.start()会根据配置文件加载相关运行信息，包括worker工作方式。在manage_workers代码如下</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">def manage_workers(self):</span><br><span class="line">    &quot;&quot;&quot;\</span><br><span class="line">    Maintain the number of workers by spawning or killing</span><br><span class="line">    as required.</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line">    if len(self.WORKERS) &lt; self.num_workers:</span><br><span class="line">        self.spawn_workers()</span><br><span class="line"></span><br><span class="line">    workers = self.WORKERS.items()</span><br><span class="line">    workers = sorted(workers, key=lambda w: w[1].age)</span><br><span class="line">    while len(workers) &gt; self.num_workers:</span><br><span class="line">        (pid, _) = workers.pop(0)</span><br><span class="line">        self.kill_worker(pid, signal.SIGTERM)</span><br><span class="line"></span><br><span class="line">    active_worker_count = len(workers)</span><br><span class="line">    if self._last_logged_active_worker_count != active_worker_count:</span><br><span class="line">        self._last_logged_active_worker_count = active_worker_count</span><br><span class="line">        self.log.debug(&quot;&#123;0&#125; workers&quot;.format(active_worker_count),</span><br><span class="line">                       extra=&#123;&quot;metric&quot;: &quot;gunicorn.workers&quot;,</span><br><span class="line">                              &quot;value&quot;: active_worker_count,</span><br><span class="line">                              &quot;mtype&quot;: &quot;gauge&quot;&#125;)</span><br></pre></td></tr></table></figure>
-<p>在spawn_worker中有初始化进程代码</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">def spawn_worker(self):</span><br><span class="line">       self.worker_age += 1</span><br><span class="line">       worker = self.worker_class(self.worker_age, self.pid, self.LISTENERS,</span><br><span class="line">                                  self.app, self.timeout / 2.0,</span><br><span class="line">                                  self.cfg, self.log)</span><br><span class="line">       self.cfg.pre_fork(self, worker)</span><br><span class="line">       pid = os.fork()</span><br><span class="line">       if pid != 0:</span><br><span class="line">           worker.pid = pid</span><br><span class="line">           self.WORKERS[pid] = worker</span><br><span class="line">           return pid</span><br><span class="line"></span><br><span class="line">       # Do not inherit the temporary files of other workers</span><br><span class="line">       for sibling in self.WORKERS.values():</span><br><span class="line">           sibling.tmp.close()</span><br><span class="line"></span><br><span class="line">       # Process Child</span><br><span class="line">       worker.pid = os.getpid()</span><br><span class="line">       try:</span><br><span class="line">           util._setproctitle(&quot;worker [%s]&quot; % self.proc_name)</span><br><span class="line">           self.log.info(&quot;Booting worker with pid: %s&quot;, worker.pid)</span><br><span class="line">           self.cfg.post_fork(self, worker)</span><br><span class="line">           worker.init_process()</span><br><span class="line">           sys.exit(0)</span><br><span class="line">       except SystemExit:</span><br><span class="line">           raise</span><br><span class="line">       except AppImportError as e:</span><br><span class="line">           self.log.debug(&quot;Exception while loading the application&quot;,</span><br><span class="line">                          exc_info=True)</span><br><span class="line">           print(&quot;%s&quot; % e, file=sys.stderr)</span><br><span class="line">           sys.stderr.flush()</span><br><span class="line">           sys.exit(self.APP_LOAD_ERROR)</span><br><span class="line">       except Exception:</span><br><span class="line">           self.log.exception(&quot;Exception in worker process&quot;)</span><br><span class="line">           if not worker.booted:</span><br><span class="line">               sys.exit(self.WORKER_BOOT_ERROR)</span><br><span class="line">           sys.exit(-1)</span><br><span class="line">       finally:</span><br><span class="line">           self.log.info(&quot;Worker exiting (pid: %s)&quot;, worker.pid)</span><br><span class="line">           try:</span><br><span class="line">               worker.tmp.close()</span><br><span class="line">               self.cfg.worker_exit(self, worker)</span><br><span class="line">           except Exception:</span><br><span class="line">               self.log.warning(&quot;Exception during worker exit:\n%s&quot;,</span><br><span class="line">                                traceback.format_exc())</span><br></pre></td></tr></table></figure>
-<p>在init_process中就能够选择不同类型的worker了。</p>
-<h4 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h4><ol>
-<li><a href="https://pypi.org/project/gunicorn/" target="_blank" rel="noopener">https://pypi.org/project/gunicorn/</a></li>
-<li><a href="https://www.cnblogs.com/xuegqcto/p/10411943.html" target="_blank" rel="noopener">https://www.cnblogs.com/xuegqcto/p/10411943.html</a></li>
-<li><a href="http://www.zh-noone.cn/2019/11/gunicorn-uwsgi%E6%80%A7%E8%83%BD%E5%AF%B9%E6%AF%94/" target="_blank" rel="noopener">http://www.zh-noone.cn/2019/11/gunicorn-uwsgi%E6%80%A7%E8%83%BD%E5%AF%B9%E6%AF%94/</a></li>
-<li><a href="https://blog.csdn.net/dadajuan_plus/article/details/106571287" target="_blank" rel="noopener">https://blog.csdn.net/dadajuan_plus/article/details/106571287</a></li>
-<li><a href="https://blog.csdn.net/weixin_46072106/article/details/109708788" target="_blank" rel="noopener">https://blog.csdn.net/weixin_46072106/article/details/109708788</a></li>
-</ol>
-]]></content>
-      <tags>
-        <tag>python</tag>
-      </tags>
   </entry>
   <entry>
     <title>Linux磁盘与文件系统</title>
