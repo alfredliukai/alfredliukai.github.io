@@ -1,0 +1,1142 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh_CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="python,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="由于uWGSI使用的是GPL2开源协议，Gunicorn使用的是MIT协议，商业使用为了规避相关法律风险，业务上有打算把uWSGI替换成Gunicorn，小结下两种组件的使用及区别。 简介相同点 perfork是一种服务端编程模型, Nginx, Gunicorn, uWSGI都是这种模型的实现, 简单的说perfok就是master进程启动注册一堆信号处理函数, 创建listen socket">
+<meta name="keywords" content="python">
+<meta property="og:type" content="article">
+<meta property="og:title" content="uWSGI和Gunicorn的对比小结">
+<meta property="og:url" content="https://alfredliukai.github.io/2021/06/23/uWSGI和Gunicorn的对比小结/index.html">
+<meta property="og:site_name" content="昨非的个人网站">
+<meta property="og:description" content="由于uWGSI使用的是GPL2开源协议，Gunicorn使用的是MIT协议，商业使用为了规避相关法律风险，业务上有打算把uWSGI替换成Gunicorn，小结下两种组件的使用及区别。 简介相同点 perfork是一种服务端编程模型, Nginx, Gunicorn, uWSGI都是这种模型的实现, 简单的说perfok就是master进程启动注册一堆信号处理函数, 创建listen socket">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://alfredliukai.github.io/2021/06/23/uWSGI和Gunicorn的对比小结/uwsgi.png">
+<meta property="og:image" content="https://alfredliukai.github.io/2021/06/23/uWSGI和Gunicorn的对比小结/gun1.png">
+<meta property="og:image" content="https://alfredliukai.github.io/2021/06/23/uWSGI和Gunicorn的对比小结/gun2.png">
+<meta property="og:image" content="https://alfredliukai.github.io/2021/06/23/uWSGI和Gunicorn的对比小结/gun3.png">
+<meta property="og:image" content="https://alfredliukai.github.io/2021/06/23/uWSGI和Gunicorn的对比小结/gun4.png">
+<meta property="og:updated_time" content="2021-06-23T16:00:48.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="uWSGI和Gunicorn的对比小结">
+<meta name="twitter:description" content="由于uWGSI使用的是GPL2开源协议，Gunicorn使用的是MIT协议，商业使用为了规避相关法律风险，业务上有打算把uWSGI替换成Gunicorn，小结下两种组件的使用及区别。 简介相同点 perfork是一种服务端编程模型, Nginx, Gunicorn, uWSGI都是这种模型的实现, 简单的说perfok就是master进程启动注册一堆信号处理函数, 创建listen socket">
+<meta name="twitter:image" content="https://alfredliukai.github.io/2021/06/23/uWSGI和Gunicorn的对比小结/uwsgi.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://alfredliukai.github.io/2021/06/23/uWSGI和Gunicorn的对比小结/">
+
+
+
+
+
+  <title>uWSGI和Gunicorn的对比小结 | 昨非的个人网站</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh_CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">昨非的个人网站</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-首页">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-标签">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-归档">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-关于">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>
+            
+            Search
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="Searching..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://alfredliukai.github.io/2021/06/23/uWSGI和Gunicorn的对比小结/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="昨非">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="昨非的个人网站">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">uWSGI和Gunicorn的对比小结</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2021-06-23T17:18:08+08:00">
+                2021-06-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>由于uWGSI使用的是GPL2开源协议，Gunicorn使用的是MIT协议，商业使用为了规避相关法律风险，业务上有打算把uWSGI替换成Gunicorn，小结下两种组件的使用及区别。</p>
+<h4 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h4><p><strong>相同点</strong></p>
+<p>perfork是一种服务端编程模型, Nginx, Gunicorn, uWSGI都是这种模型的实现, 简单的说perfok就是master进程启动注册一堆信号处理函数, 创建listen socket fd, fork出多个worker子进程, 子进程执行accept循环处理请求(这里简化模型, 当然也可以用select, epoll多路复用), master进程只负责监控worker进程状态, 通过pipeline通信来控制worker进程.</p>
+<p>perfork模型使用master进程来监控worker进程状态, 避免了我们使用supervisor来监控进程, 还支持多种信号来控制worker的数量, 使得CPU能充分得到利用, 多个worker进程监听同一端口, 可以配置reuse_port参数在worker进程间负载均衡.</p>
+<p><strong>区别</strong></p>
+<p>Gunicorn</p>
+<p>Gunicorn是使用Python实现的WSGI服务器, 直接提供了http服务, 并且在woker上提供了多种选择, gevent, eventlet这些都支持, 在多worker最大化里用CPU的同时, 还可以使用协程来提供并发支撑, 对于网络IO密集的服务比较有利.</p>
+<p>同时Gunicorn也很容易就改造成一个TCP的服务, 比如doge重写worker类, 在针对长连接的服务时, 最好开启reuse_port, 避免worker进程负载不均。</p>
+<p>uWSGI</p>
+<p>不同于Gunicorn, uWSGI是使用C写的, 它的socket fd创建, worker进程的启动都是使用C语言系统接口来实现的, 在worker进程处理循环中, 解析了http请求后, 使用python的C接口生成environ对象, 再把这个对象作为参数塞到暴露出来的WSGI application函数中调用. 而这一切都是在C程序中进行, 只是在处理请求的时候交给python虚拟机调用application. 完全使用C语言实现的好处是性能会好一些.</p>
+<p>除了支持http协议, uWSGI还实现了uwsgi协议, 一般我们会在uWSGI服务器前面使用Nginx作为负载均衡, 如果使用http协议, 请求在转发到uWSGI前已经在Nginx这里解析了一遍, 转发到uWSGI又会重新解析一遍. uWSGI为了追求性能, 设计了uwsgi协议, 在Nginx解析完以后直接把解析好的结果通过uwsgi协议转发到uWSGI服务器, uWSGI拿到请求按格式生成environ对象, 不需要重复解析请求. 如果用Nginx配合uWSGI, 最好使用uwsgi协议来转发请求.</p>
+<p>除了是一个WSGI服务器, uWSGI还是一个开发框架, 它提供了缓存, 队列, rpc等等功能, 在github找找就会发现有人用它的缓存写了一个Django cache backend, 用它的队列实现异步任务这些东西, 但是用了这些东西技术栈也就跟uWSGI绑定在一起, 所以一般也只是把uWSGI当作WSGI服务器来用。</p>
+<p>Nginx</p>
+<p>使用多个进程监听同一端口就绕不开惊群这个话题, fork子进程, 子进程共享listen socket fd, 多个子进程同时accept阻塞, 在请求到达时内核会唤醒所有accept的进程, 然而只有一个进程能accept成功, 其它进程accept失败再次阻塞, 影响系统性能, 这就是惊群. Linux 2.6内核更新以后多个进程accept只有一个进程会被唤醒, 但是如果使用epoll还是会产生惊群现象.</p>
+<p>Nginx为了解决epoll惊群问题, 使用进程间互斥锁, 只有拿到锁的进程才能把listen fd加入到epoll中, 在accept完成后再释放锁.</p>
+<p>但是在高并发情况下, 获取锁的开销也会影响性能, 一般会建议把锁配置关掉. 直到Nginx 1.9.1更新支持了socket的SO_REUSEPORT选项, 惊群问题才算解决, listen socket fd不再是在master进程中创建, 而是每个worker进程创建一个通过SO_REUSEPORT 选项来复用端口, 内核会自行选择一个fd来唤醒, 并且有负载均衡算法.</p>
+<p>Gunicorn与uWSGI都支持reuse_port选项, 在使用时可以通过压测来评估一下reuse_port是否能提升性能.</p>
+<p>一般我们会在Gunicorn/uWSGI前面再加一层Nginx, 这样做的原因有一下几点：</p>
+<ol>
+<li>做负载均衡</li>
+<li>静态文件服务器</li>
+<li>更安全</li>
+<li>扛并发</li>
+</ol>
+<h4 id="测试对比"><a href="#测试对比" class="headerlink" title="测试对比"></a>测试对比</h4><p>组里其他同学测试简单测试如下：</p>
+<p><img src="/2021/06/23/uWSGI和Gunicorn的对比小结/uwsgi.png" alt="avatar"></p>
+<p>与<a href="http://www.zh-noone.cn/2019/11/gunicorn-uwsgi%E6%80%A7%E8%83%BD%E5%AF%B9%E6%AF%94/" target="_blank" rel="noopener">http://www.zh-noone.cn/2019/11/gunicorn-uwsgi%E6%80%A7%E8%83%BD%E5%AF%B9%E6%AF%94/</a> 文章中测试结果大体一致。其中改文章中总结使用方式如下：</p>
+<p><strong>gunicorn小结</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">werkzeug:RPS:681.30/sec</span><br><span class="line"></span><br><span class="line">sync:RPS:615.97/sec</span><br><span class="line"></span><br><span class="line">gevent:RPS:1030.56/sec</span><br><span class="line"></span><br><span class="line">eventlet(preload模式):RPS:616.65/sec</span><br><span class="line"></span><br><span class="line">eventlet(非preload模式):1048.65/sec</span><br></pre></td></tr></table></figure>
+<p><strong>uwsgi小结</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">打印日志:RPS:1605.11/sec</span><br><span class="line"></span><br><span class="line">不打印日志(preload模式):RPS:1868.42/sec</span><br><span class="line"></span><br><span class="line">不打印日志(非preload模式):RPS:1433.42/sec</span><br><span class="line"></span><br><span class="line">gunicorn+nginx+eventlet:RPS:1030.56/sec</span><br></pre></td></tr></table></figure>
+<p><strong>小结</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">gunicorn 最好使用eventlet(非preload模式)</span><br><span class="line"></span><br><span class="line">uwsgi+nginx 最好使用不打印日志(preload模式)</span><br><span class="line"></span><br><span class="line">gunicorn与uwsgi比较最好使用uwsgi</span><br></pre></td></tr></table></figure>
+<h4 id="Gunicorn简介"><a href="#Gunicorn简介" class="headerlink" title="Gunicorn简介"></a>Gunicorn简介</h4><p>Gunicorn，是一个针对Python的、在Unix系统上运行的、用来解析HTTP请求的网关服务。它的特点是：能和大多数的Python web框架兼容；使用简单；轻量级的资源消耗；高性能。</p>
+<p><strong>Sync Workers（同步workers）</strong></p>
+<p><img src="/2021/06/23/uWSGI和Gunicorn的对比小结/gun1.png" alt="avatar"></p>
+<p>默认的、最简单的worker模式，是同步模式。</p>
+<p>每个worker进程，一次只处理一个请求；如果此时又有其他请求被分配到这个worker进程，那只好被阻塞了，要先等第一个请求完成 。并且，一个请求一个进程，并发时，显然很占CPU和内存。</p>
+<p>因此，只适合在访问量不大、CPU密集而非I/O密集的情形。</p>
+<p>不过也不是没有好处；好处是，即使一个worker进程crash了，也只会影响一个请求。</p>
+<p><strong>Async Workers（异步workers）</strong></p>
+<p><img src="/2021/06/23/uWSGI和Gunicorn的对比小结/gun2.png" alt="avatar"></p>
+<p>有Gevent和Eventlet两种，都是基于Greenlet实现的。</p>
+<p>用了异步worker，就能同时处理不止一个请求，就不会出现上面同步worker那样，一个请求就把后续请求都block阻塞住的情况了。</p>
+<p>Python的协程实现；可以理解为微线程。（协程是program级的“线程”，而真正的线程是OS级的。）为了更好使用协程来完成多任务，python中的greenlet模块对其封装，从而使得切换任务变的更加简单。不同的Greenlet只能在同一个线程内的不同代码段间切换；同一个线程里，每次也只能有一个Greenlet在run。Greenlet的调度也不由系统完成，而是在用户层面实现，因而其切换的开销比线程要小。</p>
+<p>Gevent是一个Python网络函数库，它通过Greenlet协程+libev快速事件循环，实现了异步模型。有了Gevent，切换Greenlet时就不再需要手动切换，而是当一个Greenlet遇到I/O时，Gevent能自动切换Greenlet，保证总有Greenlet在运行，而无需等待I/O。</p>
+<p>异步worker是怎样实现并发，使得一个worker就能同时处理很多请求的呢？</p>
+<p>以Gevent为例，每个请求的连接是一个Greenlet协程。Gevent虽然只有一个线程、同时只能处理一个请求，但是在这个请求的异步事件没准备好、进入IO等待时，能主动yield让出控制权、而不是阻塞其他请求的协程，而是先让其他协程执行，当自己的IO准备好时，事件循环会将它从yield让出控制权的地方，继续恢复执行。</p>
+<p>这样，Gevent就能在不同请求间不断切换，从而实现并发，以充分利用CPU、减少IO等待。并且，因为切换的Greenlet是“微线程”，它操作的维度是函数，而不是线程/进程，所以来回切换的开销，就没有那么大。</p>
+<p>就我个人理解，同步worker和Gevent异步worker，这两种worker类型是最常用的。一般来说，我们的web app多半属于外部IO密集型（总要访问db、访问第三方服务等等），所以用Gunicorn的Gevent异步worker，就非常合理。</p>
+<p>而如果你的web app是CPU密集型，或者你希望请求之间不要互相影响，那么可以选择Gunicorn的同步worker。</p>
+<p><strong>Tornado Workers</strong></p>
+<p>用来配合Tornado使用。</p>
+<p>Tornado是一个Python框架和网络库，可以提供异步IO非阻塞型模型，来处理长延时请求。</p>
+<p><img src="/2021/06/23/uWSGI和Gunicorn的对比小结/gun3.png" alt="avatar"></p>
+<p><strong>AsyncIO Workers</strong></p>
+<p>分成gthread和gaiohttp两种模式。</p>
+<p>gaiohttp利用aiohttp库，在服务端和客户端执行异步IO操作。支持web socket。</p>
+<p>gthread是一种全线程worker，worker与线程池保持连接，线程会等待接收请求，一个请求一个线程。在Gunicorn启动时，除了可配置worker进程数，还可以配每个进程里的thread线程数。</p>
+<p><img src="/2021/06/23/uWSGI和Gunicorn的对比小结/gun4.png" alt="avatar"></p>
+<h4 id="Gunicorn是怎样实现高并发的"><a href="#Gunicorn是怎样实现高并发的" class="headerlink" title="Gunicorn是怎样实现高并发的"></a>Gunicorn是怎样实现高并发的</h4><p>Gunicorn启动时，就把worker进程预先fork出来了。当多个请求到来的时候，会轮流复用这些worker进程，从而能提高服务器的并发负载能力。至于worker数的配置，一般推荐2<em>CPU数+1。这样推荐，背后的想法是，在任何时间，都有大概一半的worker是在做I/O，剩下一半才是需要CPU的。如果在开多进程的同时，也开多线程（也就是选择gthread类型的worker），那么，配置总的并发数（worker进程数</em>线程数），仍然建议2*CPU数+1。</p>
+<p>flask+Gunicorn(gevent)高并发的解决方法探究如下：</p>
+<p>方案一：使用gevent做协程，从而解决高并发的问题，通过Gunicorn(with gevent)的形式对app进行包装，从而来启动服务</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"># 使用gevent做异步（默认worker是同步的）    多进程+协程</span><br><span class="line">gunicorn -w 8 --bind 0.0.0.0:8000 -k &apos;gevent&apos; 运行文件名称:Flask程序实例名</span><br><span class="line"></span><br><span class="line"># 使用gunicorn命令启动flask项目 </span><br><span class="line"># -w 8 </span><br><span class="line">	8个进程</span><br><span class="line"># --bind 0.0.0.0:8000 </span><br><span class="line">	ip + 端口</span><br><span class="line"># -k &apos;gevent&apos;</span><br><span class="line">	协程</span><br></pre></td></tr></table></figure>
+<p>方案二： 将运行的信息加载到配置文件中</p>
+<p>使用gunicorn + gevent 开启高并发</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"># 多进程</span><br><span class="line">import multiprocessing </span><br><span class="line"></span><br><span class="line">&quot;&quot;&quot;gunicorn+gevent 的配置文件&quot;&quot;&quot;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"># 预加载资源</span><br><span class="line">preload_app = True</span><br><span class="line"># 绑定 ip + 端口</span><br><span class="line">bind = &quot;0.0.0.0:5000&quot;</span><br><span class="line"># 进程数 = cup数量 * 2 + 1</span><br><span class="line">workers = multiprocessing.cpu_count() * 2 + 1</span><br><span class="line"></span><br><span class="line"># 线程数 = cup数量 * 2 </span><br><span class="line">threads = multiprocessing.cpu_count() * 2</span><br><span class="line"></span><br><span class="line"># 等待队列最大长度,超过这个长度的链接将被拒绝连接</span><br><span class="line">backlog = 2048</span><br><span class="line"></span><br><span class="line"># 工作模式--协程</span><br><span class="line">worker_class = &quot;gevent&quot;</span><br><span class="line"></span><br><span class="line"># 最大客户客户端并发数量,对使用线程和协程的worker的工作有影响</span><br><span class="line"># 服务器配置设置的值  1200：中小型项目  上万并发： 中大型</span><br><span class="line"># 服务器硬件：宽带+数据库+内存</span><br><span class="line"># 服务器的架构：集群 主从</span><br><span class="line">worker_connections = 1200</span><br><span class="line"></span><br><span class="line"># 进程名称</span><br><span class="line">proc_name = &apos;gunicorn.pid&apos;</span><br><span class="line"># 进程pid记录文件</span><br><span class="line">pidfile = &apos;app_run.log&apos;</span><br><span class="line"># 日志等级</span><br><span class="line">loglevel = &apos;debug&apos;</span><br><span class="line"># 日志文件名</span><br><span class="line">logfile = &apos;debug.log&apos;</span><br><span class="line"># 访问记录</span><br><span class="line">accesslog = &apos;access.log&apos;</span><br><span class="line"># 访问记录格式</span><br><span class="line">access_log_format = &apos;%(h)s %(t)s %(U)s %(q)s&apos;</span><br></pre></td></tr></table></figure>
+<p>执行 ：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gunicorn -c gunicorn_config.py flask_server:app</span><br></pre></td></tr></table></figure></p>
+<p><strong>协程 第三方封装库</strong></p>
+<p>gevent = greenlet + python.monkey（底层使用 libevent 时间复杂度： O(N * logN)）</p>
+<p>meinheld = greenlet + picoev (时间复杂度： O(N) )</p>
+<p>eventlet</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">meinheld和gevent都能实现异步，但是测评中meinheld比gevent的性能好很多，不过因为meinheld支持的比较少，一般都是配合gunicorn使用的。下面分析一下meinheld和gevent性能差距主要原因，分别使用的是picoev和lievent。</span><br><span class="line"></span><br><span class="line"># libevent</span><br><span class="line">主要实现：使用堆（优先队列）作为timer事件的算法（nlogn）,IO和信号的实现均使用了双向队列（用链表实现）。</span><br><span class="line">时间复杂度： O(N * logN)</span><br><span class="line"></span><br><span class="line"># picoev</span><br><span class="line">picoev主要优化有两点。 </span><br><span class="line">1. 主要是考虑是fd（file descriptors）在unix中是用比较小的正整数表示的，那么把fd的相关信息，全部存储在一个array中，这样使得查找快速，在操作socket状态时会更加的快。 </span><br><span class="line"></span><br><span class="line">2. 第二点是对于timer事件的算法优化，通过环形缓冲区(128)和bit vector实现查看部分源码可以看出，主要实现是每个时间点对应的是缓冲区的一个位置，每个缓存区使用bit vector 表示fd的数值，相当于一种hash映射所以时间复杂度为(o(n))，n为那个缓存区所存的fd数量。</span><br><span class="line"></span><br><span class="line">时间复杂度： O(N)</span><br><span class="line"></span><br><span class="line">性能： picoev &gt; libevent</span><br></pre></td></tr></table></figure>
+<h4 id="Gunicorn源码概览"><a href="#Gunicorn源码概览" class="headerlink" title="Gunicorn源码概览"></a>Gunicorn源码概览</h4><p>gunicorn源码的入口文件为<strong>main</strong>.py<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">from gunicorn.app.wsgiapp import run</span><br><span class="line">run()</span><br></pre></td></tr></table></figure></p>
+<p>在初始化加载相关配置文件后，调用 Arbiter(self).run()方法</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">def run(self):</span><br><span class="line">    &quot;Main master loop.&quot;</span><br><span class="line">    self.start()</span><br><span class="line">    util._setproctitle(&quot;master [%s]&quot; % self.proc_name)</span><br><span class="line"></span><br><span class="line">    try:</span><br><span class="line">        self.manage_workers()</span><br><span class="line"></span><br><span class="line">        while True:</span><br><span class="line">            self.maybe_promote_master()</span><br><span class="line"></span><br><span class="line">            sig = self.SIG_QUEUE.pop(0) if self.SIG_QUEUE else None</span><br><span class="line">            if sig is None:</span><br><span class="line">                self.sleep()</span><br><span class="line">                self.murder_workers()</span><br><span class="line">                self.manage_workers()</span><br><span class="line">                continue</span><br><span class="line"></span><br><span class="line">            if sig not in self.SIG_NAMES:</span><br><span class="line">                self.log.info(&quot;Ignoring unknown signal: %s&quot;, sig)</span><br><span class="line">                continue</span><br><span class="line"></span><br><span class="line">            signame = self.SIG_NAMES.get(sig)</span><br><span class="line">            handler = getattr(self, &quot;handle_%s&quot; % signame, None)</span><br><span class="line">            if not handler:</span><br><span class="line">                self.log.error(&quot;Unhandled signal: %s&quot;, signame)</span><br><span class="line">                continue</span><br><span class="line">            self.log.info(&quot;Handling signal: %s&quot;, signame)</span><br><span class="line">            handler()</span><br><span class="line">            self.wakeup()</span><br><span class="line">    except (StopIteration, KeyboardInterrupt):</span><br><span class="line">        self.halt()</span><br><span class="line">    except HaltServer as inst:</span><br><span class="line">        self.halt(reason=inst.reason, exit_status=inst.exit_status)</span><br><span class="line">    except SystemExit:</span><br><span class="line">        raise</span><br><span class="line">    except Exception:</span><br><span class="line">        self.log.info(&quot;Unhandled exception in main loop&quot;,</span><br><span class="line">                      exc_info=True)</span><br><span class="line">        self.stop(False)</span><br><span class="line">        if self.pidfile is not None:</span><br><span class="line">            self.pidfile.unlink()</span><br><span class="line">        sys.exit(-1)</span><br></pre></td></tr></table></figure>
+<p>其中self.start()会根据配置文件加载相关运行信息，包括worker工作方式。在manage_workers代码如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">def manage_workers(self):</span><br><span class="line">    &quot;&quot;&quot;\</span><br><span class="line">    Maintain the number of workers by spawning or killing</span><br><span class="line">    as required.</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line">    if len(self.WORKERS) &lt; self.num_workers:</span><br><span class="line">        self.spawn_workers()</span><br><span class="line"></span><br><span class="line">    workers = self.WORKERS.items()</span><br><span class="line">    workers = sorted(workers, key=lambda w: w[1].age)</span><br><span class="line">    while len(workers) &gt; self.num_workers:</span><br><span class="line">        (pid, _) = workers.pop(0)</span><br><span class="line">        self.kill_worker(pid, signal.SIGTERM)</span><br><span class="line"></span><br><span class="line">    active_worker_count = len(workers)</span><br><span class="line">    if self._last_logged_active_worker_count != active_worker_count:</span><br><span class="line">        self._last_logged_active_worker_count = active_worker_count</span><br><span class="line">        self.log.debug(&quot;&#123;0&#125; workers&quot;.format(active_worker_count),</span><br><span class="line">                       extra=&#123;&quot;metric&quot;: &quot;gunicorn.workers&quot;,</span><br><span class="line">                              &quot;value&quot;: active_worker_count,</span><br><span class="line">                              &quot;mtype&quot;: &quot;gauge&quot;&#125;)</span><br></pre></td></tr></table></figure>
+<p>在spawn_worker中有初始化进程代码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line">def spawn_worker(self):</span><br><span class="line">       self.worker_age += 1</span><br><span class="line">       worker = self.worker_class(self.worker_age, self.pid, self.LISTENERS,</span><br><span class="line">                                  self.app, self.timeout / 2.0,</span><br><span class="line">                                  self.cfg, self.log)</span><br><span class="line">       self.cfg.pre_fork(self, worker)</span><br><span class="line">       pid = os.fork()</span><br><span class="line">       if pid != 0:</span><br><span class="line">           worker.pid = pid</span><br><span class="line">           self.WORKERS[pid] = worker</span><br><span class="line">           return pid</span><br><span class="line"></span><br><span class="line">       # Do not inherit the temporary files of other workers</span><br><span class="line">       for sibling in self.WORKERS.values():</span><br><span class="line">           sibling.tmp.close()</span><br><span class="line"></span><br><span class="line">       # Process Child</span><br><span class="line">       worker.pid = os.getpid()</span><br><span class="line">       try:</span><br><span class="line">           util._setproctitle(&quot;worker [%s]&quot; % self.proc_name)</span><br><span class="line">           self.log.info(&quot;Booting worker with pid: %s&quot;, worker.pid)</span><br><span class="line">           self.cfg.post_fork(self, worker)</span><br><span class="line">           worker.init_process()</span><br><span class="line">           sys.exit(0)</span><br><span class="line">       except SystemExit:</span><br><span class="line">           raise</span><br><span class="line">       except AppImportError as e:</span><br><span class="line">           self.log.debug(&quot;Exception while loading the application&quot;,</span><br><span class="line">                          exc_info=True)</span><br><span class="line">           print(&quot;%s&quot; % e, file=sys.stderr)</span><br><span class="line">           sys.stderr.flush()</span><br><span class="line">           sys.exit(self.APP_LOAD_ERROR)</span><br><span class="line">       except Exception:</span><br><span class="line">           self.log.exception(&quot;Exception in worker process&quot;)</span><br><span class="line">           if not worker.booted:</span><br><span class="line">               sys.exit(self.WORKER_BOOT_ERROR)</span><br><span class="line">           sys.exit(-1)</span><br><span class="line">       finally:</span><br><span class="line">           self.log.info(&quot;Worker exiting (pid: %s)&quot;, worker.pid)</span><br><span class="line">           try:</span><br><span class="line">               worker.tmp.close()</span><br><span class="line">               self.cfg.worker_exit(self, worker)</span><br><span class="line">           except Exception:</span><br><span class="line">               self.log.warning(&quot;Exception during worker exit:\n%s&quot;,</span><br><span class="line">                                traceback.format_exc())</span><br></pre></td></tr></table></figure>
+<p>在init_process中就能够选择不同类型的worker了。</p>
+<h4 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h4><ol>
+<li><a href="https://pypi.org/project/gunicorn/" target="_blank" rel="noopener">https://pypi.org/project/gunicorn/</a></li>
+<li><a href="https://www.cnblogs.com/xuegqcto/p/10411943.html" target="_blank" rel="noopener">https://www.cnblogs.com/xuegqcto/p/10411943.html</a></li>
+<li><a href="http://www.zh-noone.cn/2019/11/gunicorn-uwsgi%E6%80%A7%E8%83%BD%E5%AF%B9%E6%AF%94/" target="_blank" rel="noopener">http://www.zh-noone.cn/2019/11/gunicorn-uwsgi%E6%80%A7%E8%83%BD%E5%AF%B9%E6%AF%94/</a></li>
+<li><a href="https://blog.csdn.net/dadajuan_plus/article/details/106571287" target="_blank" rel="noopener">https://blog.csdn.net/dadajuan_plus/article/details/106571287</a></li>
+<li><a href="https://blog.csdn.net/weixin_46072106/article/details/109708788" target="_blank" rel="noopener">https://blog.csdn.net/weixin_46072106/article/details/109708788</a></li>
+</ol>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/python/" rel="tag"># python</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2021/06/22/jvm小结二/" rel="next" title="jvm-运行时数据区">
+                <i class="fa fa-chevron-left"></i> jvm-运行时数据区
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">昨非</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">136</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">1</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">23</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#简介"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#测试对比"><span class="nav-number">2.</span> <span class="nav-text">测试对比</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Gunicorn简介"><span class="nav-number">3.</span> <span class="nav-text">Gunicorn简介</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Gunicorn是怎样实现高并发的"><span class="nav-number">4.</span> <span class="nav-text">Gunicorn是怎样实现高并发的</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Gunicorn源码概览"><span class="nav-number">5.</span> <span class="nav-text">Gunicorn源码概览</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#参考文献"><span class="nav-number">6.</span> <span class="nav-text">参考文献</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">昨非</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
