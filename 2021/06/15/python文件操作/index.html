@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="昨非的个人网站">
 <meta property="og:description" content="python和其它编程语言一样，Python 也具有操作文件（I/O）的能力，比如打开文件、读取和追加数据、插入和删除数据、关闭文件、删除文件等。 除了提供文件操作基本的函数之外，Python 还提供了很多模块，例如 fileinput 模块、pathlib 模块等，通过引入这些模块，我们可以获得大量实现文件操作可用的函数和方法（类属性和类方法），大大提供编写代码的效率。 基本操作Python 中">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:updated_time" content="2021-06-16T16:24:50.000Z">
+<meta property="og:updated_time" content="2021-06-24T06:33:53.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="python文件操作">
 <meta name="twitter:description" content="python和其它编程语言一样，Python 也具有操作文件（I/O）的能力，比如打开文件、读取和追加数据、插入和删除数据、关闭文件、删除文件等。 除了提供文件操作基本的函数之外，Python 还提供了很多模块，例如 fileinput 模块、pathlib 模块等，通过引入这些模块，我们可以获得大量实现文件操作可用的函数和方法（类属性和类方法），大大提供编写代码的效率。 基本操作Python 中">
@@ -359,9 +359,14 @@
 <li>删除、修改权限：作用于文件本身，属于系统级操作。</li>
 <li>写入、读取：是文件最常用的操作，作用于文件的内容，属于应用级操作。</li>
 </ol>
+<p><strong>操作文件和目录</strong></p>
 <p>其中，对文件的系统级操作功能单一，比较容易实现，可以借助 Python 中的专用模块（os、sys 等），并调用模块中的指定函数来实现。例如，假设如下代码文件的同级目录中有一个文件“a.txt”，通过调用 os 模块中的 remove 函数，可以将该文件删除，具体实现代码如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">import os</span><br><span class="line">os.remove(&quot;a.txt&quot;)</span><br></pre></td></tr></table></figure>
-<p>而对于文件的应用级操作，通常需要按照固定的步骤进行操作，且实现过程相对比较复杂，同时也是本章重点要讲解的部分。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"># 查看当前目录的绝对路径:</span><br><span class="line">&gt;&gt;&gt; os.path.abspath(&apos;.&apos;)</span><br><span class="line">&apos;/Users/michael&apos;</span><br><span class="line"># 在某个目录下创建一个新目录，首先把新目录的完整路径表示出来:</span><br><span class="line">&gt;&gt;&gt; os.path.join(&apos;/Users/zzz&apos;, &apos;testdir&apos;)</span><br><span class="line">&apos;/Users/michael/testdir&apos;</span><br><span class="line"># 然后创建一个目录:</span><br><span class="line">&gt;&gt;&gt; os.mkdir(&apos;/Users/zzz/testdir&apos;)</span><br><span class="line"># 删掉一个目录:</span><br><span class="line">&gt;&gt;&gt; os.rmdir(&apos;/Users/zzz/testdir&apos;)</span><br></pre></td></tr></table></figure>
+<p>要拆分路径时，也不要直接去拆字符串，而要通过os.path.split()函数，这样可以把一个路径拆分为两部分，后一部分总是最后级别的目录或文件名：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; os.path.split(&apos;/Users/michael/testdir/file.txt&apos;)</span><br><span class="line">(&apos;/Users/michael/testdir&apos;, &apos;file.txt&apos;)</span><br><span class="line"></span><br><span class="line"># 对文件重命名:</span><br><span class="line">&gt;&gt;&gt; os.rename(&apos;test.txt&apos;, &apos;test.py&apos;)</span><br><span class="line"># 删掉文件:</span><br><span class="line">&gt;&gt;&gt; os.remove(&apos;test.py&apos;)</span><br></pre></td></tr></table></figure>
+<p>shutil模块提供了copyfile()的函数，你还可以在shutil模块中找到很多实用函数，它们可以看做是os模块的补充</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">列出当前目录下的所有目录</span><br><span class="line">&gt;&gt;&gt; [x for x in os.listdir(&apos;.&apos;) if os.path.isdir(x)]</span><br><span class="line">[&apos;.lein&apos;, &apos;.local&apos;, &apos;.m2&apos;, &apos;.npm&apos;, &apos;.ssh&apos;, &apos;.Trash&apos;, &apos;.vim&apos;, &apos;Applications&apos;, &apos;Desktop&apos;, ...]</span><br><span class="line"></span><br><span class="line">[x for x in os.listdir(&apos;.&apos;) if os.path.isfile(x) and os.path.splitext(x)[1]==&apos;.py&apos;]</span><br><span class="line">[&apos;apis.py&apos;, &apos;config.py&apos;, &apos;models.py&apos;, &apos;pymonitor.py&apos;, &apos;test_db.py&apos;, &apos;urls.py&apos;, &apos;wsgiapp.py&apos;]</span><br></pre></td></tr></table></figure>
+<p><strong>读文件</strong></p>
 <p>文件的应用级操作可以分为以下 3 步，每一步都需要借助对应的函数实现：</p>
 <ol>
 <li>打开文件：使用 open() 函数，该函数会返回一个文件对象；</li>
@@ -369,7 +374,40 @@
 <li>关闭文件：完成对文件的读/写操作之后，最后需要关闭文件，可以使用 close() 函数。</li>
 </ol>
 <p>一个文件，必须在打开之后才能对其进行操作，并且在操作结束之后，还应该将其关闭，这 3 步的顺序不能打乱。</p>
-
+<p>要以读文件的模式打开一个文件对象，使用Python内置的open()函数，传入文件名和标示符：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; f = open(&apos;/Users/zzz/test.txt&apos;, &apos;r&apos;)</span><br></pre></td></tr></table></figure>
+<p>如果文件打开成功，接下来，调用read()方法可以一次读取文件的全部内容，Python把内容读到内存，用一个str对象表示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; f.read()</span><br><span class="line">&apos;Hello, world!&apos;</span><br></pre></td></tr></table></figure>
+<p>最后一步是调用close()方法关闭文件。文件使用完毕后必须关闭，因为文件对象会占用操作系统的资源，并且操作系统同一时间能打开的文件数量也是有限的：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; f.close()</span><br></pre></td></tr></table></figure>
+<p>由于文件读写时都有可能产生IOError，一旦出错，后面的f.close()就不会调用。所以，为了保证无论是否出错都能正确地关闭文件，我们可以使用try … finally来实现：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">try:</span><br><span class="line">    f = open(&apos;/path/to/file&apos;, &apos;r&apos;)</span><br><span class="line">    print(f.read())</span><br><span class="line">finally:</span><br><span class="line">    if f:</span><br><span class="line">        f.close()</span><br></pre></td></tr></table></figure>
+<p>但是每次都这么写实在太繁琐，所以，Python引入了with语句来自动帮我们调用close()方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">with open(&apos;/path/to/file&apos;, &apos;r&apos;) as f:</span><br><span class="line">    print(f.read())</span><br></pre></td></tr></table></figure>
+<p>调用read()会一次性读取文件的全部内容，如果文件有10G，内存就爆了，所以，要保险起见，可以反复调用read(size)方法，每次最多读取size个字节的内容。另外，调用readline()可以每次读取一行内容，调用readlines()一次读取所有内容并按行返回list。因此，要根据需要决定怎么调用。</p>
+<p>如果文件很小，read()一次性读取最方便；如果不能确定文件大小，反复调用read(size)比较保险；如果是配置文件，调用readlines()最方便：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">for line in f.readlines():</span><br><span class="line">    print(line.strip())</span><br></pre></td></tr></table></figure>
+<p><strong>写文件</strong></p>
+<p>写文件和读文件是一样的，唯一区别是调用open()函数时，传入标识符’w’或者’wb’表示写文本文件或写二进制文件：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; f = open(&apos;/Users/michael/test.txt&apos;, &apos;w&apos;)</span><br><span class="line">&gt;&gt;&gt; f.write(&apos;Hello, world!&apos;)</span><br><span class="line">&gt;&gt;&gt; f.close()</span><br></pre></td></tr></table></figure>
+<p>你可以反复调用write()来写入文件，但是务必要调用f.close()来关闭文件。当我们写文件时，操作系统往往不会立刻把数据写入磁盘，而是放到内存缓存起来，空闲的时候再慢慢写入。只有调用close()方法时，操作系统才保证把没有写入的数据全部写入磁盘。忘记调用close()的后果是数据可能只写了一部分到磁盘，剩下的丢失了。所以，还是用with语句来得保险：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">with open(&apos;/Users/michael/test.txt&apos;, &apos;w&apos;) as f:</span><br><span class="line">    f.write(&apos;Hello, world!&apos;)</span><br></pre></td></tr></table></figure>
+<p>要写入特定编码的文本文件，请给open()函数传入encoding参数，将字符串自动转换成指定编码。</p>
+<p>细心的童鞋会发现，以’w’模式写入文件时，如果文件已存在，会直接覆盖（相当于删掉后新写入一个文件）。如果我们希望追加到文件末尾怎么办？可以传入’a’以追加（append）模式写入。</p>
+<h4 id="上下文管理"><a href="#上下文管理" class="headerlink" title="上下文管理"></a>上下文管理</h4><p>实现上下文管理是通过<strong>enter</strong>和<strong>exit</strong>这两个方法实现的。例如，下面的class实现了这两个方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">class Query(object):</span><br><span class="line"></span><br><span class="line">    def __init__(self, name):</span><br><span class="line">        self.name = name</span><br><span class="line"></span><br><span class="line">    def __enter__(self):</span><br><span class="line">        print(&apos;Begin&apos;)</span><br><span class="line">        return self</span><br><span class="line">    </span><br><span class="line">    def __exit__(self, exc_type, exc_value, traceback):</span><br><span class="line">        if exc_type:</span><br><span class="line">            print(&apos;Error&apos;)</span><br><span class="line">        else:</span><br><span class="line">            print(&apos;End&apos;)</span><br><span class="line">    </span><br><span class="line">    def query(self):</span><br><span class="line">        print(&apos;Query info about %s...&apos; % self.name)</span><br></pre></td></tr></table></figure>
+<p>这样我们就可以把自己写的资源对象用于with语句：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">with Query(&apos;Bob&apos;) as q:</span><br><span class="line">    q.query()</span><br></pre></td></tr></table></figure>
+<p><strong>@contextmanager</strong></p>
+<p>编写<strong>enter</strong>和<strong>exit</strong>仍然很繁琐，因此Python的标准库contextlib提供了更简单的写法，上面的代码可以改写如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">from contextlib import contextmanager</span><br><span class="line"></span><br><span class="line">class Query(object):</span><br><span class="line"></span><br><span class="line">    def __init__(self, name):</span><br><span class="line">        self.name = name</span><br><span class="line"></span><br><span class="line">    def query(self):</span><br><span class="line">        print(&apos;Query info about %s...&apos; % self.name)</span><br><span class="line"></span><br><span class="line">@contextmanager</span><br><span class="line">def create_query(name):</span><br><span class="line">    print(&apos;Begin&apos;)</span><br><span class="line">    q = Query(name)</span><br><span class="line">    yield q</span><br><span class="line">    print(&apos;End&apos;)</span><br></pre></td></tr></table></figure>
+<p>@contextmanager这个decorator接受一个generator，用yield语句把with … as var把变量输出出去，然后，with语句就可以正常地工作了：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">with create_query(&apos;Bob&apos;) as q:</span><br><span class="line">    q.query()</span><br></pre></td></tr></table></figure>
+<p><strong>@closing</strong></p>
+<p>如果一个对象没有实现上下文，我们就不能把它用于with语句。这个时候，可以用closing()来把该对象变为上下文对象。例如，用with语句使用urlopen()：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">from contextlib import closing</span><br><span class="line">from urllib.request import urlopen</span><br><span class="line"></span><br><span class="line">with closing(urlopen(&apos;https://www.python.org&apos;)) as page:</span><br><span class="line">    for line in page:</span><br><span class="line">        print(line)</span><br></pre></td></tr></table></figure>
+<p>closing也是一个经过@contextmanager装饰的generator，这个generator编写起来其实非常简单：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">@contextmanager</span><br><span class="line">def closing(thing):</span><br><span class="line">    try:</span><br><span class="line">        yield thing</span><br><span class="line">    finally:</span><br><span class="line">        thing.close()</span><br></pre></td></tr></table></figure>
       
     </div>
     
@@ -543,7 +581,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#基本操作"><span class="nav-number">1.</span> <span class="nav-text">基本操作</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#基本操作"><span class="nav-number">1.</span> <span class="nav-text">基本操作</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#上下文管理"><span class="nav-number">2.</span> <span class="nav-text">上下文管理</span></a></li></ol></div>
             
 
           </div>
