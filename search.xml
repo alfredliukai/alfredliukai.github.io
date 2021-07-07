@@ -630,6 +630,29 @@
       </tags>
   </entry>
   <entry>
+    <title>git clean的方法小结</title>
+    <url>/2020/09/16/git-clean%E7%9A%84%E6%96%B9%E6%B3%95%E5%B0%8F%E7%BB%93/</url>
+    <content><![CDATA[<h2 id="git-clean"><a href="#git-clean" class="headerlink" title="git clean"></a>git clean</h2><p>想批量删除branch中新加的文件(untracked files)，，git reset –hard不行～</p>
+<p>首先确认要删除的文件<br>git clean -fd -n</p>
+<p>如果以上命令给出的文件列表是你想删除的， 那么接下来执行</p>
+<p>git clean -f -d或者git clean -fd就可以了。</p>
+<p>其中-f表示文件 -d表示目录, 如果还要删除.gitignore中的文件那么再加上-x (-x对我来说没用）</p>
+<p>如果git submodule中也存在需要删除的文件那么需要再加个-f， 变成git clean -dff</p>
+<p>详见：<a href="http://stackoverflow.com/questions/61212/how-do-i-remove-local-untracked-files-from-my-current-git-branch" target="_blank" rel="noopener">http://stackoverflow.com/questions/61212/how-do-i-remove-local-untracked-files-from-my-current-git-branch</a></p>
+<p><strong>删除 untracked files</strong></p>
+<p>git clean -f</p>
+<p><strong>连 untracked 的目录也一起删掉</strong></p>
+<p>git clean -fd</p>
+<p><strong>连 gitignore 的untrack 文件/目录也一起删掉 （慎用，一般这个是用来删掉编译出来的 .o之类的文件用的）</strong></p>
+<p>git clean -xfd</p>
+<p><strong>在用上述 git clean 前，墙裂建议加上 -n 参数来先看看会删掉哪些文件，防止重要文件被误删</strong></p>
+<p>git clean -nxfd<br>git clean -nf<br>git clean -nfd</p>
+]]></content>
+      <tags>
+        <tag>git</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>git中的对象简介</title>
     <url>/2020/07/08/git%E4%B8%AD%E7%9A%84%E5%AF%B9%E8%B1%A1%E7%AE%80%E4%BB%8B/</url>
     <content><![CDATA[<p>为了加深git中底层对象的理解，特意整理如下文章。<br>Git 保存的不是文件的变化或者差异，而是一系列不同时刻的 快照 。</p>
@@ -661,29 +684,6 @@
 <p>由于 Git 的分支实质上仅是包含所指对象校验和（长度为 40 的 SHA-1 值字符串）的文件，所以它的创建和销毁都异常高效。 创建一个新分支就相当于往一个文件中写入 41 个字节（40 个字符和 1 个换行符），如此的简单能不快吗？</p>
 <p>这与过去大多数版本控制系统形成了鲜明的对比，它们在创建分支时，将所有的项目文件都复制一遍，并保存到一个特定的目录。 完成这样繁琐的过程通常需要好几秒钟，有时甚至需要好几分钟。所需时间的长短，完全取决于项目的规模。 而在 Git 中，任何规模的项目都能在瞬间创建新分支。 同时，由于每次提交都会记录父对象，所以寻找恰当的合并基础（译注：即共同祖先）也是同样的简单和高效。 这些高效的特性使得 Git 鼓励开发人员频繁地创建和使用分支。</p>
 <h4 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h4><p><a href="https://git-scm.com/book/zh/v2/Git-%E5%88%86%E6%94%AF-%E5%88%86%E6%94%AF%E7%AE%80%E4%BB%8B" target="_blank" rel="noopener">https://git-scm.com/book/zh/v2/Git-%E5%88%86%E6%94%AF-%E5%88%86%E6%94%AF%E7%AE%80%E4%BB%8B</a></p>
-]]></content>
-      <tags>
-        <tag>git</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>git clean的方法小结</title>
-    <url>/2020/09/16/git-clean%E7%9A%84%E6%96%B9%E6%B3%95%E5%B0%8F%E7%BB%93/</url>
-    <content><![CDATA[<h2 id="git-clean"><a href="#git-clean" class="headerlink" title="git clean"></a>git clean</h2><p>想批量删除branch中新加的文件(untracked files)，，git reset –hard不行～</p>
-<p>首先确认要删除的文件<br>git clean -fd -n</p>
-<p>如果以上命令给出的文件列表是你想删除的， 那么接下来执行</p>
-<p>git clean -f -d或者git clean -fd就可以了。</p>
-<p>其中-f表示文件 -d表示目录, 如果还要删除.gitignore中的文件那么再加上-x (-x对我来说没用）</p>
-<p>如果git submodule中也存在需要删除的文件那么需要再加个-f， 变成git clean -dff</p>
-<p>详见：<a href="http://stackoverflow.com/questions/61212/how-do-i-remove-local-untracked-files-from-my-current-git-branch" target="_blank" rel="noopener">http://stackoverflow.com/questions/61212/how-do-i-remove-local-untracked-files-from-my-current-git-branch</a></p>
-<p><strong>删除 untracked files</strong></p>
-<p>git clean -f</p>
-<p><strong>连 untracked 的目录也一起删掉</strong></p>
-<p>git clean -fd</p>
-<p><strong>连 gitignore 的untrack 文件/目录也一起删掉 （慎用，一般这个是用来删掉编译出来的 .o之类的文件用的）</strong></p>
-<p>git clean -xfd</p>
-<p><strong>在用上述 git clean 前，墙裂建议加上 -n 参数来先看看会删掉哪些文件，防止重要文件被误删</strong></p>
-<p>git clean -nxfd<br>git clean -nf<br>git clean -nfd</p>
 ]]></content>
       <tags>
         <tag>git</tag>
@@ -896,6 +896,24 @@
       </tags>
   </entry>
   <entry>
+    <title>java线程池小结</title>
+    <url>/2021/06/17/java%E7%BA%BF%E7%A8%8B%E6%B1%A0%E5%B0%8F%E7%BB%93/</url>
+    <content><![CDATA[<p><strong>什么是线程池？</strong></p>
+<p>一种线程管理模式。线程维护着多个线程，等待着分配可并发执行的任务。这避免了在处理短时间任务时创建和销毁线程的代价，进而影响影响缓存性能。线程池不仅不仅保证内核的充分利用，还能防止过分调度。</p>
+<p><strong>线程池的意义</strong></p>
+<p>循环利用线程资源，避免重复创建和销毁线程</p>
+<p>线程池的任务是异步执行的，只要提交完成就能快速返回，可以提高应用响应性</p>
+<p>Java线程池还有一个很重要的意义：Java线程池就是JDK 5 推出的Executor框架，在此之前Java线程既是工作任务又是执行机制，而Executor框架把工作任务与执行机制分离开来：工作任务包括Runnable接口和Callable接口，而执行机制由Executor接口提供。</p>
+<p><strong>Java中四种线程池</strong></p>
+<ol>
+<li>newFixedThreadExecutor() ： 创建固定大小的线程池。每次提交一个任务就创建一个线程，直到线程达到线程池的最大大小。线程池的大小一旦达到最大值就会保持不变，如果某个线程因为执行异常而结束，那么线程池会补充一个新线程。</li>
+</ol>
+]]></content>
+      <tags>
+        <tag>java</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>java日志体系二(slf4j作用及其实现原理)</title>
     <url>/2020/04/26/java%E6%97%A5%E5%BF%97%E4%BD%93%E7%B3%BB%E4%BA%8C/</url>
     <content><![CDATA[<h4 id="简单回顾门面模式"><a href="#简单回顾门面模式" class="headerlink" title="简单回顾门面模式"></a>简单回顾门面模式</h4><p>slf4j是门面模式的典型应用，因此在讲slf4j前，我们先简单回顾一下门面模式，</p>
@@ -924,24 +942,6 @@
 <p>最后做一个测验，我们把所有日志打开，引入logback-classic、slf4j-simple、log4j，运行Test方法，控制台输出为：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">objc[17324]: Class JavaLaunchHelper is implemented in both /Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdk/Contents/Home/bin/java (0x104b2e4c0) and /Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdk/Contents/Home/jre/lib/libinstrument.dylib (0x10640b4e0). One of the two will be used. Which one is undefined.</span><br><span class="line">Connected to the target VM, address: &apos;127.0.0.1:51595&apos;, transport: &apos;socket&apos;</span><br><span class="line">SLF4J: Class path contains multiple SLF4J bindings.</span><br><span class="line">SLF4J: Found binding in [jar:file:/Users/zyy/.m2/repository/ch/qos/logback/logback-classic/1.2.3/logback-classic-1.2.3.jar!/org/slf4j/impl/StaticLoggerBinder.class]</span><br><span class="line">SLF4J: Found binding in [jar:file:/Users/zyy/.m2/repository/org/slf4j/slf4j-simple/1.7.25/slf4j-simple-1.7.25.jar!/org/slf4j/impl/StaticLoggerBinder.class]</span><br><span class="line">SLF4J: Found binding in [jar:file:/Users/zyy/.m2/repository/org/slf4j/slf4j-log4j12/1.7.21/slf4j-log4j12-1.7.21.jar!/org/slf4j/impl/StaticLoggerBinder.class]</span><br><span class="line">SLF4J: See http://www.slf4j.org/codes.html#multiple_bindings for an explanation.</span><br><span class="line">SLF4J: Actual binding is of type [ch.qos.logback.classic.util.ContextSelectorStaticBinder]</span><br><span class="line">14:48:05.808 [main] INFO java.lang.Object - 123</span><br><span class="line">Disconnected from the target VM, address: &apos;127.0.0.1:51595&apos;, transport: &apos;socket&apos;</span><br></pre></td></tr></table></figure></p>
 <p>和上面的差别是，可以输出日志，但是会输出一些告警日志，提示我们同时引入了多个slf4j的实现，然后选择其中的一个作为我们使用的日志系统。</p>
 <p>从例子我们可以得出一个重要的结论，即slf4j的作用：只要所有代码都使用门面对象slf4j，我们就不需要关心其具体实现，最终所有地方使用一种具体实现即可，更换、维护都非常方便。</p>
-]]></content>
-      <tags>
-        <tag>java</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>java线程池小结</title>
-    <url>/2021/06/17/java%E7%BA%BF%E7%A8%8B%E6%B1%A0%E5%B0%8F%E7%BB%93/</url>
-    <content><![CDATA[<p><strong>什么是线程池？</strong></p>
-<p>一种线程管理模式。线程维护着多个线程，等待着分配可并发执行的任务。这避免了在处理短时间任务时创建和销毁线程的代价，进而影响影响缓存性能。线程池不仅不仅保证内核的充分利用，还能防止过分调度。</p>
-<p><strong>线程池的意义</strong></p>
-<p>循环利用线程资源，避免重复创建和销毁线程</p>
-<p>线程池的任务是异步执行的，只要提交完成就能快速返回，可以提高应用响应性</p>
-<p>Java线程池还有一个很重要的意义：Java线程池就是JDK 5 推出的Executor框架，在此之前Java线程既是工作任务又是执行机制，而Executor框架把工作任务与执行机制分离开来：工作任务包括Runnable接口和Callable接口，而执行机制由Executor接口提供。</p>
-<p><strong>Java中四种线程池</strong></p>
-<ol>
-<li>newFixedThreadExecutor() ： 创建固定大小的线程池。每次提交一个任务就创建一个线程，直到线程达到线程池的最大大小。线程池的大小一旦达到最大值就会保持不变，如果某个线程因为执行异常而结束，那么线程池会补充一个新线程。</li>
-</ol>
 ]]></content>
       <tags>
         <tag>java</tag>
@@ -979,6 +979,25 @@
       </tags>
   </entry>
   <entry>
+    <title>logrotate小结</title>
+    <url>/2021/03/12/logrotate%E5%B0%8F%E7%BB%93/</url>
+    <content><![CDATA[<p>对于Linux 的系统安全来说，日志文件是极其重要的工具。系统管理员可以使用logrotate 程序用来管理系统中的最新的事件，对于Linux 的系统安全来说，日志文件是极其重要的工具。系统管理员可以使用logrotate 程序用来管理系统中的最新的事件， 还可以用来备份日志文件。</p>
+<h3 id="logrotate-命令使用"><a href="#logrotate-命令使用" class="headerlink" title="logrotate 命令使用"></a>logrotate 命令使用</h3><p>功能说明：管理记录文件。</p>
+<p>语　　法：logrotate [-?dfv][-s &lt;状态文件&gt;][–usage][配置文件]</p>
+<p>补充说明：使用logrotate指令，可让你轻松管理系统所产生的记录文件。它提供自动替换，压缩，删除和邮寄记录文件，每个记录文件都可被设置成每日，每周或每月处理，也能在文件太大时立即处理。您必须自行编辑，指定配置文件，预设的配置文件存放在/etc目录下，文件名称为logrotate.conf。</p>
+<p>　参　　数：<br>　-?或–help 　在线帮助。<br>　-d或–debug 　详细显示指令执行过程，便于排错或了解程序执行的情况。<br>　-f或–force 　强行启动记录文件维护操作，纵使logrotate指令认为没有需要亦然。<br>　-s&lt;状态文件&gt;或–state=&lt;状态文件&gt; 　使用指定的状态文件。<br>　-v或–version 　显示指令执行过程。<br>　-usage 　显示指令基本用法。</p>
+<p>logrotate最常用的三个方式为：<br>logrotate /etc/logrotate.conf：重新读取配置文件，并对符合条件的文件文件进行rotate。<br>logrotate -d /etc/logrotate.conf：调试模式，输出调试结果，但并不执行。<br>logrotate -f /etc/logrotate.conf：强制模式，对所有相关文件进行rotate。</p>
+<h3 id="logrotate-配置"><a href="#logrotate-配置" class="headerlink" title="logrotate 配置"></a>logrotate 配置</h3><p>logrotate 程序是一个日志文件管理工具。用来把旧的日志文件删除，并创建新的日志文件，我们把它叫做“转储”。我们可以根据日志文件的大小，也可以根据其天数来转储，这个过程一般通过 cron 程序来执行。<br>logrotate 程序还可以用于压缩日志文件，以及发送日志到指定的E-mail 。</p>
+<p>logrotate 的配置文件是 /etc/logrotate.conf。主要参数如下表：</p>
+<p>配置参数 　　　功能说明<br>compress 　　通过gzip 压缩转储以后的日志<br>nocompress 　不需要压缩时，用这个参数<br>copytruncate 　用于还在打开中的日志文件，把当前日志备份并截断<br>nocopytruncate 　备份日志文件但是不截断<br>create mode owner group 　　转储文件，使用指定的文件模式创建新的日志文件<br>nocreate 　　不建立新的日志文件<br>delaycompress 和 compress 　　一起使用时，转储的日志文件到下一次转储时才压缩<br>nodelaycompress 　　 delaycompress 选项，转储同时压缩。<br>errors address 　　专储时的错误信息发送到指定的Email 地址<br>ifempty 　　即使是空文件也转储，这个是 logrotate 的缺省选项。<br>notifempty　　 如果是空文件的话，不转储<br>mail address 　　把转储的日志文件发送到指定的E-mail 地址<br>nomail 　　转储时不发送日志文件<br>olddir directory 　　转储后的日志文件放入指定的目录，必须和当前日志文件在同一个文件系统<br>noolddir 　　转储后的日志文件和当前日志文件放在同一个目录下<br>prerotate/endscript 　　在转储以前需要执行的命令可以放入这个对，这两个关键字必须单独成行<br>postrotate/endscript 　　在转储以后需要执行的命令可以放入这个对，这两个关键字必须单独成行<br>daily 　　指定转储周期为每天<br>weekly 　　指定转储周期为每周<br>monthly 　　指定转储周期为每月<br>rotate count 　　指定日志文件删除之前转储的次数，0 指没有备份，5 指保留5 个备份<br>tabootext [+] list 让logrotate 　　不转储指定扩展名的文件，缺省的扩展名是：.rpm-orig, .rpmsave, v, 和 ~<br>size 　size当日志文件到达指定的大小时才转储，Size 可以指定 bytes (缺省)以及KB (sizek)或者MB (sizem).</p>
+<h3 id="logrotate-默认配置文件"><a href="#logrotate-默认配置文件" class="headerlink" title="logrotate 默认配置文件"></a>logrotate 默认配置文件</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># see &quot;man logrotate&quot; for details</span><br><span class="line"># rotate log files weekly</span><br><span class="line">weekly</span><br><span class="line"></span><br><span class="line"># keep 4 weeks worth of backlogs</span><br><span class="line">rotate 4</span><br><span class="line"></span><br><span class="line"># send errors to root</span><br><span class="line">errors root</span><br><span class="line"># create new (empty) log files after rotating old ones</span><br><span class="line">create</span><br><span class="line"></span><br><span class="line"># uncomment this if you want your log files compressed</span><br><span class="line">#compress</span><br><span class="line"></span><br><span class="line"># RPM packages drop log rotation information into this directory</span><br><span class="line">include /etc/logrotate.d</span><br><span class="line"></span><br><span class="line"># no packages own lastlog or wtmp --we&apos;ll rotate them here</span><br><span class="line">/var/log/wtmp &#123;</span><br><span class="line">monthly</span><br><span class="line">create 0664 root utmp</span><br><span class="line">rotate 1</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">/var/log/lastlog &#123;</span><br><span class="line">monthly</span><br><span class="line">rotate 1</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"># system-specific logs may be configured here</span><br></pre></td></tr></table></figure>
+<h3 id="使用include-选项覆盖缺省配置"><a href="#使用include-选项覆盖缺省配置" class="headerlink" title="使用include 选项覆盖缺省配置"></a>使用include 选项覆盖缺省配置</h3><p>当/etc/logrotate.conf读入文件时，include指定的文件中的转储参数将覆盖缺省的参数，如下例：<br>linuxconf文件的参数</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">/var/log/htmlaccess.log &#123; </span><br><span class="line"> errors jim</span><br><span class="line"> notifempty</span><br><span class="line"> nocompress</span><br><span class="line"> weekly</span><br><span class="line"> prerotate</span><br><span class="line"> /usr/bin/chattr -a /var/log/htmlaccess.log</span><br><span class="line"> endscript</span><br><span class="line"></span><br><span class="line"> postrotate</span><br><span class="line"> /usr/bin/chattr +a /var/log/htmlaccess.log</span><br><span class="line"> endscript</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">/var/log/netconf.log &#123; </span><br><span class="line"> nocompress</span><br><span class="line"> monthly</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>]]></content>
+      <tags>
+        <tag>linux</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>logrotate日志切割不执行问题</title>
     <url>/2021/06/30/logrotate%E6%97%A5%E5%BF%97%E5%88%87%E5%89%B2%E4%B8%8D%E6%89%A7%E8%A1%8C%E9%97%AE%E9%A2%98/</url>
     <content><![CDATA[<p>业务服务中写的日志切割功能没有执行，具体排查流程如下：</p>
@@ -994,25 +1013,6 @@
 <p><strong>小结</strong></p>
 <p>可以手工添加定时任务解决问题。</p>
 ]]></content>
-      <tags>
-        <tag>linux</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>logrotate小结</title>
-    <url>/2021/03/12/logrotate%E5%B0%8F%E7%BB%93/</url>
-    <content><![CDATA[<p>对于Linux 的系统安全来说，日志文件是极其重要的工具。系统管理员可以使用logrotate 程序用来管理系统中的最新的事件，对于Linux 的系统安全来说，日志文件是极其重要的工具。系统管理员可以使用logrotate 程序用来管理系统中的最新的事件， 还可以用来备份日志文件。</p>
-<h3 id="logrotate-命令使用"><a href="#logrotate-命令使用" class="headerlink" title="logrotate 命令使用"></a>logrotate 命令使用</h3><p>功能说明：管理记录文件。</p>
-<p>语　　法：logrotate [-?dfv][-s &lt;状态文件&gt;][–usage][配置文件]</p>
-<p>补充说明：使用logrotate指令，可让你轻松管理系统所产生的记录文件。它提供自动替换，压缩，删除和邮寄记录文件，每个记录文件都可被设置成每日，每周或每月处理，也能在文件太大时立即处理。您必须自行编辑，指定配置文件，预设的配置文件存放在/etc目录下，文件名称为logrotate.conf。</p>
-<p>　参　　数：<br>　-?或–help 　在线帮助。<br>　-d或–debug 　详细显示指令执行过程，便于排错或了解程序执行的情况。<br>　-f或–force 　强行启动记录文件维护操作，纵使logrotate指令认为没有需要亦然。<br>　-s&lt;状态文件&gt;或–state=&lt;状态文件&gt; 　使用指定的状态文件。<br>　-v或–version 　显示指令执行过程。<br>　-usage 　显示指令基本用法。</p>
-<p>logrotate最常用的三个方式为：<br>logrotate /etc/logrotate.conf：重新读取配置文件，并对符合条件的文件文件进行rotate。<br>logrotate -d /etc/logrotate.conf：调试模式，输出调试结果，但并不执行。<br>logrotate -f /etc/logrotate.conf：强制模式，对所有相关文件进行rotate。</p>
-<h3 id="logrotate-配置"><a href="#logrotate-配置" class="headerlink" title="logrotate 配置"></a>logrotate 配置</h3><p>logrotate 程序是一个日志文件管理工具。用来把旧的日志文件删除，并创建新的日志文件，我们把它叫做“转储”。我们可以根据日志文件的大小，也可以根据其天数来转储，这个过程一般通过 cron 程序来执行。<br>logrotate 程序还可以用于压缩日志文件，以及发送日志到指定的E-mail 。</p>
-<p>logrotate 的配置文件是 /etc/logrotate.conf。主要参数如下表：</p>
-<p>配置参数 　　　功能说明<br>compress 　　通过gzip 压缩转储以后的日志<br>nocompress 　不需要压缩时，用这个参数<br>copytruncate 　用于还在打开中的日志文件，把当前日志备份并截断<br>nocopytruncate 　备份日志文件但是不截断<br>create mode owner group 　　转储文件，使用指定的文件模式创建新的日志文件<br>nocreate 　　不建立新的日志文件<br>delaycompress 和 compress 　　一起使用时，转储的日志文件到下一次转储时才压缩<br>nodelaycompress 　　 delaycompress 选项，转储同时压缩。<br>errors address 　　专储时的错误信息发送到指定的Email 地址<br>ifempty 　　即使是空文件也转储，这个是 logrotate 的缺省选项。<br>notifempty　　 如果是空文件的话，不转储<br>mail address 　　把转储的日志文件发送到指定的E-mail 地址<br>nomail 　　转储时不发送日志文件<br>olddir directory 　　转储后的日志文件放入指定的目录，必须和当前日志文件在同一个文件系统<br>noolddir 　　转储后的日志文件和当前日志文件放在同一个目录下<br>prerotate/endscript 　　在转储以前需要执行的命令可以放入这个对，这两个关键字必须单独成行<br>postrotate/endscript 　　在转储以后需要执行的命令可以放入这个对，这两个关键字必须单独成行<br>daily 　　指定转储周期为每天<br>weekly 　　指定转储周期为每周<br>monthly 　　指定转储周期为每月<br>rotate count 　　指定日志文件删除之前转储的次数，0 指没有备份，5 指保留5 个备份<br>tabootext [+] list 让logrotate 　　不转储指定扩展名的文件，缺省的扩展名是：.rpm-orig, .rpmsave, v, 和 ~<br>size 　size当日志文件到达指定的大小时才转储，Size 可以指定 bytes (缺省)以及KB (sizek)或者MB (sizem).</p>
-<h3 id="logrotate-默认配置文件"><a href="#logrotate-默认配置文件" class="headerlink" title="logrotate 默认配置文件"></a>logrotate 默认配置文件</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># see &quot;man logrotate&quot; for details</span><br><span class="line"># rotate log files weekly</span><br><span class="line">weekly</span><br><span class="line"></span><br><span class="line"># keep 4 weeks worth of backlogs</span><br><span class="line">rotate 4</span><br><span class="line"></span><br><span class="line"># send errors to root</span><br><span class="line">errors root</span><br><span class="line"># create new (empty) log files after rotating old ones</span><br><span class="line">create</span><br><span class="line"></span><br><span class="line"># uncomment this if you want your log files compressed</span><br><span class="line">#compress</span><br><span class="line"></span><br><span class="line"># RPM packages drop log rotation information into this directory</span><br><span class="line">include /etc/logrotate.d</span><br><span class="line"></span><br><span class="line"># no packages own lastlog or wtmp --we&apos;ll rotate them here</span><br><span class="line">/var/log/wtmp &#123;</span><br><span class="line">monthly</span><br><span class="line">create 0664 root utmp</span><br><span class="line">rotate 1</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">/var/log/lastlog &#123;</span><br><span class="line">monthly</span><br><span class="line">rotate 1</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"># system-specific logs may be configured here</span><br></pre></td></tr></table></figure>
-<h3 id="使用include-选项覆盖缺省配置"><a href="#使用include-选项覆盖缺省配置" class="headerlink" title="使用include 选项覆盖缺省配置"></a>使用include 选项覆盖缺省配置</h3><p>当/etc/logrotate.conf读入文件时，include指定的文件中的转储参数将覆盖缺省的参数，如下例：<br>linuxconf文件的参数</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">/var/log/htmlaccess.log &#123; </span><br><span class="line"> errors jim</span><br><span class="line"> notifempty</span><br><span class="line"> nocompress</span><br><span class="line"> weekly</span><br><span class="line"> prerotate</span><br><span class="line"> /usr/bin/chattr -a /var/log/htmlaccess.log</span><br><span class="line"> endscript</span><br><span class="line"></span><br><span class="line"> postrotate</span><br><span class="line"> /usr/bin/chattr +a /var/log/htmlaccess.log</span><br><span class="line"> endscript</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">/var/log/netconf.log &#123; </span><br><span class="line"> nocompress</span><br><span class="line"> monthly</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>]]></content>
       <tags>
         <tag>linux</tag>
       </tags>
@@ -1828,64 +1828,6 @@
       </tags>
   </entry>
   <entry>
-    <title>python基础小结</title>
-    <url>/2021/02/18/python%E5%9F%BA%E7%A1%80%E5%B0%8F%E7%BB%93/</url>
-    <content><![CDATA[<h3 id="python中sys-argv函数精简概括"><a href="#python中sys-argv函数精简概括" class="headerlink" title="python中sys.argv函数精简概括"></a>python中sys.argv函数精简概括</h3><ul>
-<li>sys.argv[0]：给定脚本名是 ‘-‘ （标准输入）时，sys.argv[0] 是 ‘-‘。使用 -c command 时，sys.argv[0] 是 ‘-c’。如果使用选项 -m module，sys.argv[0] 就是包含目录的模块全名。</li>
-<li>sys.argv[1]：sys.argv[1]是输出了参数所组成的列表的第一个元素</li>
-<li>sys.argv[1:]：sys.argv[1:]是输出了参数所组成的列表，空格分割</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">import sys</span><br><span class="line">print(sys.argv[0])</span><br><span class="line">print(sys.argv[1])</span><br><span class="line">print(sys.argv[1:])</span><br></pre></td></tr></table></figure>
-<h3 id="python文件编码说明"><a href="#python文件编码说明" class="headerlink" title="python文件编码说明"></a>python文件编码说明</h3><p>python 支持3种编码声明，一般常用能见到下面两种</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">1.# -*- coding: utf-8 -*-</span><br><span class="line"></span><br><span class="line">这种写法是为了兼容Emacs的编码声明</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">2.短一点，但Emacs不能用# coding=utf-8</span><br><span class="line"></span><br><span class="line">短一点，但Emacs不能用</span><br></pre></td></tr></table></figure>
-<p>之所以要声明未编码类型 ，主要是中文出错的问题。</p>
-<p>在python 文件开头（一般是第一行或第二行），用来说明你的Python源程序文件用使用的编码。缺省情况下你的程序需要使用ascii码来写，但如果在其中写中文的话，python解释器一般会报错，但如果加上你所用的文件编码，python就会自动处理不再报错。</p>
-<p>这里要注意的是：</p>
-<p>1.coding 后面使用 “:” 或 “=” 都可以</p>
-<p>2.但是， “:” 或 “=” 必须和 coding之间没有空格。之前我就试过有空格声明失败，还是不支持中文。至于 “:” 或 “=” 后面，有没有空格就没所谓了。</p>
-<h3 id="Python-c-执行命令"><a href="#Python-c-执行命令" class="headerlink" title="Python -c 执行命令"></a>Python -c 执行命令</h3><h4 id="1-查看-Python-版本"><a href="#1-查看-Python-版本" class="headerlink" title="1. 查看 Python 版本"></a>1. 查看 Python 版本</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">strong@foreverstrong:~$ python -V</span><br><span class="line">Python 3.6.8</span><br><span class="line">strong@foreverstrong:~$ </span><br><span class="line"></span><br><span class="line">strong@foreverstrong:~$ python --version</span><br><span class="line">Python 3.6.8</span><br><span class="line">strong@foreverstrong:~$</span><br></pre></td></tr></table></figure>
-<h4 id="2-查看-Python-安装路径"><a href="#2-查看-Python-安装路径" class="headerlink" title="2. 查看 Python 安装路径"></a>2. 查看 Python 安装路径</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">strong@foreverstrong:~$ python -c &quot;import sys; print(sys.executable)&quot;</span><br><span class="line">/usr/bin/python</span><br><span class="line">strong@foreverstrong:~$ </span><br><span class="line"></span><br><span class="line"></span><br><span class="line">strong@foreverstrong:~$ python -c &quot;import os; print(os.sys.executable)&quot;</span><br><span class="line">/usr/bin/python</span><br><span class="line">strong@foreverstrong:~$ </span><br><span class="line"></span><br><span class="line">strong@foreverstrong:~$ python -c &quot;import os; path = os.sys.executable; folder=path[0 : path.rfind(os.sep)]; print(folder)&quot;</span><br><span class="line">/usr/bin</span><br><span class="line">strong@foreverstrong:~$</span><br></pre></td></tr></table></figure>
-<h3 id="Python-m-执行命令"><a href="#Python-m-执行命令" class="headerlink" title="Python -m 执行命令"></a>Python -m 执行命令</h3><blockquote>
-<p>在 Python3 中，只需一行命令就能实现一个简单的 HTTP 服务：</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">python -m http.server 8000</span><br><span class="line"> </span><br><span class="line"># 注:在 Python2 中是这样</span><br><span class="line">python -m SimpleHTTPServer 8000</span><br></pre></td></tr></table></figure>
-<p>执行后，在本机打开“ <a href="http://localhost:8000" target="_blank" rel="noopener">http://localhost:8000</a>  ”，或者在局域网内的其它机器上打开“  http://本机ip:8000   ”，就能访问到执行目录下的内容。</p>
-<blockquote>
-<p>与此类似，我们只需要一行命令“python -m pydoc -p xxx”，就能生成 HTML 格式的官方帮助文档，可以在浏览器中访问。</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">python -m pydoc -p 9000</span><br></pre></td></tr></table></figure>
-<p>上面的命令执行了 pydoc 模块，会在 9000 端口启动一个 http 服务.</p>
-<blockquote>
-<p>它的第三个常见用法是执行 pdb 的调试命令“python -m pdb xxx.py”，以调试模式来执行“xxx.py”脚本：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">python -m pdb test.py</span><br></pre></td></tr></table></figure></p>
-</blockquote>
-<blockquote>
-<p>第四个同样挺有用的场景是用 timeit 在命令行中测试一小段代码的运行时间。以下的 3 段代码，用不同的方式拼接 “0-1-2-……-99” 数字串。可以直观地看出它们的效率差异：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">python -m timeit &quot;&apos;-&apos;.join(str(n) for n in range(100))&quot;</span><br><span class="line">python -m timeit &quot;&apos;-&apos;.join([str(n) for n in range(100)])&quot;</span><br><span class="line">python -m timeit &quot;&apos;-&apos;.join(map(str,range(100)))&quot;</span><br></pre></td></tr></table></figure></p>
-</blockquote>
-<blockquote>
-<p>最后，还有一种常常被人忽略的场景：“python -m pip install xxx”。我们可能会习惯性地使用“pip install xxx”，或者做了版本区分时用“pip3 install xxx”，总之不在前面用“python -m”做指定。但这种写法可能会出问题。</p>
-</blockquote>
-<h3 id="m-选项的两种原理解析"><a href="#m-选项的两种原理解析" class="headerlink" title="-m 选项的两种原理解析"></a>-m 选项的两种原理解析</h3><p>看了前面的几种典型用法，你是否开始好奇： “-m”是怎么运作的？它是怎么实现的？</p>
-<p>对于“python -m name”，一句话解释： Python 会检索 sys.path ，查找名字为“name”的模块或者包（含命名空间包），并将其内容当成“<strong>main</strong>”模块来执行。</p>
-<p><strong>1、对于普通模块</strong></p>
-<p>以“.py”为后缀的文件就是一个模块，在“-m”之后使用时，只需要使用模块名，不需要写出后缀，但前提是该模块名是有效的，且不能是用 C 语言写成的模块。</p>
-<p>在“-m”之后，如果是一个无效的模块名，则会报错“No module named xxx”。</p>
-<p>如果是一个带后缀的模块，则首先会导入该模块，然后可能报错：Error while finding module specification for ‘xxx.py’ (AttributeError: module ‘xxx’ has no attribute ‘<strong>path</strong>‘。</p>
-<p><img src="/2021/02/18/python基础小结/python1.png" alt="avatar"></p>
-<p>对于一个普通模块，有时候这两种写法表面看起来是等效的：<br>两种写法都会把定位到的模块脚本当成主程序入口来执行，即在执行时，该脚本的 <strong>name</strong> 都是”<strong>main</strong>“，跟 import 导入方式是不同的。</p>
-<p>但它的前提是：在执行目录中存在着“test.py”，且只有唯一的“test”模块。对于本例，如果换一个目录执行的话，“python test.py”当然会报找不到文件的错误，然而，“python -m test”却不会报错，因为解释器在遍历 sys.path 时可以找到同名的“test”模块，并且执行：</p>
-<p><img src="/2021/02/18/python基础小结/python2.png" alt="avatar"></p>
-<p>由此差异，我们其实可以总结出“-m”的用法： 已知一个模块的名字，但不知道它的文件路径，那么使用“-m”就意味着交给解释器自行查找，若找到，则当成脚本执行。</p>
-<p>直接运行脚本时，相当于给出了脚本的完整路径（不管是绝对路径还是相对路径），解释器根据 文件系统的查找机制， 定位到该脚本，然后执行 使用“-m”方式时，解释器需要在不 import 的情况下，在 所有模块命名空间 中查找，定位到脚本的路径，然后执行。为了实现这个过程，解释器会借助两个模块： pkgutil 和 runpy ，前者用来获取所有的模块列表，后者根据模块名来定位并执行脚本 </p>
-<p><strong>2、对于包内模块</strong></p>
-<p>如果“-m”之后要执行的是一个包，那么解释器经过前面提到的查找过程，先定位到该包，然后会去执行它的“<strong>main</strong>”子模块，也就是说，在包目录下需要实现一个“<strong>main</strong>.py”文件。</p>
-<p>换句话说，假设有个包的名称是“pname”，那么， “python -m pname”，其实就等效于“python -m pname.<strong>main</strong>”。</p>
-]]></content>
-      <tags>
-        <tag>python</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>python文件操作</title>
     <url>/2021/06/15/python%E6%96%87%E4%BB%B6%E6%93%8D%E4%BD%9C/</url>
     <content><![CDATA[<p>python和其它编程语言一样，Python 也具有操作文件（I/O）的能力，比如打开文件、读取和追加数据、插入和删除数据、关闭文件、删除文件等。</p>
@@ -1944,6 +1886,114 @@
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">from contextlib import closing</span><br><span class="line">from urllib.request import urlopen</span><br><span class="line"></span><br><span class="line">with closing(urlopen(&apos;https://www.python.org&apos;)) as page:</span><br><span class="line">    for line in page:</span><br><span class="line">        print(line)</span><br></pre></td></tr></table></figure>
 <p>closing也是一个经过@contextmanager装饰的generator，这个generator编写起来其实非常简单：</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@contextmanager</span><br><span class="line">def closing(thing):</span><br><span class="line">    try:</span><br><span class="line">        yield thing</span><br><span class="line">    finally:</span><br><span class="line">        thing.close()</span><br></pre></td></tr></table></figure>]]></content>
+      <tags>
+        <tag>python</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>python基础小结</title>
+    <url>/2021/02/18/python%E5%9F%BA%E7%A1%80%E5%B0%8F%E7%BB%93/</url>
+    <content><![CDATA[<h3 id="python中sys-argv函数精简概括"><a href="#python中sys-argv函数精简概括" class="headerlink" title="python中sys.argv函数精简概括"></a>python中sys.argv函数精简概括</h3><ul>
+<li>sys.argv[0]：给定脚本名是 ‘-‘ （标准输入）时，sys.argv[0] 是 ‘-‘。使用 -c command 时，sys.argv[0] 是 ‘-c’。如果使用选项 -m module，sys.argv[0] 就是包含目录的模块全名。</li>
+<li>sys.argv[1]：sys.argv[1]是输出了参数所组成的列表的第一个元素</li>
+<li>sys.argv[1:]：sys.argv[1:]是输出了参数所组成的列表，空格分割</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">import sys</span><br><span class="line">print(sys.argv[0])</span><br><span class="line">print(sys.argv[1])</span><br><span class="line">print(sys.argv[1:])</span><br></pre></td></tr></table></figure>
+<h3 id="python文件编码说明"><a href="#python文件编码说明" class="headerlink" title="python文件编码说明"></a>python文件编码说明</h3><p>python 支持3种编码声明，一般常用能见到下面两种</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">1.# -*- coding: utf-8 -*-</span><br><span class="line"></span><br><span class="line">这种写法是为了兼容Emacs的编码声明</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">2.短一点，但Emacs不能用# coding=utf-8</span><br><span class="line"></span><br><span class="line">短一点，但Emacs不能用</span><br></pre></td></tr></table></figure>
+<p>之所以要声明未编码类型 ，主要是中文出错的问题。</p>
+<p>在python 文件开头（一般是第一行或第二行），用来说明你的Python源程序文件用使用的编码。缺省情况下你的程序需要使用ascii码来写，但如果在其中写中文的话，python解释器一般会报错，但如果加上你所用的文件编码，python就会自动处理不再报错。</p>
+<p>这里要注意的是：</p>
+<p>1.coding 后面使用 “:” 或 “=” 都可以</p>
+<p>2.但是， “:” 或 “=” 必须和 coding之间没有空格。之前我就试过有空格声明失败，还是不支持中文。至于 “:” 或 “=” 后面，有没有空格就没所谓了。</p>
+<h3 id="Python-c-执行命令"><a href="#Python-c-执行命令" class="headerlink" title="Python -c 执行命令"></a>Python -c 执行命令</h3><h4 id="1-查看-Python-版本"><a href="#1-查看-Python-版本" class="headerlink" title="1. 查看 Python 版本"></a>1. 查看 Python 版本</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">strong@foreverstrong:~$ python -V</span><br><span class="line">Python 3.6.8</span><br><span class="line">strong@foreverstrong:~$ </span><br><span class="line"></span><br><span class="line">strong@foreverstrong:~$ python --version</span><br><span class="line">Python 3.6.8</span><br><span class="line">strong@foreverstrong:~$</span><br></pre></td></tr></table></figure>
+<h4 id="2-查看-Python-安装路径"><a href="#2-查看-Python-安装路径" class="headerlink" title="2. 查看 Python 安装路径"></a>2. 查看 Python 安装路径</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">strong@foreverstrong:~$ python -c &quot;import sys; print(sys.executable)&quot;</span><br><span class="line">/usr/bin/python</span><br><span class="line">strong@foreverstrong:~$ </span><br><span class="line"></span><br><span class="line"></span><br><span class="line">strong@foreverstrong:~$ python -c &quot;import os; print(os.sys.executable)&quot;</span><br><span class="line">/usr/bin/python</span><br><span class="line">strong@foreverstrong:~$ </span><br><span class="line"></span><br><span class="line">strong@foreverstrong:~$ python -c &quot;import os; path = os.sys.executable; folder=path[0 : path.rfind(os.sep)]; print(folder)&quot;</span><br><span class="line">/usr/bin</span><br><span class="line">strong@foreverstrong:~$</span><br></pre></td></tr></table></figure>
+<h3 id="Python-m-执行命令"><a href="#Python-m-执行命令" class="headerlink" title="Python -m 执行命令"></a>Python -m 执行命令</h3><blockquote>
+<p>在 Python3 中，只需一行命令就能实现一个简单的 HTTP 服务：</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">python -m http.server 8000</span><br><span class="line"> </span><br><span class="line"># 注:在 Python2 中是这样</span><br><span class="line">python -m SimpleHTTPServer 8000</span><br></pre></td></tr></table></figure>
+<p>执行后，在本机打开“ <a href="http://localhost:8000" target="_blank" rel="noopener">http://localhost:8000</a>  ”，或者在局域网内的其它机器上打开“  http://本机ip:8000   ”，就能访问到执行目录下的内容。</p>
+<blockquote>
+<p>与此类似，我们只需要一行命令“python -m pydoc -p xxx”，就能生成 HTML 格式的官方帮助文档，可以在浏览器中访问。</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">python -m pydoc -p 9000</span><br></pre></td></tr></table></figure>
+<p>上面的命令执行了 pydoc 模块，会在 9000 端口启动一个 http 服务.</p>
+<blockquote>
+<p>它的第三个常见用法是执行 pdb 的调试命令“python -m pdb xxx.py”，以调试模式来执行“xxx.py”脚本：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">python -m pdb test.py</span><br></pre></td></tr></table></figure></p>
+</blockquote>
+<blockquote>
+<p>第四个同样挺有用的场景是用 timeit 在命令行中测试一小段代码的运行时间。以下的 3 段代码，用不同的方式拼接 “0-1-2-……-99” 数字串。可以直观地看出它们的效率差异：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">python -m timeit &quot;&apos;-&apos;.join(str(n) for n in range(100))&quot;</span><br><span class="line">python -m timeit &quot;&apos;-&apos;.join([str(n) for n in range(100)])&quot;</span><br><span class="line">python -m timeit &quot;&apos;-&apos;.join(map(str,range(100)))&quot;</span><br></pre></td></tr></table></figure></p>
+</blockquote>
+<blockquote>
+<p>最后，还有一种常常被人忽略的场景：“python -m pip install xxx”。我们可能会习惯性地使用“pip install xxx”，或者做了版本区分时用“pip3 install xxx”，总之不在前面用“python -m”做指定。但这种写法可能会出问题。</p>
+</blockquote>
+<h3 id="m-选项的两种原理解析"><a href="#m-选项的两种原理解析" class="headerlink" title="-m 选项的两种原理解析"></a>-m 选项的两种原理解析</h3><p>看了前面的几种典型用法，你是否开始好奇： “-m”是怎么运作的？它是怎么实现的？</p>
+<p>对于“python -m name”，一句话解释： Python 会检索 sys.path ，查找名字为“name”的模块或者包（含命名空间包），并将其内容当成“<strong>main</strong>”模块来执行。</p>
+<p><strong>1、对于普通模块</strong></p>
+<p>以“.py”为后缀的文件就是一个模块，在“-m”之后使用时，只需要使用模块名，不需要写出后缀，但前提是该模块名是有效的，且不能是用 C 语言写成的模块。</p>
+<p>在“-m”之后，如果是一个无效的模块名，则会报错“No module named xxx”。</p>
+<p>如果是一个带后缀的模块，则首先会导入该模块，然后可能报错：Error while finding module specification for ‘xxx.py’ (AttributeError: module ‘xxx’ has no attribute ‘<strong>path</strong>‘。</p>
+<p><img src="/2021/02/18/python基础小结/python1.png" alt="avatar"></p>
+<p>对于一个普通模块，有时候这两种写法表面看起来是等效的：<br>两种写法都会把定位到的模块脚本当成主程序入口来执行，即在执行时，该脚本的 <strong>name</strong> 都是”<strong>main</strong>“，跟 import 导入方式是不同的。</p>
+<p>但它的前提是：在执行目录中存在着“test.py”，且只有唯一的“test”模块。对于本例，如果换一个目录执行的话，“python test.py”当然会报找不到文件的错误，然而，“python -m test”却不会报错，因为解释器在遍历 sys.path 时可以找到同名的“test”模块，并且执行：</p>
+<p><img src="/2021/02/18/python基础小结/python2.png" alt="avatar"></p>
+<p>由此差异，我们其实可以总结出“-m”的用法： 已知一个模块的名字，但不知道它的文件路径，那么使用“-m”就意味着交给解释器自行查找，若找到，则当成脚本执行。</p>
+<p>直接运行脚本时，相当于给出了脚本的完整路径（不管是绝对路径还是相对路径），解释器根据 文件系统的查找机制， 定位到该脚本，然后执行 使用“-m”方式时，解释器需要在不 import 的情况下，在 所有模块命名空间 中查找，定位到脚本的路径，然后执行。为了实现这个过程，解释器会借助两个模块： pkgutil 和 runpy ，前者用来获取所有的模块列表，后者根据模块名来定位并执行脚本 </p>
+<p><strong>2、对于包内模块</strong></p>
+<p>如果“-m”之后要执行的是一个包，那么解释器经过前面提到的查找过程，先定位到该包，然后会去执行它的“<strong>main</strong>”子模块，也就是说，在包目录下需要实现一个“<strong>main</strong>.py”文件。</p>
+<p>换句话说，假设有个包的名称是“pname”，那么， “python -m pname”，其实就等效于“python -m pname.<strong>main</strong>”。</p>
+]]></content>
+      <tags>
+        <tag>python</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>python获取文件路径小结</title>
+    <url>/2021/07/07/python%E8%8E%B7%E5%8F%96%E6%96%87%E4%BB%B6%E8%B7%AF%E5%BE%84%E5%B0%8F%E7%BB%93/</url>
+    <content><![CDATA[<p>业务线最近遇到一个问题，缘由是以下代码导致的</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">def get_work_dir():</span><br><span class="line">    work_dir = os.path.split(os.path.realpath(sys.argv[0]))[0]</span><br><span class="line">    sdk = os.path.join(work_dir, &quot;certificate/license-sdk&quot;)</span><br><span class="line">    ....</span><br></pre></td></tr></table></figure>
+<p>整体来讲，就是在获取当前文件执行路径的时候出了问题。单独运行py文件和用uwsgi运行py文件，及用gunicorn运行py文件，这种方式获取的路径在代码运行的过程中是不一致的。为了验证上述问题，做如下测试：</p>
+<p>测试代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">import os</span><br><span class="line">import sys</span><br><span class="line">from flask import Flask</span><br><span class="line"></span><br><span class="line">app = Flask(__name__)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">@app.route(&apos;/&apos;)</span><br><span class="line">def hello_world():</span><br><span class="line">    print(&quot;------------&quot;)</span><br><span class="line">    print(sys.argv)</span><br><span class="line">    print(os.path.realpath(sys.argv[0]))</span><br><span class="line">    #print(os.getcwd())</span><br><span class="line">    #print(os.path.abspath(&apos;.&apos;))</span><br><span class="line">    print(&quot;------------&quot;)</span><br><span class="line">    return &apos;Hello World!&apos;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">if __name__ == &apos;__main__&apos;:</span><br><span class="line">    app.run()</span><br></pre></td></tr></table></figure>
+<ol>
+<li><p>单独启动flask项目，返回结果如下：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[&apos;/Users/zyy/Downloads/workspace/python3/learn/.venv/lib/python3.6/site-packages/flask/__main__.py&apos;, &apos;run&apos;]</span><br><span class="line">/Users/zyy/Downloads/workspace/python3/learn/.venv/lib/python3.6/site-packages/flask/__main__.py</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>通过uwsgi启动项目，</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">uwsgi --socket 0.0.0.0:5000 --protocol=http -p 1  --set foo=bar -w run:app</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>返回结果如下：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[&apos;uwsgi&apos;]</span><br><span class="line">/Users/zyy/Downloads/workspace/python3/learn/uwsgi</span><br></pre></td></tr></table></figure></p>
+<ol start="3">
+<li>通过gunicorn启动项目</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">gunicorn -w 1 -b 127.0.0.1:5000 run:app</span><br></pre></td></tr></table></figure>
+<p>返回结果如下：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[&apos;/Users/zyy/Downloads/workspace/python3/learn/.venv/bin/gunicorn&apos;, &apos;-w&apos;, &apos;1&apos;, &apos;-b&apos;, &apos;127.0.0.1:5000&apos;, &apos;run:app&apos;]</span><br><span class="line">/Users/zyy/Downloads/workspace/python3/learn/.venv/bin/gunicorn</span><br></pre></td></tr></table></figure></p>
+<p>对比来看，三种方式启动后获取的文件路径都不一样，所以当通过uwsgi替换为gunicorn的时候，上述代码会出现问题。为了避免出现问题，可以通过其他方式来获取当前项目的执行路径。比如可以通过以下方式来获取项目执行路径。<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">os.getcwd()</span><br></pre></td></tr></table></figure></p>
+<h4 id="获取当前路径"><a href="#获取当前路径" class="headerlink" title="获取当前路径"></a>获取当前路径</h4><ol>
+<li>使用sys.argv[0]</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">import sys</span><br><span class="line">print sys.argv[0]</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>os模块</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">print(os.getcwd()) #获取当前工作目录路径</span><br><span class="line">print(os.path.abspath(&apos;.&apos;)) #获取当前工作目录路径</span><br><span class="line">print(os.path.abspath(&apos;test.txt&apos;)) #获取当前目录文件下的工作目录路径</span><br><span class="line">print(os.path.abspath(&apos;..&apos;)) #获取当前工作的父目录 ！注意是父目录路径</span><br><span class="line">print(os.path.abspath(os.curdir)) #获取当前工作目录路径</span><br></pre></td></tr></table></figure>
+<ol start="3">
+<li>改变当前路径</li>
+</ol>
+<p>使用: os.chdir(path)</p>
+<p>比如, 如果当前目录在 ‘E:’ 下面， 然后进入E 下面的files 文件 可以使用 os.chdir(E:\files).之后，使用比如 test1 = open(‘file1.txt’),  打开的文件会是在这个 ‘E:\files’ 目录下的文件，而不是 ‘E’ 下的文件。</p>
+<ol start="4">
+<li>组合路径返回</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">os.path.join(&apos;file1&apos;,&apos;file2&apos;,&apos;file3&apos;)</span><br></pre></td></tr></table></figure>
+<p>合并得到路径 file1/file2/file3</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt; print os.path.join(&apos;E:&apos;, &apos;file1&apos;, &apos;file2&apos;)</span><br><span class="line">E:/file1/file2</span><br><span class="line">&gt;&gt;&gt; print os.path.join(&apos;/home&apos;, &apos;/home/file1/&apos;, &apos;/home/file1/file2/&apos;)</span><br><span class="line">/home/file1/file2/</span><br></pre></td></tr></table></figure>
+<h4 id="获得当前目录下所有文件"><a href="#获得当前目录下所有文件" class="headerlink" title="获得当前目录下所有文件"></a>获得当前目录下所有文件</h4><p>os.walk() 用于在目录树种游走输出目录中的文件名字，向上或下</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">语法</span><br><span class="line">os.walk(top[, topdown=True[, onerror=None[, followlinks=False]]])</span><br><span class="line"></span><br><span class="line">参数：</span><br><span class="line">top -- 根目录下的每一个文件夹(包含它自己), 产生3-元组 (dirpath, dirnames, filenames)【文件夹路径, </span><br><span class="line">       文件夹名字, 文件名】。</span><br><span class="line"></span><br><span class="line">topdown --可选，为True或者没有指定, 一个目录的的3-元组将比它的任何子文件夹的3-元组先产生 (目录自上而下)。</span><br><span class="line">          如果topdown为 False, 一个目录的3-元组将比它的任何子文件夹的3-元组后产生 (目录自下而上)。</span><br><span class="line"></span><br><span class="line">onerror -- 可选，是一个函数; 它调用时有一个参数, 一个OSError实例。报告这错误后，继续walk,或者抛出exception终止walk。</span><br><span class="line"></span><br><span class="line">followlinks -- 设置为 true，则通过软链接访问目录。</span><br></pre></td></tr></table></figure>
+<p>测试代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">def file_name(file_dir):</span><br><span class="line">    for root, dirs, files in os.walk(file_dir):</span><br><span class="line">        print(&quot;-----------&quot;)</span><br><span class="line">        print(root)  # os.walk()所在目录</span><br><span class="line">        print(dirs)  # os.walk()所在目录的所有目录名</span><br><span class="line">        print(files)  # os.walk()所在目录的所有非目录文件名</span><br><span class="line">        print(&quot; &quot;)</span><br></pre></td></tr></table></figure>]]></content>
       <tags>
         <tag>python</tag>
       </tags>
