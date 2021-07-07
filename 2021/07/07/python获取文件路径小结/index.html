@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="昨非的个人网站">
 <meta property="og:description" content="业务线最近遇到一个问题，缘由是以下代码导致的 1234def get_work_dir():    work_dir = os.path.split(os.path.realpath(sys.argv[0]))[0]    sdk = os.path.join(work_dir, &amp;quot;certificate/license-sdk&amp;quot;)    .... 整体来讲，就是在获取当前文件">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:updated_time" content="2021-07-07T03:57:00.000Z">
+<meta property="og:updated_time" content="2021-07-07T05:00:27.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="python获取文件路径小结">
 <meta name="twitter:description" content="业务线最近遇到一个问题，缘由是以下代码导致的 1234def get_work_dir():    work_dir = os.path.split(os.path.realpath(sys.argv[0]))[0]    sdk = os.path.join(work_dir, &amp;quot;certificate/license-sdk&amp;quot;)    .... 整体来讲，就是在获取当前文件">
@@ -358,20 +358,22 @@
 <p>测试代码如下：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">import os</span><br><span class="line">import sys</span><br><span class="line">from flask import Flask</span><br><span class="line"></span><br><span class="line">app = Flask(__name__)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">@app.route(&apos;/&apos;)</span><br><span class="line">def hello_world():</span><br><span class="line">    print(&quot;------------&quot;)</span><br><span class="line">    print(sys.argv)</span><br><span class="line">    print(os.path.realpath(sys.argv[0]))</span><br><span class="line">    #print(os.getcwd())</span><br><span class="line">    #print(os.path.abspath(&apos;.&apos;))</span><br><span class="line">    print(&quot;------------&quot;)</span><br><span class="line">    return &apos;Hello World!&apos;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">if __name__ == &apos;__main__&apos;:</span><br><span class="line">    app.run()</span><br></pre></td></tr></table></figure>
 <ol>
-<li><p>单独启动flask项目，返回结果如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[&apos;/Users/zyy/Downloads/workspace/python3/learn/.venv/lib/python3.6/site-packages/flask/__main__.py&apos;, &apos;run&apos;]</span><br><span class="line">/Users/zyy/Downloads/workspace/python3/learn/.venv/lib/python3.6/site-packages/flask/__main__.py</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>通过uwsgi启动项目，</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uwsgi --socket 0.0.0.0:5000 --protocol=http -p 1  --set foo=bar -w run:app</span><br></pre></td></tr></table></figure>
-</li>
+<li>单独启动flask项目，返回结果如下：</li>
 </ol>
-<p>返回结果如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[&apos;uwsgi&apos;]</span><br><span class="line">/Users/zyy/Downloads/workspace/python3/learn/uwsgi</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[&apos;/Users/zyy/Downloads/workspace/python3/learn/.venv/lib/python3.6/site-packages/flask/__main__.py&apos;, &apos;run&apos;]</span><br><span class="line">/Users/zyy/Downloads/workspace/python3/learn/.venv/lib/python3.6/site-packages/flask/__main__.py</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>通过uwsgi启动项目，</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">wsgi --socket 0.0.0.0:5000 --protocol=http -p 1  --set foo=bar -w run:app</span><br><span class="line"></span><br><span class="line">返回结果如下：</span><br><span class="line"></span><br><span class="line">[&apos;uwsgi&apos;]</span><br><span class="line">/Users/zyy/Downloads/workspace/python3/learn/uwsgi</span><br></pre></td></tr></table></figure>
 <ol start="3">
 <li>通过gunicorn启动项目</li>
 </ol>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gunicorn -w 1 -b 127.0.0.1:5000 run:app</span><br></pre></td></tr></table></figure>
-<p>返回结果如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[&apos;/Users/zyy/Downloads/workspace/python3/learn/.venv/bin/gunicorn&apos;, &apos;-w&apos;, &apos;1&apos;, &apos;-b&apos;, &apos;127.0.0.1:5000&apos;, &apos;run:app&apos;]</span><br><span class="line">/Users/zyy/Downloads/workspace/python3/learn/.venv/bin/gunicorn</span><br></pre></td></tr></table></figure></p>
-<p>对比来看，三种方式启动后获取的文件路径都不一样，所以当通过uwsgi替换为gunicorn的时候，上述代码会出现问题。为了避免出现问题，可以通过其他方式来获取当前项目的执行路径。比如可以通过以下方式来获取项目执行路径。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">os.getcwd()</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">gunicorn -w 1 -b 127.0.0.1:5000 run:app</span><br><span class="line"></span><br><span class="line">返回结果如下：</span><br><span class="line"></span><br><span class="line">[&apos;/Users/zyy/Downloads/workspace/python3/learn/.venv/bin/gunicorn&apos;, &apos;-w&apos;, &apos;1&apos;, &apos;-b&apos;, &apos;127.0.0.1:5000&apos;, &apos;run:app&apos;]</span><br><span class="line">/Users/zyy/Downloads/workspace/python3/learn/.venv/bin/gunicorn</span><br></pre></td></tr></table></figure>
+<ol start="4">
+<li>小结</li>
+</ol>
+<p>对比来看，三种方式启动后获取的文件路径都不一样，所以当通过uwsgi替换为gunicorn的时候，上述代码会出现问题。为了避免出现问题，可以通过其他方式来获取当前项目的执行路径。比如可以通过以下方式来获取项目执行路径。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">os.getcwd()</span><br></pre></td></tr></table></figure>
 <h4 id="获取当前路径"><a href="#获取当前路径" class="headerlink" title="获取当前路径"></a>获取当前路径</h4><ol>
 <li>使用sys.argv[0]</li>
 </ol>
