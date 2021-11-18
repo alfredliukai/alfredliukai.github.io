@@ -1,6 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>CRIT Supervisor running as root问题排查</title>
+    <url>/2021/06/10/CRIT-Supervisor-running-as-root%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/</url>
+    <content><![CDATA[<h4 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h4><p>项目中遇到如下问题:<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">2021-06-10 17:58:59,776 CRIT Supervisor running as root (no user in config file)</span><br><span class="line">2021-06-10 17:58:59,777 WARN Included extra file &quot;/etc/supervisord.d/aaa.ini&quot; during parsing</span><br><span class="line">2021-06-10 17:58:59,777 INFO Increased RLIMIT_NOFILE limit to 32768</span><br></pre></td></tr></table></figure></p>
+<h4 id="处理流程"><a href="#处理流程" class="headerlink" title="处理流程"></a>处理流程</h4><p>参考文章大致判断流程如下</p>
+<ol>
+<li>单个进程打开 fb 过多    /etc/security/limits.conf    修改文件或使用 prlimit 命令</li>
+<li>操作系统打开的 fb 过多    /proc/sys/fs/file-max    直接 echo 写入即可</li>
+<li>Systemd 对进程限制    LimitNOFILE=20480000    通常在 /etc/systemd/system/ 目录下</li>
+<li>Supervisor 对进程限制    minfds    通常在 /etc/supervisor/conf.d/ 目录下</li>
+<li>Inotify 达到上限    sysctl -p 或 /etc/sysctl.conf    该机制受到 2 个内核参数的影响</li>
+</ol>
+<p>因此，修改配置文件<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">user=root</span><br><span class="line">minfds=100000</span><br></pre></td></tr></table></figure></p>
+<h4 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h4><ol>
+<li><a href="https://github.com/Supervisor/supervisor/issues/308" target="_blank" rel="noopener">https://github.com/Supervisor/supervisor/issues/308</a></li>
+<li><a href="https://www.escapelife.site/posts/5457f758.html" target="_blank" rel="noopener">https://www.escapelife.site/posts/5457f758.html</a></li>
+<li><a href="https://www.cnblogs.com/orzs/p/12715841.html" target="_blank" rel="noopener">https://www.cnblogs.com/orzs/p/12715841.html</a></li>
+</ol>
+]]></content>
+      <tags>
+        <tag>linux</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>BloomFilter小结</title>
     <url>/2021/04/15/BloomFilter%E5%B0%8F%E7%BB%93/</url>
     <content><![CDATA[<h3 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h3><p>布隆过滤器（Bloom Filter）是由布隆（Burton Howard Bloom）在1970年提出的。它实际上是由一个很长的二进制向量（位向量）和一系列随机映射函数组成，布隆过滤器可以用于检索一个元素是否在一个集合中。它的优点是空间效率和查询时间都远远超过一般的算法，缺点是有一定的误识别率（假正例False positives，即Bloom Filter报告某一元素存在于某集合中，但是实际上该元素并不在集合中）和删除困难，但是没有识别错误的情形（即假反例False negatives，如果某个元素确实没有在该集合中，那么Bloom Filter 是不会报告该元素存在于集合中的，所以不会漏报）。因此，Bloom Filter不适合那些“零错误”的应用场合。而在能容忍低错误率的应用场合下，Bloom Filter通过极少的错误换取了存储空间的极大节省。</p>
@@ -44,29 +67,6 @@
 ]]></content>
       <tags>
         <tag>数据结构</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>CRIT Supervisor running as root问题排查</title>
-    <url>/2021/06/10/CRIT-Supervisor-running-as-root%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/</url>
-    <content><![CDATA[<h4 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h4><p>项目中遇到如下问题:<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">2021-06-10 17:58:59,776 CRIT Supervisor running as root (no user in config file)</span><br><span class="line">2021-06-10 17:58:59,777 WARN Included extra file &quot;/etc/supervisord.d/aaa.ini&quot; during parsing</span><br><span class="line">2021-06-10 17:58:59,777 INFO Increased RLIMIT_NOFILE limit to 32768</span><br></pre></td></tr></table></figure></p>
-<h4 id="处理流程"><a href="#处理流程" class="headerlink" title="处理流程"></a>处理流程</h4><p>参考文章大致判断流程如下</p>
-<ol>
-<li>单个进程打开 fb 过多    /etc/security/limits.conf    修改文件或使用 prlimit 命令</li>
-<li>操作系统打开的 fb 过多    /proc/sys/fs/file-max    直接 echo 写入即可</li>
-<li>Systemd 对进程限制    LimitNOFILE=20480000    通常在 /etc/systemd/system/ 目录下</li>
-<li>Supervisor 对进程限制    minfds    通常在 /etc/supervisor/conf.d/ 目录下</li>
-<li>Inotify 达到上限    sysctl -p 或 /etc/sysctl.conf    该机制受到 2 个内核参数的影响</li>
-</ol>
-<p>因此，修改配置文件<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">user=root</span><br><span class="line">minfds=100000</span><br></pre></td></tr></table></figure></p>
-<h4 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h4><ol>
-<li><a href="https://github.com/Supervisor/supervisor/issues/308" target="_blank" rel="noopener">https://github.com/Supervisor/supervisor/issues/308</a></li>
-<li><a href="https://www.escapelife.site/posts/5457f758.html" target="_blank" rel="noopener">https://www.escapelife.site/posts/5457f758.html</a></li>
-<li><a href="https://www.cnblogs.com/orzs/p/12715841.html" target="_blank" rel="noopener">https://www.cnblogs.com/orzs/p/12715841.html</a></li>
-</ol>
-]]></content>
-      <tags>
-        <tag>linux</tag>
       </tags>
   </entry>
   <entry>
@@ -380,36 +380,6 @@
       </tags>
   </entry>
   <entry>
-    <title>TUN/TAP设备浅析</title>
-    <url>/2021/01/28/TUN-TAP%E8%AE%BE%E5%A4%87%E6%B5%85%E6%9E%90/</url>
-    <content><![CDATA[<h3 id="TUN设备"><a href="#TUN设备" class="headerlink" title="TUN设备"></a>TUN设备</h3><p>TUN 设备是一种虚拟网络设备，通过此设备，程序可以方便地模拟网络行为。TUN 模拟的是一个三层设备,也就是说,通过它可以处理来自网络层的数据，更通俗一点的说，通过它，我们可以处理 IP 数据包。</p>
-<p>先来看看物理设备是如何工作的：</p>
-<p><img src="/2021/01/28/TUN-TAP设备浅析/tun1.png" alt="avatar"></p>
-<p>上图中的 eth0 表示我们主机已有的真实的网卡接口 (interface)。</p>
-<p>网卡接口 eth0 所代表的真实网卡通过网线(wire)和外部网络相连，该物理网卡收到的数据包会经由接口 eth0 传递给内核的网络协议栈(Network Stack)。然后协议栈对这些数据包进行进一步的处理。</p>
-<p>对于一些错误的数据包,协议栈可以选择丢弃；对于不属于本机的数据包，协议栈可以选择转发；而对于确实是传递给本机的数据包,而且该数据包确实被上层的应用所需要，协议栈会通过 Socket API 告知上层正在等待的应用程序。</p>
-<p>下面看看 TUN 的工作方式：</p>
-<p>数据包处理过程<br><img src="/2021/01/28/TUN-TAP设备浅析/tun2.png" alt="avatar"></p>
-<p>UDP_VPN<br><img src="/2021/01/28/TUN-TAP设备浅析/tun3.png" alt="avatar"></p>
-<p>我们知道，普通的网卡是通过网线来收发数据包的话，而 TUN 设备比较特殊，它通过一个文件收发数据包。</p>
-<p>如上图所示，tunX 和上面的 eth0 在逻辑上面是等价的， tunX 也代表了一个网络接口,虽然这个接口是系统通过软件所模拟出来的.</p>
-<p>网卡接口 tunX 所代表的虚拟网卡通过文件 /dev/tunX 与我们的应用程序(App) 相连，应用程序每次使用 write 之类的系统调用将数据写入该文件，这些数据会以网络层数据包的形式，通过该虚拟网卡，经由网络接口 tunX 传递给网络协议栈，同时该应用程序也可以通过 read 之类的系统调用，经由文件 /dev/tunX 读取到协议栈向 tunX 传递的所有数据包。</p>
-<p>此外，协议栈可以像操纵普通网卡一样来操纵 tunX 所代表的虚拟网卡。比如说，给 tunX 设定 IP 地址，设置路由，总之，在协议栈看来，tunX 所代表的网卡和其他普通的网卡区别不大，当然，硬要说区别，那还是有的,那就是 tunX 设备不存在 MAC 地址，这个很好理解，tunX 只模拟到了网络层，要 MAC地址没有任何意义。当然，如果是 tapX 的话，在协议栈的眼中，tapX 和真是网卡没有任何区别。</p>
-<p>如果我们使用 TUN 设备搭建一个基于 UDP 的 VPN ，那么整个处理过程可能是这幅样子：</p>
-<p><img src="/2021/01/28/TUN-TAP设备浅析/tun4.png" alt="avatar"></p>
-<p>首先，我们的应用程序通过 eth0 和远程的 UDP 程序相连,对方传递过来的 UDP 数据包经由左边的协议栈传递给了应用程序，UDP 数据包的内容其实是一个网络层的数据包，比如说 IP 数据报，应用程序接收到该数据包的数据（剥除了各种头部之后的 UDP 数据）之后，然后进行一定的处理，处理完成后将处理后的数据写入文件 /dev/tunX，这样，数据会第二次到达协议栈。需要注意的是，上图中绘制的两个协议栈其实是同一个协议栈，之所以这么画是为了叙述的方便。</p>
-<h3 id="TAP设备"><a href="#TAP设备" class="headerlink" title="TAP设备"></a>TAP设备</h3><p>TAP 设备与 TUN 设备工作方式完全相同，区别在于：</p>
-<ol>
-<li>TUN 设备是一个三层设备，它只模拟到了 IP 层，即网络层 我们可以通过 /dev/tunX 文件收发 IP 层数据包，它无法与物理网卡做 bridge，但是可以通过三层交换（如 ip_forward）与物理网卡连通。可以使用ifconfig之类的命令给该设备设定 IP 地址。</li>
-<li>TAP 设备是一个二层设备，它比 TUN 更加深入，通过 /dev/tapX 文件可以收发 MAC 层数据包，即数据链路层，拥有 MAC 层功能，可以与物理网卡做 bridge，支持 MAC 层广播。同样的，我们也可以通过ifconfig之类的命令给该设备设定 IP 地址，你如果愿意，我们可以给它设定 MAC 地址。</li>
-</ol>
-<p>最后，关于文章中出现的二层，三层，我这里说明一下，第一层是物理层，第二层是数据链路层，第三层是网络层，第四层是传输层。</p>
-]]></content>
-      <tags>
-        <tag>linux</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>UltraISO制作ISO镜像流程及问题记录</title>
     <url>/2021/04/16/UltraISO%E5%88%B6%E4%BD%9CISO%E9%95%9C%E5%83%8F%E6%B5%81%E7%A8%8B%E5%8F%8A%E9%97%AE%E9%A2%98%E8%AE%B0%E5%BD%95/</url>
     <content><![CDATA[<p>业务系统中需要使用ISO进行项目交付，制作ISO镜像的过程中需要制作U盘启动盘。相关流程及问题总结如下：</p>
@@ -440,6 +410,36 @@
 <h3 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h3><ol>
 <li><a href="https://blog.csdn.net/weixin_39278265/article/details/89006467" target="_blank" rel="noopener">https://blog.csdn.net/weixin_39278265/article/details/89006467</a></li>
 </ol>
+]]></content>
+      <tags>
+        <tag>linux</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>TUN/TAP设备浅析</title>
+    <url>/2021/01/28/TUN-TAP%E8%AE%BE%E5%A4%87%E6%B5%85%E6%9E%90/</url>
+    <content><![CDATA[<h3 id="TUN设备"><a href="#TUN设备" class="headerlink" title="TUN设备"></a>TUN设备</h3><p>TUN 设备是一种虚拟网络设备，通过此设备，程序可以方便地模拟网络行为。TUN 模拟的是一个三层设备,也就是说,通过它可以处理来自网络层的数据，更通俗一点的说，通过它，我们可以处理 IP 数据包。</p>
+<p>先来看看物理设备是如何工作的：</p>
+<p><img src="/2021/01/28/TUN-TAP设备浅析/tun1.png" alt="avatar"></p>
+<p>上图中的 eth0 表示我们主机已有的真实的网卡接口 (interface)。</p>
+<p>网卡接口 eth0 所代表的真实网卡通过网线(wire)和外部网络相连，该物理网卡收到的数据包会经由接口 eth0 传递给内核的网络协议栈(Network Stack)。然后协议栈对这些数据包进行进一步的处理。</p>
+<p>对于一些错误的数据包,协议栈可以选择丢弃；对于不属于本机的数据包，协议栈可以选择转发；而对于确实是传递给本机的数据包,而且该数据包确实被上层的应用所需要，协议栈会通过 Socket API 告知上层正在等待的应用程序。</p>
+<p>下面看看 TUN 的工作方式：</p>
+<p>数据包处理过程<br><img src="/2021/01/28/TUN-TAP设备浅析/tun2.png" alt="avatar"></p>
+<p>UDP_VPN<br><img src="/2021/01/28/TUN-TAP设备浅析/tun3.png" alt="avatar"></p>
+<p>我们知道，普通的网卡是通过网线来收发数据包的话，而 TUN 设备比较特殊，它通过一个文件收发数据包。</p>
+<p>如上图所示，tunX 和上面的 eth0 在逻辑上面是等价的， tunX 也代表了一个网络接口,虽然这个接口是系统通过软件所模拟出来的.</p>
+<p>网卡接口 tunX 所代表的虚拟网卡通过文件 /dev/tunX 与我们的应用程序(App) 相连，应用程序每次使用 write 之类的系统调用将数据写入该文件，这些数据会以网络层数据包的形式，通过该虚拟网卡，经由网络接口 tunX 传递给网络协议栈，同时该应用程序也可以通过 read 之类的系统调用，经由文件 /dev/tunX 读取到协议栈向 tunX 传递的所有数据包。</p>
+<p>此外，协议栈可以像操纵普通网卡一样来操纵 tunX 所代表的虚拟网卡。比如说，给 tunX 设定 IP 地址，设置路由，总之，在协议栈看来，tunX 所代表的网卡和其他普通的网卡区别不大，当然，硬要说区别，那还是有的,那就是 tunX 设备不存在 MAC 地址，这个很好理解，tunX 只模拟到了网络层，要 MAC地址没有任何意义。当然，如果是 tapX 的话，在协议栈的眼中，tapX 和真是网卡没有任何区别。</p>
+<p>如果我们使用 TUN 设备搭建一个基于 UDP 的 VPN ，那么整个处理过程可能是这幅样子：</p>
+<p><img src="/2021/01/28/TUN-TAP设备浅析/tun4.png" alt="avatar"></p>
+<p>首先，我们的应用程序通过 eth0 和远程的 UDP 程序相连,对方传递过来的 UDP 数据包经由左边的协议栈传递给了应用程序，UDP 数据包的内容其实是一个网络层的数据包，比如说 IP 数据报，应用程序接收到该数据包的数据（剥除了各种头部之后的 UDP 数据）之后，然后进行一定的处理，处理完成后将处理后的数据写入文件 /dev/tunX，这样，数据会第二次到达协议栈。需要注意的是，上图中绘制的两个协议栈其实是同一个协议栈，之所以这么画是为了叙述的方便。</p>
+<h3 id="TAP设备"><a href="#TAP设备" class="headerlink" title="TAP设备"></a>TAP设备</h3><p>TAP 设备与 TUN 设备工作方式完全相同，区别在于：</p>
+<ol>
+<li>TUN 设备是一个三层设备，它只模拟到了 IP 层，即网络层 我们可以通过 /dev/tunX 文件收发 IP 层数据包，它无法与物理网卡做 bridge，但是可以通过三层交换（如 ip_forward）与物理网卡连通。可以使用ifconfig之类的命令给该设备设定 IP 地址。</li>
+<li>TAP 设备是一个二层设备，它比 TUN 更加深入，通过 /dev/tapX 文件可以收发 MAC 层数据包，即数据链路层，拥有 MAC 层功能，可以与物理网卡做 bridge，支持 MAC 层广播。同样的，我们也可以通过ifconfig之类的命令给该设备设定 IP 地址，你如果愿意，我们可以给它设定 MAC 地址。</li>
+</ol>
+<p>最后，关于文章中出现的二层，三层，我这里说明一下，第一层是物理层，第二层是数据链路层，第三层是网络层，第四层是传输层。</p>
 ]]></content>
       <tags>
         <tag>linux</tag>
@@ -570,7 +570,7 @@
       </tags>
   </entry>
   <entry>
-    <title>es3总结</title>
+    <title>es总结3</title>
     <url>/2020/03/29/es%E6%80%BB%E7%BB%933/</url>
     <content><![CDATA[<h4 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h4><ol>
 <li>概念</li>
@@ -653,43 +653,6 @@
       </tags>
   </entry>
   <entry>
-    <title>git中的对象简介</title>
-    <url>/2020/07/08/git%E4%B8%AD%E7%9A%84%E5%AF%B9%E8%B1%A1%E7%AE%80%E4%BB%8B/</url>
-    <content><![CDATA[<p>为了加深git中底层对象的理解，特意整理如下文章。<br>Git 保存的不是文件的变化或者差异，而是一系列不同时刻的 快照 。</p>
-<p>在进行提交操作时，Git 会保存一个提交对象（commit object）。 知道了 Git 保存数据的方式，我们可以很自然的想到——该提交对象会包含一个指向暂存内容快照的指针。 但不仅仅是这样，该提交对象还包含了作者的姓名和邮箱、提交时输入的信息以及指向它的父对象的指针。 首次提交产生的提交对象没有父对象，普通提交操作产生的提交对象有一个父对象， 而由多个分支合并产生的提交对象有多个父对象，</p>
-<p>为了更加形象地说明，我们假设现在有一个工作目录，里面包含了三个将要被暂存和提交的文件。 暂存操作会为每一个文件计算校验和（使用我们在 起步 中提到的 SHA-1 哈希算法），然后会把当前版本的文件快照保存到 Git 仓库中 （Git 使用 blob 对象来保存它们），最终将校验和加入到暂存区域等待提交：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ git add README test.rb LICENSE</span><br><span class="line">$ git commit -m &apos;The initial commit of my project&apos;</span><br></pre></td></tr></table></figure>
-<p>当使用 git commit 进行提交操作时，Git 会先计算每一个子目录（本例中只有项目根目录）的校验和， 然后在 Git 仓库中这些校验和保存为树对象。随后，Git 便会创建一个提交对象， 它除了包含上面提到的那些信息外，还包含指向这个树对象（项目根目录）的指针。 如此一来，Git 就可以在需要的时候重现此次保存的快照。</p>
-<p>现在，Git 仓库中有五个对象：三个 blob 对象（保存着文件快照）、一个 树 对象 （记录着目录结构和 blob 对象索引）以及一个 提交 对象（包含着指向前述树对象的指针和所有提交信息）。<br><img src="/2020/07/08/git中的对象简介/git1.png" alt="avatar"><br>Figure 9. 首次提交对象及其树结构<br>做些修改后再次提交，那么这次产生的提交对象会包含一个指向上次提交对象（父对象）的指针。<br><img src="/2020/07/08/git中的对象简介/git2.png" alt="avatar"><br>Figure 10. 提交对象及其父对象<br>Git 的分支，其实本质上仅仅是指向提交对象的可变指针。 Git 的默认分支名字是 master。 在多次提交操作之后，你其实已经有一个指向最后那个提交对象的 master 分支。 master 分支会在每次提交时自动向前移动。<br><img src="/2020/07/08/git中的对象简介/git3.png" alt="avatar"><br>Figure 11. 分支及其提交历史</p>
-<h4 id="分支创建"><a href="#分支创建" class="headerlink" title="分支创建"></a>分支创建</h4><p>Git 是怎么创建新分支的呢？ 很简单，它只是为你创建了一个可以移动的新的指针。 比如，创建一个 testing 分支， 你需要使用 git branch 命令：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ git branch testing</span><br></pre></td></tr></table></figure></p>
-<p>这会在当前所在的提交对象上创建一个指针。<br><img src="/2020/07/08/git中的对象简介/git4.png" alt="avatar"></p>
-<p>Figure 12. 两个指向相同提交历史的分支<br>那么，Git 又是怎么知道当前在哪一个分支上呢？ 也很简单，它有一个名为 HEAD 的特殊指针。 请注意它和许多其它版本控制系统（如 Subversion 或 CVS）里的 HEAD 概念完全不同。 在 Git 中，它是一个指针，指向当前所在的本地分支（译注：将 HEAD 想象为当前分支的别名）。 在本例中，你仍然在 master 分支上。 因为 git branch 命令仅仅 创建 一个新分支，并不会自动切换到新分支中去。</p>
-<p><img src="/2020/07/08/git中的对象简介/git5.png" alt="avatar"></p>
-<p>Figure 13. HEAD 指向当前所在的分支<br>你可以简单地使用 git log 命令查看各个分支当前所指的对象。 提供这一功能的参数是 –decorate<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ git log --oneline --decorate</span><br><span class="line">f30ab (HEAD -&gt; master, testing) add feature #32 - ability to add new formats to the central interface</span><br><span class="line">34ac2 Fixed bug #1328 - stack overflow under certain conditions</span><br><span class="line">98ca9 The initial commit of my project</span><br></pre></td></tr></table></figure></p>
-<p>正如你所见，当前 master 和 testing 分支均指向校验和以 f30ab 开头的提交对象。</p>
-<h4 id="分支切换"><a href="#分支切换" class="headerlink" title="分支切换"></a>分支切换</h4><p>要切换到一个已存在的分支，你需要使用 git checkout 命令。 我们现在切换到新创建的 testing 分支去：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ git checkout testing</span><br></pre></td></tr></table></figure>
-<p>这样 HEAD 就指向 testing 分支了。</p>
-<p><img src="/2020/07/08/git中的对象简介/git6.png" alt="avatar"></p>
-<p>Figure 14. HEAD 指向当前所在的分支<br>那么，这样的实现方式会给我们带来什么好处呢？ 现在不妨再提交一次：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ vim test.rb</span><br><span class="line">$ git commit -a -m &apos;made a change&apos;</span><br></pre></td></tr></table></figure>
-<p><img src="/2020/07/08/git中的对象简介/git7.png" alt="avatar"></p>
-<p>Figure 15. HEAD 分支随着提交操作自动向前移动<br>如图所示，你的 testing 分支向前移动了，但是 master 分支却没有，它仍然指向运行 git checkout 时所指的对象。 这就有意思了，现在我们切换回 master 分支看看：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ git checkout master</span><br></pre></td></tr></table></figure>
-<p><img src="/2020/07/08/git中的对象简介/git8.png" alt="avatar"><br>Figure 16. 检出时 HEAD 随之移动<br>这条命令做了两件事。 一是使 HEAD 指回 master 分支，二是将工作目录恢复成 master 分支所指向的快照内容。 也就是说，你现在做修改的话，项目将始于一个较旧的版本。 本质上来讲，这就是忽略 testing 分支所做的修改，以便于向另一个方向进行开发。</p>
-<p>我们不妨再稍微做些修改并提交：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ vim test.rb</span><br><span class="line">$ git commit -a -m &apos;made other changes&apos;</span><br></pre></td></tr></table></figure>
-<p>现在，这个项目的提交历史已经产生了分叉（参见 项目分叉历史）。 因为刚才你创建了一个新分支，并切换过去进行了一些工作，随后又切换回 master 分支进行了另外一些工作。 上述两次改动针对的是不同分支：你可以在不同分支间不断地来回切换和工作，并在时机成熟时将它们合并起来。 而所有这些工作，你需要的命令只有 branch、checkout 和 commit。<br><img src="/2020/07/08/git中的对象简介/git9.png" alt="avatar"><br>Figure 17. 项目分叉历史<br>你可以简单地使用 git log 命令查看分叉历史。 运行 git log –oneline –decorate –graph –all ，它会输出你的提交历史、各个分支的指向以及项目的分支分叉情况。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ git log --oneline --decorate --graph --all</span><br><span class="line">* c2b9e (HEAD, master) made other changes</span><br><span class="line">| * 87ab2 (testing) made a change</span><br><span class="line">|/</span><br><span class="line">* f30ab add feature #32 - ability to add new formats to the</span><br><span class="line">* 34ac2 fixed bug #1328 - stack overflow under certain conditions</span><br><span class="line">* 98ca9 initial commit of my project</span><br></pre></td></tr></table></figure>
-<p>由于 Git 的分支实质上仅是包含所指对象校验和（长度为 40 的 SHA-1 值字符串）的文件，所以它的创建和销毁都异常高效。 创建一个新分支就相当于往一个文件中写入 41 个字节（40 个字符和 1 个换行符），如此的简单能不快吗？</p>
-<p>这与过去大多数版本控制系统形成了鲜明的对比，它们在创建分支时，将所有的项目文件都复制一遍，并保存到一个特定的目录。 完成这样繁琐的过程通常需要好几秒钟，有时甚至需要好几分钟。所需时间的长短，完全取决于项目的规模。 而在 Git 中，任何规模的项目都能在瞬间创建新分支。 同时，由于每次提交都会记录父对象，所以寻找恰当的合并基础（译注：即共同祖先）也是同样的简单和高效。 这些高效的特性使得 Git 鼓励开发人员频繁地创建和使用分支。</p>
-<h4 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h4><p><a href="https://git-scm.com/book/zh/v2/Git-%E5%88%86%E6%94%AF-%E5%88%86%E6%94%AF%E7%AE%80%E4%BB%8B" target="_blank" rel="noopener">https://git-scm.com/book/zh/v2/Git-%E5%88%86%E6%94%AF-%E5%88%86%E6%94%AF%E7%AE%80%E4%BB%8B</a></p>
-]]></content>
-      <tags>
-        <tag>git</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>git常用命令</title>
     <url>/2020/04/05/git%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/</url>
     <content><![CDATA[<h4 id="git-branch"><a href="#git-branch" class="headerlink" title="git branch"></a>git branch</h4><ul>
@@ -750,6 +713,43 @@
 <li>git pull –rebase<br>如果远程git服务器仓库分支已经有了更新上，通常git pull时候将会默认执行merge合并提交。相当于执行两个操作<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">git fetch origin</span><br><span class="line">git merge origin/master</span><br><span class="line"></span><br><span class="line">实际上除了合并外还有一种方法，那就是执行rebase来同步变化，它通常更有用，git提交历史也更清晰，</span><br><span class="line">rebase方法需要显性指定--rebase参数：</span><br><span class="line"></span><br><span class="line">git pull --rebase ，他相当执行:</span><br><span class="line">git fetch origin</span><br><span class="line">git rebase origin/master</span><br><span class="line"></span><br><span class="line">合并方法更简单，更容易理解。但是很多时候我们更需要的是rebase，我们也可以通过设置，设置rebase为</span><br><span class="line">pull时候默认执行的动作：git config --global pull.rebase true</span><br></pre></td></tr></table></figure>
 </li>
 </ul>
+]]></content>
+      <tags>
+        <tag>git</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>git中的对象简介</title>
+    <url>/2020/07/08/git%E4%B8%AD%E7%9A%84%E5%AF%B9%E8%B1%A1%E7%AE%80%E4%BB%8B/</url>
+    <content><![CDATA[<p>为了加深git中底层对象的理解，特意整理如下文章。<br>Git 保存的不是文件的变化或者差异，而是一系列不同时刻的 快照 。</p>
+<p>在进行提交操作时，Git 会保存一个提交对象（commit object）。 知道了 Git 保存数据的方式，我们可以很自然的想到——该提交对象会包含一个指向暂存内容快照的指针。 但不仅仅是这样，该提交对象还包含了作者的姓名和邮箱、提交时输入的信息以及指向它的父对象的指针。 首次提交产生的提交对象没有父对象，普通提交操作产生的提交对象有一个父对象， 而由多个分支合并产生的提交对象有多个父对象，</p>
+<p>为了更加形象地说明，我们假设现在有一个工作目录，里面包含了三个将要被暂存和提交的文件。 暂存操作会为每一个文件计算校验和（使用我们在 起步 中提到的 SHA-1 哈希算法），然后会把当前版本的文件快照保存到 Git 仓库中 （Git 使用 blob 对象来保存它们），最终将校验和加入到暂存区域等待提交：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ git add README test.rb LICENSE</span><br><span class="line">$ git commit -m &apos;The initial commit of my project&apos;</span><br></pre></td></tr></table></figure>
+<p>当使用 git commit 进行提交操作时，Git 会先计算每一个子目录（本例中只有项目根目录）的校验和， 然后在 Git 仓库中这些校验和保存为树对象。随后，Git 便会创建一个提交对象， 它除了包含上面提到的那些信息外，还包含指向这个树对象（项目根目录）的指针。 如此一来，Git 就可以在需要的时候重现此次保存的快照。</p>
+<p>现在，Git 仓库中有五个对象：三个 blob 对象（保存着文件快照）、一个 树 对象 （记录着目录结构和 blob 对象索引）以及一个 提交 对象（包含着指向前述树对象的指针和所有提交信息）。<br><img src="/2020/07/08/git中的对象简介/git1.png" alt="avatar"><br>Figure 9. 首次提交对象及其树结构<br>做些修改后再次提交，那么这次产生的提交对象会包含一个指向上次提交对象（父对象）的指针。<br><img src="/2020/07/08/git中的对象简介/git2.png" alt="avatar"><br>Figure 10. 提交对象及其父对象<br>Git 的分支，其实本质上仅仅是指向提交对象的可变指针。 Git 的默认分支名字是 master。 在多次提交操作之后，你其实已经有一个指向最后那个提交对象的 master 分支。 master 分支会在每次提交时自动向前移动。<br><img src="/2020/07/08/git中的对象简介/git3.png" alt="avatar"><br>Figure 11. 分支及其提交历史</p>
+<h4 id="分支创建"><a href="#分支创建" class="headerlink" title="分支创建"></a>分支创建</h4><p>Git 是怎么创建新分支的呢？ 很简单，它只是为你创建了一个可以移动的新的指针。 比如，创建一个 testing 分支， 你需要使用 git branch 命令：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ git branch testing</span><br></pre></td></tr></table></figure></p>
+<p>这会在当前所在的提交对象上创建一个指针。<br><img src="/2020/07/08/git中的对象简介/git4.png" alt="avatar"></p>
+<p>Figure 12. 两个指向相同提交历史的分支<br>那么，Git 又是怎么知道当前在哪一个分支上呢？ 也很简单，它有一个名为 HEAD 的特殊指针。 请注意它和许多其它版本控制系统（如 Subversion 或 CVS）里的 HEAD 概念完全不同。 在 Git 中，它是一个指针，指向当前所在的本地分支（译注：将 HEAD 想象为当前分支的别名）。 在本例中，你仍然在 master 分支上。 因为 git branch 命令仅仅 创建 一个新分支，并不会自动切换到新分支中去。</p>
+<p><img src="/2020/07/08/git中的对象简介/git5.png" alt="avatar"></p>
+<p>Figure 13. HEAD 指向当前所在的分支<br>你可以简单地使用 git log 命令查看各个分支当前所指的对象。 提供这一功能的参数是 –decorate<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ git log --oneline --decorate</span><br><span class="line">f30ab (HEAD -&gt; master, testing) add feature #32 - ability to add new formats to the central interface</span><br><span class="line">34ac2 Fixed bug #1328 - stack overflow under certain conditions</span><br><span class="line">98ca9 The initial commit of my project</span><br></pre></td></tr></table></figure></p>
+<p>正如你所见，当前 master 和 testing 分支均指向校验和以 f30ab 开头的提交对象。</p>
+<h4 id="分支切换"><a href="#分支切换" class="headerlink" title="分支切换"></a>分支切换</h4><p>要切换到一个已存在的分支，你需要使用 git checkout 命令。 我们现在切换到新创建的 testing 分支去：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ git checkout testing</span><br></pre></td></tr></table></figure>
+<p>这样 HEAD 就指向 testing 分支了。</p>
+<p><img src="/2020/07/08/git中的对象简介/git6.png" alt="avatar"></p>
+<p>Figure 14. HEAD 指向当前所在的分支<br>那么，这样的实现方式会给我们带来什么好处呢？ 现在不妨再提交一次：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ vim test.rb</span><br><span class="line">$ git commit -a -m &apos;made a change&apos;</span><br></pre></td></tr></table></figure>
+<p><img src="/2020/07/08/git中的对象简介/git7.png" alt="avatar"></p>
+<p>Figure 15. HEAD 分支随着提交操作自动向前移动<br>如图所示，你的 testing 分支向前移动了，但是 master 分支却没有，它仍然指向运行 git checkout 时所指的对象。 这就有意思了，现在我们切换回 master 分支看看：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ git checkout master</span><br></pre></td></tr></table></figure>
+<p><img src="/2020/07/08/git中的对象简介/git8.png" alt="avatar"><br>Figure 16. 检出时 HEAD 随之移动<br>这条命令做了两件事。 一是使 HEAD 指回 master 分支，二是将工作目录恢复成 master 分支所指向的快照内容。 也就是说，你现在做修改的话，项目将始于一个较旧的版本。 本质上来讲，这就是忽略 testing 分支所做的修改，以便于向另一个方向进行开发。</p>
+<p>我们不妨再稍微做些修改并提交：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ vim test.rb</span><br><span class="line">$ git commit -a -m &apos;made other changes&apos;</span><br></pre></td></tr></table></figure>
+<p>现在，这个项目的提交历史已经产生了分叉（参见 项目分叉历史）。 因为刚才你创建了一个新分支，并切换过去进行了一些工作，随后又切换回 master 分支进行了另外一些工作。 上述两次改动针对的是不同分支：你可以在不同分支间不断地来回切换和工作，并在时机成熟时将它们合并起来。 而所有这些工作，你需要的命令只有 branch、checkout 和 commit。<br><img src="/2020/07/08/git中的对象简介/git9.png" alt="avatar"><br>Figure 17. 项目分叉历史<br>你可以简单地使用 git log 命令查看分叉历史。 运行 git log –oneline –decorate –graph –all ，它会输出你的提交历史、各个分支的指向以及项目的分支分叉情况。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ git log --oneline --decorate --graph --all</span><br><span class="line">* c2b9e (HEAD, master) made other changes</span><br><span class="line">| * 87ab2 (testing) made a change</span><br><span class="line">|/</span><br><span class="line">* f30ab add feature #32 - ability to add new formats to the</span><br><span class="line">* 34ac2 fixed bug #1328 - stack overflow under certain conditions</span><br><span class="line">* 98ca9 initial commit of my project</span><br></pre></td></tr></table></figure>
+<p>由于 Git 的分支实质上仅是包含所指对象校验和（长度为 40 的 SHA-1 值字符串）的文件，所以它的创建和销毁都异常高效。 创建一个新分支就相当于往一个文件中写入 41 个字节（40 个字符和 1 个换行符），如此的简单能不快吗？</p>
+<p>这与过去大多数版本控制系统形成了鲜明的对比，它们在创建分支时，将所有的项目文件都复制一遍，并保存到一个特定的目录。 完成这样繁琐的过程通常需要好几秒钟，有时甚至需要好几分钟。所需时间的长短，完全取决于项目的规模。 而在 Git 中，任何规模的项目都能在瞬间创建新分支。 同时，由于每次提交都会记录父对象，所以寻找恰当的合并基础（译注：即共同祖先）也是同样的简单和高效。 这些高效的特性使得 Git 鼓励开发人员频繁地创建和使用分支。</p>
+<h4 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h4><p><a href="https://git-scm.com/book/zh/v2/Git-%E5%88%86%E6%94%AF-%E5%88%86%E6%94%AF%E7%AE%80%E4%BB%8B" target="_blank" rel="noopener">https://git-scm.com/book/zh/v2/Git-%E5%88%86%E6%94%AF-%E5%88%86%E6%94%AF%E7%AE%80%E4%BB%8B</a></p>
 ]]></content>
       <tags>
         <tag>git</tag>
@@ -979,25 +979,6 @@
       </tags>
   </entry>
   <entry>
-    <title>logrotate小结</title>
-    <url>/2021/03/12/logrotate%E5%B0%8F%E7%BB%93/</url>
-    <content><![CDATA[<p>对于Linux 的系统安全来说，日志文件是极其重要的工具。系统管理员可以使用logrotate 程序用来管理系统中的最新的事件，对于Linux 的系统安全来说，日志文件是极其重要的工具。系统管理员可以使用logrotate 程序用来管理系统中的最新的事件， 还可以用来备份日志文件。</p>
-<h3 id="logrotate-命令使用"><a href="#logrotate-命令使用" class="headerlink" title="logrotate 命令使用"></a>logrotate 命令使用</h3><p>功能说明：管理记录文件。</p>
-<p>语　　法：logrotate [-?dfv][-s &lt;状态文件&gt;][–usage][配置文件]</p>
-<p>补充说明：使用logrotate指令，可让你轻松管理系统所产生的记录文件。它提供自动替换，压缩，删除和邮寄记录文件，每个记录文件都可被设置成每日，每周或每月处理，也能在文件太大时立即处理。您必须自行编辑，指定配置文件，预设的配置文件存放在/etc目录下，文件名称为logrotate.conf。</p>
-<p>　参　　数：<br>　-?或–help 　在线帮助。<br>　-d或–debug 　详细显示指令执行过程，便于排错或了解程序执行的情况。<br>　-f或–force 　强行启动记录文件维护操作，纵使logrotate指令认为没有需要亦然。<br>　-s&lt;状态文件&gt;或–state=&lt;状态文件&gt; 　使用指定的状态文件。<br>　-v或–version 　显示指令执行过程。<br>　-usage 　显示指令基本用法。</p>
-<p>logrotate最常用的三个方式为：<br>logrotate /etc/logrotate.conf：重新读取配置文件，并对符合条件的文件文件进行rotate。<br>logrotate -d /etc/logrotate.conf：调试模式，输出调试结果，但并不执行。<br>logrotate -f /etc/logrotate.conf：强制模式，对所有相关文件进行rotate。</p>
-<h3 id="logrotate-配置"><a href="#logrotate-配置" class="headerlink" title="logrotate 配置"></a>logrotate 配置</h3><p>logrotate 程序是一个日志文件管理工具。用来把旧的日志文件删除，并创建新的日志文件，我们把它叫做“转储”。我们可以根据日志文件的大小，也可以根据其天数来转储，这个过程一般通过 cron 程序来执行。<br>logrotate 程序还可以用于压缩日志文件，以及发送日志到指定的E-mail 。</p>
-<p>logrotate 的配置文件是 /etc/logrotate.conf。主要参数如下表：</p>
-<p>配置参数 　　　功能说明<br>compress 　　通过gzip 压缩转储以后的日志<br>nocompress 　不需要压缩时，用这个参数<br>copytruncate 　用于还在打开中的日志文件，把当前日志备份并截断<br>nocopytruncate 　备份日志文件但是不截断<br>create mode owner group 　　转储文件，使用指定的文件模式创建新的日志文件<br>nocreate 　　不建立新的日志文件<br>delaycompress 和 compress 　　一起使用时，转储的日志文件到下一次转储时才压缩<br>nodelaycompress 　　 delaycompress 选项，转储同时压缩。<br>errors address 　　专储时的错误信息发送到指定的Email 地址<br>ifempty 　　即使是空文件也转储，这个是 logrotate 的缺省选项。<br>notifempty　　 如果是空文件的话，不转储<br>mail address 　　把转储的日志文件发送到指定的E-mail 地址<br>nomail 　　转储时不发送日志文件<br>olddir directory 　　转储后的日志文件放入指定的目录，必须和当前日志文件在同一个文件系统<br>noolddir 　　转储后的日志文件和当前日志文件放在同一个目录下<br>prerotate/endscript 　　在转储以前需要执行的命令可以放入这个对，这两个关键字必须单独成行<br>postrotate/endscript 　　在转储以后需要执行的命令可以放入这个对，这两个关键字必须单独成行<br>daily 　　指定转储周期为每天<br>weekly 　　指定转储周期为每周<br>monthly 　　指定转储周期为每月<br>rotate count 　　指定日志文件删除之前转储的次数，0 指没有备份，5 指保留5 个备份<br>tabootext [+] list 让logrotate 　　不转储指定扩展名的文件，缺省的扩展名是：.rpm-orig, .rpmsave, v, 和 ~<br>size 　size当日志文件到达指定的大小时才转储，Size 可以指定 bytes (缺省)以及KB (sizek)或者MB (sizem).</p>
-<h3 id="logrotate-默认配置文件"><a href="#logrotate-默认配置文件" class="headerlink" title="logrotate 默认配置文件"></a>logrotate 默认配置文件</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># see &quot;man logrotate&quot; for details</span><br><span class="line"># rotate log files weekly</span><br><span class="line">weekly</span><br><span class="line"></span><br><span class="line"># keep 4 weeks worth of backlogs</span><br><span class="line">rotate 4</span><br><span class="line"></span><br><span class="line"># send errors to root</span><br><span class="line">errors root</span><br><span class="line"># create new (empty) log files after rotating old ones</span><br><span class="line">create</span><br><span class="line"></span><br><span class="line"># uncomment this if you want your log files compressed</span><br><span class="line">#compress</span><br><span class="line"></span><br><span class="line"># RPM packages drop log rotation information into this directory</span><br><span class="line">include /etc/logrotate.d</span><br><span class="line"></span><br><span class="line"># no packages own lastlog or wtmp --we&apos;ll rotate them here</span><br><span class="line">/var/log/wtmp &#123;</span><br><span class="line">monthly</span><br><span class="line">create 0664 root utmp</span><br><span class="line">rotate 1</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">/var/log/lastlog &#123;</span><br><span class="line">monthly</span><br><span class="line">rotate 1</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"># system-specific logs may be configured here</span><br></pre></td></tr></table></figure>
-<h3 id="使用include-选项覆盖缺省配置"><a href="#使用include-选项覆盖缺省配置" class="headerlink" title="使用include 选项覆盖缺省配置"></a>使用include 选项覆盖缺省配置</h3><p>当/etc/logrotate.conf读入文件时，include指定的文件中的转储参数将覆盖缺省的参数，如下例：<br>linuxconf文件的参数</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">/var/log/htmlaccess.log &#123; </span><br><span class="line"> errors jim</span><br><span class="line"> notifempty</span><br><span class="line"> nocompress</span><br><span class="line"> weekly</span><br><span class="line"> prerotate</span><br><span class="line"> /usr/bin/chattr -a /var/log/htmlaccess.log</span><br><span class="line"> endscript</span><br><span class="line"></span><br><span class="line"> postrotate</span><br><span class="line"> /usr/bin/chattr +a /var/log/htmlaccess.log</span><br><span class="line"> endscript</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">/var/log/netconf.log &#123; </span><br><span class="line"> nocompress</span><br><span class="line"> monthly</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>]]></content>
-      <tags>
-        <tag>linux</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>logrotate日志切割不执行问题</title>
     <url>/2021/06/30/logrotate%E6%97%A5%E5%BF%97%E5%88%87%E5%89%B2%E4%B8%8D%E6%89%A7%E8%A1%8C%E9%97%AE%E9%A2%98/</url>
     <content><![CDATA[<p>业务服务中写的日志切割功能没有执行，具体排查流程如下：</p>
@@ -1013,6 +994,25 @@
 <p><strong>小结</strong></p>
 <p>可以手工添加定时任务解决问题。</p>
 ]]></content>
+      <tags>
+        <tag>linux</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>logrotate小结</title>
+    <url>/2021/03/12/logrotate%E5%B0%8F%E7%BB%93/</url>
+    <content><![CDATA[<p>对于Linux 的系统安全来说，日志文件是极其重要的工具。系统管理员可以使用logrotate 程序用来管理系统中的最新的事件，对于Linux 的系统安全来说，日志文件是极其重要的工具。系统管理员可以使用logrotate 程序用来管理系统中的最新的事件， 还可以用来备份日志文件。</p>
+<h3 id="logrotate-命令使用"><a href="#logrotate-命令使用" class="headerlink" title="logrotate 命令使用"></a>logrotate 命令使用</h3><p>功能说明：管理记录文件。</p>
+<p>语　　法：logrotate [-?dfv][-s &lt;状态文件&gt;][–usage][配置文件]</p>
+<p>补充说明：使用logrotate指令，可让你轻松管理系统所产生的记录文件。它提供自动替换，压缩，删除和邮寄记录文件，每个记录文件都可被设置成每日，每周或每月处理，也能在文件太大时立即处理。您必须自行编辑，指定配置文件，预设的配置文件存放在/etc目录下，文件名称为logrotate.conf。</p>
+<p>　参　　数：<br>　-?或–help 　在线帮助。<br>　-d或–debug 　详细显示指令执行过程，便于排错或了解程序执行的情况。<br>　-f或–force 　强行启动记录文件维护操作，纵使logrotate指令认为没有需要亦然。<br>　-s&lt;状态文件&gt;或–state=&lt;状态文件&gt; 　使用指定的状态文件。<br>　-v或–version 　显示指令执行过程。<br>　-usage 　显示指令基本用法。</p>
+<p>logrotate最常用的三个方式为：<br>logrotate /etc/logrotate.conf：重新读取配置文件，并对符合条件的文件文件进行rotate。<br>logrotate -d /etc/logrotate.conf：调试模式，输出调试结果，但并不执行。<br>logrotate -f /etc/logrotate.conf：强制模式，对所有相关文件进行rotate。</p>
+<h3 id="logrotate-配置"><a href="#logrotate-配置" class="headerlink" title="logrotate 配置"></a>logrotate 配置</h3><p>logrotate 程序是一个日志文件管理工具。用来把旧的日志文件删除，并创建新的日志文件，我们把它叫做“转储”。我们可以根据日志文件的大小，也可以根据其天数来转储，这个过程一般通过 cron 程序来执行。<br>logrotate 程序还可以用于压缩日志文件，以及发送日志到指定的E-mail 。</p>
+<p>logrotate 的配置文件是 /etc/logrotate.conf。主要参数如下表：</p>
+<p>配置参数 　　　功能说明<br>compress 　　通过gzip 压缩转储以后的日志<br>nocompress 　不需要压缩时，用这个参数<br>copytruncate 　用于还在打开中的日志文件，把当前日志备份并截断<br>nocopytruncate 　备份日志文件但是不截断<br>create mode owner group 　　转储文件，使用指定的文件模式创建新的日志文件<br>nocreate 　　不建立新的日志文件<br>delaycompress 和 compress 　　一起使用时，转储的日志文件到下一次转储时才压缩<br>nodelaycompress 　　 delaycompress 选项，转储同时压缩。<br>errors address 　　专储时的错误信息发送到指定的Email 地址<br>ifempty 　　即使是空文件也转储，这个是 logrotate 的缺省选项。<br>notifempty　　 如果是空文件的话，不转储<br>mail address 　　把转储的日志文件发送到指定的E-mail 地址<br>nomail 　　转储时不发送日志文件<br>olddir directory 　　转储后的日志文件放入指定的目录，必须和当前日志文件在同一个文件系统<br>noolddir 　　转储后的日志文件和当前日志文件放在同一个目录下<br>prerotate/endscript 　　在转储以前需要执行的命令可以放入这个对，这两个关键字必须单独成行<br>postrotate/endscript 　　在转储以后需要执行的命令可以放入这个对，这两个关键字必须单独成行<br>daily 　　指定转储周期为每天<br>weekly 　　指定转储周期为每周<br>monthly 　　指定转储周期为每月<br>rotate count 　　指定日志文件删除之前转储的次数，0 指没有备份，5 指保留5 个备份<br>tabootext [+] list 让logrotate 　　不转储指定扩展名的文件，缺省的扩展名是：.rpm-orig, .rpmsave, v, 和 ~<br>size 　size当日志文件到达指定的大小时才转储，Size 可以指定 bytes (缺省)以及KB (sizek)或者MB (sizem).</p>
+<h3 id="logrotate-默认配置文件"><a href="#logrotate-默认配置文件" class="headerlink" title="logrotate 默认配置文件"></a>logrotate 默认配置文件</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># see &quot;man logrotate&quot; for details</span><br><span class="line"># rotate log files weekly</span><br><span class="line">weekly</span><br><span class="line"></span><br><span class="line"># keep 4 weeks worth of backlogs</span><br><span class="line">rotate 4</span><br><span class="line"></span><br><span class="line"># send errors to root</span><br><span class="line">errors root</span><br><span class="line"># create new (empty) log files after rotating old ones</span><br><span class="line">create</span><br><span class="line"></span><br><span class="line"># uncomment this if you want your log files compressed</span><br><span class="line">#compress</span><br><span class="line"></span><br><span class="line"># RPM packages drop log rotation information into this directory</span><br><span class="line">include /etc/logrotate.d</span><br><span class="line"></span><br><span class="line"># no packages own lastlog or wtmp --we&apos;ll rotate them here</span><br><span class="line">/var/log/wtmp &#123;</span><br><span class="line">monthly</span><br><span class="line">create 0664 root utmp</span><br><span class="line">rotate 1</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">/var/log/lastlog &#123;</span><br><span class="line">monthly</span><br><span class="line">rotate 1</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"># system-specific logs may be configured here</span><br></pre></td></tr></table></figure>
+<h3 id="使用include-选项覆盖缺省配置"><a href="#使用include-选项覆盖缺省配置" class="headerlink" title="使用include 选项覆盖缺省配置"></a>使用include 选项覆盖缺省配置</h3><p>当/etc/logrotate.conf读入文件时，include指定的文件中的转储参数将覆盖缺省的参数，如下例：<br>linuxconf文件的参数</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">/var/log/htmlaccess.log &#123; </span><br><span class="line"> errors jim</span><br><span class="line"> notifempty</span><br><span class="line"> nocompress</span><br><span class="line"> weekly</span><br><span class="line"> prerotate</span><br><span class="line"> /usr/bin/chattr -a /var/log/htmlaccess.log</span><br><span class="line"> endscript</span><br><span class="line"></span><br><span class="line"> postrotate</span><br><span class="line"> /usr/bin/chattr +a /var/log/htmlaccess.log</span><br><span class="line"> endscript</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">/var/log/netconf.log &#123; </span><br><span class="line"> nocompress</span><br><span class="line"> monthly</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>]]></content>
       <tags>
         <tag>linux</tag>
       </tags>
@@ -3063,6 +3063,248 @@
 <li>返回结果包括了每一条操作执行的结果<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">POST _bulk </span><br><span class="line">&#123; &quot;index&quot; : &#123;&quot;_index&quot;: &quot;test&quot;,&quot;_id&quot;:&quot;1&quot;&#125;&#125;</span><br><span class="line">&#123; &quot;field1&quot;: &quot;value1&quot;&#125;</span><br><span class="line">&#123; &quot;delete&quot;: &#123;&quot;_index&quot;: &quot;test&quot;,&quot;_id&quot;:&quot;2&quot;&#125;&#125;</span><br><span class="line">&#123; &quot;create&quot;: &#123;&quot;_index&quot;: &quot;test2&quot;,&quot;_id&quot;:&quot;3&quot;&#125;&#125;</span><br><span class="line">&#123; &quot;field1&quot;: &quot;value3&quot;&#125;</span><br><span class="line">&#123; &quot;update&quot;: &#123;&quot;_index&quot;: &quot;test&quot;,&quot;_id&quot;:&quot;1&quot;&#125;&#125;</span><br><span class="line">&#123;&quot;doc&quot;:&#123;&quot;field2&quot;:&quot;value2&quot;&#125;&#125;</span><br><span class="line"></span><br><span class="line">&#123;</span><br><span class="line">  &quot;took&quot; : 717,</span><br><span class="line">  &quot;errors&quot; : false,</span><br><span class="line">  &quot;items&quot; : [</span><br><span class="line">    &#123;</span><br><span class="line">      &quot;index&quot; : &#123;</span><br><span class="line">        &quot;_index&quot; : &quot;test&quot;,</span><br><span class="line">        &quot;_type&quot; : &quot;_doc&quot;,</span><br><span class="line">        &quot;_id&quot; : &quot;1&quot;,</span><br><span class="line">        &quot;_version&quot; : 1,</span><br><span class="line">        &quot;result&quot; : &quot;created&quot;,</span><br><span class="line">        &quot;_shards&quot; : &#123;</span><br><span class="line">          &quot;total&quot; : 2,</span><br><span class="line">          &quot;successful&quot; : 2,</span><br><span class="line">          &quot;failed&quot; : 0</span><br><span class="line">        &#125;,</span><br><span class="line">        &quot;_seq_no&quot; : 0,</span><br><span class="line">        &quot;_primary_term&quot; : 1,</span><br><span class="line">        &quot;status&quot; : 201</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    &#123;</span><br><span class="line">      &quot;delete&quot; : &#123;</span><br><span class="line">        &quot;_index&quot; : &quot;test&quot;,</span><br><span class="line">        &quot;_type&quot; : &quot;_doc&quot;,</span><br><span class="line">        &quot;_id&quot; : &quot;2&quot;,</span><br><span class="line">        &quot;_version&quot; : 1,</span><br><span class="line">        &quot;result&quot; : &quot;not_found&quot;,</span><br><span class="line">        &quot;_shards&quot; : &#123;</span><br><span class="line">          &quot;total&quot; : 2,</span><br><span class="line">          &quot;successful&quot; : 2,</span><br><span class="line">          &quot;failed&quot; : 0</span><br><span class="line">        &#125;,</span><br><span class="line">        &quot;_seq_no&quot; : 1,</span><br><span class="line">        &quot;_primary_term&quot; : 1,</span><br><span class="line">        &quot;status&quot; : 404</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    &#123;</span><br><span class="line">      &quot;create&quot; : &#123;</span><br><span class="line">        &quot;_index&quot; : &quot;test2&quot;,</span><br><span class="line">        &quot;_type&quot; : &quot;_doc&quot;,</span><br><span class="line">        &quot;_id&quot; : &quot;3&quot;,</span><br><span class="line">        &quot;_version&quot; : 1,</span><br><span class="line">        &quot;result&quot; : &quot;created&quot;,</span><br><span class="line">        &quot;_shards&quot; : &#123;</span><br><span class="line">          &quot;total&quot; : 2,</span><br><span class="line">          &quot;successful&quot; : 1,</span><br><span class="line">          &quot;failed&quot; : 0</span><br><span class="line">        &#125;,</span><br><span class="line">        &quot;_seq_no&quot; : 0,</span><br><span class="line">        &quot;_primary_term&quot; : 1,</span><br><span class="line">        &quot;status&quot; : 201</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    &#123;</span><br><span class="line">      &quot;update&quot; : &#123;</span><br><span class="line">        &quot;_index&quot; : &quot;test&quot;,</span><br><span class="line">        &quot;_type&quot; : &quot;_doc&quot;,</span><br><span class="line">        &quot;_id&quot; : &quot;1&quot;,</span><br><span class="line">        &quot;_version&quot; : 2,</span><br><span class="line">        &quot;result&quot; : &quot;updated&quot;,</span><br><span class="line">        &quot;_shards&quot; : &#123;</span><br><span class="line">          &quot;total&quot; : 2,</span><br><span class="line">          &quot;successful&quot; : 2,</span><br><span class="line">          &quot;failed&quot; : 0</span><br><span class="line">        &#125;,</span><br><span class="line">        &quot;_seq_no&quot; : 2,</span><br><span class="line">        &quot;_primary_term&quot; : 1,</span><br><span class="line">        &quot;status&quot; : 200</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">批量读取-mget，批量操作可以减少网络连接所产生的开销，提高性能</span><br><span class="line">GET _mget</span><br><span class="line">&#123;</span><br><span class="line">  &quot;docs&quot;:[</span><br><span class="line">    &#123;</span><br><span class="line">      &quot;_index&quot;:&quot;user&quot;,</span><br><span class="line">      &quot;_id&quot;:1</span><br><span class="line">    &#125;,</span><br><span class="line">    &#123;</span><br><span class="line">      &quot;_index&quot;:&quot;comment&quot;,</span><br><span class="line">      &quot;_id&quot;:1</span><br><span class="line">    &#125;</span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#123;</span><br><span class="line">  &quot;docs&quot; : [</span><br><span class="line">    &#123;</span><br><span class="line">      &quot;_index&quot; : &quot;user&quot;,</span><br><span class="line">      &quot;_type&quot; : null,</span><br><span class="line">      &quot;_id&quot; : &quot;1&quot;,</span><br><span class="line">      &quot;error&quot; : &#123;</span><br><span class="line">        &quot;root_cause&quot; : [</span><br><span class="line">          &#123;</span><br><span class="line">            &quot;type&quot; : &quot;index_not_found_exception&quot;,</span><br><span class="line">            &quot;reason&quot; : &quot;no such index [user]&quot;,</span><br><span class="line">            &quot;resource.type&quot; : &quot;index_expression&quot;,</span><br><span class="line">            &quot;resource.id&quot; : &quot;user&quot;,</span><br><span class="line">            &quot;index_uuid&quot; : &quot;_na_&quot;,</span><br><span class="line">            &quot;index&quot; : &quot;user&quot;</span><br><span class="line">          &#125;</span><br><span class="line">        ],</span><br><span class="line">        &quot;type&quot; : &quot;index_not_found_exception&quot;,</span><br><span class="line">        &quot;reason&quot; : &quot;no such index [user]&quot;,</span><br><span class="line">        &quot;resource.type&quot; : &quot;index_expression&quot;,</span><br><span class="line">        &quot;resource.id&quot; : &quot;user&quot;,</span><br><span class="line">        &quot;index_uuid&quot; : &quot;_na_&quot;,</span><br><span class="line">        &quot;index&quot; : &quot;user&quot;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    &#123;</span><br><span class="line">      &quot;_index&quot; : &quot;comment&quot;,</span><br><span class="line">      &quot;_type&quot; : null,</span><br><span class="line">      &quot;_id&quot; : &quot;1&quot;,</span><br><span class="line">      &quot;error&quot; : &#123;</span><br><span class="line">        &quot;root_cause&quot; : [</span><br><span class="line">          &#123;</span><br><span class="line">            &quot;type&quot; : &quot;index_not_found_exception&quot;,</span><br><span class="line">            &quot;reason&quot; : &quot;no such index [comment]&quot;,</span><br><span class="line">            &quot;resource.type&quot; : &quot;index_expression&quot;,</span><br><span class="line">            &quot;resource.id&quot; : &quot;comment&quot;,</span><br><span class="line">            &quot;index_uuid&quot; : &quot;_na_&quot;,</span><br><span class="line">            &quot;index&quot; : &quot;comment&quot;</span><br><span class="line">          &#125;</span><br><span class="line">        ],</span><br><span class="line">        &quot;type&quot; : &quot;index_not_found_exception&quot;,</span><br><span class="line">        &quot;reason&quot; : &quot;no such index [comment]&quot;,</span><br><span class="line">        &quot;resource.type&quot; : &quot;index_expression&quot;,</span><br><span class="line">        &quot;resource.id&quot; : &quot;comment&quot;,</span><br><span class="line">        &quot;index_uuid&quot; : &quot;_na_&quot;,</span><br><span class="line">        &quot;index&quot; : &quot;comment&quot;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br><span class="line">其他：msearch批量查询</span><br><span class="line">错误返回：</span><br><span class="line">无法连接：网络故障或集群挂了</span><br><span class="line">连接无法关闭：网络故障或节点错误</span><br><span class="line">429:集群过于繁忙</span><br><span class="line">4xx:请求体格式有错  </span><br><span class="line">500:集群内部错误</span><br></pre></td></tr></table></figure></li>
 </ul>
 ]]></content>
+      <tags>
+        <tag>Elasticsearch</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>es总结4</title>
+    <url>/2021/11/08/es%E6%80%BB%E7%BB%934/</url>
+    <content><![CDATA[<h4 id="Search-API"><a href="#Search-API" class="headerlink" title="Search API"></a>Search API</h4><p>URI Search : 在URL中使用查询参数</p>
+<p>Request Body Search : 使用 Elasticsearch提供的，基于JSON格式的更加完备的 Query Domain Specific Language(DSL)</p>
+<p><strong>指定查询的索引</strong></p>
+<p><img src="/2021/11/08/es总结4/es1.png" alt="avatar"></p>
+<p><strong>URI查询</strong></p>
+<ul>
+<li>使用 “q” ，指定查询字符串</li>
+<li>“query string syntax”, KV 键值对</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">curl -XGET &quot;http://localhost:9200/index1/_search?q=name:dog&quot;</span><br></pre></td></tr></table></figure>
+<p><strong>Request Body</strong></p>
+<p><img src="/2021/11/08/es总结4/es2.png" alt="avatar"></p>
+<p><strong>搜索Response</strong></p>
+<p><img src="/2021/11/08/es总结4/es3.png" alt="avatar"></p>
+<p><strong>URI Search字段解释</strong></p>
+<p><img src="/2021/11/08/es总结4/es4.png" alt="avatar"></p>
+<p><strong>Query String Sytax</strong></p>
+<ul>
+<li>指定字段 v.s 泛查询 : q=title:2012 /q=2012</li>
+<li>Term v.s Phrase<ul>
+<li>Beautiful Mind 等效于 Beautiful OR Mind</li>
+<li>“Beautiful Mind”, 等效于 Beautiful AND Mind。 Phrase查询，还要求前后顺序保持一致。</li>
+</ul>
+</li>
+<li>分组与引号<ul>
+<li>title:(Beautiful AND Mind)</li>
+<li>title=”Beautiful Mind”</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">//带profile</span><br><span class="line">GET /movies/_search?q=2012&amp;df=title</span><br><span class="line">&#123;</span><br><span class="line">    &quot;profile&quot;:&quot;true&quot;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//泛查询,正对_all，所有字段</span><br><span class="line">GET /movies/_search?q=2012</span><br><span class="line">&#123;</span><br><span class="line">    &quot;profile&quot;:&quot;true&quot;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//指定字段</span><br><span class="line">GET /movies/_search?q=title:2012</span><br><span class="line">&#123;</span><br><span class="line">    &quot;profile&quot;:&quot;true&quot;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//使用引号，Phrase查询</span><br><span class="line">GET /movies/_search?q=title:&quot;Beautiful Mind&quot;</span><br><span class="line">&#123;</span><br><span class="line">    &quot;profile&quot;:&quot;true&quot;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//Mind为泛查询</span><br><span class="line">GET /movies/_search?q=title:Beautiful Mind</span><br><span class="line">&#123;</span><br><span class="line">    &quot;profile&quot;:&quot;true&quot;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//分组， Bool查询</span><br><span class="line">GET /movies/_search?q=title:(Beautiful Mind)</span><br><span class="line">&#123;</span><br><span class="line">    &quot;profile&quot;:&quot;true&quot;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//分组， Bool查询</span><br><span class="line">GET /movies/_search?q=title:(Beautiful Mind)</span><br><span class="line">&#123;</span><br><span class="line">    &quot;profile&quot;:&quot;true&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>Query String Syntax2</strong></p>
+<ul>
+<li>布尔操作<ul>
+<li>AND / OR / NOT 或者 &amp;&amp; / || / !</li>
+<li>必须大写</li>
+<li>title:(matrix NOT reloaded)</li>
+</ul>
+</li>
+<li>分组<ul>
+<li>+表示 must</li>
+<li>-表示 must_not</li>
+<li>title:(+matrix -reloaded)</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">GET /movies/_search?q=title:(Beautiful AND Mind)</span><br><span class="line">&#123;</span><br><span class="line">    &quot;profile&quot;:&quot;true&quot;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">GET /movies/_search?q=title:(Beautiful OR Mind)</span><br><span class="line">&#123;</span><br><span class="line">    &quot;profile&quot;:&quot;true&quot;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">GET /movies/_search?q=title:(Beautiful  %2BMind)</span><br><span class="line">&#123;</span><br><span class="line">    &quot;profile&quot;:&quot;true&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>Query String Syntax3</strong></p>
+<ul>
+<li>范围查询<ul>
+<li>区间表示： []闭区间，{}开区间</li>
+<li>year:{2019 TO 2020}</li>
+<li>year:[* TO 2020]</li>
+</ul>
+</li>
+<li>算数符号<ul>
+<li>year :&gt;2010</li>
+<li>year:(&gt;2010 &amp;&amp; &lt;= 2018)</li>
+<li>year:(+&gt;2010 +<2018>)</2018></li>
+</ul>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">GET /movies/_search?q=year&gt;=1980</span><br><span class="line">&#123;</span><br><span class="line">    &quot;profile&quot;:&quot;true&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>Query String Syntax4</strong></p>
+<ul>
+<li>通配符查询（通配符查询效率低，占用内存大，不建议使用。特别放在最前面）<ul>
+<li>？代表一个字符，*代表0或者多个字符</li>
+<li>title:mi?d</li>
+<li>title:be*</li>
+</ul>
+</li>
+<li>正则表达<ul>
+<li>title:[bt]oy</li>
+</ul>
+</li>
+<li>模糊匹配与近似查询<ul>
+<li>title:befutifl~1</li>
+<li>title:”lord rings”~2</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">GET /movies/_search?q=title:b*</span><br><span class="line">&#123;</span><br><span class="line">    &quot;profile&quot;:&quot;true&quot;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">GET /movies/_search?q=title:befutifl~1</span><br><span class="line">&#123;</span><br><span class="line">    &quot;profile&quot;:&quot;true&quot;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">GET /movies/_search?q=title:&quot;lord rings&quot;~2</span><br><span class="line">&#123;</span><br><span class="line">    &quot;profile&quot;:&quot;true&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="RequestBody与QueryDSL简介"><a href="#RequestBody与QueryDSL简介" class="headerlink" title="RequestBody与QueryDSL简介"></a>RequestBody与QueryDSL简介</h4><p>Query-string 搜索通过命令非常方便地进行临时性的即席搜索 ，但它有自身的局限性（参见 轻量 搜索 ）。Elasticsearch 提供一个丰富灵活的查询语言叫做 查询表达式 ， 它支持构建更加复杂和健壮的查询。</p>
+<p>领域特定语言 （DSL）， 使用 JSON 构造了一个请求。我们可以像这样重写之前的查询所有名为 Smith 的搜索 ：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">PUT /megacorp/_doc/1</span><br><span class="line">&#123;</span><br><span class="line">    &quot;first_name&quot; : &quot;John&quot;,</span><br><span class="line">    &quot;last_name&quot; :  &quot;Smith&quot;,</span><br><span class="line">    &quot;age&quot; :        25,</span><br><span class="line">    &quot;about&quot; :      &quot;I love to go rock climbing&quot;,</span><br><span class="line">    &quot;interests&quot;: [ &quot;sports&quot;, &quot;music&quot; ]</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">PUT /megacorp/_doc/2</span><br><span class="line">&#123;</span><br><span class="line">    &quot;first_name&quot; :  &quot;Jane&quot;,</span><br><span class="line">    &quot;last_name&quot; :   &quot;Smith&quot;,</span><br><span class="line">    &quot;age&quot; :         32,</span><br><span class="line">    &quot;about&quot; :       &quot;I like to collect rock albums&quot;,</span><br><span class="line">    &quot;interests&quot;:  [ &quot;music&quot; ]</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">PUT /megacorp/_doc/3</span><br><span class="line">&#123;</span><br><span class="line">    &quot;first_name&quot; :  &quot;Douglas&quot;,</span><br><span class="line">    &quot;last_name&quot; :   &quot;Fir&quot;,</span><br><span class="line">    &quot;age&quot; :         35,</span><br><span class="line">    &quot;about&quot;:        &quot;I like to build cabinets&quot;,</span><br><span class="line">    &quot;interests&quot;:  [ &quot;forestry&quot; ]</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">GET /megacorp/_search?q=last_name:Smith</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">GET /megacorp/_search</span><br><span class="line">&#123;</span><br><span class="line">    &quot;query&quot; : &#123;</span><br><span class="line">        &quot;match&quot; : &#123;</span><br><span class="line">            &quot;last_name&quot; : &quot;Smith&quot;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>将 查询语句通过HTTP Request Body 发送给Elasticsearch</li>
+<li>Query DSL</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">GET /megacorp/_search</span><br><span class="line">&#123;</span><br><span class="line">    &quot;query&quot; : &#123;</span><br><span class="line">        &quot;bool&quot;: &#123;</span><br><span class="line">            &quot;must&quot;: &#123;</span><br><span class="line">                &quot;match&quot; : &#123;</span><br><span class="line">                    &quot;last_name&quot; : &quot;smith&quot; </span><br><span class="line">                &#125;</span><br><span class="line">            &#125;,</span><br><span class="line">            &quot;filter&quot;: &#123;</span><br><span class="line">                &quot;range&quot; : &#123;</span><br><span class="line">                    &quot;age&quot; : &#123; &quot;gt&quot; : 30 &#125; </span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>分页</strong></p>
+<ul>
+<li>from 从0开始，默认返回10个结果</li>
+<li>获取靠后的翻页成本较高</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">POST /myindex/_search</span><br><span class="line">&#123;</span><br><span class="line">    &quot;from&quot;:10,</span><br><span class="line">    &quot;size&quot;:20,</span><br><span class="line">    &quot;query&quot;:&#123;</span><br><span class="line">        &quot;match_all&quot;:&#123;&#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>排序</strong></p>
+<ul>
+<li>最好在“数字型”与“日期型”字段上排序</li>
+<li>因为对于多值类型或分析过的字段排序，系统会选一个值，无法得知该值。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">POST /myindex/_search</span><br><span class="line">&#123;</span><br><span class="line">    “sort”:[&#123;&quot;order_date&quot;:&quot;desc&quot;&#125;]</span><br><span class="line">    &quot;from&quot;:10,</span><br><span class="line">    &quot;size&quot;:20,</span><br><span class="line">    &quot;query&quot;:&#123;</span><br><span class="line">        &quot;match_all&quot;:&#123;&#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>_source filtering</strong></p>
+<ul>
+<li>如果_source没有存储，那就只返回匹配的文档的元数据</li>
+<li>_source支持使用通配符， _source[“name<em>“,”desc</em>“]</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">POST /myindex/_search</span><br><span class="line">&#123;</span><br><span class="line">    &quot;_source&quot;:[&quot;order_date&quot;,&quot;category.keyword&quot;]</span><br><span class="line">    “sort”:[&#123;&quot;order_date&quot;:&quot;desc&quot;&#125;]</span><br><span class="line">    &quot;from&quot;:10,</span><br><span class="line">    &quot;size&quot;:20,</span><br><span class="line">    &quot;query&quot;:&#123;</span><br><span class="line">        &quot;match_all&quot;:&#123;&#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>Simple Query String Query</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">POST /myindex/_search</span><br><span class="line">&#123;</span><br><span class="line">    &quot;query&quot;:&#123;</span><br><span class="line">        &quot;simple_query_string&quot;:&#123;</span><br><span class="line">            &quot;query&quot;:&quot;category&quot;,</span><br><span class="line">            &quot;fields&quot;:[&quot;name&quot;],</span><br><span class="line">            &quot;default_operator&quot;:&quot;AND&quot;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>类似Query String，但是会忽略错误的语法，同时只支持部分查询语法</li>
+<li>不支持 AND OR NOT，会当作字符串处理</li>
+<li>Term之间默认的关系是OR，可以指定Operator，</li>
+<li>支持部分逻辑 +替代 AND，|替代OR，-替代NOT</li>
+</ul>
+<p><strong>整体小结</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">PUT /megacorp/_doc/1</span><br><span class="line">&#123;</span><br><span class="line">    &quot;first_name&quot; : &quot;John&quot;,</span><br><span class="line">    &quot;last_name&quot; :  &quot;Smith&quot;,</span><br><span class="line">    &quot;age&quot; :        25,</span><br><span class="line">    &quot;about&quot; :      &quot;I love to go rock climbing&quot;,</span><br><span class="line">    &quot;interests&quot;: [ &quot;sports&quot;, &quot;music&quot; ]</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">PUT /megacorp/_doc/2</span><br><span class="line">&#123;</span><br><span class="line">    &quot;first_name&quot; :  &quot;Jane&quot;,</span><br><span class="line">    &quot;last_name&quot; :   &quot;Smith&quot;,</span><br><span class="line">    &quot;age&quot; :         32,</span><br><span class="line">    &quot;about&quot; :       &quot;I like to collect rock albums&quot;,</span><br><span class="line">    &quot;interests&quot;:  [ &quot;music&quot; ]</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">PUT /megacorp/_doc/3</span><br><span class="line">&#123;</span><br><span class="line">    &quot;first_name&quot; :  &quot;Douglas&quot;,</span><br><span class="line">    &quot;last_name&quot; :   &quot;Fir&quot;,</span><br><span class="line">    &quot;age&quot; :         35,</span><br><span class="line">    &quot;about&quot;:        &quot;I like to build cabinets&quot;,</span><br><span class="line">    &quot;interests&quot;:  [ &quot;forestry&quot; ]</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">GET /megacorp/_search?q=last_name:Smith</span><br><span class="line"></span><br><span class="line">GET /megacorp/_search</span><br><span class="line">&#123;</span><br><span class="line">    &quot;query&quot; : &#123;</span><br><span class="line">        &quot;match&quot; : &#123;</span><br><span class="line">            &quot;last_name&quot; : &quot;Smith&quot;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">#复杂搜索</span><br><span class="line">GET /megacorp/_search</span><br><span class="line">&#123;</span><br><span class="line">    &quot;query&quot; : &#123;</span><br><span class="line">        &quot;bool&quot;: &#123;</span><br><span class="line">            &quot;must&quot;: &#123;</span><br><span class="line">                &quot;match&quot; : &#123;</span><br><span class="line">                    &quot;last_name&quot; : &quot;smith&quot; </span><br><span class="line">                &#125;</span><br><span class="line">            &#125;,</span><br><span class="line">            &quot;filter&quot;: &#123;</span><br><span class="line">                &quot;range&quot; : &#123;</span><br><span class="line">                    &quot;age&quot; : &#123; &quot;gt&quot; : 30 &#125; </span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">#全文搜索</span><br><span class="line">GET /megacorp/_search</span><br><span class="line">&#123;</span><br><span class="line">    &quot;query&quot; : &#123;</span><br><span class="line">        &quot;match&quot; : &#123;</span><br><span class="line">            &quot;about&quot; : &quot;rock climbing&quot;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">#短语搜索</span><br><span class="line">GET /megacorp/_search</span><br><span class="line">&#123;</span><br><span class="line">    &quot;query&quot; : &#123;</span><br><span class="line">        &quot;match_phrase&quot; : &#123;</span><br><span class="line">            &quot;about&quot; : &quot;rock climbing&quot;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"># 高亮搜索</span><br><span class="line">GET /megacorp/_search</span><br><span class="line">&#123;</span><br><span class="line">    &quot;query&quot; : &#123;</span><br><span class="line">        &quot;match_phrase&quot; : &#123;</span><br><span class="line">            &quot;about&quot; : &quot;rock climbing&quot;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    &quot;highlight&quot;: &#123;</span><br><span class="line">        &quot;fields&quot; : &#123;</span><br><span class="line">            &quot;about&quot; : &#123;&#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">PUT megacorp/_mapping/</span><br><span class="line">&#123;</span><br><span class="line">  &quot;properties&quot;: &#123;</span><br><span class="line">    &quot;interests&quot;:&#123;</span><br><span class="line">      &quot;type&quot;:&quot;text&quot;,</span><br><span class="line">      &quot;fielddata&quot;: true</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">GET /megacorp/_search</span><br><span class="line">&#123;</span><br><span class="line">  &quot;aggs&quot;: &#123;</span><br><span class="line">    &quot;all_interests&quot;: &#123;</span><br><span class="line">      &quot;terms&quot;: &#123; &quot;field&quot;: &quot;interests&quot; &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">GET /megacorp/_search</span><br><span class="line">&#123;</span><br><span class="line">  &quot;query&quot;: &#123;</span><br><span class="line">    &quot;match&quot;: &#123;</span><br><span class="line">      &quot;last_name&quot;: &quot;smith&quot;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  &quot;aggs&quot;: &#123;</span><br><span class="line">    &quot;all_interests&quot;: &#123;</span><br><span class="line">      &quot;terms&quot;: &#123;</span><br><span class="line">        &quot;field&quot;: &quot;interests&quot;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">GET /megacorp/_search</span><br><span class="line">&#123;</span><br><span class="line">    &quot;aggs&quot; : &#123;</span><br><span class="line">        &quot;all_interests&quot; : &#123;</span><br><span class="line">            &quot;terms&quot; : &#123; &quot;field&quot; : &quot;interests&quot; &#125;,</span><br><span class="line">            &quot;aggs&quot; : &#123;</span><br><span class="line">                &quot;avg_age&quot; : &#123;</span><br><span class="line">                    &quot;avg&quot; : &#123; &quot;field&quot; : &quot;age&quot; &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="Mapping"><a href="#Mapping" class="headerlink" title="Mapping"></a>Mapping</h4><p><strong>什么是Mapping</strong></p>
+<ul>
+<li><p>Mapping 类似数据库中的schema的定义，作用如下</p>
+<ul>
+<li>定义索引中的字段的名称</li>
+<li>定义字段中的数据类型，例如字符串，数字，布尔…</li>
+<li>字段，倒排索引的相关配置，(Analyzed or Not Analyzed, Analyzer)</li>
+</ul>
+</li>
+<li><p>Mapping 会把JSON文档映射成Lucence所需要的扁平格式</p>
+</li>
+<li>一个Mapping属于一个索引的Type<ul>
+<li>每个文档都属于一个Type</li>
+<li>一个Type有一个Mapping定义</li>
+<li>7.0开始，不需要在Mapping定义中指定type的信息</li>
+</ul>
+</li>
+</ul>
+<p><strong>字段的数据类型</strong></p>
+<ul>
+<li>简单类型<ul>
+<li>Text/Keyword</li>
+<li>Date</li>
+<li>Integer/Floating</li>
+<li>Boolean</li>
+<li>IPv4 &amp; IPv6</li>
+</ul>
+</li>
+<li>复杂类型<ul>
+<li>对象类型/嵌套类型</li>
+</ul>
+</li>
+<li>特殊类型<ul>
+<li>geo_point &amp; geo_shape/percolator</li>
+</ul>
+</li>
+</ul>
+<p><strong>什么是Dynamic Mapping</strong></p>
+<ul>
+<li>在写入文档时候，如果索引不存在，会自动创建索引</li>
+<li>Dynamic Mapping的机制，使得我们无需手动定义Mappings。ElasticSearch会自动根据文档信息，推算出字段的类型。</li>
+<li>但是有时候会推算的不对，例如地理位置信息</li>
+<li>当类型如果设置不对时，会导致一些功能无法正常运行，例如Range查询。</li>
+</ul>
+<p><img src="/2021/11/08/es总结4/es5.png" alt="avatar"></p>
+<p><strong>能否更改Mapping的字段类型</strong></p>
+<ul>
+<li>两种情况<ul>
+<li>新增加字段<ul>
+<li>Dynamic 设置为true时，一旦有新增字段的文档写入，Mapping也同时被更新</li>
+<li>Dynamic 设置为false时，Mapping不会被更新，新增字段的数据无法被索引，但是信息会出现在 _source 中</li>
+<li>Dynamic 设置为strict时，文档写入失败</li>
+</ul>
+</li>
+<li>对已有字段， 一旦有数据写入，就不再支持修改字段定义<ul>
+<li>Lucence实现的倒排索引，一旦生成后，就不允许修改</li>
+</ul>
+</li>
+<li>如果希望改变字段类型，必须Reindex API，重建索引</li>
+</ul>
+</li>
+<li>原因<ul>
+<li>如果修改了字段的数据类型，会导致已被索引的属于无法被索引</li>
+<li>但是如果是新增的字段，  就没有这样的影响。</li>
+</ul>
+</li>
+</ul>
+<h4 id="显式Mapping设置与常见参数介绍"><a href="#显式Mapping设置与常见参数介绍" class="headerlink" title="显式Mapping设置与常见参数介绍"></a>显式Mapping设置与常见参数介绍</h4><p><strong>定义一个mapping</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">PUT movies</span><br><span class="line">&#123;</span><br><span class="line">    &quot;mappings&quot;:&#123;</span><br><span class="line">        // define your mapping</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>自定义mapping的建议</strong></p>
+<ul>
+<li>可以参考API手册，纯手写</li>
+<li>为了减少输入的工作量，减少出错率，可以依照以下步骤<ul>
+<li>创建一个临时的index，写入一些样本数据</li>
+<li>通过访问Mapping API获得该临时文件的动态Mapping定义</li>
+<li>修改后用，使用该配置创建你的索引</li>
+<li>删除临时索引</li>
+</ul>
+</li>
+</ul>
+<p><strong>控制当前字段是否被索引</strong></p>
+<ul>
+<li>index 控制当前字段是否被索引。默认为true，如果设置成false，该字段不可被索引。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">PUT users</span><br><span class="line">&#123;</span><br><span class="line">    &quot;mappings&quot;:&#123;</span><br><span class="line">        &quot;properties&quot;:&#123;</span><br><span class="line">            &quot;firstName&quot;:&#123;</span><br><span class="line">                &quot;type&quot;:&quot;text&quot;</span><br><span class="line">            &#125;,</span><br><span class="line">             &quot;lastName&quot;:&#123;</span><br><span class="line">                &quot;type&quot;:&quot;text&quot;</span><br><span class="line">            &#125;,</span><br><span class="line">             &quot;mobile&quot;:&#123;</span><br><span class="line">                &quot;type&quot;:&quot;text&quot;,</span><br><span class="line">                &quot;index&quot;:false</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>Index Options</strong></p>
+<ul>
+<li>四种不同级别的Index Options配置，可以控制倒索引记录的内容<ul>
+<li>docs   记录 doc id</li>
+<li>freqs  记录 doc id 和term frequencies</li>
+<li>positions  记录doc id ／term frequencies／ term position</li>
+<li>offset  记录 doc id ／term frequencies /term position / character offects</li>
+</ul>
+</li>
+<li>Text 类型默认记录positions，其他默认为docs</li>
+<li>记录内容越多，占用存储空间越大</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">PUT users</span><br><span class="line">&#123;</span><br><span class="line">    &quot;mappings&quot;:&#123;</span><br><span class="line">        &quot;properties&quot;:&#123;</span><br><span class="line">            &quot;firstName&quot;:&#123;</span><br><span class="line">                &quot;type&quot;:&quot;text&quot;</span><br><span class="line">            &#125;,</span><br><span class="line">             &quot;lastName&quot;:&#123;</span><br><span class="line">                &quot;type&quot;:&quot;text&quot;</span><br><span class="line">            &#125;,</span><br><span class="line">             &quot;mobile&quot;:&#123;</span><br><span class="line">                &quot;type&quot;:&quot;text&quot;,</span><br><span class="line">                &quot;index&quot;:false</span><br><span class="line">            &#125;</span><br><span class="line">            &quot;bio&quot;:&#123;</span><br><span class="line">                 &quot;type&quot;:&quot;text&quot;,</span><br><span class="line">                 &quot;index_options&quot;:&quot;offsets&quot;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>null_value</strong></p>
+<ul>
+<li>需要对Null值实现搜索</li>
+<li>只有Keyword类型支持设置Null_Value</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">PUT users</span><br><span class="line">&#123;</span><br><span class="line">    &quot;mappings&quot;:&#123;</span><br><span class="line">        &quot;properties&quot;:&#123;</span><br><span class="line">            &quot;firstName&quot;:&#123;</span><br><span class="line">                &quot;type&quot;:&quot;text&quot;</span><br><span class="line">            &#125;,</span><br><span class="line">             &quot;lastName&quot;:&#123;</span><br><span class="line">                &quot;type&quot;:&quot;text&quot;</span><br><span class="line">            &#125;,</span><br><span class="line">             &quot;mobile&quot;:&#123;</span><br><span class="line">                &quot;type&quot;:&quot;text&quot;,</span><br><span class="line">                &quot;null_value&quot;:&quot;NULL&quot;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">GET users/_search?q=mobile:NULL</span><br><span class="line"></span><br><span class="line">&quot;_source&quot;:&#123;</span><br><span class="line">    &quot;firstName&quot;:&quot;test&quot;,</span><br><span class="line">    &quot;lastName&quot;:&quot;last&quot;,</span><br><span class="line">    &quot;mobile&quot;:null</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>copy_to设置</strong></p>
+<ul>
+<li>_all在7中被copy_to所替代</li>
+<li>满足一些特定的搜索需求</li>
+<li>copy_to将字段的数值拷贝到目标字段，实现类似_all的作用</li>
+<li>copy_to的目标字段不出现在_source中</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">PUT users</span><br><span class="line">&#123;</span><br><span class="line">    &quot;mappings&quot;:&#123;</span><br><span class="line">        &quot;properties&quot;:&#123;</span><br><span class="line">            &quot;firstName&quot;:&#123;</span><br><span class="line">                &quot;type&quot;:&quot;text&quot;</span><br><span class="line">                &quot;copy_to&quot;:&quot;fullName&quot;</span><br><span class="line">            &#125;,</span><br><span class="line">             &quot;lastName&quot;:&#123;</span><br><span class="line">                &quot;type&quot;:&quot;text&quot;</span><br><span class="line">                &quot;copy_to&quot;:&quot;fullName&quot;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>数组类型</strong></p>
+<ul>
+<li>Elasticsearch中不提供专门的数组类型。但是任何字段，都可以包含多个相同类型的值</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">PUT users/_doc/1</span><br><span class="line">&#123;</span><br><span class="line">    &quot;name&quot;:&quot;onebird&quot;,</span><br><span class="line">    &quot;interests&quot;:&quot;reading&quot;</span><br><span class="line">&#125;</span><br><span class="line">PUT users/_doc/2</span><br><span class="line">&#123;</span><br><span class="line">    &quot;name&quot;:&quot;onebird&quot;,</span><br><span class="line">    &quot;interests&quot;:[&quot;reading&quot;,&quot;music&quot;]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>]]></content>
       <tags>
         <tag>Elasticsearch</tag>
       </tags>
